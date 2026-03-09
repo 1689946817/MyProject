@@ -126,6 +126,11 @@ npm run dev
   - 建议你将 COCO 原始 caption 或其它文本描述单独构建为一个 Chroma 集合 `images_text_only`，
     其 `id` 与 ground truth 中的 `relevant_ids` 对齐。完成后即可使用本仓库中的基线代码进行评测。
 
+- **Baseline B：跨模态检索（qwen3-vl-embedding）**
+  - 使用 qwen3-vl-embedding 多模态融合向量模型，支持文本→图像和图像→图像检索。
+  - 首先构建向量索引：`python -m evaluation.build_clip_index`
+  - 该基线使用独立的 Chroma 集合 `images_multimodal_embedding`。
+
 ### 3. 运行检索评测脚本
 
 在项目根目录下，使用 Python 模块方式运行：
@@ -138,7 +143,8 @@ python -m evaluation.run_offline_eval \
 ```
 
 - `--method proposed`：评测本项目提出的方法（MLLM 描述 + 文本检索）；
-- 你也可以使用 `--method baseline_text` 评测纯文本检索基线（前提是已构建好 `images_text_only` 集合）。
+- `--method baseline_text`：评测纯文本检索基线（前提是已构建好 `images_text_only` 集合）；
+- `--method baseline_clip`：评测跨模态检索基线（前提是已构建好 `images_multimodal_embedding` 集合）。
 
 脚本会输出：
 
@@ -148,8 +154,7 @@ python -m evaluation.run_offline_eval \
 
 可将结果记录到论文/开题报告的实验章节中。
 
-> 提示：`baseline_clip_retrieval.py` 文件中已预留跨模态向量检索接口，若你后续接入 CLIP / BLIP-2，
-> 可在此基础上实现更强的 Baseline B，对比本系统的效果。
+> 提示：Baseline B 已实现，使用 qwen3-vl-embedding 多模态融合向量模型进行跨模态检索。
 
 ---
 
