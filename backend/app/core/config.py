@@ -1,41 +1,71 @@
+"""
+配置管理模块
+
+该模块负责加载和管理应用程序的所有配置项，包括：
+- 应用基本信息
+- CORS 配置
+- 数据库连接
+- 向量存储配置
+- 模型服务配置（多模态、嵌入、文本生成）
+
+使用 pydantic-settings 从环境变量或 .env 文件加载配置，确保类型安全和默认值处理。
+"""
 from functools import lru_cache
 from typing import List, Optional
 
-from pydantic import AnyHttpUrl, BaseSettings
+from pydantic import AnyHttpUrl
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "Multimodal RAG Knowledge Base"
+    """应用配置类
+    
+    管理所有应用配置项，支持从环境变量和 .env 文件加载。
+    配置项采用大写命名，保持与环境变量一致。
+    """
+    # 应用基本信息
+    APP_NAME: str = "Multimodal RAG Knowledge Base"  # 应用名称
 
-    # Backend
+    # 后端 CORS 配置
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
         "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
         "http://127.0.0.1:5173",
-    ]
+        "http://127.0.0.1:5174",
+        "http://127.0.0.1:5175",
+    ]  # 允许的跨域来源，主要是前端开发服务器地址
 
-    # Database
-    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./app.db"
+    # 数据库配置
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./app.db"  # SQLite 数据库连接字符串
 
-    # Chroma / vector store
-    CHROMA_PERSIST_DIR: str = "./chroma_data"
-    CHROMA_COLLECTION_NAME: str = "images_semantic_desc"
+    # Chroma 向量存储配置
+    CHROMA_PERSIST_DIR: str = "./chroma_data"  # Chroma 持久化存储目录
+    CHROMA_COLLECTION_NAME: str = "images_semantic_desc"  # 向量存储集合名称，用于存储图像语义描述
 
-    # Multimodal model (e.g. Qwen-VL on 阿里百炼)
-    MLLM_BASE_URL: Optional[str] = None
-    MLLM_API_KEY: Optional[str] = None
-    MLLM_MODEL_NAME: Optional[str] = None
+    # 多模态模型配置（例如 阿里百炼上的 Qwen-VL）
+    MLLM_BASE_URL: Optional[str] = None  # 多模态模型 API 基础 URL
+    MLLM_API_KEY: Optional[str] = None  # 多模态模型 API 密钥
+    MLLM_MODEL_NAME: Optional[str] = None  # 多模态模型名称
 
-    # Embedding model (e.g. BGE-m3 on 阿里百炼 / OpenAI 格式)
-    EMBEDDING_BASE_URL: Optional[str] = None
-    EMBEDDING_API_KEY: Optional[str] = None
-    EMBEDDING_MODEL_NAME: Optional[str] = None
+    # 嵌入模型配置（例如 阿里百炼上的 BGE-m3 或 OpenAI 格式）
+    EMBEDDING_BASE_URL: Optional[str] = None  # 嵌入模型 API 基础 URL
+    EMBEDDING_API_KEY: Optional[str] = None  # 嵌入模型 API 密钥
+    EMBEDDING_MODEL_NAME: Optional[str] = None  # 嵌入模型名称
 
-    # LLM for RAG QA
-    LLM_BASE_URL: Optional[str] = None
-    LLM_API_KEY: Optional[str] = None
-    LLM_MODEL_NAME: Optional[str] = None
+    # RAG 问答用的文本生成模型配置
+    LLM_BASE_URL: Optional[str] = None  # 文本生成模型 API 基础 URL
+    LLM_API_KEY: Optional[str] = None  # 文本生成模型 API 密钥
+    LLM_MODEL_NAME: Optional[str] = None  # 文本生成模型名称
 
     class Config:
+        """配置类的配置
+        
+        控制配置加载行为：
+        - case_sensitive: 环境变量大小写敏感
+        - env_file: 从 .env 文件加载配置
+        - env_file_encoding: .env 文件编码
+        """
         case_sensitive = True
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -43,8 +73,16 @@ class Settings(BaseSettings):
 
 @lru_cache()
 def get_settings() -> Settings:
+    """获取应用配置
+    
+    使用 lru_cache 缓存配置实例，避免重复加载。
+    
+    Returns:
+        Settings: 应用配置实例
+    """
     return Settings()
 
 
+# 全局配置实例，供其他模块直接使用
 settings = get_settings()
 

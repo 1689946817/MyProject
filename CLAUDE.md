@@ -93,8 +93,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 3. RAG 问答流程
 1. 用户输入问题（可选上传图片）
 2. 执行双路检索获取相关图像
-3. 将检索结果格式化为文本上下文
-4. 调用文本 LLM 生成答案
+3. 将检索到的原始图像转换为base64编码
+4. 将图像和问题一起传给多模态大模型生成答案
 5. 返回答案和引用的图像列表
 
 ### 4. 离线评估流程
