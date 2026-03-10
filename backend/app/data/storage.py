@@ -9,13 +9,13 @@
 支持不同数据集分割的存储管理（train、val、test、custom）。
 """
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TypeAlias
 
 from app.core.config import settings
 
 
 # 图像数据集分割类型
-type ImageSplit = Literal["train", "val", "test", "custom"]
+ImageSplit: TypeAlias = Literal["train", "val", "test", "custom"]
 
 
 # 基础存储目录路径

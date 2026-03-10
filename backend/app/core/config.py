@@ -10,11 +10,15 @@
 
 使用 pydantic-settings 从环境变量或 .env 文件加载配置，确保类型安全和默认值处理。
 """
+import os
 from functools import lru_cache
 from typing import List, Optional
 
 from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings
+
+# config.py 所在目录的绝对路径（backend/app/core/）
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Settings(BaseSettings):
@@ -24,7 +28,7 @@ class Settings(BaseSettings):
     配置项采用大写命名，保持与环境变量一致。
     """
     # 应用基本信息
-    APP_NAME: str = "Multimodal RAG Knowledge Base"  # 应用名称
+    APP_NAME: str = "Multimodal RAG Base"  # 应用名称
 
     # 后端 CORS 配置
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
@@ -40,7 +44,7 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: str = "sqlite:///./app.db"  # SQLite 数据库连接字符串
 
     # Chroma 向量存储配置
-    CHROMA_PERSIST_DIR: str = "./chroma_data"  # Chroma 持久化存储目录
+    CHROMA_PERSIST_DIR: str = os.path.join(_BASE_DIR, "../../chroma_data")  # Chroma 持久化存储目录（绝对路径，固定指向 backend/chroma_data/）
     CHROMA_COLLECTION_NAME: str = "images_semantic_desc"  # 向量存储集合名称，用于存储图像语义描述
 
     # 多模态模型配置（例如 阿里百炼上的 Qwen-VL）
