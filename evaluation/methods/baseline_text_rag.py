@@ -26,6 +26,49 @@ _client = chromadb.Client(
 _collection = _client.get_or_create_collection(name="images_text_only")
 
 
+def build_text_index(image_records: List[dict]) -> None:
+    """
+    构建纯文本向量索引。
+
+    将 COCO caption 或人工文本描述向量化后存入 ChromaDB。
+    需要在运行评估前调用此函数构建向量库。
+
+    Args:
+        image_records: 图像记录列表，每个记录应包含：
+            - id: 图像 ID（字符串）
+            - caption: COCO caption 或人工描述文本
+            - file_path: 图像文件路径（可选，用于元数据）
+    """
+    embedder = get_embedding_client()
+
+    ids = [record["id"] for record in image_records]
+    texts = [record["caption"] for record in image_records]
+    metadatas = [
+        {"file_path": record.get("file_path", ""), "source": "baseline_text"}
+        for record in image_records
+    ]
+
+    print(f"Embedding {len(texts)} captions...")
+    embeddings = embedder.embed_texts(texts)
+
+    existing = _collection.count()
+    if existing > 0:
+        _collection.delete(where={})
+
+    _collection.add(
+        embeddings=embeddings,
+        documents=texts,
+        ids=ids,
+        metadatas=metadatas,
+    )
+    print(f"Text index built: {len(ids)} records in collection 'images_text_only'")
+
+
+def check_text_index() -> bool:
+    """检查文本向量索引是否已构建。"""
+    return _collection.count() > 0
+
+
 def retrieve(query: str, top_k: int = 10) -> List[str]:
     """
     基于文本查询 text-only 向量集合，返回预测的图像 ID 列表。

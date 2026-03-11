@@ -6,24 +6,27 @@ MS-COCO 子集数据加载与抽象。
 
 {
   "query": "a child playing football on the grass",
-  "relevant_ids": ["000000123456", "000000234567"]
+  "relevant_ids": ["000000123456", "000000234567"],
+  "reference_answer": "A child is playing football on the grass."  // 可选
 }
 
 其中 relevant_ids 与系统中向量库 / ImageRecord 的 id 对应。
+reference_answer 为可选字段，用于 RAG 生成质量评估（Answer Correctness 指标）。
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Set
+from typing import List, Optional, Set
 
 
 @dataclass
 class CocoQuerySample:
     query: str
     relevant_ids: Set[str]
+    reference_answer: str = ""
 
 
 def load_coco_subset(json_path: str | Path) -> List[CocoQuerySample]:
@@ -33,6 +36,7 @@ def load_coco_subset(json_path: str | Path) -> List[CocoQuerySample]:
     for item in raw:
         query = item["query"]
         rel_ids = set(item.get("relevant_ids", []))
-        samples.append(CocoQuerySample(query=query, relevant_ids=rel_ids))
+        reference_answer = item.get("reference_answer", "")
+        samples.append(CocoQuerySample(query=query, relevant_ids=rel_ids, reference_answer=reference_answer))
     return samples
 
