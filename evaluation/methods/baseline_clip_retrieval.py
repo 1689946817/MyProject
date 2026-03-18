@@ -11,13 +11,18 @@ Baseline B：跨模态嵌入（qwen3-vl-embedding）检索。
 from __future__ import annotations
 
 import os
+import sys
+from pathlib import Path
 from typing import List
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 
-from backend.app.core.config import settings
-from backend.app.retrieval.embedding_client import get_embedding_client
+# 将 backend 加入路径
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
+
+from app.core.config import settings  # noqa: E402
+from app.langchain_integration.models import get_multimodal_embedding_model  # noqa: E402
 
 # 初始化 ChromaDB 客户端和集合
 _client = chromadb.Client(
@@ -44,17 +49,10 @@ def retrieve_text(query: str, top_k: int = 10) -> List[str]:
     Returns:
         List[str]: top_k 个预测图像 ID 列表
     """
-    embedder = get_embedding_client()
-
-    # 检查是否支持图像嵌入（需要 DashScopeEmbeddingClient）
-    if not hasattr(embedder, 'embed_images'):
-        raise NotImplementedError(
-            "Current embedding client does not support image embedding. "
-            "Please use DashScopeEmbeddingClient with qwen3-vl-embedding model."
-        )
+    embedder = get_multimodal_embedding_model()
 
     # 将查询文本编码为向量
-    query_embedding = embedder.embed_texts([query])[0]
+    query_embedding = embedder.embed_query(query)
 
     # 在向量库中检索
     results = _collection.query(
@@ -80,7 +78,7 @@ def retrieve_image(image_path: str, top_k: int = 10) -> List[str]:
     Returns:
         List[str]: top_k 个预测图像 ID 列表
     """
-    embedder = get_embedding_client()
+    embedder = get_multimodal_embedding_model()
 
     # 检查是否支持图像嵌入
     if not hasattr(embedder, 'embed_images'):
@@ -136,7 +134,7 @@ def build_vector_index(image_records: List[dict]) -> None:
             - file_path: 图像文件路径
             - description: 图像描述（可选，用于元数据）
     """
-    embedder = get_embedding_client()
+    embedder = get_multimodal_embedding_model()
 
     # 检查是否支持图像嵌入
     if not hasattr(embedder, 'embed_images'):

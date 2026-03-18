@@ -5,3 +5,12 @@ pydantic
 python-dotenv
 chromadb
 httpx
+
+# LangChain 核心依赖
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+
+# 可选：LangChain 特定提供商支持
+# langchain-openai  # OpenAI 支持
+# langchain-anthropic  # Anthropic 支持

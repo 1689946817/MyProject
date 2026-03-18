@@ -11,7 +11,7 @@
 
 ## 构建、测试与开发命令
 - `cd backend && pip install -r requirements.txt`：安装后端依赖。
-- `cd backend && python main.py`：启动 API，默认地址为 `http://localhost:9094`。
+- `cd backend && python main.py`：启动 API，默认地址为 `http://localhost:9090`。
 - `cd frontend && npm install`：安装前端依赖。
 - `cd frontend && npm run dev`：启动 Vite 开发服务器，默认地址为 `http://localhost:5173`。
 - `cd frontend && npm run build`：构建前端生产包。

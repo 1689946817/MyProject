@@ -8,13 +8,18 @@ Baseline A：仅文本检索（纯文本 RAG 系统）。
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from typing import Any, Dict, List
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 
-from backend.app.core.config import settings
-from backend.app.retrieval.embedding_client import get_embedding_client
+# 将 backend 加入路径
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
+
+from app.core.config import settings  # noqa: E402
+from app.langchain_integration.models import get_embedding_model  # noqa: E402
 
 
 _client = chromadb.Client(
@@ -39,7 +44,7 @@ def build_text_index(image_records: List[dict]) -> None:
             - caption: COCO caption 或人工描述文本
             - file_path: 图像文件路径（可选，用于元数据）
     """
-    embedder = get_embedding_client()
+    embedder = get_embedding_model()
 
     ids = [record["id"] for record in image_records]
     texts = [record["caption"] for record in image_records]
@@ -49,7 +54,7 @@ def build_text_index(image_records: List[dict]) -> None:
     ]
 
     print(f"Embedding {len(texts)} captions...")
-    embeddings = embedder.embed_texts(texts)
+    embeddings = embedder.embed_documents(texts)
 
     existing = _collection.count()
     if existing > 0:
@@ -73,8 +78,8 @@ def retrieve(query: str, top_k: int = 10) -> List[str]:
     """
     基于文本查询 text-only 向量集合，返回预测的图像 ID 列表。
     """
-    embedder = get_embedding_client()
-    emb = embedder.embed_texts([query])[0]
+    embedder = get_embedding_model()
+    emb = embedder.embed_query(query)
     results: Dict[str, Any] = _collection.query(query_embeddings=[emb], n_results=top_k)
     ids = results.get("ids", [[]])[0]
     return [str(i) for i in ids]

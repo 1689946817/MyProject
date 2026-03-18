@@ -21,13 +21,18 @@ Baseline C：基于 OCR 与文档结构解析的多模态 RAG 流程。
 from __future__ import annotations
 
 import os
+import sys
+from pathlib import Path
 from typing import List, Optional
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 
-from backend.app.core.config import settings
-from backend.app.retrieval.embedding_client import get_embedding_client
+# 将 backend 加入路径
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
+
+from app.core.config import settings  # noqa: E402
+from app.langchain_integration.models import get_embedding_model  # noqa: E402
 
 # 初始化 ChromaDB 客户端和集合
 _client = chromadb.Client(
@@ -90,8 +95,8 @@ def retrieve(query: str, top_k: int = 10) -> List[str]:
     Returns:
         List[str]: top_k 个预测图像 ID 列表
     """
-    embedder = get_embedding_client()
-    emb = embedder.embed_texts([query])[0]
+    embedder = get_embedding_model()
+    emb = embedder.embed_query(query)
     results = _collection.query(query_embeddings=[emb], n_results=top_k)
     ids = results.get("ids", [[]])[0]
     return [str(i) for i in ids]
@@ -113,7 +118,7 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
     if fallback_text is None:
         fallback_text = "[no text]"
 
-    embedder = get_embedding_client()
+    embedder = get_embedding_model()
 
     ids = []
     texts = []
@@ -148,7 +153,7 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
         return
 
     print(f"Embedding {len(texts)} OCR texts...")
-    embeddings = embedder.embed_texts(texts)
+    embeddings = embedder.embed_documents(texts)
 
     # 清空现有集合并写入新数据
     existing = _collection.count()

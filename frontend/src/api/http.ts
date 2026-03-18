@@ -12,7 +12,7 @@ import axios from "axios";
  * - timeout: 请求超时时间（毫秒）
  */
 export const http = axios.create({
-  baseURL: "http://localhost:9094", // 后端服务地址
+  baseURL: "http://localhost:9090", // 后端服务地址
   timeout: 60000 // 60秒超时
 });
 

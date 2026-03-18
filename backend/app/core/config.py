@@ -52,10 +52,14 @@ class Settings(BaseSettings):
     MLLM_API_KEY: Optional[str] = None  # 多模态模型 API 密钥
     MLLM_MODEL_NAME: Optional[str] = None  # 多模态模型名称
 
-    # 嵌入模型配置（例如 阿里百炼上的 BGE-m3 或 OpenAI 格式）
+    # 嵌入模型配置（文本向量，用于主流程）
     EMBEDDING_BASE_URL: Optional[str] = None  # 嵌入模型 API 基础 URL
     EMBEDDING_API_KEY: Optional[str] = None  # 嵌入模型 API 密钥
     EMBEDDING_MODEL_NAME: Optional[str] = None  # 嵌入模型名称
+
+    # 多模态嵌入模型配置（图文同空间，仅用于 CLIP baseline）
+    MULTIMODAL_EMBEDDING_API_KEY: Optional[str] = None
+    MULTIMODAL_EMBEDDING_MODEL_NAME: Optional[str] = None
 
     # RAG 问答用的文本生成模型配置
     LLM_BASE_URL: Optional[str] = None  # 文本生成模型 API 基础 URL

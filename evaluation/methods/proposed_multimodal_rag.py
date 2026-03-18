@@ -7,12 +7,17 @@ Proposed 方法：MLLM 结构化描述 + 文本检索。
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from typing import List
 
-from backend.app.retrieval.vector_store import search_by_text
+# 将 backend 加入路径，以便直接导入 app 模块
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
+
+from app.langchain_integration.vectorstores import get_vector_store  # noqa: E402
 
 
 def retrieve(query: str, top_k: int = 10) -> List[str]:
-    hits = search_by_text(query_text=query, top_k=top_k)
+    hits = get_vector_store().search_by_text(query_text=query, top_k=top_k)
     return [str(item["id"]) for item in hits]
 

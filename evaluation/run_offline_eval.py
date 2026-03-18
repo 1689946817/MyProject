@@ -24,7 +24,7 @@ from evaluation.metrics import (
     mean_recall_at_k,
     mean_reciprocal_rank,
 )
-from evaluation.methods import baseline_text_rag, proposed_multimodal_rag, baseline_clip_retrieval, baseline_ocr_rag
+from evaluation.methods import proposed_multimodal_rag, baseline_clip_retrieval, baseline_ocr_rag
 
 
 def run_experiment(samples: List[CocoQuerySample], method: str, top_k: int) -> None:
@@ -33,8 +33,6 @@ def run_experiment(samples: List[CocoQuerySample], method: str, top_k: int) -> N
     for sample in samples:
         if method == "proposed":
             predicted_ids = proposed_multimodal_rag.retrieve(sample.query, top_k=top_k)
-        elif method == "baseline_text":
-            predicted_ids = baseline_text_rag.retrieve(sample.query, top_k=top_k)
         elif method == "baseline_clip":
             predicted_ids = baseline_clip_retrieval.retrieve(sample.query, top_k=top_k)
         elif method == "baseline_ocr":
@@ -61,7 +59,7 @@ def main() -> None:
     parser.add_argument(
         "--method",
         type=str,
-        choices=["proposed", "baseline_text", "baseline_clip", "baseline_ocr"],
+        choices=["proposed", "baseline_clip", "baseline_ocr"],
         default="proposed",
         help="Which method to evaluate.",
     )

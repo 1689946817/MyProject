@@ -1,11 +1,11 @@
 """
-知识库管理 API 路由模块
+知识库管理 API 路由模块（LangChain 版本）
 
 该模块定义了知识库管理相关的 API 路由，包括：
 - 获取已上传的图片记录列表
 - 上传图片并生成描述
 
-所有路由都以 /api/knowledge-base 为前缀。
+使用 LangChain 框架实现，所有路由都以 /api/knowledge-base 为前缀。
 """
 from typing import List, Optional
 
@@ -15,11 +15,14 @@ from sqlalchemy.orm import Session
 from app.application.schemas import ImageRecordOut, UploadImagesResponse
 from app.data.database import get_db
 from app.data.models import ImageRecord
-from app.semantic.description_service import process_image_uploads
+from app.langchain_integration.adapters import LangChainAdapter
 
 
 # 创建 API 路由器，设置前缀和标签
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
+
+# 创建 LangChain 适配器实例
+adapter = LangChainAdapter()
 
 
 @router.get("/list", response_model=List[ImageRecordOut])
@@ -56,6 +59,7 @@ async def upload_images(
     """上传图片并生成描述
     
     批量上传图片，生成结构化描述，并将描述写入向量库。
+    使用 LangChain 框架实现图像处理和描述生成。
     
     Args:
         files: 上传的文件列表
@@ -66,15 +70,14 @@ async def upload_images(
     Returns:
         UploadImagesResponse: 上传结果，包含处理后的图片记录列表
     """
-    # 处理上传的图片
-    processed = await process_image_uploads(
+    # 使用 LangChain 适配器处理上传的图片
+    processed = await adapter.process_image_uploads(
         db=db,
         files=files,
-        split=split,  # type: ignore[arg-type]
+        split=split,
         source_dataset=source_dataset,
     )
     # 提取处理后的记录
     records = [rec for rec, _desc in processed]
     # 构建响应
     return UploadImagesResponse(images=[ImageRecordOut.model_validate(r) for r in records])
-

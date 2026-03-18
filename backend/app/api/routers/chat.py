@@ -1,21 +1,24 @@
 """
-RAG 聊天 API 路由模块
+RAG 聊天 API 路由模块（LangChain 版本）
 
 该模块定义了 RAG（检索增强生成）聊天相关的 API 路由，包括：
 - RAG 聊天接口：基于用户查询（文本或图像）生成回答
 
-所有路由都以 /api/rag 为前缀。
+使用 LangChain 框架实现，所有路由都以 /api/rag 为前缀。
 """
 from typing import List, Optional
 
 from fastapi import APIRouter, File, Form, UploadFile
 
-from app.application.rag_engine import rag_chat
 from app.application.schemas import ChatResponse, SearchResultItem
+from app.langchain_integration.adapters import LangChainAdapter
 
 
 # 创建 API 路由器，设置前缀和标签
 router = APIRouter(prefix="/api/rag", tags=["rag"])
+
+# 创建 LangChain 适配器实例
+adapter = LangChainAdapter()
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -27,6 +30,7 @@ async def rag_chat_endpoint(
     """RAG 聊天接口
     
     基于用户查询（文本或图像）检索相关图像，然后生成回答。
+    使用 LangChain 框架实现 RAG 流程。
     
     Args:
         query: 用户问题
@@ -36,8 +40,8 @@ async def rag_chat_endpoint(
     Returns:
         ChatResponse: 聊天结果，包含生成的回答和检索到的相关图像列表
     """
-    # 调用 RAG 聊天服务
-    answer, retrieved = await rag_chat(query=query, top_k=top_k, image=image)
+    # 调用 LangChain 适配器的 RAG 聊天服务
+    answer, retrieved = await adapter.rag_chat(query=query, top_k=top_k, image=image)
     # 处理检索结果
     results: List[SearchResultItem] = []
     for item in retrieved:
@@ -52,4 +56,3 @@ async def rag_chat_endpoint(
         )
     # 构建响应
     return ChatResponse(answer=answer, results=results)
-
