@@ -19,6 +19,8 @@ from pydantic_settings import BaseSettings
 
 # config.py 所在目录的绝对路径（backend/app/core/）
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# backend/ 目录（.env 文件所在位置）
+_BACKEND_DIR = os.path.dirname(os.path.dirname(_BASE_DIR))
 
 
 class Settings(BaseSettings):
@@ -75,7 +77,7 @@ class Settings(BaseSettings):
         - env_file_encoding: .env 文件编码
         """
         case_sensitive = True
-        env_file = ".env"
+        env_file = os.path.join(_BACKEND_DIR, ".env")
         env_file_encoding = "utf-8"
 
 

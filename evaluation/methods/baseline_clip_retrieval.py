@@ -161,9 +161,10 @@ def build_vector_index(image_records: List[dict]) -> None:
         }
         metadatas.append(metadata)
 
-    # 清空现有集合并添加新数据
-    _collection.delete(where={})  # 删除所有文档
-    _collection.add(
+    # 删除旧集合并重建，避免 ChromaDB delete API 的版本兼容问题
+    _client.delete_collection(_collection_name)
+    fresh = _client.get_or_create_collection(name=_collection_name)
+    fresh.add(
         embeddings=embeddings,
         ids=ids,
         metadatas=metadatas

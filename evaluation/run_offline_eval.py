@@ -14,7 +14,19 @@
 from __future__ import annotations
 
 import argparse
+import os
+import sys
 from pathlib import Path
+
+# 加载 backend/.env，确保从任意工作目录运行时配置都能正确读取
+_env_path = Path(__file__).parent.parent / "backend" / ".env"
+if _env_path.exists():
+    for _line in _env_path.read_text(encoding="utf-8").splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _k, _, _v = _line.partition("=")
+            os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
+
 from typing import List
 
 from evaluation.datasets.coco_subset import CocoQuerySample, load_coco_subset

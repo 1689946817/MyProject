@@ -45,6 +45,54 @@ _collection_name = "images_ocr_text"
 _collection = _client.get_or_create_collection(name=_collection_name)
 
 
+_paddle_ocr = None
+
+
+def _run_ocr_subprocess(image_paths: list[str]) -> dict[str, str]:
+    """
+    在独立子进程中批量执行 OCR，返回 {image_path: ocr_text} 映射。
+
+    PaddleOCR 3.4.0 在 import 时初始化 PDX，同一进程不能重复初始化，
+    因此将 OCR 隔离到子进程中运行。
+    """
+    import json
+    import subprocess
+    import sys
+
+    # 内联子进程脚本
+    script = """
+import sys, json
+from paddleocr import PaddleOCR
+ocr = PaddleOCR(use_angle_cls=True, lang="en", show_log=False)
+paths = json.loads(sys.argv[1])
+results = {}
+for p in paths:
+    try:
+        r = ocr.ocr(p, cls=True)
+        if r and r[0]:
+            lines = [w[1][0] for line in r for w in line if w]
+            results[p] = " ".join(lines).strip()
+        else:
+            results[p] = ""
+    except Exception as e:
+        results[p] = ""
+print(json.dumps(results, ensure_ascii=False))
+"""
+    proc = subprocess.run(
+        [sys.executable, "-c", script, json.dumps(image_paths)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    if proc.returncode != 0:
+        print(f"[WARN] OCR subprocess error: {proc.stderr[:200]}")
+        return {p: "" for p in image_paths}
+    try:
+        return json.loads(proc.stdout.strip())
+    except Exception:
+        return {p: "" for p in image_paths}
+
+
 def _extract_text_ocr(image_path: str) -> str:
     """
     对单张图像执行 OCR，返回提取到的文字字符串。
@@ -60,9 +108,11 @@ def _extract_text_ocr(image_path: str) -> str:
     """
     # 优先尝试 PaddleOCR
     try:
+        global _paddle_ocr
         from paddleocr import PaddleOCR
-        ocr = PaddleOCR(use_angle_cls=True, lang="en", show_log=False)
-        result = ocr.ocr(image_path, cls=True)
+        if _paddle_ocr is None:
+            _paddle_ocr = PaddleOCR(use_angle_cls=True, lang="en", show_log=False)
+        result = _paddle_ocr.ocr(image_path, cls=True)
         if not result or not result[0]:
             return ""
         lines = [word_info[1][0] for line in result for word_info in line if word_info]
@@ -120,33 +170,34 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
 
     embedder = get_embedding_model()
 
+    # 过滤出存在的图片
+    valid_records = [r for r in image_records if os.path.exists(r["file_path"])]
+    skipped = len(image_records) - len(valid_records)
+    if skipped:
+        print(f"[SKIP] {skipped} images not found on disk.")
+
+    if not valid_records:
+        print("[WARNING] No valid images to process.")
+        return
+
+    # 用子进程批量跑 OCR，避免 PaddleOCR PDX 重复初始化问题
+    print(f"Running OCR on {len(valid_records)} images (subprocess) ...")
+    image_paths = [r["file_path"] for r in valid_records]
+    ocr_results = _run_ocr_subprocess(image_paths)
+
     ids = []
     texts = []
     metadatas = []
-
-    print(f"Running OCR on {len(image_records)} images...")
-    for i, record in enumerate(image_records):
+    for record in valid_records:
         image_path = record["file_path"]
-        image_id = record["id"]
-
-        if not os.path.exists(image_path):
-            print(f"[SKIP] Image not found: {image_path}")
-            continue
-
-        ocr_text = _extract_text_ocr(image_path)
-        if not ocr_text:
-            ocr_text = fallback_text
-
-        ids.append(image_id)
+        ocr_text = ocr_results.get(image_path, "") or fallback_text
+        ids.append(record["id"])
         texts.append(ocr_text)
         metadatas.append({
             "file_path": image_path,
             "ocr_text": ocr_text,
             "source": "baseline_ocr",
         })
-
-        if (i + 1) % 50 == 0:
-            print(f"  Processed {i + 1}/{len(image_records)} images")
 
     if not ids:
         print("[WARNING] No valid images processed, index is empty.")
@@ -155,12 +206,10 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
     print(f"Embedding {len(texts)} OCR texts...")
     embeddings = embedder.embed_documents(texts)
 
-    # 清空现有集合并写入新数据
-    existing = _collection.count()
-    if existing > 0:
-        _collection.delete(where={})
-
-    _collection.add(
+    # 删除旧集合并重建，避免 ChromaDB delete API 的版本兼容问题
+    _client.delete_collection(_collection_name)
+    fresh = _client.get_or_create_collection(name=_collection_name)
+    fresh.add(
         embeddings=embeddings,
         documents=texts,
         ids=ids,

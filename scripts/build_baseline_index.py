@@ -29,15 +29,34 @@ import json
 import sys
 from pathlib import Path
 
-# 将 backend 加入路径
-sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
+# 将 backend 和项目根目录加入路径
+PROJECT_DIR = Path(__file__).parent.parent
+BACKEND_DIR = PROJECT_DIR / "backend"
+sys.path.insert(0, str(BACKEND_DIR))
+sys.path.insert(0, str(PROJECT_DIR))  # 添加项目根目录以导入 evaluation 模块
 
-from app.data.database import SessionLocal
-from app.data.models import ImageRecord
+# 手动加载 backend/.env，确保从任意工作目录运行时配置都能正确读取
+import os
+_env_path = BACKEND_DIR / ".env"
+if _env_path.exists():
+    for line in _env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, _, v = line.partition("=")
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.data.models import ImageRecord, Base
+
+# 直接指向 backend/app.db，不依赖工作目录
+_db_path = BACKEND_DIR / "app.db"
+_engine = create_engine(f"sqlite:///{_db_path}", connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(bind=_engine)
 
 
 def get_image_records(uuid_filter: set[str] | None = None) -> list[dict]:
-    """从 SQLite 读取已完成的图片记录。"""
+    """从 SQLite 读取已完成的图片记录，file_path 转为绝对路径。"""
     db = SessionLocal()
     try:
         query = db.query(ImageRecord).filter(ImageRecord.status == "Completed")
@@ -49,9 +68,11 @@ def get_image_records(uuid_filter: set[str] | None = None) -> list[dict]:
     for r in records:
         if uuid_filter and r.id not in uuid_filter:
             continue
+        # SQLite 存的是相对于 backend/ 的路径，转为绝对路径
+        abs_path = str(BACKEND_DIR / r.file_path)
         result.append({
             "id": r.id,
-            "file_path": r.file_path,
+            "file_path": abs_path,
             "description": r.generated_description or "",
         })
     return result

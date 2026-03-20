@@ -19,8 +19,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
 from app.core.config import settings
-from app.data.database import SessionLocal, engine
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from app.data.models import ImageRecord, Base
+
+# 直接指向 backend/app.db，不依赖工作目录
+_db_path = Path(__file__).parent.parent / "backend" / "app.db"
+_engine = create_engine(f"sqlite:///{_db_path}", connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(bind=_engine)
+engine = _engine
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings
@@ -35,6 +42,8 @@ CHROMA_COLLECTIONS = [
 
 def clear_sqlite() -> None:
     print("Clearing SQLite image_records ...")
+    # 确保表存在（后端首次启动时才会创建）
+    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         count = db.query(ImageRecord).count()

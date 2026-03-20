@@ -59,13 +59,14 @@ def upload_image(img_path: Path, api_url: str, retries: int = 3) -> str | None:
     for attempt in range(retries):
         try:
             with open(img_path, "rb") as f:
+                # 接口字段名为 files（复数），返回 {"images": [{"id": ...}]}
                 resp = requests.post(
                     f"{api_url}/api/knowledge-base/upload",
-                    files={"file": (img_path.name, f, "image/jpeg")},
+                    files=[("files", (img_path.name, f, "image/jpeg"))],
                     timeout=60,
                 )
             if resp.status_code == 200:
-                return resp.json()["id"]
+                return resp.json()["images"][0]["id"]
             print(f"  [WARN] Upload HTTP {resp.status_code}: {resp.text[:100]}")
         except Exception as e:
             print(f"  [WARN] Upload attempt {attempt + 1} failed: {e}")

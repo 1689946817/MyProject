@@ -164,6 +164,11 @@ backend/app/semantic/__pycache__/
 app.db
 chroma_data/
 
+# 评估数据目录（图片体积大，只保留 JSON）
+data/val2017/
+data/val2017_subset/
+data/annotations/
+
 frontend/node_modules/
 frontend/dist/
 frontend/package-lock.json

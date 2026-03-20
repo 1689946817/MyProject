@@ -58,7 +58,7 @@ def build_text_index(image_records: List[dict]) -> None:
 
     existing = _collection.count()
     if existing > 0:
-        _collection.delete(where={})
+        _collection.delete(where=None)  # 删除所有文档
 
     _collection.add(
         embeddings=embeddings,
