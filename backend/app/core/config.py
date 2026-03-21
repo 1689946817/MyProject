@@ -63,6 +63,9 @@ class Settings(BaseSettings):
     MULTIMODAL_EMBEDDING_API_KEY: Optional[str] = None
     MULTIMODAL_EMBEDDING_MODEL_NAME: Optional[str] = None
 
+    # PaddleOCR Python 解释器路径（用于 OCR baseline 子进程）
+    PADDLEOCR_PYTHON: Optional[str] = None
+
     # RAG 问答用的文本生成模型配置
     LLM_BASE_URL: Optional[str] = None  # 文本生成模型 API 基础 URL
     LLM_API_KEY: Optional[str] = None  # 文本生成模型 API 密钥

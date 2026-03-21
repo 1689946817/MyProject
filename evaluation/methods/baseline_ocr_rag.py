@@ -78,8 +78,9 @@ for p in paths:
         results[p] = ""
 print(json.dumps(results, ensure_ascii=False))
 """
+    paddle_python = os.environ.get("PADDLEOCR_PYTHON") or sys.executable
     proc = subprocess.run(
-        [sys.executable, "-c", script, json.dumps(image_paths)],
+        [paddle_python, "-c", script, json.dumps(image_paths)],
         capture_output=True,
         text=True,
         encoding="utf-8",

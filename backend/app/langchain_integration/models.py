@@ -396,12 +396,13 @@ class OpenAIEmbeddingsWrapper(Embeddings):
         self.api_key = api_key or (settings.EMBEDDING_API_KEY or "")
         self.model_name = model_name or (settings.EMBEDDING_MODEL_NAME or "")
 
-    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+    def embed_documents(self, texts: List[str], batch_size: int = 10) -> List[List[float]]:
         """
-        嵌入文档文本（同步）
+        嵌入文档文本（同步），自动分批避免超出 API 单次请求限制。
 
         Args:
             texts: 文本列表
+            batch_size: 每批最多发送的文本数量，默认 25
 
         Returns:
             List[List[float]]: 嵌入向量列表
@@ -413,17 +414,17 @@ class OpenAIEmbeddingsWrapper(Embeddings):
             "Content-Type": "application/json",
         }
 
-        payload = {
-            "model": self.model_name,
-            "input": texts,
-        }
-
+        all_embeddings: List[List[float]] = []
         with httpx.Client(base_url=self.base_url, timeout=60) as client:
-            response = client.post("/v1/embeddings", headers=headers, json=payload)
-            response.raise_for_status()
-            data = response.json()
+            for i in range(0, len(texts), batch_size):
+                batch = texts[i: i + batch_size]
+                payload = {"model": self.model_name, "input": batch}
+                response = client.post("/v1/embeddings", headers=headers, json=payload)
+                response.raise_for_status()
+                data = response.json()
+                all_embeddings.extend(item["embedding"] for item in data["data"])
 
-        return [item["embedding"] for item in data["data"]]
+        return all_embeddings
 
     def embed_query(self, text: str) -> List[float]:
         """
@@ -438,12 +439,13 @@ class OpenAIEmbeddingsWrapper(Embeddings):
         embeddings = self.embed_documents([text])
         return embeddings[0]
 
-    async def aembed_documents(self, texts: List[str]) -> List[List[float]]:
+    async def aembed_documents(self, texts: List[str], batch_size: int = 10) -> List[List[float]]:
         """
-        异步嵌入文档文本
+        异步嵌入文档文本，自动分批避免超出 API 单次请求限制。
 
         Args:
             texts: 文本列表
+            batch_size: 每批最多发送的文本数量，默认 25
 
         Returns:
             List[List[float]]: 嵌入向量列表
@@ -455,17 +457,17 @@ class OpenAIEmbeddingsWrapper(Embeddings):
             "Content-Type": "application/json",
         }
 
-        payload = {
-            "model": self.model_name,
-            "input": texts,
-        }
-
+        all_embeddings: List[List[float]] = []
         async with httpx.AsyncClient(base_url=self.base_url, timeout=60) as client:
-            response = await client.post("/v1/embeddings", headers=headers, json=payload)
-            response.raise_for_status()
-            data = response.json()
+            for i in range(0, len(texts), batch_size):
+                batch = texts[i: i + batch_size]
+                payload = {"model": self.model_name, "input": batch}
+                response = await client.post("/v1/embeddings", headers=headers, json=payload)
+                response.raise_for_status()
+                data = response.json()
+                all_embeddings.extend(item["embedding"] for item in data["data"])
 
-        return [item["embedding"] for item in data["data"]]
+        return all_embeddings
 
     async def aembed_query(self, text: str) -> List[float]:
         """
