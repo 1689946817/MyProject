@@ -13,6 +13,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import KnowledgeBase from "@/views/KnowledgeBase.vue"; // 知识库管理页面
 import Search from "@/views/Search.vue"; // 搜索页面
 import Chat from "@/views/Chat.vue"; // 聊天页面
+import DocumentKB from "@/views/DocumentKB.vue"; // 文档知识库页面
 
 /**
  * 路由配置数组
@@ -23,7 +24,8 @@ const routes: RouteRecordRaw[] = [
   { path: "/", redirect: "/kb" }, // 根路径重定向到知识库页面
   { path: "/kb", component: KnowledgeBase }, // 知识库管理页面
   { path: "/search", component: Search }, // 搜索页面
-  { path: "/chat", component: Chat } // 聊天页面
+  { path: "/chat", component: Chat }, // 聊天页面
+  { path: "/docs", component: DocumentKB }, // 文档知识库页面
 ];
 
 /**

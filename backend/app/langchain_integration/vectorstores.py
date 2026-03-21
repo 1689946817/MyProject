@@ -231,3 +231,86 @@ def get_vector_store() -> ChromaVectorStore:
     if _vector_store is None:
         _vector_store = ChromaVectorStore()
     return _vector_store
+
+
+class DocumentVectorStore:
+    """
+    文档文本片段向量存储
+
+    使用独立 ChromaDB 集合 `documents_text` 存储 PDF 提取的文本片段。
+    """
+
+    def __init__(
+        self,
+        persist_directory: Optional[str] = None,
+        collection_name: Optional[str] = None,
+    ):
+        self.persist_directory = persist_directory or settings.CHROMA_PERSIST_DIR
+        self.collection_name = collection_name or settings.DOC_COLLECTION_NAME
+        self.embedding_model = get_embedding_model()
+
+        self._vectorstore = Chroma(
+            collection_name=self.collection_name,
+            embedding_function=self.embedding_model,
+            persist_directory=self.persist_directory,
+        )
+
+    def upsert_chunks(
+        self,
+        doc_id: str,
+        chunks: List[str],
+        metadatas: Optional[List[Dict[str, Any]]] = None,
+    ) -> List[str]:
+        """将文档文本片段写入向量存储。"""
+        if not chunks:
+            return []
+        ids = [f"{doc_id}_chunk_{i}" for i in range(len(chunks))]
+        base_meta = {"doc_id": doc_id}
+        metas = []
+        for i, chunk in enumerate(chunks):
+            m = dict(base_meta)
+            if metadatas and i < len(metadatas):
+                m.update(metadatas[i])
+            m["chunk_index"] = i
+            metas.append(m)
+        documents = [Document(page_content=chunk, metadata=metas[i]) for i, chunk in enumerate(chunks)]
+        self._vectorstore.add_documents(documents, ids=ids)
+        return ids
+
+    def similarity_search(
+        self,
+        query: str,
+        k: int = 5,
+    ) -> List[Dict[str, Any]]:
+        """相似度检索文本片段。"""
+        results = self._vectorstore.similarity_search_with_relevance_scores(query, k=k)
+        hits = []
+        for doc, score in results:
+            hits.append({
+                "doc_id": doc.metadata.get("doc_id", ""),
+                "chunk_index": doc.metadata.get("chunk_index", 0),
+                "content": doc.page_content,
+                "metadata": doc.metadata,
+                "score": float(score),
+            })
+        return hits
+
+    def delete_document(self, doc_id: str) -> None:
+        """删除指定文档的所有片段。"""
+        try:
+            collection = self._vectorstore._collection
+            collection.delete(where={"doc_id": doc_id})
+        except Exception:
+            pass
+
+
+# 全局文档向量存储实例缓存
+_document_vector_store: Optional[DocumentVectorStore] = None
+
+
+def get_document_vector_store() -> DocumentVectorStore:
+    """获取文档向量存储实例（单例模式）。"""
+    global _document_vector_store
+    if _document_vector_store is None:
+        _document_vector_store = DocumentVectorStore()
+    return _document_vector_store

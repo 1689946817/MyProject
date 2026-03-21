@@ -10,21 +10,24 @@ LangChain 适配器模块
 """
 import base64
 import os
+import uuid
 from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
+from app.data.doc_models import DocumentRecord
 from app.data.models import ImageRecord
-from app.data.storage import get_image_path
+from app.data.storage import get_image_path, get_doc_path
 from app.langchain_integration.chains import (
     get_image_description_chain,
     get_rag_chain,
     ImageDescriptionChain,
     RAGChain,
 )
+from app.langchain_integration.doc_parser import parse_pdf
 from app.langchain_integration.retrievers import get_multimodal_retriever
-from app.langchain_integration.vectorstores import get_vector_store
+from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
 
 
 class LangChainAdapter:
@@ -55,6 +58,7 @@ class LangChainAdapter:
         self.rag_chain = rag_chain or get_rag_chain()
         self.vector_store = get_vector_store()
         self.retriever = get_multimodal_retriever()
+        self.document_vector_store = get_document_vector_store()
 
     async def process_image_upload(
         self,
@@ -284,6 +288,121 @@ class LangChainAdapter:
                 "error": str(e),
                 "collection_name": self.vector_store.collection_name,
             }
+
+    async def process_pdf_upload(self, db: Session, file: UploadFile) -> DocumentRecord:
+        """
+        处理 PDF 文档上传：解析文本和图片，分别向量化存储。
+
+        流程：
+        1. 保存 PDF 文件到 storage/docs/
+        2. 创建 DocumentRecord（status=Processing）
+        3. 解析 PDF：提取文本片段 + 图片字节
+        4. 文本片段 → DocumentVectorStore（documents_text）
+        5. 图片字节 → 逐张调用 ImageDescriptionChain → ChromaVectorStore（images_semantic_desc）
+        6. 更新 DocumentRecord status=Completed
+
+        Args:
+            db: 数据库会话
+            file: 上传的 PDF 文件
+
+        Returns:
+            DocumentRecord: 文档记录
+        """
+        doc_id = str(uuid.uuid4())
+        contents = await file.read()
+        file_name = file.filename or "document.pdf"
+
+        # 保存 PDF 文件
+        doc_path = get_doc_path(doc_id)
+        with open(str(doc_path), "wb") as f:
+            f.write(contents)
+
+        # 创建数据库记录
+        record = DocumentRecord(
+            id=doc_id,
+            file_name=file_name,
+            file_path=str(doc_path),
+            status="Processing",
+        )
+        db.add(record)
+        db.commit()
+        db.refresh(record)
+
+        try:
+            # 解析 PDF
+            text_chunks, image_bytes_list = parse_pdf(contents)
+
+            # 文本片段向量化
+            if text_chunks:
+                self.document_vector_store.upsert_chunks(
+                    doc_id=doc_id,
+                    chunks=text_chunks,
+                    metadatas=[{"file_name": file_name}] * len(text_chunks),
+                )
+
+            # 图片向量化（复用图片上传流程）
+            processed_image_count = 0
+            for idx, img_bytes in enumerate(image_bytes_list):
+                try:
+                    img_id = str(uuid.uuid4())
+                    # 保存图片到 storage/images/custom/
+                    from app.data.storage import BASE_STORAGE_DIR
+                    img_dir = BASE_STORAGE_DIR / "custom"
+                    img_dir.mkdir(parents=True, exist_ok=True)
+                    img_path = img_dir / f"{img_id}.jpg"
+                    with open(str(img_path), "wb") as f:
+                        f.write(img_bytes)
+
+                    # 调用 MLLM 生成描述
+                    img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+                    description = await self.image_description_chain.ainvoke(
+                        {"image_b64": img_b64}
+                    )
+
+                    # 写入图片向量存储
+                    from langchain_core.documents import Document as LCDoc
+                    lc_doc = LCDoc(
+                        page_content=description,
+                        metadata={
+                            "id": img_id,
+                            "source": "pdf",
+                            "doc_id": doc_id,
+                            "file_name": file_name,
+                        },
+                    )
+                    self.vector_store.add_documents([lc_doc], ids=[img_id])
+
+                    # 写入 SQLite image_records
+                    from app.data.models import ImageRecord
+                    img_record = ImageRecord(
+                        id=img_id,
+                        file_path=str(img_path),
+                        generated_description=description,
+                        status="Completed",
+                        source_dataset="pdf",
+                        extra_metadata=f'{{"doc_id": "{doc_id}"}}',
+                    )
+                    db.add(img_record)
+                    db.commit()
+
+                    processed_image_count += 1
+                except Exception:
+                    pass
+
+            # 更新文档记录
+            record.chunk_count = len(text_chunks)
+            record.image_count = processed_image_count
+            record.status = "Completed"
+            db.commit()
+            db.refresh(record)
+
+        except Exception as e:
+            record.status = "Failed"
+            record.extra_metadata = str(e)
+            db.commit()
+            db.refresh(record)
+
+        return record
 
 
 # 全局适配器实例缓存

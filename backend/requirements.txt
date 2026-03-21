@@ -5,6 +5,7 @@ pydantic
 python-dotenv
 chromadb
 httpx
+pymupdf
 
 # LangChain 核心依赖
 langchain>=0.3.0

@@ -81,9 +81,43 @@ class ImageSearchResponse(BaseModel):
 
 class ChatResponse(BaseModel):
     """聊天响应模型
-    
+
     用于返回 RAG 聊天的结果，包括生成的回答和检索到的图像。
     """
     answer: str  # 生成的回答
     results: List[SearchResultItem]  # 检索到的相关图像列表
+
+
+class DocumentRecordOut(BaseModel):
+    """文档记录输出模型"""
+    id: str
+    file_name: str
+    file_path: str
+    upload_time: datetime
+    status: str
+    chunk_count: int = 0
+    image_count: int = 0
+
+    model_config = {"from_attributes": True}
+
+
+class UploadDocumentResponse(BaseModel):
+    """上传文档响应模型"""
+    document: DocumentRecordOut
+    message: str = ""
+
+
+class DocChunk(BaseModel):
+    """文档文本片段"""
+    doc_id: str
+    chunk_index: int
+    content: str
+    score: float
+
+
+class DocParseResult(BaseModel):
+    """文档解析结果（文本片段 + 图片记录）"""
+    document: DocumentRecordOut
+    chunks: List[DocChunk]
+    images: List[ImageRecordOut]
 

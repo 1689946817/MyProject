@@ -21,6 +21,9 @@ ImageSplit: TypeAlias = Literal["train", "val", "test", "custom"]
 # 基础存储目录路径
 BASE_STORAGE_DIR = Path("storage") / "images"
 
+# 文档存储目录路径
+DOC_STORAGE_DIR = Path("storage") / "docs"
+
 
 def ensure_storage_dir() -> None:
     """确保存储目录存在
@@ -28,6 +31,19 @@ def ensure_storage_dir() -> None:
     创建基础存储目录及其父目录，若目录已存在则不做操作。
     """
     BASE_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def get_doc_path(doc_id: str) -> Path:
+    """获取文档文件路径
+
+    Args:
+        doc_id: 文档唯一标识符
+
+    Returns:
+        Path: 文档文件的完整路径
+    """
+    DOC_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+    return DOC_STORAGE_DIR / f"{doc_id}.pdf"
 
 
 def get_image_path(image_id: str, split: ImageSplit = "custom") -> Path:

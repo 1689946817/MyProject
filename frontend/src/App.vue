@@ -5,6 +5,7 @@
         <el-menu-item index="/kb">知识库管理</el-menu-item>
         <el-menu-item index="/search">图像检索</el-menu-item>
         <el-menu-item index="/chat">RAG 智能问答</el-menu-item>
+        <el-menu-item index="/docs">文档知识库</el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
