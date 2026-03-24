@@ -17,13 +17,13 @@ from typing import List
 # 将 backend 加入路径，以便直接导入 app 模块
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
-from app.langchain_integration.vectorstores import get_vector_store  # noqa: E402
+from app.langchain_integration.vectorstores import get_coco_proposed_vector_store  # noqa: E402
 
 # 只检索 COCO 数据集图片，排除 PDF 提取图片的干扰
 _COCO_FILTER = {"source_dataset": "coco_val2017"}
 
 
 def retrieve(query: str, top_k: int = 10) -> List[str]:
-    vs = get_vector_store()
+    vs = get_coco_proposed_vector_store()
     results = vs.similarity_search_with_score(query, k=top_k, filter=_COCO_FILTER)
     return [doc.metadata.get("id", "") for doc, _score in results]

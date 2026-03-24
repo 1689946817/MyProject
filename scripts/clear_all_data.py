@@ -1,7 +1,7 @@
 """
 清空所有数据库中的旧数据，包括：
   - SQLite：清空 image_records 表
-  - ChromaDB：删除三个集合（images_semantic_desc, images_multimodal_embedding, images_ocr_text）
+  - ChromaDB：删除四个集合（images_main_kb, images_coco_proposed, images_multimodal_embedding, images_ocr_text）
   - 存储文件：清空 backend/storage/images/ 下的图片文件（可选）
 
 用法（在项目根目录）：
@@ -34,7 +34,8 @@ from chromadb.config import Settings as ChromaSettings
 
 
 CHROMA_COLLECTIONS = [
-    "images_semantic_desc",
+    settings.MAIN_IMAGE_COLLECTION_NAME,
+    settings.COCO_PROPOSED_COLLECTION_NAME,
     "images_multimodal_embedding",
     "images_ocr_text",
 ]

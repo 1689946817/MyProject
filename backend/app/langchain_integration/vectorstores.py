@@ -43,7 +43,7 @@ class ChromaVectorStore:
             collection_name: 集合名称，默认从配置读取
         """
         self.persist_directory = persist_directory or settings.CHROMA_PERSIST_DIR
-        self.collection_name = collection_name or settings.CHROMA_COLLECTION_NAME
+        self.collection_name = collection_name or settings.MAIN_IMAGE_COLLECTION_NAME
         self.embedding_model = get_embedding_model()
 
         # 初始化 LangChain Chroma 向量存储
@@ -220,17 +220,26 @@ class ChromaVectorStore:
 _vector_store: Optional[ChromaVectorStore] = None
 
 
-def get_vector_store() -> ChromaVectorStore:
-    """
-    获取向量存储实例（单例模式）
-
-    Returns:
-        ChromaVectorStore: 向量存储实例
-    """
+def get_main_image_vector_store() -> ChromaVectorStore:
+    """获取主系统图片知识库向量存储实例（单例模式）。"""
     global _vector_store
     if _vector_store is None:
-        _vector_store = ChromaVectorStore()
+        _vector_store = ChromaVectorStore(
+            collection_name=settings.MAIN_IMAGE_COLLECTION_NAME,
+        )
     return _vector_store
+
+
+def get_vector_store() -> ChromaVectorStore:
+    """兼容旧调用，返回主系统图片知识库向量存储实例。"""
+    return get_main_image_vector_store()
+
+
+def get_coco_proposed_vector_store() -> ChromaVectorStore:
+    """获取 COCO proposed baseline 专用向量存储实例。"""
+    return ChromaVectorStore(
+        collection_name=settings.COCO_PROPOSED_COLLECTION_NAME,
+    )
 
 
 class DocumentVectorStore:

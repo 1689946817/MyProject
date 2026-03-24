@@ -49,6 +49,7 @@ import argparse
 import asyncio
 import base64
 import json
+import mimetypes
 import os
 import sys
 from pathlib import Path
@@ -66,7 +67,6 @@ from evaluation.methods import (
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 from app.langchain_integration.models import get_chat_model  # noqa: E402
-from app.langchain_integration.vectorstores import get_vector_store  # noqa: E402
 from langchain_core.messages import HumanMessage  # noqa: E402
 
 # 传图片给 MLLM 时使用的 prompt
@@ -75,13 +75,19 @@ _RAG_WITH_IMAGE_PROMPT = (
     "以及用户提出的问题。请仔细观察这些图像的内容，基于图像中的视觉信息回答用户的问题。\n\n"
     "用户问题：{query}\n\n"
     "{extra_context_section}"
-    "请基于图像内容进行回答，可以自然地引用相关图像，例如"根据第一张图像，可以看到……"。"
+    "请基于图像内容进行回答，可以自然地引用相关图像，例如'根据第一张图像，可以看到……'。"
     "如果图像信息不足以回答某些部分，请明确说明不确定。"
 )
 
 _EXTRA_CONTEXT_SECTION = "参考文档内容：\n{extra_context}\n\n"
 
-# 支持传图片的方法
+
+def _build_image_data_url(image_b64: str, file_path: str = "") -> str:
+    mime_type, _ = mimetypes.guess_type(file_path) if file_path else (None, None)
+    actual_mime_type = mime_type if mime_type and mime_type.startswith("image/") else "image/jpeg"
+    return f"data:{actual_mime_type};base64,{image_b64}"
+
+
 _IMAGE_METHODS = {"proposed", "baseline_clip", "baseline_ocr"}
 
 # 各方法对应的检索函数（返回图像 ID 列表）
@@ -102,7 +108,7 @@ def _ids_to_file_paths(ids: List[str]) -> List[str]:
         ChromaSettings(is_persistent=True, persist_directory=app_settings.CHROMA_PERSIST_DIR)
     )
     collection_names = [
-        "images_semantic_desc",
+        app_settings.COCO_PROPOSED_COLLECTION_NAME,
         "images_multimodal_embedding",
         "images_ocr_text",
     ]
@@ -121,20 +127,21 @@ def _ids_to_file_paths(ids: List[str]) -> List[str]:
     return [id_to_path.get(i, "") for i in ids]
 
 
-def _read_image_as_base64(file_path: str) -> Optional[str]:
+def _read_image_as_base64(file_path: str) -> Optional[tuple[str, str]]:
     if not file_path or not os.path.exists(file_path):
         return None
     with open(file_path, "rb") as f:
-        return base64.b64encode(f.read()).decode("utf-8")
+        image_b64 = base64.b64encode(f.read()).decode("utf-8")
+    return image_b64, file_path
 
 
 async def _generate_with_images(
     query: str,
-    image_b64_list: List[str],
+    image_payloads: List[tuple[str, str]],
     extra_context: Optional[str] = None,
 ) -> str:
     """将检索到的图像（+ 可选文档上下文）送入 MLLM 生成答案。"""
-    if not image_b64_list:
+    if not image_payloads:
         return "未找到相关图像，无法回答问题。"
 
     extra_section = (
@@ -144,8 +151,8 @@ async def _generate_with_images(
     prompt_text = _RAG_WITH_IMAGE_PROMPT.format(query=query, extra_context_section=extra_section)
 
     content: List[Dict[str, Any]] = [{"type": "text", "text": prompt_text}]
-    for idx, b64 in enumerate(image_b64_list, start=1):
-        content.append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}})
+    for idx, (image_b64, file_path) in enumerate(image_payloads, start=1):
+        content.append({"type": "image_url", "image_url": {"url": _build_image_data_url(image_b64, file_path)}})
         content.append({"type": "text", "text": f"\n[图像 {idx}]"})
 
     model = get_chat_model()
@@ -207,11 +214,11 @@ async def _run_one_sample(
     # 传图片的方法：proposed / baseline_clip / baseline_ocr
     ids = _RETRIEVAL_FUNCS[method](sample.query, top_k=top_k)
     file_paths = _ids_to_file_paths(ids)
-    image_b64_list = [b for p in file_paths if (b := _read_image_as_base64(p))]
+    image_payloads = [payload for p in file_paths if (payload := _read_image_as_base64(p))]
     context = extra_context or ""
 
     try:
-        answer = await _generate_with_images(sample.query, image_b64_list, extra_context=extra_context)
+        answer = await _generate_with_images(sample.query, image_payloads, extra_context=extra_context)
     except Exception as e:
         print(f"  [WARN] 生成失败: {e}")
         answer = ""
@@ -221,7 +228,7 @@ async def _run_one_sample(
         "reference_answer": sample.reference_answer,
         "generated_answer": answer,
         "context": context,
-        "image": [image_b64_list[0]] if image_b64_list else [],
+        "image": [image_payloads[0][0]] if image_payloads else [],
     }
 
 

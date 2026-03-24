@@ -115,16 +115,16 @@ async def _run_one_sample(
         # proposed / baseline_clip / baseline_ocr — 传图片
         ids = _RETRIEVAL_FUNCS[method](sample.query, top_k=top_k)
         file_paths = ids_to_file_paths(ids)
-        image_b64_list = [b for p in file_paths if (b := read_image_as_base64(p))]
+        image_payloads = [payload for p in file_paths if (payload := read_image_as_base64(p))]
         try:
-            answer = await generate_with_images(sample.query, image_b64_list, extra_context=text_context)
+            answer = await generate_with_images(sample.query, image_payloads, extra_context=text_context)
         except Exception as e:
             print(f"  [WARN] 生成失败: {e}")
             answer = ""
         r = {
             "generated_answer": answer,
             "context": text_context or "",
-            "images": [image_b64_list[0]] if image_b64_list else [],
+            "images": [image_payloads[0][0]] if image_payloads else [],
         }
 
     return {

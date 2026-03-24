@@ -113,14 +113,14 @@ npm run dev
 }
 ```
 
-其中 `relevant_ids` 应与系统中 `ImageRecord.id`（以及向量库中的 doc_id）一致。
+其中 `relevant_ids` 应与系统中 `ImageRecord.id`（以及向量库中的 doc_id）一致。对于离线 COCO proposed 实验，对应向量应写入 `images_coco_proposed`；主系统在线数据默认写入 `images_main_kb`。
 
 ### 2. 构建向量索引
 
 - **Proposed 方法：MLLM 结构化描述 + 文本检索**
   1. 启动后端。
   2. 通过前端或脚本批量上传 COCO 子集图片到 `/api/knowledge-base/upload`；
-  3. 系统会自动调用多模态模型生成描述，将描述与图像写入数据库和 Chroma 集合 `images_semantic_desc`。
+  3. 主系统在线图片知识库会将描述与图像写入数据库和 Chroma 集合 `images_main_kb`；若用于 COCO proposed 离线评测，请将评测索引单独构建到 `images_coco_proposed`，避免与主系统在线数据混用。
 
 - **Baseline A：仅文本检索（纯文本 RAG）**
   - 建议你将 COCO 原始 caption 或其它文本描述单独构建为一个 Chroma 集合 `images_text_only`，

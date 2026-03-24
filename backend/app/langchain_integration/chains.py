@@ -18,7 +18,12 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough, RunnableSequence
 
-from app.langchain_integration.models import get_chat_model, MultimodalChatModel
+from app.langchain_integration.models import (
+    build_image_data_url,
+    get_chat_model,
+    guess_image_mime_type,
+    MultimodalChatModel,
+)
 from app.langchain_integration.retrievers import MultimodalRetriever, get_multimodal_retriever
 from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
 
@@ -65,6 +70,7 @@ class ImageDescriptionChain:
         prepare_input = RunnableLambda(
             lambda x: {
                 "image_b64": x["image_b64"],
+                "mime_type": x.get("mime_type", "image/jpeg"),
                 "prompt": x.get("prompt", self.prompt),
             }
         )
@@ -75,7 +81,7 @@ class ImageDescriptionChain:
                 {"type": "text", "text": inputs["prompt"]},
                 {
                     "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{inputs['image_b64']}"},
+                    "image_url": {"url": build_image_data_url(inputs["image_b64"], inputs["mime_type"])},
                 },
             ]
             return [HumanMessage(content=content)]
@@ -129,7 +135,8 @@ class ImageDescriptionChain:
         """
         contents = await file.read()
         b64_image = base64.b64encode(contents).decode("utf-8")
-        return await self.ainvoke({"image_b64": b64_image})
+        mime_type = file.content_type or "image/jpeg"
+        return await self.ainvoke({"image_b64": b64_image, "mime_type": mime_type})
 
 
 class RAGChain:
@@ -219,9 +226,10 @@ class RAGChain:
                             image_data = f.read()
                             image_b64 = base64.b64encode(image_data).decode("utf-8")
 
+                        mime_type = guess_image_mime_type(file_path)
                         content.append({
                             "type": "image_url",
-                            "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"},
+                            "image_url": {"url": build_image_data_url(image_b64, mime_type)},
                         })
                         content.append({
                             "type": "text",

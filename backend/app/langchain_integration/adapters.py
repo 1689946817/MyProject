@@ -298,7 +298,7 @@ class LangChainAdapter:
         2. 创建 DocumentRecord（status=Processing）
         3. 解析 PDF：提取文本片段 + 图片字节
         4. 文本片段 → DocumentVectorStore（documents_text）
-        5. 图片字节 → 逐张调用 ImageDescriptionChain → ChromaVectorStore（images_semantic_desc）
+        5. 图片字节 → 逐张调用 ImageDescriptionChain → ChromaVectorStore（images_main_kb）
         6. 更新 DocumentRecord status=Completed
 
         Args:

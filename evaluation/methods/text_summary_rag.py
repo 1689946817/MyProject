@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
-from app.langchain_integration.vectorstores import get_vector_store  # noqa: E402
+from app.langchain_integration.vectorstores import get_coco_proposed_vector_store  # noqa: E402
 from app.langchain_integration.models import get_chat_model  # noqa: E402
 from langchain_core.messages import HumanMessage  # noqa: E402
 
@@ -29,7 +29,7 @@ _PROMPT = (
 
 def retrieve(query: str, top_k: int = 5) -> List[str]:
     """复用 proposed 方法的检索，返回图像 ID 列表。"""
-    hits = get_vector_store().search_by_text(query_text=query, top_k=top_k)
+    hits = get_coco_proposed_vector_store().search_by_text(query_text=query, top_k=top_k)
     return [str(item["id"]) for item in hits]
 
 
@@ -49,7 +49,7 @@ async def generate(query: str, top_k: int = 5, extra_context: Optional[str] = No
             "images": [],     # 不传图片
         }
     """
-    results = get_vector_store().similarity_search_with_score(query, k=top_k)
+    results = get_coco_proposed_vector_store().similarity_search_with_score(query, k=top_k)
 
     descriptions = []
     for doc, _ in results:

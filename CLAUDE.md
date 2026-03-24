@@ -97,7 +97,7 @@ backend/app/
 | 存储 | 位置 | 内容 |
 |------|------|------|
 | SQLite | `backend/app.db` | `image_records` 表，存图像元数据和描述 |
-| ChromaDB | `backend/chroma_data/` | 集合 `images_semantic_desc`，存描述向量 |
+| ChromaDB | `backend/chroma_data/` | 主系统图片集合 `images_main_kb`，COCO proposed 评测集合 `images_coco_proposed`，文档集合 `documents_text` |
 | 图片文件 | `backend/storage/` | 以 UUID 命名的原始图片 |
 
 三处存储的 ID 必须保持一致（均为 UUID 字符串）。

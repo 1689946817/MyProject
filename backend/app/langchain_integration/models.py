@@ -8,6 +8,7 @@ LangChain 模型集成模块
 使用 LangChain 的标准接口封装现有的模型服务，实现与 LangChain 生态的无缝集成。
 """
 import base64
+import mimetypes
 from typing import Any, Dict, List, Optional, Union
 
 from langchain_core.callbacks import CallbackManagerForLLMRun
@@ -23,6 +24,22 @@ from langchain_core.embeddings import Embeddings
 from pydantic import Field
 
 from app.core.config import settings
+
+
+def guess_image_mime_type(file_path: Optional[str] = None, default: str = "image/jpeg") -> str:
+    """根据文件路径推断图片 MIME 类型。"""
+    if not file_path:
+        return default
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if mime_type and mime_type.startswith("image/"):
+        return mime_type
+    return default
+
+
+def build_image_data_url(image_b64: str, mime_type: Optional[str] = None) -> str:
+    """构造带 MIME 类型的 base64 data URL。"""
+    actual_mime_type = mime_type or "image/jpeg"
+    return f"data:{actual_mime_type};base64,{image_b64}"
 
 
 class MultimodalChatModel(BaseChatModel):
@@ -220,13 +237,19 @@ class MultimodalChatModel(BaseChatModel):
 
         return ChatResult(generations=[generation])
 
-    async def agenerate_description(self, image_b64: str, prompt: str) -> str:
+    async def agenerate_description(
+        self,
+        image_b64: str,
+        prompt: str,
+        mime_type: str = "image/jpeg",
+    ) -> str:
         """
         生成图像描述（异步）
 
         Args:
             image_b64: Base64 编码的图像数据
             prompt: 提示词
+            mime_type: 图像 MIME 类型，默认 image/jpeg
 
         Returns:
             str: 生成的描述文本
@@ -236,7 +259,7 @@ class MultimodalChatModel(BaseChatModel):
             {"type": "text", "text": prompt},
             {
                 "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"},
+                "image_url": {"url": build_image_data_url(image_b64, mime_type)},
             },
         ]
 
@@ -358,7 +381,7 @@ class DashScopeEmbeddings(Embeddings):
                 image_data = f.read()
                 image_b64 = base64.b64encode(image_data).decode("utf-8")
 
-            input_data = [{"image": f"data:image/jpeg;base64,{image_b64}"}]
+            input_data = [{"image": build_image_data_url(image_b64, guess_image_mime_type(image_path))}]
             response = MultiModalEmbedding.call(
                 model=self.model_name,
                 input=input_data

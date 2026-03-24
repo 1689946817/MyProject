@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import mimetypes
 import os
 import sys
 from pathlib import Path
@@ -24,10 +25,16 @@ _RAG_WITH_IMAGE_PROMPT = (
     "以及用户提出的问题。请仔细观察这些图像的内容，基于图像中的视觉信息回答用户的问题。\n\n"
     "用户问题：{query}\n\n"
     "{extra_context_section}"
-    "请基于图像内容进行回答，可以自然地引用相关图像，例如"根据第一张图像，可以看到……"。"
+    "请基于图像内容进行回答，可以自然地引用相关图像，例如'根据第一张图像，可以看到……'。"
     "如果图像信息不足以回答某些部分，请明确说明不确定。"
 )
 _EXTRA_CONTEXT_SECTION = "参考文档内容：\n{extra_context}\n\n"
+
+
+def _build_image_data_url(image_b64: str, file_path: str = "") -> str:
+    mime_type, _ = mimetypes.guess_type(file_path) if file_path else (None, None)
+    actual_mime_type = mime_type if mime_type and mime_type.startswith("image/") else "image/jpeg"
+    return f"data:{actual_mime_type};base64,{image_b64}"
 
 
 def ids_to_file_paths(ids: List[str]) -> List[str]:
@@ -40,7 +47,11 @@ def ids_to_file_paths(ids: List[str]) -> List[str]:
         ChromaSettings(is_persistent=True, persist_directory=app_settings.CHROMA_PERSIST_DIR)
     )
     id_to_path: Dict[str, str] = {}
-    for col_name in ["images_semantic_desc", "images_multimodal_embedding", "images_ocr_text"]:
+    for col_name in [
+        app_settings.COCO_PROPOSED_COLLECTION_NAME,
+        "images_multimodal_embedding",
+        "images_ocr_text",
+    ]:
         try:
             col = client.get_collection(col_name)
             result = col.get(ids=ids, include=["metadatas"])
@@ -54,20 +65,21 @@ def ids_to_file_paths(ids: List[str]) -> List[str]:
     return [id_to_path.get(i, "") for i in ids]
 
 
-def read_image_as_base64(file_path: str) -> Optional[str]:
+def read_image_as_base64(file_path: str) -> Optional[tuple[str, str]]:
     if not file_path or not os.path.exists(file_path):
         return None
     with open(file_path, "rb") as f:
-        return base64.b64encode(f.read()).decode("utf-8")
+        image_b64 = base64.b64encode(f.read()).decode("utf-8")
+    return image_b64, file_path
 
 
 async def generate_with_images(
     query: str,
-    image_b64_list: List[str],
+    image_payloads: List[tuple[str, str]],
     extra_context: Optional[str] = None,
 ) -> str:
     """将检索到的图像（+ 可选文档上下文）送入 MLLM 生成答案。"""
-    if not image_b64_list:
+    if not image_payloads:
         return "未找到相关图像，无法回答问题。"
 
     extra_section = (
@@ -76,8 +88,8 @@ async def generate_with_images(
     prompt_text = _RAG_WITH_IMAGE_PROMPT.format(query=query, extra_context_section=extra_section)
 
     content: List[Dict[str, Any]] = [{"type": "text", "text": prompt_text}]
-    for idx, b64 in enumerate(image_b64_list, start=1):
-        content.append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}})
+    for idx, (image_b64, file_path) in enumerate(image_payloads, start=1):
+        content.append({"type": "image_url", "image_url": {"url": _build_image_data_url(image_b64, file_path)}})
         content.append({"type": "text", "text": f"\n[图像 {idx}]"})
 
     model = get_chat_model()
