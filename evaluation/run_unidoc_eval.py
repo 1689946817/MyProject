@@ -214,6 +214,24 @@ def main() -> None:
     parser.add_argument("--build-index", action="store_true", help="Build index before evaluating.")
     parser.add_argument("--subset-root", type=str, default="data/UniDoc-Bench-subset")
     parser.add_argument("--output-dir", type=str, default="data/eval_results")
+    parser.add_argument("--dataset-name", type=str, default="UniDoc-Bench-subset")
+    parser.add_argument("--cache-dir", type=str, default="data/cache/unidoc_proposed")
+    parser.add_argument(
+        "--resume",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Reuse successful proposed cache records (default: enabled).",
+    )
+    parser.add_argument(
+        "--retry-failed",
+        action="store_true",
+        help="Retry failed proposed cache records instead of skipping them.",
+    )
+    parser.add_argument(
+        "--force-refresh",
+        action="store_true",
+        help="Ignore proposed cache and regenerate all descriptions.",
+    )
     args = parser.parse_args()
 
     subset_root = Path(args.subset_root)
@@ -229,7 +247,23 @@ def main() -> None:
         print(f"Candidate images: {len(image_records)}")
 
         if args.method == "proposed":
-            unidoc_proposed.build_index(args.domain, image_records)
+            print(
+                "Proposed cache options: "
+                f"resume={args.resume}  "
+                f"retry_failed={args.retry_failed}  "
+                f"force_refresh={args.force_refresh}  "
+                f"dataset_name={args.dataset_name}  "
+                f"cache_dir={args.cache_dir}"
+            )
+            unidoc_proposed.build_index(
+                args.domain,
+                image_records,
+                dataset_name=args.dataset_name,
+                cache_dir=args.cache_dir,
+                resume=args.resume,
+                retry_failed=args.retry_failed,
+                force_refresh=args.force_refresh,
+            )
         elif args.method == "baseline_clip":
             unidoc_clip.build_index(args.domain, image_records)
         elif args.method == "baseline_ocr":
