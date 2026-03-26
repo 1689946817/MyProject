@@ -1,0 +1,4443 @@
+{
+  "summary": {
+    "method": "proposed",
+    "domain": "legal",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.7108,
+      "std": 0.355
+    },
+    "recall_at_5": {
+      "mean": 0.9575,
+      "std": 0.1802
+    },
+    "recall_at_10": {
+      "mean": 0.9708,
+      "std": 0.1491
+    },
+    "mrr": {
+      "mean": 0.9433,
+      "std": 0.2013
+    },
+    "map_at_10": {
+      "mean": 0.9407,
+      "std": 0.1991
+    },
+    "latency_ms": {
+      "mean": 663.315,
+      "std": 315.231
+    },
+    "latency_ms_median": 501.19
+  },
+  "by_question_type": {
+    "causal_reasoning": {
+      "count": 8,
+      "recall_at_1": {
+        "mean": 0.5417,
+        "std": 0.4034
+      },
+      "recall_at_5": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.9375,
+        "std": 0.1768
+      },
+      "map_at_10": {
+        "mean": 0.9549,
+        "std": 0.1277
+      }
+    },
+    "comparison": {
+      "count": 19,
+      "recall_at_1": {
+        "mean": 0.8333,
+        "std": 0.3368
+      },
+      "recall_at_5": {
+        "mean": 0.9868,
+        "std": 0.0574
+      },
+      "recall_at_10": {
+        "mean": 0.9868,
+        "std": 0.0574
+      },
+      "mrr": {
+        "mean": 0.9737,
+        "std": 0.1147
+      },
+      "map_at_10": {
+        "mean": 0.9693,
+        "std": 0.1152
+      }
+    },
+    "factual_retrieval": {
+      "count": 61,
+      "recall_at_1": {
+        "mean": 0.7486,
+        "std": 0.3504
+      },
+      "recall_at_5": {
+        "mean": 0.9454,
+        "std": 0.2209
+      },
+      "recall_at_10": {
+        "mean": 0.9617,
+        "std": 0.1836
+      },
+      "mrr": {
+        "mean": 0.9235,
+        "std": 0.2407
+      },
+      "map_at_10": {
+        "mean": 0.9235,
+        "std": 0.2407
+      }
+    },
+    "summarization": {
+      "count": 12,
+      "recall_at_1": {
+        "mean": 0.4375,
+        "std": 0.1982
+      },
+      "recall_at_5": {
+        "mean": 0.9444,
+        "std": 0.1297
+      },
+      "recall_at_10": {
+        "mean": 0.9722,
+        "std": 0.0962
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 0.973,
+        "std": 0.0642
+      }
+    }
+  },
+  "by_answer_type": {
+    "image_only": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.86,
+        "std": 0.3505
+      },
+      "recall_at_5": {
+        "mean": 0.94,
+        "std": 0.2399
+      },
+      "recall_at_10": {
+        "mean": 0.96,
+        "std": 0.1979
+      },
+      "mrr": {
+        "mean": 0.8967,
+        "std": 0.2691
+      },
+      "map_at_10": {
+        "mean": 0.8967,
+        "std": 0.2691
+      }
+    },
+    "table_required": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.5617,
+        "std": 0.2939
+      },
+      "recall_at_5": {
+        "mean": 0.975,
+        "std": 0.0863
+      },
+      "recall_at_10": {
+        "mean": 0.9817,
+        "std": 0.0739
+      },
+      "mrr": {
+        "mean": 0.99,
+        "std": 0.0707
+      },
+      "map_at_10": {
+        "mean": 0.9846,
+        "std": 0.0605
+      }
+    }
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "In 2020, how much did the Maine Insurance Guaranty Association collect from each recovery category?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/6349113/6349113_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 0.6666666666666666,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 597.73
+    },
+    {
+      "query_index": 1,
+      "query": "In the 2020 MIGA Annual Report, how much assessment ability was estimated for 'Other' categories using 2% of the 2019 net direct written premiums?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/4233310/4233310_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 363.63
+    },
+    {
+      "query_index": 2,
+      "query": "In the data compiled for 2010, which locations are reported to have over 40% of their correctional facilities under private management?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7896540/7896540_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/2922673/2922673_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1022.74
+    },
+    {
+      "query_index": 3,
+      "query": "In the context of the BIIAB's educational program, which substances are identified as frequently connected to unlawful acts on licensed locations?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3934571/3934571_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3934571/3934571_page_0003.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/1095340/1095340_page_0009.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/0293784/0293784_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 428.22
+    },
+    {
+      "query_index": 4,
+      "query": "For what reason is the Ombudsperson initiative by SOS Children’s Villages being established worldwide to aid individuals affected by abuse?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/2523414/2523414_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/3941562/3941562_page_0002.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/6292560/6292560_page_0003.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/6909961/6909961_page_0002.png",
+        "images/legal/4151009/4151009_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 509.2
+    },
+    {
+      "query_index": 5,
+      "query": "In the 2020 authority request disclosure document, where is the discussion on Telenor Pakistan found?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/0632613/0632613_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/0632613/0632613_page_0001.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/6066761/6066761_page_0006.png",
+        "images/legal/5264964/5264964_page_0008.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/3374686/3374686_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 585.34
+    },
+    {
+      "query_index": 6,
+      "query": "During the period from 2006 to 2016, when did the most courts establish an online presence?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/1788795/1788795_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/5264964/5264964_page_0009.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/5264964/5264964_page_0010.png",
+        "images/legal/2207961/2207961_page_0003.png",
+        "images/legal/5487811/5487811_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1366.8
+    },
+    {
+      "query_index": 7,
+      "query": "When does the agreement between Mastar Florida Corp. and InforSense.com end according to the overview of contracts dashboard?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/4151009/4151009_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1721.93
+    },
+    {
+      "query_index": 8,
+      "query": "On what date did the Active Non-Disclosure Agreement titled 'Mutual Confidentiality Agreement' between Mastar Barcelona S.A. and Access Limited become effective?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/4233310/4233310_page_0005.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/4233310/4233310_page_0006.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 819.27
+    },
+    {
+      "query_index": 9,
+      "query": "If an urgent legal document requires alt text and consent is given for later inclusion, what should the drafter do?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3675460/3675460_page_0004.png",
+        "images/legal/3675460/3675460_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3675460/3675460_page_0005.png",
+        "images/legal/3675460/3675460_page_0004.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/2207961/2207961_page_0004.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/6349113/6349113_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 415.9
+    },
+    {
+      "query_index": 10,
+      "query": "In the contract signed by Mr. Washburn, what date is found within the termination provision?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3401988/3401988_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/6716847/6716847_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1475.81
+    },
+    {
+      "query_index": 11,
+      "query": "According to the Australian Institute of Criminology, what elements increase the risk of repeat sexual offenses by child sex offenders as time progresses?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/6204462/6204462_page_0016.png",
+        "images/legal/6549868/6549868_page_0002.png",
+        "images/legal/0293784/0293784_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 566.02
+    },
+    {
+      "query_index": 12,
+      "query": "How do the feature sets and subscription models of LegiNation's BillTrack50 compare to those of TrackBill for tracking legislative activities?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/2207961/2207961_page_0003.png",
+        "images/legal/2207961/2207961_page_0004.png",
+        "images/legal/2207961/2207961_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2207961/2207961_page_0003.png",
+        "images/legal/2207961/2207961_page_0004.png",
+        "images/legal/2207961/2207961_page_0002.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/3675460/3675460_page_0005.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/3675460/3675460_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 659.48
+    },
+    {
+      "query_index": 13,
+      "query": "Can you provide the start and end dates for the active agreements listed in the Contracts - Purchase contracts dashboard related to NDAs?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/3401988/3401988_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 978.73
+    },
+    {
+      "query_index": 14,
+      "query": "How is a significant transaction defined when it involves an Issuer borrowing or lending amounts exceeding 10% of its market value?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/6625935/6625935_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6625935/6625935_page_0005.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/3900806/3900806_page_0004.png",
+        "images/legal/3900806/3900806_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 509.94
+    },
+    {
+      "query_index": 15,
+      "query": "In how many instances involving claims of domestic mistreatment is unrestricted interaction with the child determined?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5437805/5437805_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/6549868/6549868_page_0002.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/1880877/1880877_page_0009.png",
+        "images/legal/4081341/4081341_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 474.3
+    },
+    {
+      "query_index": 16,
+      "query": "How might the use of digital trading systems introduce potential hazards according to the banking risk assessment?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/1125177/1125177_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/7691267/7691267_page_0012.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/6625935/6625935_page_0005.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/1095340/1095340_page_0009.png",
+        "images/legal/3934571/3934571_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.56
+    },
+    {
+      "query_index": 17,
+      "query": "In Arizona's right of way, what infrastructure, associated with the Small Cell Act of 2018, is utilized for telecommunication purposes?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/0028652/0028652_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0028652/0028652_page_0005.png",
+        "images/legal/3372208/3372208_page_0005.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7636806/7636806_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 498.55
+    },
+    {
+      "query_index": 18,
+      "query": "Which conditions must a business meet in terms of revenue reduction and workforce size to qualify for the Ontario Small Business Support Grant starting December 26, 2020?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/4233310/4233310_page_0005.png",
+        "images/legal/1880877/1880877_page_0009.png",
+        "images/legal/3274043/3274043_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 488.52
+    },
+    {
+      "query_index": 19,
+      "query": "In what way does the Risk Assessment report illustrate the compliance conditions of different file categories?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/2561941/2561941_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/7691267/7691267_page_0012.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/7894475/7894475_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.48
+    },
+    {
+      "query_index": 20,
+      "query": "What was the trend in serious road injuries in Durham from 2016 through 2020?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/2144920/2144920_page_0004.png",
+        "images/legal/2144920/2144920_page_0002.png",
+        "images/legal/2144920/2144920_page_0005.png",
+        "images/legal/2144920/2144920_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2144920/2144920_page_0005.png",
+        "images/legal/2144920/2144920_page_0004.png",
+        "images/legal/2144920/2144920_page_0003.png",
+        "images/legal/2144920/2144920_page_0002.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/0293784/0293784_page_0019.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 983.9
+    },
+    {
+      "query_index": 21,
+      "query": "In the context of the Half-way House program, how do rearrest, reconviction, and re-imprisonment rates differ between those who completed the program successfully and those who did not?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3819330/3819330_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/0293784/0293784_page_0019.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 984.85
+    },
+    {
+      "query_index": 22,
+      "query": "In the recidivism analysis, how do the re-arrest percentages for those who did not complete their programs differ between the half-way house and day reporting?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3819330/3819330_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/0293784/0293784_page_0019.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 510.13
+    },
+    {
+      "query_index": 23,
+      "query": "Where does 3M possess a trio of operations: sales, manufacturing, and technical expertise?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3274043/3274043_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3274043/3274043_page_0005.png",
+        "images/legal/3274043/3274043_page_0006.png",
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/2207961/2207961_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 720.64
+    },
+    {
+      "query_index": 24,
+      "query": "How many people follow the Yuba County Sheriff's profiles on Facebook, Twitter, and Instagram?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/4151009/4151009_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/2144920/2144920_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 486.68
+    },
+    {
+      "query_index": 25,
+      "query": "What is the difference in the proportion of insured people between the age groups 45 to 54 and 55 to 64 based on the 2020 data from the U.S. Census Bureau?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7454342/7454342_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/6204462/6204462_page_0016.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/4757894/4757894_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.97
+    },
+    {
+      "query_index": 26,
+      "query": "In the context of federally funded initiatives, which activities are considered suitable for direct cost allocation, including research data management and extensive administrative effort?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3372208/3372208_page_0006.png",
+        "images/legal/3372208/3372208_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3372208/3372208_page_0006.png",
+        "images/legal/3372208/3372208_page_0005.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/0293784/0293784_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 493.67
+    },
+    {
+      "query_index": 27,
+      "query": "Which subjects are covered in the Amnesty International document discussing changes to Poland's judicial system, addressing issues like the Supreme Court?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3941562/3941562_page_0002.png",
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/3941562/3941562_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/3941562/3941562_page_0001.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/5733090/5733090_page_0011.png",
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/3941562/3941562_page_0002.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/3276234/3276234_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8095238095238094,
+      "latency_ms": 992.49
+    },
+    {
+      "query_index": 28,
+      "query": "Who are the law enforcement officers at the trial of Richard Daschbach in Oecusse?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3276234/3276234_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3276234/3276234_page_0001.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/6066761/6066761_page_0006.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/3401988/3401988_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 483.87
+    },
+    {
+      "query_index": 29,
+      "query": "How old, on average, are the individuals involved in the report from the Specialized Dockets Section of Ohio's Supreme Court?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/0293784/0293784_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/5437805/5437805_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 492.2
+    },
+    {
+      "query_index": 30,
+      "query": "When do the agreements involving Master International and Wolters Kluwer Belgium start and end?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/3374686/3374686_page_0006.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 493.16
+    },
+    {
+      "query_index": 31,
+      "query": "Which accolade did Entain receive in 2020 for its commitment to responsible gambling at the EGR event?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/2502771/2502771_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2502771/2502771_page_0005.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/3934571/3934571_page_0003.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/3900806/3900806_page_0005.png",
+        "images/legal/3900806/3900806_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.46
+    },
+    {
+      "query_index": 32,
+      "query": "In the context of Rueda and Emmenegger's findings, how does one's employment condition impact their propensity to support major right-wing parties?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7386841/7386841_page_0019.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7386841/7386841_page_0019.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/5264964/5264964_page_0008.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/6549868/6549868_page_0002.png",
+        "images/legal/5264964/5264964_page_0009.png",
+        "images/legal/4751111/4751111_page_0005.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/6625935/6625935_page_0005.png",
+        "images/legal/7606904/7606904_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.18
+    },
+    {
+      "query_index": 33,
+      "query": "How does European Directive 2014/59/EU describe the dangers linked to investing in unsecured credit institution instruments?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/1125177/1125177_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/1880877/1880877_page_0009.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/6625935/6625935_page_0005.png",
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/2561941/2561941_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 497.77
+    },
+    {
+      "query_index": 34,
+      "query": "When does the contract named 'BUSINESS AGREEMENT' between Mastar Florida Corp. and InforSense.com terminate according to the contract overview?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/7636806/7636806_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 486.05
+    },
+    {
+      "query_index": 35,
+      "query": "In the 2020 report on authority requests, which pages cover Telenor's activities in both Bangladesh and Norway?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/0632613/0632613_page_0001.png",
+        "images/legal/0632613/0632613_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/0632613/0632613_page_0001.png",
+        "images/legal/6066761/6066761_page_0006.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/4151009/4151009_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1032.45
+    },
+    {
+      "query_index": 36,
+      "query": "When is the shareholder assembly for the Natural Gas Services Group, Inc. set to occur, including its specific time?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3900806/3900806_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3900806/3900806_page_0003.png",
+        "images/legal/3900806/3900806_page_0004.png",
+        "images/legal/3900806/3900806_page_0005.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3900806/3900806_page_0006.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/7605593/7605593_page_0020.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/3374686/3374686_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 444.41
+    },
+    {
+      "query_index": 37,
+      "query": "What led to the court's decision to overturn and return the case involving Maimouna Barry against US Airways Group, Inc.?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5018416/5018416_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/5390077/5390077_page_0004.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/3374686/3374686_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.6388888888888888,
+      "latency_ms": 496.51
+    },
+    {
+      "query_index": 38,
+      "query": "In the 'Collaborating for Freedom' analysis, which funding type decreased from 2017 to 2019?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/2922673/2922673_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/3372208/3372208_page_0006.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/3372208/3372208_page_0005.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/5264964/5264964_page_0009.png",
+        "images/legal/5487811/5487811_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 486.77
+    },
+    {
+      "query_index": 39,
+      "query": "Until what date could businesses apply for the Ontario grant supporting small enterprises impacted by the shutdown starting on December 26, 2020?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/4233310/4233310_page_0005.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/4233310/4233310_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 736.14
+    },
+    {
+      "query_index": 40,
+      "query": "Who is listed as the approver for the CCTV Policy's implementation at the Tower Learning Centre in the review details?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3657965/3657965_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/6292560/6292560_page_0003.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/5221475/5221475_page_0006.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/7636806/7636806_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 569.93
+    },
+    {
+      "query_index": 41,
+      "query": "Which organization is connected to the Sprout Anarchist group located in Grand Rapids?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/1527344/1527344_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1527344/1527344_page_0001.png",
+        "images/legal/7605593/7605593_page_0020.png",
+        "images/legal/5264964/5264964_page_0008.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/5264964/5264964_page_0009.png",
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/2922673/2922673_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 924.97
+    },
+    {
+      "query_index": 42,
+      "query": "For the NFA group modeled with a Mixture Exponential distribution, how does the chance of arrest in the upcoming year, given it hasn't happened yet, change over the first eight years?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7118673/7118673_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/3819330/3819330_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 474.12
+    },
+    {
+      "query_index": 43,
+      "query": "Among U.S. adolescents, what is the proportion that favors Snapchat over other platforms like YouTube?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3134069/3134069_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/3134069/3134069_page_0002.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/0293784/0293784_page_0020.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 494.22
+    },
+    {
+      "query_index": 44,
+      "query": "At what stage is alt text required for images in a principal or amending Bill according to the Federal Register procedures?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3675460/3675460_page_0004.png",
+        "images/legal/3675460/3675460_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3675460/3675460_page_0004.png",
+        "images/legal/3675460/3675460_page_0005.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/2207961/2207961_page_0002.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/3372208/3372208_page_0006.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/6749931/6749931_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.34
+    },
+    {
+      "query_index": 45,
+      "query": "As of March 31, 2021, what is the cumulative balance for the Chamber of Tax Consultants accounting for all specified memberships and designated funds?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/4233310/4233310_page_0007.png",
+        "images/legal/4233310/4233310_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4233310/4233310_page_0005.png",
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/4233310/4233310_page_0007.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/7605593/7605593_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 741.43
+    },
+    {
+      "query_index": 46,
+      "query": "How were the mobile devices affected following their seizure by Croatian authorities using aerial assistance?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6066761/6066761_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6066761/6066761_page_0006.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/0632613/0632613_page_0001.png",
+        "images/legal/0028652/0028652_page_0005.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/2523414/2523414_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 982.07
+    },
+    {
+      "query_index": 47,
+      "query": "How does understanding of coercive control vary among different age groups?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6549868/6549868_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6549868/6549868_page_0002.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/6204462/6204462_page_0016.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/0293784/0293784_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 487.46
+    },
+    {
+      "query_index": 48,
+      "query": "At what time and through what method will the Governance Committee of Sullivan County Infrastructure LDC convene on December 23, 2020?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/7636806/7636806_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/3900806/3900806_page_0005.png",
+        "images/legal/3900806/3900806_page_0004.png",
+        "images/legal/5221475/5221475_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 494.5
+    },
+    {
+      "query_index": 49,
+      "query": "How do the initial costs and ongoing fees compare between Retirement Village and Sterling New Life for elderly accommodation options?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/0502795/0502795_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0502795/0502795_page_0002.png",
+        "images/legal/6909961/6909961_page_0002.png",
+        "images/legal/3934571/3934571_page_0003.png",
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/4233310/4233310_page_0005.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/2502771/2502771_page_0005.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/4233310/4233310_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 996.56
+    },
+    {
+      "query_index": 50,
+      "query": "What is mentioned concerning gender terminology in the Council's policy reapproved in May 2021, based on a September 2018 directive?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/6349113/6349113_page_0007.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/6349113/6349113_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6349113/6349113_page_0007.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/5221475/5221475_page_0006.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/7636806/7636806_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 534.48
+    },
+    {
+      "query_index": 51,
+      "query": "When does the corporate software license agreement between Master International Holding B.V. and Wolters Kluwer Belgium conclude?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/1125177/1125177_page_0005.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 6,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.16666666666666666,
+      "ap_at_10": 0.16666666666666666,
+      "latency_ms": 451.33
+    },
+    {
+      "query_index": 52,
+      "query": "How many people are employed worldwide by 3M in the current year?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3274043/3274043_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3274043/3274043_page_0005.png",
+        "images/legal/3274043/3274043_page_0006.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/0444051/0444051_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 560.68
+    },
+    {
+      "query_index": 53,
+      "query": "According to the 2020 data from the American Community Survey, what is the insured percentage for those aged 65 and above?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7454342/7454342_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/2144920/2144920_page_0003.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 456.31
+    },
+    {
+      "query_index": 54,
+      "query": "What inquiry is made to the electorate concerning the possible merger of the Mesa Water District with the Costa Mesa Sanitary District in the advisory ballot?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/6749931/6749931_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3900806/3900806_page_0006.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/3900806/3900806_page_0003.png",
+        "images/legal/5390077/5390077_page_0004.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/3900806/3900806_page_0005.png",
+        "images/legal/0444051/0444051_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 929.52
+    },
+    {
+      "query_index": 55,
+      "query": "What were the reasons for partially upholding and partially overturning the ruling in the Wal-Mart vs. Sweasy case labeled 2008-CA-001571-WC?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5018416/5018416_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/5390077/5390077_page_0004.png",
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/0502795/0502795_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.81
+    },
+    {
+      "query_index": 56,
+      "query": "What key approaches are utilized by SOS Children’s Villages to aid young individuals affected by mistreatment, such as the safeguarding and empowerment initiatives?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/2523414/2523414_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/6909961/6909961_page_0002.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/3941562/3941562_page_0002.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/2502771/2502771_page_0005.png",
+        "images/legal/6909961/6909961_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.87
+    },
+    {
+      "query_index": 57,
+      "query": "In the disciplinary procedure, what is the function of the Headteacher alongside the Chair of Governors at the Written Warning Meeting stage?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/5221475/5221475_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5221475/5221475_page_0006.png",
+        "images/legal/6292560/6292560_page_0003.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/4081341/4081341_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.86
+    },
+    {
+      "query_index": 58,
+      "query": "What was the total amount assigned to the legal referral initiative by the Law Foundation of Newfoundland and Labrador over the years 1980 to 2014?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/7812031/7812031_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/5733090/5733090_page_0011.png",
+        "images/legal/2207961/2207961_page_0003.png",
+        "images/legal/2207961/2207961_page_0004.png",
+        "images/legal/7605593/7605593_page_0020.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/5437805/5437805_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 542.46
+    },
+    {
+      "query_index": 59,
+      "query": "What is the date when the preliminary inquiry was submitted in Case C-20/21 against a Polish airline company?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/5767485/5767485_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/6066761/6066761_page_0006.png",
+        "images/legal/3941562/3941562_page_0001.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/0444051/0444051_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 463.74
+    },
+    {
+      "query_index": 60,
+      "query": "In business risk evaluations, what weaknesses are connected to the absence of fire detection mechanisms?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7691267/7691267_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7691267/7691267_page_0012.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/2144920/2144920_page_0005.png",
+        "images/legal/3934571/3934571_page_0003.png",
+        "images/legal/7118673/7118673_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 463.42
+    },
+    {
+      "query_index": 61,
+      "query": "What was the transformation in Peru's economic output from 1970, set as the baseline, to 2010?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/4751111/4751111_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4751111/4751111_page_0005.png",
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/3274043/3274043_page_0005.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/3274043/3274043_page_0006.png",
+        "images/legal/6204462/6204462_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 488.12
+    },
+    {
+      "query_index": 62,
+      "query": "What differences are observed in the detection of amphetamine when comparing 'high spiked' and 'low spiked' marks in fingermark analysis at m/z 368.4?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/1095340/1095340_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1095340/1095340_page_0009.png",
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/0028652/0028652_page_0005.png",
+        "images/legal/7691267/7691267_page_0012.png",
+        "images/legal/3274043/3274043_page_0005.png",
+        "images/legal/2144920/2144920_page_0002.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/2144920/2144920_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 2460.1
+    },
+    {
+      "query_index": 63,
+      "query": "How did the availability of N95 masks change for healthcare staff in Ontario on October 8, 2020, amid the pandemic?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/1880877/1880877_page_0009.png",
+        "images/legal/1880877/1880877_page_0008.png",
+        "images/legal/1880877/1880877_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/1880877/1880877_page_0009.png",
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/2144920/2144920_page_0005.png",
+        "images/legal/2144920/2144920_page_0003.png",
+        "images/legal/7454342/7454342_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 0.75,
+      "recall_at_10": 0.75,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9166666666666666,
+      "latency_ms": 496.17
+    },
+    {
+      "query_index": 64,
+      "query": "Which principal topics are highlighted in the second section of the Ninth Programme of Law Reform by the Scottish Law Commission?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5733090/5733090_page_0010.png",
+        "images/legal/5733090/5733090_page_0009.png",
+        "images/legal/5733090/5733090_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5733090/5733090_page_0009.png",
+        "images/legal/5733090/5733090_page_0011.png",
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/2207961/2207961_page_0004.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/3675460/3675460_page_0005.png",
+        "images/legal/3675460/3675460_page_0004.png",
+        "images/legal/5437805/5437805_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 0.6666666666666666,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 734.87
+    },
+    {
+      "query_index": 65,
+      "query": "Based on the July 2021 report from the Australian Institute of Criminology, what factors and periods are linked to sexual reoffending in child sex offenders?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/6204462/6204462_page_0016.png",
+        "images/legal/6549868/6549868_page_0002.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/2922673/2922673_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1232.35
+    },
+    {
+      "query_index": 66,
+      "query": "What were the conclusions or decisions in the dispute between Mark Steven Thomas and Rita Rose Thomas, case number 2008-CA-001036-ME, regarding the opinion result?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5018416/5018416_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/5437805/5437805_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 737.83
+    },
+    {
+      "query_index": 67,
+      "query": "How does the whistleblowing policy document describe the guiding principle of Slindon College?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6292560/6292560_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6292560/6292560_page_0003.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/5221475/5221475_page_0006.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/5733090/5733090_page_0011.png",
+        "images/legal/6909961/6909961_page_0001.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/1527344/1527344_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.07
+    },
+    {
+      "query_index": 68,
+      "query": "Which standards connected to the Wise Giving Alliance are referenced in the Legal Review by the Native American Rights Fund?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7605593/7605593_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7605593/7605593_page_0020.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/2207961/2207961_page_0003.png",
+        "images/legal/2207961/2207961_page_0004.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/2207961/2207961_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 734.16
+    },
+    {
+      "query_index": 69,
+      "query": "How are CSOs involved in initiatives such as FSC, FLEGT, EITI, and the Kimberley Process concerning resource governance?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/7606904/7606904_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/2207961/2207961_page_0003.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/2502771/2502771_page_0005.png",
+        "images/legal/7605593/7605593_page_0020.png",
+        "images/legal/3274043/3274043_page_0006.png",
+        "images/legal/0632613/0632613_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.75
+    },
+    {
+      "query_index": 70,
+      "query": "What was the outcome determined by the Kentucky appellate court regarding the legal matter involving James Wesley Heady, identified as case number 2008-CA-001976-MR?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5018416/5018416_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/2207961/2207961_page_0004.png",
+        "images/legal/5767485/5767485_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.17
+    },
+    {
+      "query_index": 71,
+      "query": "What details are specified on the tags of standard DuraPro connectors for toilet tanks featuring plastic coupling nuts?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/5390077/5390077_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5390077/5390077_page_0004.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/4233310/4233310_page_0007.png",
+        "images/legal/7691267/7691267_page_0012.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/7710697/7710697_page_0002.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3934571/3934571_page_0003.png",
+        "images/legal/2474602/2474602_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 488.52
+    },
+    {
+      "query_index": 72,
+      "query": "What responsibilities are outlined in the proxy voting procedure for choosing directors and deciding on executive pay at Natural Gas Services Group, Inc.'s 2021 meeting?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3900806/3900806_page_0003.png",
+        "images/legal/3900806/3900806_page_0005.png",
+        "images/legal/3900806/3900806_page_0004.png",
+        "images/legal/3900806/3900806_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3900806/3900806_page_0003.png",
+        "images/legal/3900806/3900806_page_0004.png",
+        "images/legal/3900806/3900806_page_0005.png",
+        "images/legal/3900806/3900806_page_0006.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/7605593/7605593_page_0020.png",
+        "images/legal/6749931/6749931_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 986.13
+    },
+    {
+      "query_index": 73,
+      "query": "According to the evaluation chart, what risk classification corresponds to a score of 80.7% on social media performance?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/2474602/2474602_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/2144920/2144920_page_0002.png",
+        "images/legal/5264964/5264964_page_0009.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/2144920/2144920_page_0003.png",
+        "images/legal/7894475/7894475_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 501.67
+    },
+    {
+      "query_index": 74,
+      "query": "What shifts occurred in the participation of various entities in anti-slavery collaborations from 2017 to 2019, focusing on the contributions of non-governmental organizations, local government bodies, and law enforcement?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/2922673/2922673_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/2144920/2144920_page_0005.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/2144920/2144920_page_0004.png",
+        "images/legal/1788795/1788795_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1169.0
+    },
+    {
+      "query_index": 75,
+      "query": "How did 3M allocate its supplier spending globally from 2016 to 2020?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3274043/3274043_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3274043/3274043_page_0006.png",
+        "images/legal/3274043/3274043_page_0005.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/4233310/4233310_page_0007.png",
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/3372208/3372208_page_0005.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/2922673/2922673_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 663.91
+    },
+    {
+      "query_index": 76,
+      "query": "How does the prescription rate of psychotropic drugs differ between male and female youths in Virginia's juvenile detention facilities?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/4757894/4757894_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 740.67
+    },
+    {
+      "query_index": 77,
+      "query": "In instances involving claims of domestic abuse, how often was no contact directive issued?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5437805/5437805_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/6549868/6549868_page_0002.png",
+        "images/legal/2144920/2144920_page_0004.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/7894475/7894475_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 500.7
+    },
+    {
+      "query_index": 78,
+      "query": "What impact did the events from the T Day Ordinance through Takeshima Days between 2005 and 2015 have on material conflicts between Japan and South Korea?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/5129844/5129844_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5129844/5129844_page_0016.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3276234/3276234_page_0001.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/7606904/7606904_page_0002.png",
+        "images/legal/6066761/6066761_page_0006.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/5264964/5264964_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 770.0
+    },
+    {
+      "query_index": 79,
+      "query": "How does the Sterling New Life plan financially benefit seniors as opposed to conventional retirement communities?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/0502795/0502795_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0502795/0502795_page_0002.png",
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/2502771/2502771_page_0005.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/5733090/5733090_page_0011.png",
+        "images/legal/6909961/6909961_page_0002.png",
+        "images/legal/7605593/7605593_page_0020.png",
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 579.43
+    },
+    {
+      "query_index": 80,
+      "query": "When did the contractual agreement with ABC Inc. regarding Corporate software start?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0026.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/3372208/3372208_page_0005.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 1215.58
+    },
+    {
+      "query_index": 81,
+      "query": "What is the difference in total hours between disciplinary and other cases as specified in Provision 7's subdivisions (d)(1) through (d)(4)?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/4081341/4081341_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/5221475/5221475_page_0006.png",
+        "images/legal/5437805/5437805_page_0021.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/6292560/6292560_page_0003.png",
+        "images/legal/3657965/3657965_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 603.76
+    },
+    {
+      "query_index": 82,
+      "query": "What are the key objectives outlined for groups focused on freeing occupied regions and dismantling adversary nations?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5264964/5264964_page_0009.png",
+        "images/legal/5264964/5264964_page_0008.png",
+        "images/legal/5264964/5264964_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5264964/5264964_page_0009.png",
+        "images/legal/5264964/5264964_page_0008.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/3941562/3941562_page_0002.png",
+        "images/legal/5264964/5264964_page_0010.png",
+        "images/legal/1527344/1527344_page_0001.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/0632613/0632613_page_0002.png",
+        "images/legal/3941562/3941562_page_0001.png",
+        "images/legal/7606904/7606904_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8666666666666667,
+      "latency_ms": 431.76
+    },
+    {
+      "query_index": 83,
+      "query": "What causes unsecured bond investors to face drawbacks versus depositors under the EU directive related to financial institution recovery?",
+      "domain": "legal",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/1125177/1125177_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/1880877/1880877_page_0009.png",
+        "images/legal/6625935/6625935_page_0005.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/1880877/1880877_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 439.56
+    },
+    {
+      "query_index": 84,
+      "query": "Which parties are appealing in the cases identified by the numbers 20027685 and 20027841, associated with Costco and BRE RC Maui Kapalua LLC?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3180438/3180438_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/5390077/5390077_page_0004.png",
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/0502795/0502795_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 503.19
+    },
+    {
+      "query_index": 85,
+      "query": "What ruling was made in the case numbered 2008-CA-001571-WC related to Wal-Mart Stores and a workers' compensation dispute?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5018416/5018416_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5390077/5390077_page_0004.png",
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/0502795/0502795_page_0002.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/1880877/1880877_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 477.07
+    },
+    {
+      "query_index": 86,
+      "query": "Identify the appellant company linked to TMK 3-8-079-022-0000 in the case number 20027685.",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/3180438/3180438_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/5767485/5767485_page_0001.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/5018416/5018416_page_0005.png",
+        "images/legal/5390077/5390077_page_0004.png",
+        "images/legal/5018416/5018416_page_0004.png",
+        "images/legal/4233310/4233310_page_0007.png",
+        "images/legal/6625935/6625935_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 528.55
+    },
+    {
+      "query_index": 87,
+      "query": "How does Ontario's Main Street Relief Grant assist enterprises affected by the public health restrictions declared on October 9, 2020?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/1880877/1880877_page_0006.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/1880877/1880877_page_0007.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/3274043/3274043_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 455.05
+    },
+    {
+      "query_index": 88,
+      "query": "According to the risk evaluation dated August 4, 2025, what percentage represents the candidate's LinkedIn social risk level?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/2474602/2474602_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2474602/2474602_page_0012.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7691267/7691267_page_0012.png",
+        "images/legal/7386841/7386841_page_0019.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.44
+    },
+    {
+      "query_index": 89,
+      "query": "What amount was collected over the year as Life Membership Fees based on the financial report of the Chamber of Tax Consultants ending March 31, 2021?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/4233310/4233310_page_0007.png",
+        "images/legal/4233310/4233310_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4233310/4233310_page_0005.png",
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/4233310/4233310_page_0007.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/3900806/3900806_page_0004.png",
+        "images/legal/3374686/3374686_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 502.1
+    },
+    {
+      "query_index": 90,
+      "query": "How long, on average, was the abuse committed by priests in relation to the count of victims affected?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/6204462/6204462_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6204462/6204462_page_0016.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0007.png",
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/6549868/6549868_page_0002.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/5437805/5437805_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 978.97
+    },
+    {
+      "query_index": 91,
+      "query": "What is the signing date of the contract between Mr. Washburn and the City of Osage Beach?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/3401988/3401988_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/legal/3401988/3401988_page_0004.png",
+        "images/legal/3374686/3374686_page_0006.png",
+        "images/legal/5018416/5018416_page_0003.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/6749931/6749931_page_0007.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/5018416/5018416_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 492.57
+    },
+    {
+      "query_index": 92,
+      "query": "Which parts are listed under the coaching segment for intramural matches in the 2013 Fall guide of the Valley Stream Soccer Club for parents and coaches?",
+      "domain": "legal",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/6909961/6909961_page_0001.png",
+        "images/legal/6909961/6909961_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6909961/6909961_page_0001.png",
+        "images/legal/6909961/6909961_page_0002.png",
+        "images/legal/7636806/7636806_page_0003.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/7636806/7636806_page_0002.png",
+        "images/legal/2523414/2523414_page_0007.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/5221475/5221475_page_0006.png",
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/7605593/7605593_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 766.6
+    },
+    {
+      "query_index": 93,
+      "query": "Between 2017 and 2019, which funding source for partnerships saw the biggest decline, specifically in terms of government contributions?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/2922673/2922673_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/legal/2922673/2922673_page_0013.png",
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/7812031/7812031_page_0005.png",
+        "images/legal/0444051/0444051_page_0002.png",
+        "images/legal/7606904/7606904_page_0003.png",
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/4233310/4233310_page_0006.png",
+        "images/legal/0444051/0444051_page_0003.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/5264964/5264964_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 458.69
+    },
+    {
+      "query_index": 94,
+      "query": "Identify the chapter titles and numbers listed in the first section of ISO/IEC 17021–1:2015.",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/7710697/7710697_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7710697/7710697_page_0002.png",
+        "images/legal/3657965/3657965_page_0002.png",
+        "images/legal/5733090/5733090_page_0009.png",
+        "images/legal/7691267/7691267_page_0012.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3941562/3941562_page_0003.png",
+        "images/legal/6349113/6349113_page_0005.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/6716847/6716847_page_0026.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 493.1
+    },
+    {
+      "query_index": 95,
+      "query": "When does the business contract between Mastar Denmark AB and its associated party conclude, according to the Contracts dashboard details?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/6716847/6716847_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/legal/6716847/6716847_page_0006.png",
+        "images/legal/6716847/6716847_page_0009.png",
+        "images/legal/6716847/6716847_page_0007.png",
+        "images/legal/6716847/6716847_page_0008.png",
+        "images/legal/6716847/6716847_page_0026.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/3180438/3180438_page_0004.png",
+        "images/legal/3274043/3274043_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.16
+    },
+    {
+      "query_index": 96,
+      "query": "How does the insurance rate differ between those aged 26 to 34 and those from 35 to 44 based on census data?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/7454342/7454342_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/legal/7454342/7454342_page_0001.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/3374686/3374686_page_0005.png",
+        "images/legal/6204462/6204462_page_0016.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/7894475/7894475_page_0008.png",
+        "images/legal/7894475/7894475_page_0012.png",
+        "images/legal/3819330/3819330_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 735.48
+    },
+    {
+      "query_index": 97,
+      "query": "According to Baltic International Bank's financial instruments details, what potential losses arise from conducting trades beyond standard session times?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/1125177/1125177_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/legal/1125177/1125177_page_0005.png",
+        "images/legal/1125177/1125177_page_0004.png",
+        "images/legal/6625935/6625935_page_0005.png",
+        "images/legal/7812031/7812031_page_0006.png",
+        "images/legal/2561941/2561941_page_0007.png",
+        "images/legal/3934571/3934571_page_0003.png",
+        "images/legal/6349113/6349113_page_0006.png",
+        "images/legal/3374686/3374686_page_0004.png",
+        "images/legal/3374686/3374686_page_0007.png",
+        "images/legal/7118673/7118673_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.21
+    },
+    {
+      "query_index": 98,
+      "query": "What are the comparative statistics for racial groups between the general U.S. demographics and those incarcerated?",
+      "domain": "legal",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/5487811/5487811_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/legal/5487811/5487811_page_0012.png",
+        "images/legal/7896540/7896540_page_0021.png",
+        "images/legal/3819330/3819330_page_0012.png",
+        "images/legal/7118673/7118673_page_0005.png",
+        "images/legal/4757894/4757894_page_0007.png",
+        "images/legal/0293784/0293784_page_0020.png",
+        "images/legal/0293784/0293784_page_0019.png",
+        "images/legal/7894475/7894475_page_0006.png",
+        "images/legal/2922673/2922673_page_0009.png",
+        "images/legal/7894475/7894475_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1024.19
+    },
+    {
+      "query_index": 99,
+      "query": "What was the total number of service calls managed by the YCSO in 2018 based on their records?",
+      "domain": "legal",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/legal/4151009/4151009_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/legal/4151009/4151009_page_0007.png",
+        "images/legal/4081341/4081341_page_0015.png",
+        "images/legal/6749931/6749931_page_0006.png",
+        "images/legal/7636806/7636806_page_0001.png",
+        "images/legal/6909961/6909961_page_0002.png",
+        "images/legal/6909961/6909961_page_0001.png",
+        "images/legal/2144920/2144920_page_0004.png",
+        "images/legal/1788795/1788795_page_0017.png",
+        "images/legal/3372208/3372208_page_0005.png",
+        "images/legal/0293784/0293784_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 696.32
+    }
+  ],
+  "meta": {
+    "timestamp": "20260326_214939",
+    "method": "proposed",
+    "domain": "legal",
+    "top_k": 10
+  }
+}

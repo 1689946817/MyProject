@@ -21,6 +21,7 @@ import argparse
 import json
 import os
 import statistics
+import sys
 import time
 from collections import defaultdict
 from datetime import datetime
@@ -49,6 +50,27 @@ from evaluation.metrics import (  # noqa: E402
     reciprocal_rank,
 )
 from evaluation.methods import unidoc_clip, unidoc_ocr, unidoc_proposed  # noqa: E402
+
+
+def _configure_utf8_stdio() -> None:
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8", errors="replace")
+
+
+_configure_utf8_stdio()
+
+
+def _safe_console_text(text: str) -> str:
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    return text.encode(encoding, errors="replace").decode(encoding, errors="replace")
+
+
+def _print_safe(*parts: object, sep: str = " ", end: str = "\n") -> None:
+    message = sep.join(str(part) for part in parts)
+    print(_safe_console_text(message), end=end)
 
 
 def _first_hit_rank(ranked: RankedList) -> int | None:
@@ -136,8 +158,10 @@ def run_experiment(
             "latency_ms": round(latency_ms, 2),
         })
 
-        print(f"  [{i+1}/{len(samples)}] RR={reciprocal_rank(ranked):.2f}  "
-              f"first_hit={fhr}  latency={latency_ms:.0f}ms  query={sample.query[:60]}")
+        _print_safe(
+            f"  [{i+1}/{len(samples)}] RR={reciprocal_rank(ranked):.2f}  "
+            f"first_hit={fhr}  latency={latency_ms:.0f}ms  query={sample.query[:60]}"
+        )
 
     # 汇总统计
     latencies = [r["latency_ms"] for r in per_query_records]
@@ -160,25 +184,27 @@ def run_experiment(
     by_answer_type = _group_stats(per_query_records, "answer_type", top_k)
 
     # 打印汇总
-    print(f"\n{'='*55}")
-    print(f"Method: {method}  |  Domain: {domain}  |  Queries: {summary['num_queries']}  |  Top-K: {top_k}")
-    print(f"{'='*55}")
+    _print_safe(f"\n{'='*55}")
+    _print_safe(f"Method: {method}  |  Domain: {domain}  |  Queries: {summary['num_queries']}  |  Top-K: {top_k}")
+    _print_safe(f"{'='*55}")
     for k in (1, 5, top_k):
         key = f"recall_at_{k}"
         s = summary[key]
-        print(f"Recall@{k}:   {s['mean']:.4f}  (±{s['std']:.4f})")
-    print(f"MRR:         {summary['mrr']['mean']:.4f}  (±{summary['mrr']['std']:.4f})")
-    print(f"mAP@{top_k}:     {summary[f'map_at_{top_k}']['mean']:.4f}  (±{summary[f'map_at_{top_k}']['std']:.4f})")
-    print(f"Latency(ms): mean={summary['latency_ms']['mean']:.1f}  "
-          f"median={summary['latency_ms_median']:.1f}  std={summary['latency_ms']['std']:.1f}")
+        _print_safe(f"Recall@{k}:   {s['mean']:.4f}  (±{s['std']:.4f})")
+    _print_safe(f"MRR:         {summary['mrr']['mean']:.4f}  (±{summary['mrr']['std']:.4f})")
+    _print_safe(f"mAP@{top_k}:     {summary[f'map_at_{top_k}']['mean']:.4f}  (±{summary[f'map_at_{top_k}']['std']:.4f})")
+    _print_safe(
+        f"Latency(ms): mean={summary['latency_ms']['mean']:.1f}  "
+        f"median={summary['latency_ms_median']:.1f}  std={summary['latency_ms']['std']:.1f}"
+    )
 
-    print(f"\n--- By question_type ---")
+    _print_safe(f"\n--- By question_type ---")
     for qt, s in by_question_type.items():
-        print(f"  {qt} (n={s['count']}): Recall@{top_k}={s[f'recall_at_{top_k}']['mean']:.4f}  MRR={s['mrr']['mean']:.4f}")
+        _print_safe(f"  {qt} (n={s['count']}): Recall@{top_k}={s[f'recall_at_{top_k}']['mean']:.4f}  MRR={s['mrr']['mean']:.4f}")
 
-    print(f"\n--- By answer_type ---")
+    _print_safe(f"\n--- By answer_type ---")
     for at, s in by_answer_type.items():
-        print(f"  {at} (n={s['count']}): Recall@{top_k}={s[f'recall_at_{top_k}']['mean']:.4f}  MRR={s['mrr']['mean']:.4f}")
+        _print_safe(f"  {at} (n={s['count']}): Recall@{top_k}={s[f'recall_at_{top_k}']['mean']:.4f}  MRR={s['mrr']['mean']:.4f}")
 
     # 保存结果
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -198,7 +224,7 @@ def run_experiment(
         },
     }
     output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n结果已保存到: {output_path}")
+    _print_safe(f"\n结果已保存到: {output_path}")
 
 
 def main() -> None:

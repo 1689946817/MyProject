@@ -14,11 +14,13 @@ import os
 import sys
 import time
 from datetime import datetime, timezone
+from io import BytesIO
 from pathlib import Path
 from typing import Any, Dict, List
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings
+from PIL import Image
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "backend"))
@@ -61,6 +63,81 @@ def _utc_now_iso() -> str:
 
 def _resolve_cache_file(cache_dir: str | Path, dataset_name: str, domain: str) -> Path:
     return Path(cache_dir) / dataset_name / domain / "descriptions.jsonl"
+
+
+def _estimate_base64_size(raw_size: int) -> int:
+    return ((raw_size + 2) // 3) * 4
+
+
+def _prepare_image_payload(
+    file_path: str,
+    *,
+    max_base64_bytes: int = 9_500_000,
+) -> tuple[str, str]:
+    with open(file_path, "rb") as f:
+        image_data = f.read()
+
+    if _estimate_base64_size(len(image_data)) <= max_base64_bytes:
+        return base64.b64encode(image_data).decode("utf-8"), guess_image_mime_type(file_path)
+
+    print(
+        f"[INFO] Image payload exceeds limit, compressing before MLLM request: "
+        f"{file_path} ({len(image_data) / 1024:.1f}KB)"
+    )
+
+    image = Image.open(BytesIO(image_data))
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
+    max_side_candidates = [1800, 1600, 1280]
+    quality_candidates = [85, 75, 65]
+
+    for max_side in max_side_candidates:
+        working = image.copy()
+        longest_side = max(working.width, working.height)
+        if longest_side > max_side:
+            scale = max_side / longest_side
+            working = working.resize(
+                (
+                    max(1, int(round(working.width * scale))),
+                    max(1, int(round(working.height * scale))),
+                ),
+                Image.Resampling.LANCZOS,
+            )
+
+        for quality in quality_candidates:
+            buffer = BytesIO()
+            working.save(buffer, format="JPEG", quality=quality, optimize=True)
+            candidate = buffer.getvalue()
+            if _estimate_base64_size(len(candidate)) <= max_base64_bytes:
+                print(
+                    f"[INFO] Compressed image payload for MLLM: {file_path} -> "
+                    f"{len(candidate) / 1024:.1f}KB (max_side={max_side}, quality={quality})"
+                )
+                return base64.b64encode(candidate).decode("utf-8"), "image/jpeg"
+
+    raise ValueError(
+        "Image exceeds multimodal payload limit even after resize/jpeg compression: "
+        f"{file_path}"
+    )
+
+
+def _is_non_retryable_payload_error(error_message: str) -> bool:
+    normalized = error_message.lower()
+    if "400" not in normalized and "bad request" not in normalized:
+        return False
+    payload_markers = [
+        "payload",
+        "base64",
+        "image",
+        "file",
+        "size",
+        "too large",
+        "limit",
+        "content too long",
+        "maximum context length",
+    ]
+    return any(marker in normalized for marker in payload_markers) or "bad request" in normalized
 
 
 def _load_cache_records(cache_file: Path) -> List[Dict[str, Any]]:
@@ -175,10 +252,12 @@ def _generate_description_with_retry(
     max_retries: int = 3,
     base_backoff_seconds: float = 2.0,
 ) -> tuple[str, str | None, int]:
-    with open(file_path, "rb") as f:
-        b64 = base64.b64encode(f.read()).decode("utf-8")
-
-    mime_type = guess_image_mime_type(file_path)
+    try:
+        b64, mime_type = _prepare_image_payload(file_path)
+    except Exception as e:
+        error_message = str(e).strip() or repr(e)
+        print(f"[WARN] Failed to prepare image payload for {file_path}: {error_message}")
+        return "", error_message, 1
 
     last_error: str | None = None
     total_attempts = max_retries + 1
@@ -195,6 +274,9 @@ def _generate_description_with_retry(
                 f"[WARN] MLLM failed for {file_path} "
                 f"(attempt {attempt}/{total_attempts}): {error_message}"
             )
+            if _is_non_retryable_payload_error(error_message):
+                print(f"[INFO] Stop retrying non-retryable 400 payload error for {file_path}")
+                return "", error_message, attempt
             if attempt < total_attempts:
                 sleep_seconds = base_backoff_seconds * (2 ** (attempt - 1))
                 print(f"[INFO] Backing off for {sleep_seconds:.1f}s before retrying {file_path}")

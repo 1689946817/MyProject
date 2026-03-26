@@ -1,0 +1,4477 @@
+{
+  "summary": {
+    "method": "baseline_clip",
+    "domain": "construction",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.6959,
+      "std": 0.3624
+    },
+    "recall_at_5": {
+      "mean": 0.9251,
+      "std": 0.1983
+    },
+    "recall_at_10": {
+      "mean": 0.9463,
+      "std": 0.161
+    },
+    "mrr": {
+      "mean": 0.9417,
+      "std": 0.193
+    },
+    "map_at_10": {
+      "mean": 0.9222,
+      "std": 0.1907
+    },
+    "latency_ms": {
+      "mean": 536.33,
+      "std": 128.6075
+    },
+    "latency_ms_median": 494.41
+  },
+  "by_question_type": {
+    "causal_reasoning": {
+      "count": 9,
+      "recall_at_1": {
+        "mean": 0.6833,
+        "std": 0.3857
+      },
+      "recall_at_5": {
+        "mean": 0.9333,
+        "std": 0.1414
+      },
+      "recall_at_10": {
+        "mean": 0.9556,
+        "std": 0.1333
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 0.9844,
+        "std": 0.0317
+      }
+    },
+    "comparison": {
+      "count": 15,
+      "recall_at_1": {
+        "mean": 0.6222,
+        "std": 0.3463
+      },
+      "recall_at_5": {
+        "mean": 0.9333,
+        "std": 0.2582
+      },
+      "recall_at_10": {
+        "mean": 0.9333,
+        "std": 0.2582
+      },
+      "mrr": {
+        "mean": 0.9333,
+        "std": 0.2582
+      },
+      "map_at_10": {
+        "mean": 0.9058,
+        "std": 0.2632
+      }
+    },
+    "factual_retrieval": {
+      "count": 66,
+      "recall_at_1": {
+        "mean": 0.7012,
+        "std": 0.3771
+      },
+      "recall_at_5": {
+        "mean": 0.9234,
+        "std": 0.1963
+      },
+      "recall_at_10": {
+        "mean": 0.9524,
+        "std": 0.135
+      },
+      "mrr": {
+        "mean": 0.9268,
+        "std": 0.2028
+      },
+      "map_at_10": {
+        "mean": 0.9107,
+        "std": 0.1965
+      }
+    },
+    "summarization": {
+      "count": 9,
+      "recall_at_1": {
+        "mean": 0.7593,
+        "std": 0.29
+      },
+      "recall_at_5": {
+        "mean": 0.9074,
+        "std": 0.1884
+      },
+      "recall_at_10": {
+        "mean": 0.9074,
+        "std": 0.1884
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 0.963,
+        "std": 0.0735
+      }
+    },
+    "temporal_comparison": {
+      "count": 1,
+      "recall_at_1": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      }
+    }
+  },
+  "by_answer_type": {
+    "image_only": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.9,
+        "std": 0.2857
+      },
+      "recall_at_5": {
+        "mean": 0.95,
+        "std": 0.2082
+      },
+      "recall_at_10": {
+        "mean": 0.97,
+        "std": 0.1568
+      },
+      "mrr": {
+        "mean": 0.9367,
+        "std": 0.2205
+      },
+      "map_at_10": {
+        "mean": 0.9367,
+        "std": 0.2205
+      }
+    },
+    "table_required": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.4919,
+        "std": 0.3141
+      },
+      "recall_at_5": {
+        "mean": 0.9002,
+        "std": 0.1866
+      },
+      "recall_at_10": {
+        "mean": 0.9226,
+        "std": 0.1632
+      },
+      "mrr": {
+        "mean": 0.9467,
+        "std": 0.163
+      },
+      "map_at_10": {
+        "mean": 0.9077,
+        "std": 0.1561
+      }
+    }
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "Can you describe the features of the Hasselblad camera that were utilized in the UAV photogrammetry study detailed in the ISPRS journal?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/1858503/1858503_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/1858503/1858503_page_0014.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/1858503/1858503_page_0018.png",
+        "images/construction/5601112/5601112_page_0008.png",
+        "images/construction/2096828/2096828_page_0002.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/5057007/5057007_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.7,
+      "latency_ms": 614.28
+    },
+    {
+      "query_index": 1,
+      "query": "According to section 33.654.130, what are the comments regarding existing and future public dead-ends and walking connections for the location?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5349734/5349734_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/7412078/7412078_page_0011.png",
+        "images/construction/2928102/2928102_page_0015.png",
+        "images/construction/4097986/4097986_page_0018.png",
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/3050869/3050869_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 422.47
+    },
+    {
+      "query_index": 2,
+      "query": "Between which values do the signed vertical differences lie in the overlapping section of the pre-aligned DSM from 1977 and the DTM from 2001?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4913473/4913473_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/3147496/3147496_page_0017.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/4173881/4173881_page_0008.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/4395151/4395151_page_0024.png",
+        "images/construction/1858503/1858503_page_0018.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.28
+    },
+    {
+      "query_index": 3,
+      "query": "How do the actions 'Move Brick P.', 'Take Bricks', and 'Lab. Idle' proceed in the Simphony Designer simulation process?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/0579361/0579361_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/4395151/4395151_page_0025.png",
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/7074222/7074222_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 760.43
+    },
+    {
+      "query_index": 4,
+      "query": "During which years in the early 21st century does Egremni Beach face erosion surpassing 1.50 meters annually?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/3147496/3147496_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/3147496/3147496_page_0017.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/1844363/1844363_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 471.77
+    },
+    {
+      "query_index": 5,
+      "query": "For the analysis involving 544,410 equations in a multi-storey building, which technique exhibited the shortest processing duration among options like MPCG_AMIS?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/7924200/7924200_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/7924200/7924200_page_0005.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/0579361/0579361_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.7
+    },
+    {
+      "query_index": 6,
+      "query": "What findings emerged from the Vision Derby 2040 planning session held in September 2019?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2107998/2107998_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/4395151/4395151_page_0022.png",
+        "images/construction/4097986/4097986_page_0018.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/1844363/1844363_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 501.59
+    },
+    {
+      "query_index": 7,
+      "query": "Identify the segments outlined in the Town of Peace River's Pats Creek Storm Water Mediation Project documentation.",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1630263/1630263_page_0004.png",
+        "images/construction/1630263/1630263_page_0002.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/1630263/1630263_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1630263/1630263_page_0001.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/1630263/1630263_page_0002.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/1630263/1630263_page_0004.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/5057007/5057007_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.95,
+      "latency_ms": 473.55
+    },
+    {
+      "query_index": 8,
+      "query": "What range of air content is specified for shotcrete mixtures aimed at enhancing initial strength, according to ASTM standards?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0013.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/2771539/2771539_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.65
+    },
+    {
+      "query_index": 9,
+      "query": "During tests involving sinusoidal loads on 26 gauge Type B panels, what were the peak load values when tested at a frequency of 0.25 cycles per second?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/1748668/1748668_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/5193048/5193048_page_0011.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/6061855/6061855_page_0004.png",
+        "images/construction/7924200/7924200_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.64
+    },
+    {
+      "query_index": 10,
+      "query": "What is the pollution index value for the emissions-compliant engine from Poulan?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4481874/4481874_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4481874/4481874_page_0021.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/5513408/5513408_page_0009.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/5513408/5513408_page_0011.png",
+        "images/construction/1676343/1676343_page_0012.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/4481874/4481874_page_0015.png",
+        "images/construction/4201027/4201027_page_0013.png",
+        "images/construction/4481874/4481874_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.44
+    },
+    {
+      "query_index": 11,
+      "query": "What effects does frequent foot traffic have on the surface and look of vinyl floors in busy locations?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7915935/7915935_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7915935/7915935_page_0004.png",
+        "images/construction/7915935/7915935_page_0002.png",
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/4097986/4097986_page_0016.png",
+        "images/construction/6326859/6326859_page_0004.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/5513408/5513408_page_0010.png",
+        "images/construction/4917851/4917851_page_0007.png",
+        "images/construction/4481874/4481874_page_0015.png",
+        "images/construction/1674783/1674783_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.59
+    },
+    {
+      "query_index": 12,
+      "query": "Which individuals were present at the February 27, 2018 meeting with the Department of Planning and Environment about changes to the local environmental plan?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/6837658/6837658_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/1615421/1615421_page_0017.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/7412078/7412078_page_0010.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/4900780/4900780_page_0008.png",
+        "images/construction/1615421/1615421_page_0019.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 0.6666666666666666,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.75,
+      "latency_ms": 487.5
+    },
+    {
+      "query_index": 13,
+      "query": "What reasons allow the planned project in the R2 area to satisfy the width criteria for individual homes?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5349734/5349734_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/1615421/1615421_page_0018.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/3050869/3050869_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.12
+    },
+    {
+      "query_index": 14,
+      "query": "In the study on wood engineering, which uses of LVL and PSL are outlined in specific global architectural sites such as a warehouse in Victoria, a stage entrance in Washington DC, and a school library in Australia?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4005140/4005140_page_0006.png",
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/4005140/4005140_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/4005140/4005140_page_0006.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/4005140/4005140_page_0007.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/7915935/7915935_page_0004.png",
+        "images/construction/2771539/2771539_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9166666666666666,
+      "latency_ms": 490.98
+    },
+    {
+      "query_index": 15,
+      "query": "What changes are planned for the Colnbrook River in the development projects located south of Richings Park?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7414009/7414009_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7414009/7414009_page_0006.png",
+        "images/construction/5244261/5244261_page_0010.png",
+        "images/construction/5244261/5244261_page_0011.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/5066651/5066651_page_0012.png",
+        "images/construction/4097986/4097986_page_0018.png",
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/3050869/3050869_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.58
+    },
+    {
+      "query_index": 16,
+      "query": "What is the variation in time taken by the Block Lanczos (MFM) technique between the two computational models for analyzing different multi-storey buildings?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/7924200/7924200_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/7924200/7924200_page_0005.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/5601112/5601112_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.11
+    },
+    {
+      "query_index": 17,
+      "query": "How does the damped link function within the outrigger and core framework of the Two International Finance Centre's skyscraper?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2608715/2608715_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/5193048/5193048_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 484.46
+    },
+    {
+      "query_index": 18,
+      "query": "What is the quality reduction when three-quarters of pavement lifespan have passed, as indicated by the PCI?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/6326859/6326859_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6326859/6326859_page_0004.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/4201027/4201027_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 502.26
+    },
+    {
+      "query_index": 19,
+      "query": "Which type of window featuring curved upper sections is typical within Berwick's local architectural style?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/1527880/1527880_page_0008.png",
+        "images/construction/1527880/1527880_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1527880/1527880_page_0007.png",
+        "images/construction/1527880/1527880_page_0008.png",
+        "images/construction/2477920/2477920_page_0005.png",
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/3235227/3235227_page_0015.png",
+        "images/construction/5066651/5066651_page_0012.png",
+        "images/construction/4228468/4228468_page_0007.png",
+        "images/construction/1630263/1630263_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 481.59
+    },
+    {
+      "query_index": 20,
+      "query": "What caused the distinct seepage problems in the Peygham-Chay dam abutments based on their permeability characteristics?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/1844363/1844363_page_0009.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/1844363/1844363_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/1844363/1844363_page_0010.png",
+        "images/construction/1844363/1844363_page_0009.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2096828/2096828_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 500.47
+    },
+    {
+      "query_index": 21,
+      "query": "How is the scale defined for Dennis' design of the landscape at the Winn Residence?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4900780/4900780_page_0007.png",
+        "images/construction/4900780/4900780_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4900780/4900780_page_0008.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/3050869/3050869_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 484.26
+    },
+    {
+      "query_index": 22,
+      "query": "In what ways do the flexibility and fire resistance of RC, SRC, S, and CFT structural types differ?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/0992970/0992970_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/4201027/4201027_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.5
+    },
+    {
+      "query_index": 23,
+      "query": "During the National Night Out event related to Vision Derby's future plans, how were community members engaging with one another?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2107998/2107998_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/5066651/5066651_page_0013.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/1676343/1676343_page_0012.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/4097986/4097986_page_0018.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/4193476/4193476_page_0025.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 537.44
+    },
+    {
+      "query_index": 24,
+      "query": "In the context of the Constraint Bag Process Model, which loop type has the greatest 'ALTA' significance categorized under RED-RED?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/1027658/1027658_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/7924200/7924200_page_0005.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/2692012/2692012_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 913.35
+    },
+    {
+      "query_index": 25,
+      "query": "Which areas are set aside for foot traffic and public transport in the New Carrollton layout, mentioning elements like the continuing Pedestrian Bridge and MARC Platform?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4097986/4097986_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4097986/4097986_page_0018.png",
+        "images/construction/4395151/4395151_page_0022.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/2928102/2928102_page_0015.png",
+        "images/construction/4097986/4097986_page_0016.png",
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/7412078/7412078_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.01
+    },
+    {
+      "query_index": 26,
+      "query": "Where in the Spire Indonesia report can information on what influences the lifespan of homes in Indonesia be located?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4005140/4005140_page_0006.png",
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/4005140/4005140_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/4005140/4005140_page_0006.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/5066651/5066651_page_0011.png",
+        "images/construction/7915935/7915935_page_0002.png",
+        "images/construction/5066651/5066651_page_0013.png",
+        "images/construction/4795922/4795922_page_0023.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 0.6666666666666666,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 511.87
+    },
+    {
+      "query_index": 27,
+      "query": "Can you provide the size of the master sleeping area in the villa design detailed in Samaru Journal of Information Studies Vol. 7 (1) 2007?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4228468/4228468_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4228468/4228468_page_0007.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/2096828/2096828_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 493.11
+    },
+    {
+      "query_index": 28,
+      "query": "How many drainage hoses are included with the model CMB-P1010V-G1 as per the provided items?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/7773476/7773476_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7773476/7773476_page_0010.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/4395151/4395151_page_0025.png",
+        "images/construction/4395151/4395151_page_0024.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/4900780/4900780_page_0008.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/1844363/1844363_page_0009.png",
+        "images/construction/5601112/5601112_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 494.78
+    },
+    {
+      "query_index": 29,
+      "query": "What is the difference in the walkability scores between Ward 28 and Ward 21 in Khulna City?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5513408/5513408_page_0009.png",
+        "images/construction/5513408/5513408_page_0011.png",
+        "images/construction/5513408/5513408_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5513408/5513408_page_0010.png",
+        "images/construction/5513408/5513408_page_0009.png",
+        "images/construction/5513408/5513408_page_0011.png",
+        "images/construction/2928102/2928102_page_0015.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/5244261/5244261_page_0011.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/4395151/4395151_page_0024.png",
+        "images/construction/4795922/4795922_page_0023.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.72
+    },
+    {
+      "query_index": 30,
+      "query": "What associations are covered by EFCA's European representation related to FIDIC?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/6613336/6613336_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6613336/6613336_page_0001.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/6061855/6061855_page_0004.png",
+        "images/construction/6920660/6920660_page_0001.png",
+        "images/construction/5193048/5193048_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 501.26
+    },
+    {
+      "query_index": 31,
+      "query": "How is the size relationship defined for the 1/4 Section 2530 map concerning land utilization in Portland?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/2928102/2928102_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/7412078/7412078_page_0011.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/2928102/2928102_page_0015.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/5349734/5349734_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.41666666666666663,
+      "latency_ms": 482.32
+    },
+    {
+      "query_index": 32,
+      "query": "How are IFC models linked with VIRTUOSO DYNAMIC ONTOLOGY within the BIM4EEB management framework?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7317968/7317968_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7317968/7317968_page_0006.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/4455456/4455456_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.4
+    },
+    {
+      "query_index": 33,
+      "query": "Can you provide the detailed measurements for the tank shells used in the computational analysis?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/2545392/2545392_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/1844363/1844363_page_0010.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/1844363/1844363_page_0009.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/5193048/5193048_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 487.2
+    },
+    {
+      "query_index": 34,
+      "query": "Which conditions do not apply to the location at 1900 SW 4th Avenue regarding environmental and building hazards?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/6018212/6018212_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/1615421/1615421_page_0018.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/4900780/4900780_page_0007.png",
+        "images/construction/7412078/7412078_page_0011.png",
+        "images/construction/3050869/3050869_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.98
+    },
+    {
+      "query_index": 35,
+      "query": "How are the panels configured in a machine-made gabion as detailed in the ASTM specification?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4383350/4383350_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4383350/4383350_page_0003.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/2771539/2771539_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 494.43
+    },
+    {
+      "query_index": 36,
+      "query": "Who is tasked with guaranteeing emergency entry under the guidelines of Title 31 within the technical specifications summary?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/3050869/3050869_page_0013.png",
+        "images/construction/3050869/3050869_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/6061855/6061855_page_0004.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/6613336/6613336_page_0001.png",
+        "images/construction/4383350/4383350_page_0003.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 494.01
+    },
+    {
+      "query_index": 37,
+      "query": "Identify the reference details for the sewer consultation related to Greenside Recreation Fields submitted late December 2016.",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5244261/5244261_page_0011.png",
+        "images/construction/5244261/5244261_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5244261/5244261_page_0011.png",
+        "images/construction/5244261/5244261_page_0010.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/1615421/1615421_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 494.33
+    },
+    {
+      "query_index": 38,
+      "query": "In the comparative reference layout related to the RELUIS initiative, what are the specified characteristics of velocities, densities, and damping ratios for the distinct layers?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7074222/7074222_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/4913473/4913473_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 481.12
+    },
+    {
+      "query_index": 39,
+      "query": "How are the various slope characteristics designated from A to E in the geological survey of the ultrabasic rock region?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2096828/2096828_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2096828/2096828_page_0002.png",
+        "images/construction/2692012/2692012_page_0004.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/2692012/2692012_page_0003.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/1630263/1630263_page_0002.png",
+        "images/construction/1858503/1858503_page_0018.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/1858503/1858503_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.04
+    },
+    {
+      "query_index": 40,
+      "query": "What goals are set for evaluating the effectiveness of the shotcrete compositions within the described project parameters?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/4201027/4201027_page_0013.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/2096828/2096828_page_0002.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/4201027/4201027_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8333333333333333,
+      "latency_ms": 489.0
+    },
+    {
+      "query_index": 41,
+      "query": "What methods are used to assess polyurethane adhesive performance in steel and wood joint structures as outlined in Annex A?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/2771539/2771539_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/4201027/4201027_page_0013.png",
+        "images/construction/4201027/4201027_page_0006.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5833333333333333,
+      "latency_ms": 489.7
+    },
+    {
+      "query_index": 42,
+      "query": "How do the cycle counts vary for different peak loads when testing panels secured with screws under dynamic conditions?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/1748668/1748668_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/5193048/5193048_page_0011.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/5193048/5193048_page_0012.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/7074222/7074222_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 501.03
+    },
+    {
+      "query_index": 43,
+      "query": "In shotcrete applications, how does the early compressive strength change when using a pozzolanic rheology control agent instead of silica fume, taking into account differences in surface area and particle dimensions?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/4201027/4201027_page_0013.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/2608715/2608715_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8875,
+      "latency_ms": 490.69
+    },
+    {
+      "query_index": 44,
+      "query": "How have the employment figures and unemployment percentages shifted from mid-2018 to mid-2025 within the scope of transport and community services statistics?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7034712/7034712_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7034712/7034712_page_0004.png",
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/4097986/4097986_page_0016.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/5066651/5066651_page_0011.png",
+        "images/construction/5066651/5066651_page_0014.png",
+        "images/construction/5066651/5066651_page_0013.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/4193476/4193476_page_0025.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 483.83
+    },
+    {
+      "query_index": 45,
+      "query": "In what way does the configuration of the overload device pulley affect safety protocols during crane usage?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7205921/7205921_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7205921/7205921_page_0020.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/4481874/4481874_page_0014.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/5244261/5244261_page_0010.png",
+        "images/construction/4173881/4173881_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.25
+    },
+    {
+      "query_index": 46,
+      "query": "Incorporating color image and color mask streams, what configuration reaches the minimal Euclidean distance under the medium rate of learning?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5601112/5601112_page_0007.png",
+        "images/construction/5601112/5601112_page_0006.png",
+        "images/construction/5601112/5601112_page_0008.png",
+        "images/construction/5601112/5601112_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5601112/5601112_page_0008.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/5601112/5601112_page_0006.png",
+        "images/construction/5601112/5601112_page_0007.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/4173881/4173881_page_0008.png",
+        "images/construction/1027658/1027658_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.44
+    },
+    {
+      "query_index": 47,
+      "query": "For a model with 544,410 equations on a Pentium III machine, what is the difference in computation time between the MPCG_AMIS and Block Lanczos methods?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/7924200/7924200_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/7924200/7924200_page_0005.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/7773476/7773476_page_0010.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/4201027/4201027_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 507.09
+    },
+    {
+      "query_index": 48,
+      "query": "What symbol is used to illustrate the connection of StarNet's independent flooring groups in professional analyses?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7915935/7915935_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/2692012/2692012_page_0003.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/5193048/5193048_page_0012.png",
+        "images/construction/7915935/7915935_page_0002.png",
+        "images/construction/5066651/5066651_page_0012.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/1615421/1615421_page_0018.png",
+        "images/construction/1858503/1858503_page_0018.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 6,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.16666666666666666,
+      "ap_at_10": 0.16666666666666666,
+      "latency_ms": 712.63
+    },
+    {
+      "query_index": 49,
+      "query": "How does the rapid 1/8000s shutter speed of the Hasselblad drone camera enhance the detection of archaeological elements?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/1858503/1858503_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/1858503/1858503_page_0018.png",
+        "images/construction/1858503/1858503_page_0014.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/5601112/5601112_page_0008.png",
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/4173881/4173881_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1250.83
+    },
+    {
+      "query_index": 50,
+      "query": "Which technique and GIS software are linked to the Constraint-Quadratic method described by Wood in 1996 for calculating slopes?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/2692012/2692012_page_0004.png",
+        "images/construction/2692012/2692012_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2692012/2692012_page_0004.png",
+        "images/construction/2096828/2096828_page_0002.png",
+        "images/construction/2692012/2692012_page_0003.png",
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/7924200/7924200_page_0005.png",
+        "images/construction/1858503/1858503_page_0018.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/1615421/1615421_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8333333333333333,
+      "latency_ms": 1207.66
+    },
+    {
+      "query_index": 51,
+      "query": "In the 2021 study published in the ISPRS International Journal of Geo-Information, how accurate is the user’s detection of iron slag traces with SfM classification?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/1858503/1858503_page_0014.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1858503/1858503_page_0014.png",
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/1858503/1858503_page_0018.png",
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/5601112/5601112_page_0008.png",
+        "images/construction/3147496/3147496_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 750.49
+    },
+    {
+      "query_index": 52,
+      "query": "How does the peak load change with varying screw end distances in connections involving steel sheathings?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/5193048/5193048_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/5193048/5193048_page_0011.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/5193048/5193048_page_0012.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/2771539/2771539_page_0013.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 517.52
+    },
+    {
+      "query_index": 53,
+      "query": "In the context of the Midtown Santa Fe redevelopment, what objectives are prioritized for financial success and sustained value creation?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5066651/5066651_page_0014.png",
+        "images/construction/5066651/5066651_page_0015.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/5066651/5066651_page_0011.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/5066651/5066651_page_0013.png",
+        "images/construction/5066651/5066651_page_0012.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/5066651/5066651_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/4395151/4395151_page_0022.png",
+        "images/construction/5066651/5066651_page_0014.png",
+        "images/construction/5066651/5066651_page_0012.png",
+        "images/construction/5066651/5066651_page_0013.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/5066651/5066651_page_0010.png",
+        "images/construction/4395151/4395151_page_0025.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false
+      ],
+      "hit_count": 7,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.1111111111111111,
+      "recall_at_5": 0.4444444444444444,
+      "recall_at_10": 0.7777777777777778,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8954648526077096,
+      "latency_ms": 472.71
+    },
+    {
+      "query_index": 54,
+      "query": "What criteria does the Evenness assessment algorithm use to determine the status of line segments regarding their deviation limits?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4173881/4173881_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4173881/4173881_page_0008.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/2692012/2692012_page_0004.png",
+        "images/construction/2096828/2096828_page_0002.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/4913473/4913473_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 497.03
+    },
+    {
+      "query_index": 55,
+      "query": "In Portland's land evaluation process, how does the Bureau of Environmental Services contribute within the agency feedback segment?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/7412078/7412078_page_0010.png",
+        "images/construction/7412078/7412078_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/7412078/7412078_page_0010.png",
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/1615421/1615421_page_0017.png",
+        "images/construction/1615421/1615421_page_0016.png",
+        "images/construction/3050869/3050869_page_0013.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/1630263/1630263_page_0003.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 490.96
+    },
+    {
+      "query_index": 56,
+      "query": "What is the location of the proposed replacement habitat in connection to the flood defense embankments near the hydropower plant at Brežice?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/5057007/5057007_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/7414009/7414009_page_0006.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/1844363/1844363_page_0010.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/6018212/6018212_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 480.43
+    },
+    {
+      "query_index": 57,
+      "query": "How do the job categories such as professionals, administrators, sales, and others compare in terms of very unsatisfactory workstation satisfaction levels?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/6799387/6799387_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6799387/6799387_page_0008.png",
+        "images/construction/5066651/5066651_page_0011.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/5513408/5513408_page_0011.png",
+        "images/construction/5513408/5513408_page_0009.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/5513408/5513408_page_0010.png",
+        "images/construction/2545392/2545392_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 737.27
+    },
+    {
+      "query_index": 58,
+      "query": "Which minerals predominantly make up the structure of granite according to the composition chart?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/6920660/6920660_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6920660/6920660_page_0004.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/2096828/2096828_page_0002.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/3528859/3528859_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 494.35
+    },
+    {
+      "query_index": 59,
+      "query": "In the materials by Morley Glass & Glazing, what organization is associated with the Perfect Fit® roller blind?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2477920/2477920_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2477920/2477920_page_0005.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/7915935/7915935_page_0002.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/4383350/4383350_page_0003.png",
+        "images/construction/7205921/7205921_page_0020.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/7915935/7915935_page_0004.png",
+        "images/construction/3235227/3235227_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.63
+    },
+    {
+      "query_index": 60,
+      "query": "How does temperature variation affect the complex modulus of standard versus nano-enhanced bitumen according to the research?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/1674783/1674783_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/4917851/4917851_page_0007.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/6326859/6326859_page_0004.png",
+        "images/construction/0992970/0992970_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 486.6
+    },
+    {
+      "query_index": 61,
+      "query": "In the analysis provided, what benefit is anticipated when SHM is not utilized after three decades?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4455456/4455456_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4455456/4455456_page_0009.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/6326859/6326859_page_0004.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/7034712/7034712_page_0004.png",
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/4917851/4917851_page_0007.png",
+        "images/construction/4201027/4201027_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 487.1
+    },
+    {
+      "query_index": 62,
+      "query": "Identify the components and amounts in the proposed shotcrete mix that includes TYTRO® RC 430 as an additive.",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/4201027/4201027_page_0013.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/3528859/3528859_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.32
+    },
+    {
+      "query_index": 63,
+      "query": "What conclusions were drawn from the panel's February 27, 2018, inspection and discussions on the proposed lot division at 2 Inverary Drive, Kurmond?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/6837658/6837658_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/1615421/1615421_page_0017.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/3050869/3050869_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 0.6666666666666666,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.18
+    },
+    {
+      "query_index": 64,
+      "query": "What was the reason for failing to complete the submission of the 2017 Mid Term Evaluation Report to KfW?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4193476/4193476_page_0025.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/6061855/6061855_page_0004.png",
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/3528859/3528859_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.06
+    },
+    {
+      "query_index": 65,
+      "query": "Which individual holds the position of Staff Engineer in the structural assessment documentation by Stork Twin City?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/6061855/6061855_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6061855/6061855_page_0004.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/4900780/4900780_page_0008.png",
+        "images/construction/1630263/1630263_page_0001.png",
+        "images/construction/5193048/5193048_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 494.39
+    },
+    {
+      "query_index": 66,
+      "query": "Which machinery is usually employed to clear snow on River Street during December 2008 as depicted?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/1676343/1676343_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1676343/1676343_page_0012.png",
+        "images/construction/1521255/1521255_page_0003.png",
+        "images/construction/4917851/4917851_page_0007.png",
+        "images/construction/7205921/7205921_page_0020.png",
+        "images/construction/1630263/1630263_page_0001.png",
+        "images/construction/1615421/1615421_page_0018.png",
+        "images/construction/4395151/4395151_page_0025.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/1630263/1630263_page_0004.png",
+        "images/construction/5066651/5066651_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.11
+    },
+    {
+      "query_index": 67,
+      "query": "How do the components vary between the reference and proposed mixtures, where the latter incorporates a pozzolanic-based rheology control element, given a 0.46 w/c ratio?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/4201027/4201027_page_0013.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/1027658/1027658_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.7,
+      "latency_ms": 502.97
+    },
+    {
+      "query_index": 68,
+      "query": "How are the rules defined in sections 33.654.130.B and 33.654.130.C concerning current and future dead-end street links?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5349734/5349734_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/3050869/3050869_page_0013.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/5066651/5066651_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 485.53
+    },
+    {
+      "query_index": 69,
+      "query": "Can you list the roads scheduled for repair in the village's 2021 concrete program?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/1521255/1521255_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1521255/1521255_page_0003.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/1676343/1676343_page_0012.png",
+        "images/construction/7034712/7034712_page_0004.png",
+        "images/construction/1630263/1630263_page_0002.png",
+        "images/construction/4395151/4395151_page_0024.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/4395151/4395151_page_0025.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/1630263/1630263_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.19
+    },
+    {
+      "query_index": 70,
+      "query": "What specific guidelines and documents pertain to the flood plain and Building Code Title 24 within the proposal?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/0334580/0334580_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/5244261/5244261_page_0011.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/5066651/5066651_page_0012.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5833333333333333,
+      "latency_ms": 503.66
+    },
+    {
+      "query_index": 71,
+      "query": "In the context of rubberised bitumen, what specifications and contaminant limits are set for crumb rubber?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4917851/4917851_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4917851/4917851_page_0007.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/4201027/4201027_page_0006.png",
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/4395151/4395151_page_0025.png",
+        "images/construction/4383350/4383350_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 474.67
+    },
+    {
+      "query_index": 72,
+      "query": "In what ways do the time history curves for nodal coordinates vary between dynamic and static conditions during the deployment of the CTS cable dome?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/3235227/3235227_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/2608715/2608715_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 488.01
+    },
+    {
+      "query_index": 73,
+      "query": "How many nations are recipients of IntechOpen's distributed publications?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/6920660/6920660_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6920660/6920660_page_0001.png",
+        "images/construction/4917851/4917851_page_0007.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/4005140/4005140_page_0006.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/5066651/5066651_page_0012.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/4005140/4005140_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 777.87
+    },
+    {
+      "query_index": 74,
+      "query": "In what manner do attendees engage with the displayed materials at the Vision Derby 2040 community event?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2107998/2107998_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/7317968/7317968_page_0006.png",
+        "images/construction/1630263/1630263_page_0002.png",
+        "images/construction/6837658/6837658_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 704.87
+    },
+    {
+      "query_index": 75,
+      "query": "Based on the RF classifier's confusion matrix, what is the count of TH construction types that were correctly identified?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/4280740/4280740_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/6799387/6799387_page_0008.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/1527880/1527880_page_0008.png",
+        "images/construction/6061855/6061855_page_0004.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/1027658/1027658_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8333333333333334,
+      "latency_ms": 489.53
+    },
+    {
+      "query_index": 76,
+      "query": "In Fig. A1, what size is the rubber component utilized in assembling the specimen for prolonged stress evaluation?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2771539/2771539_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/4201027/4201027_page_0005.png",
+        "images/construction/4917851/4917851_page_0007.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/4383350/4383350_page_0003.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/7074222/7074222_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 495.16
+    },
+    {
+      "query_index": 77,
+      "query": "How did the erosion and accretion trends differ in the northern and southern parts of the Gialos shoreline from 1945 to 1972 compared to 1972 to 2000?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/3147496/3147496_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/construction/3147496/3147496_page_0017.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/2692012/2692012_page_0004.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/1844363/1844363_page_0011.png",
+        "images/construction/4455456/4455456_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.96
+    },
+    {
+      "query_index": 78,
+      "query": "What were the trends in employment and unemployment rates from mid-2020 to mid-2023 based on the dataset spanning from mid-2018 to mid-2025?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7034712/7034712_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7034712/7034712_page_0004.png",
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/5066651/5066651_page_0014.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/3147496/3147496_page_0017.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/6799387/6799387_page_0008.png",
+        "images/construction/5066651/5066651_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 493.28
+    },
+    {
+      "query_index": 79,
+      "query": "For what reason was a scale of 1 inch equals 200 feet chosen for the design of Section 3825 in project LU 08-109725 LDP?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1615421/1615421_page_0017.png",
+        "images/construction/1615421/1615421_page_0018.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/1615421/1615421_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1615421/1615421_page_0018.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/4900780/4900780_page_0007.png",
+        "images/construction/7412078/7412078_page_0011.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/4900780/4900780_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.2,
+      "recall_at_5": 0.6,
+      "recall_at_10": 0.6,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9166666666666666,
+      "latency_ms": 499.83
+    },
+    {
+      "query_index": 80,
+      "query": "Can you identify the criteria from the code chapters that do not apply because of the site's characteristics and proposal details?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/6018212/6018212_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/5349734/5349734_page_0004.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/0334580/0334580_page_0008.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/3050869/3050869_page_0013.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/2928102/2928102_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8333333333333333,
+      "latency_ms": 558.94
+    },
+    {
+      "query_index": 81,
+      "query": "What effect do changes in stud thickness and screw diameter have on the shear strength of screw connections as per the modeling outcomes?",
+      "domain": "construction",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/5193048/5193048_page_0011.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/5193048/5193048_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/5193048/5193048_page_0011.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/5193048/5193048_page_0012.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/5254543/5254543_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 5,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.2,
+      "recall_at_5": 0.8,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9428571428571428,
+      "latency_ms": 649.46
+    },
+    {
+      "query_index": 82,
+      "query": "Identify the person acting as the representative for the subdivision project located at 13035 NE Oregon Street.",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/2600534/2600534_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/7412078/7412078_page_0010.png",
+        "images/construction/3050869/3050869_page_0013.png",
+        "images/construction/1615421/1615421_page_0016.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/1615421/1615421_page_0017.png",
+        "images/construction/6061855/6061855_page_0004.png",
+        "images/construction/4900780/4900780_page_0008.png",
+        "images/construction/1615421/1615421_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.21
+    },
+    {
+      "query_index": 83,
+      "query": "How much is the projected expense for the 2008 PG Plaza Midblock Crossing initiative, and which activities contribute to this amount?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4395151/4395151_page_0023.png",
+        "images/construction/4395151/4395151_page_0025.png",
+        "images/construction/4395151/4395151_page_0022.png",
+        "images/construction/4395151/4395151_page_0024.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4395151/4395151_page_0025.png",
+        "images/construction/4395151/4395151_page_0024.png",
+        "images/construction/5066651/5066651_page_0008.png",
+        "images/construction/1676343/1676343_page_0012.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/7034712/7034712_page_0004.png",
+        "images/construction/4395151/4395151_page_0022.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/7412078/7412078_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.75,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8095238095238094,
+      "latency_ms": 505.15
+    },
+    {
+      "query_index": 84,
+      "query": "During the May 3, 2021 Limestone County Commission meeting, to which entity was the SMART Board with serial SBB885-M2-B002848 assigned?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/7299441/7299441_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/2928102/2928102_page_0015.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/1615421/1615421_page_0017.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/7412078/7412078_page_0010.png",
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/1676343/1676343_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 489.74
+    },
+    {
+      "query_index": 85,
+      "query": "Which documents comprise the applicant's declaration in the land use review from the year 2104?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/7412078/7412078_page_0010.png",
+        "images/construction/7412078/7412078_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7412078/7412078_page_0010.png",
+        "images/construction/3050869/3050869_page_0013.png",
+        "images/construction/2928102/2928102_page_0014.png",
+        "images/construction/3050869/3050869_page_0012.png",
+        "images/construction/1615421/1615421_page_0017.png",
+        "images/construction/6018212/6018212_page_0003.png",
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/2600534/2600534_page_0001.png",
+        "images/construction/1615421/1615421_page_0016.png",
+        "images/construction/5244261/5244261_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 480.75
+    },
+    {
+      "query_index": 86,
+      "query": "In the context of the BIM4EEB Project, how does the ontology within the BIM management system enable connections between resources and entities?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7317968/7317968_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7317968/7317968_page_0006.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/4455456/4455456_page_0009.png",
+        "images/construction/5066651/5066651_page_0010.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/5066651/5066651_page_0014.png",
+        "images/construction/5601112/5601112_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 516.56
+    },
+    {
+      "query_index": 87,
+      "query": "How do the predicted construction types compare with the reference categories in terms of misclassification rates for S-DH, TH, and MFH?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/4280740/4280740_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/4280740/4280740_page_0010.png",
+        "images/construction/1858503/1858503_page_0014.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/0579361/0579361_page_0002.png",
+        "images/construction/6799387/6799387_page_0008.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/7924200/7924200_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 491.44
+    },
+    {
+      "query_index": 88,
+      "query": "How does the activity of Montmorillonite differ from Illite in the clay samples from Glee Geunteng hill?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/3528859/3528859_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/construction/3528859/3528859_page_0002.png",
+        "images/construction/3528859/3528859_page_0001.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/2096828/2096828_page_0002.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/6920660/6920660_page_0004.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/3147496/3147496_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 472.0
+    },
+    {
+      "query_index": 89,
+      "query": "Which construction techniques or materials are identified for building a gravity oil-grit separator that includes a precast iron frame?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/1152094/1152094_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1152094/1152094_page_0004.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/5057007/5057007_page_0002.png",
+        "images/construction/1630263/1630263_page_0003.png",
+        "images/construction/1844363/1844363_page_0010.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/5244261/5244261_page_0010.png",
+        "images/construction/2608715/2608715_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 647.82
+    },
+    {
+      "query_index": 90,
+      "query": "What were the scheduled months for the new FMC's formation and training for the 2018 IGFs as outlined in the yearly summary?",
+      "domain": "construction",
+      "question_type": "temporal_comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4193476/4193476_page_0025.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4193476/4193476_page_0025.png",
+        "images/construction/7924200/7924200_page_0005.png",
+        "images/construction/3147496/3147496_page_0015.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/7924200/7924200_page_0004.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/6613336/6613336_page_0001.png",
+        "images/construction/3147496/3147496_page_0017.png",
+        "images/construction/0992970/0992970_page_0002.png",
+        "images/construction/7317968/7317968_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 588.72
+    },
+    {
+      "query_index": 91,
+      "query": "How are the components logically connected in the load structure depicted?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2053770/2053770_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/5193048/5193048_page_0011.png",
+        "images/construction/7773476/7773476_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 509.66
+    },
+    {
+      "query_index": 92,
+      "query": "Which beam spread degrees are offered for different lighting fixtures as per technical details?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4795922/4795922_page_0023.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4795922/4795922_page_0023.png",
+        "images/construction/2771539/2771539_page_0004.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/4005140/4005140_page_0005.png",
+        "images/construction/1527880/1527880_page_0008.png",
+        "images/construction/1858503/1858503_page_0017.png",
+        "images/construction/2477920/2477920_page_0005.png",
+        "images/construction/4280740/4280740_page_0012.png",
+        "images/construction/2771539/2771539_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 752.5
+    },
+    {
+      "query_index": 93,
+      "query": "How does the blending moments difference change in percentage when the pliantness parameter is 1.00, moving from point 4 to point 10?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/5254543/5254543_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/4201027/4201027_page_0012.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/4201027/4201027_page_0004.png",
+        "images/construction/1027658/1027658_page_0007.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/3147496/3147496_page_0017.png",
+        "images/construction/4913473/4913473_page_0005.png",
+        "images/construction/6565973/6565973_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 677.31
+    },
+    {
+      "query_index": 94,
+      "query": "Which protective elements, like pedestrian barriers, are found in the New Carrollton station's layout plan?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/4097986/4097986_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4097986/4097986_page_0018.png",
+        "images/construction/4395151/4395151_page_0022.png",
+        "images/construction/4097986/4097986_page_0016.png",
+        "images/construction/1615421/1615421_page_0019.png",
+        "images/construction/1615421/1615421_page_0020.png",
+        "images/construction/7412078/7412078_page_0011.png",
+        "images/construction/6018212/6018212_page_0004.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/1615421/1615421_page_0018.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 497.48
+    },
+    {
+      "query_index": 95,
+      "query": "In the shear strength evaluation, what are the load ratio extremes and cycle counts for tests involving sinusoidal loading?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/1748668/1748668_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/1748668/1748668_page_0005.png",
+        "images/construction/5193048/5193048_page_0016.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/1674783/1674783_page_0013.png",
+        "images/construction/5193048/5193048_page_0011.png",
+        "images/construction/4201027/4201027_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 502.43
+    },
+    {
+      "query_index": 96,
+      "query": "What are the differences in sensor pressure values between the configurations involving Pipe CD and Pipe DE?",
+      "domain": "construction",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/6565973/6565973_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/construction/6565973/6565973_page_0005.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/5601112/5601112_page_0005.png",
+        "images/construction/5193048/5193048_page_0010.png",
+        "images/construction/5193048/5193048_page_0015.png",
+        "images/construction/1844363/1844363_page_0009.png",
+        "images/construction/7074222/7074222_page_0012.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/4280740/4280740_page_0011.png",
+        "images/construction/1748668/1748668_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 482.69
+    },
+    {
+      "query_index": 97,
+      "query": "What were the key points and topics discussed during the Vision Derby 2040 community meeting?",
+      "domain": "construction",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/2107998/2107998_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/construction/2107998/2107998_page_0002.png",
+        "images/construction/7299441/7299441_page_0011.png",
+        "images/construction/5066651/5066651_page_0013.png",
+        "images/construction/5066651/5066651_page_0016.png",
+        "images/construction/6837658/6837658_page_0004.png",
+        "images/construction/5066651/5066651_page_0009.png",
+        "images/construction/6837658/6837658_page_0005.png",
+        "images/construction/5066651/5066651_page_0011.png",
+        "images/construction/5066651/5066651_page_0010.png",
+        "images/construction/3050869/3050869_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 499.11
+    },
+    {
+      "query_index": 98,
+      "query": "Which part in the KROLL GIANT CRANES setup is responsible for avoiding excessive load?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/construction/7205921/7205921_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/construction/7205921/7205921_page_0020.png",
+        "images/construction/2053770/2053770_page_0007.png",
+        "images/construction/2608715/2608715_page_0007.png",
+        "images/construction/5254543/5254543_page_0005.png",
+        "images/construction/1748668/1748668_page_0004.png",
+        "images/construction/2545392/2545392_page_0002.png",
+        "images/construction/4097986/4097986_page_0018.png",
+        "images/construction/2545392/2545392_page_0001.png",
+        "images/construction/7773476/7773476_page_0010.png",
+        "images/construction/4173881/4173881_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 476.05
+    },
+    {
+      "query_index": 99,
+      "query": "What checks should be performed for the chainsaw before each operation?",
+      "domain": "construction",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/construction/4481874/4481874_page_0015.png",
+        "images/construction/4481874/4481874_page_0014.png"
+      ],
+      "predicted_ids": [
+        "images/construction/4481874/4481874_page_0015.png",
+        "images/construction/4481874/4481874_page_0014.png",
+        "images/construction/4481874/4481874_page_0021.png",
+        "images/construction/7205921/7205921_page_0020.png",
+        "images/construction/2771539/2771539_page_0013.png",
+        "images/construction/2771539/2771539_page_0003.png",
+        "images/construction/7773476/7773476_page_0010.png",
+        "images/construction/1844363/1844363_page_0007.png",
+        "images/construction/0334580/0334580_page_0009.png",
+        "images/construction/4193476/4193476_page_0025.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 496.56
+    }
+  ],
+  "meta": {
+    "timestamp": "20260326_195520",
+    "method": "baseline_clip",
+    "domain": "construction",
+    "top_k": 10
+  }
+}

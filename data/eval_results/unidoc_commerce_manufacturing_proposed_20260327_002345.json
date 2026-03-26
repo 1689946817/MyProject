@@ -1,0 +1,4467 @@
+{
+  "summary": {
+    "method": "proposed",
+    "domain": "commerce_manufacturing",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.6608,
+      "std": 0.3672
+    },
+    "recall_at_5": {
+      "mean": 0.97,
+      "std": 0.1284
+    },
+    "recall_at_10": {
+      "mean": 0.98,
+      "std": 0.1237
+    },
+    "mrr": {
+      "mean": 0.9467,
+      "std": 0.1771
+    },
+    "map_at_10": {
+      "mean": 0.9387,
+      "std": 0.177
+    },
+    "latency_ms": {
+      "mean": 409.0763,
+      "std": 245.8519
+    },
+    "latency_ms_median": 311.61
+  },
+  "by_question_type": {
+    "causal_reasoning": {
+      "count": 10,
+      "recall_at_1": {
+        "mean": 0.45,
+        "std": 0.3148
+      },
+      "recall_at_5": {
+        "mean": 0.95,
+        "std": 0.0805
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 0.9917,
+        "std": 0.0264
+      }
+    },
+    "comparison": {
+      "count": 23,
+      "recall_at_1": {
+        "mean": 0.6703,
+        "std": 0.3468
+      },
+      "recall_at_5": {
+        "mean": 0.9855,
+        "std": 0.048
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.9783,
+        "std": 0.1043
+      },
+      "map_at_10": {
+        "mean": 0.9674,
+        "std": 0.1144
+      }
+    },
+    "factual_retrieval": {
+      "count": 59,
+      "recall_at_1": {
+        "mean": 0.6808,
+        "std": 0.3891
+      },
+      "recall_at_5": {
+        "mean": 0.9633,
+        "std": 0.161
+      },
+      "recall_at_10": {
+        "mean": 0.9661,
+        "std": 0.1602
+      },
+      "mrr": {
+        "mean": 0.9181,
+        "std": 0.2175
+      },
+      "map_at_10": {
+        "mean": 0.9153,
+        "std": 0.2136
+      }
+    },
+    "summarization": {
+      "count": 8,
+      "recall_at_1": {
+        "mean": 0.75,
+        "std": 0.2673
+      },
+      "recall_at_5": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 0.9625,
+        "std": 0.1061
+      }
+    }
+  },
+  "by_answer_type": {
+    "image_only": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.84,
+        "std": 0.3703
+      },
+      "recall_at_5": {
+        "mean": 0.98,
+        "std": 0.1414
+      },
+      "recall_at_10": {
+        "mean": 0.98,
+        "std": 0.1414
+      },
+      "mrr": {
+        "mean": 0.9033,
+        "std": 0.2335
+      },
+      "map_at_10": {
+        "mean": 0.905,
+        "std": 0.2296
+      }
+    },
+    "table_required": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.4817,
+        "std": 0.2642
+      },
+      "recall_at_5": {
+        "mean": 0.96,
+        "std": 0.1145
+      },
+      "recall_at_10": {
+        "mean": 0.98,
+        "std": 0.1045
+      },
+      "mrr": {
+        "mean": 0.99,
+        "std": 0.0707
+      },
+      "map_at_10": {
+        "mean": 0.9723,
+        "std": 0.091
+      }
+    }
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "What are the steps involved in the corrective action process in Hunt Design's QMS?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0003.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0009.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 760.69
+    },
+    {
+      "query_index": 1,
+      "query": "What products are advertised by A. Borsig in the Nichi-Doku-Kōgyō-Kōkoku from 1897?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6109033/6109033_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6109033/6109033_page_0007.png",
+        "images/commerce_manufacturing/1088635/1088635_page_0013.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0010.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/7045239/7045239_page_0003.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0009.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 315.84
+    },
+    {
+      "query_index": 2,
+      "query": "What is the approximate circuit area of the TPS62745 Buck Converter Evaluation Module as specified by Texas Instruments?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0007.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.41666666666666663,
+      "latency_ms": 244.77
+    },
+    {
+      "query_index": 3,
+      "query": "What are the primary flows of money, parts, and services in the automotive industry channel model?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/7215936/7215936_page_0005.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 570.77
+    },
+    {
+      "query_index": 4,
+      "query": "What is the process flow for handling a customer purchase order in Hunt Design's QMS?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0003.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/6532134/6532134_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 276.86
+    },
+    {
+      "query_index": 5,
+      "query": "What are the possible transitions between states in the finite state machine of an embedded device?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/1428492/1428492_page_0004.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/5147063/5147063_page_0003.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 630.81
+    },
+    {
+      "query_index": 6,
+      "query": "What is the sequence of steps in the CRM model implementation process for Saba Corporation?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png",
+        "images/commerce_manufacturing/2290435/2290435_page_0001.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 285.91
+    },
+    {
+      "query_index": 7,
+      "query": "How is the process of handling orders implemented to increase profit per sale?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0010.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 300.96
+    },
+    {
+      "query_index": 8,
+      "query": "What are the start and end times for the production schedule labeled 'Making Schedule 2' in the plant model?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 387.27
+    },
+    {
+      "query_index": 9,
+      "query": "What is the firmware version of the MEASURpoint instrument DT887x-48?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 280.95
+    },
+    {
+      "query_index": 10,
+      "query": "What are the compartment sizes for product types on Tour 1 in the genetic algorithm solution?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 311.41
+    },
+    {
+      "query_index": 11,
+      "query": "What is the firmware revision and IP address of the DT887x-48 instrument model provided by Data Translation Inc.?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 411.82
+    },
+    {
+      "query_index": 12,
+      "query": "How does the process flow of the browser statechart testing model progress from test case generation to logging?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1428492/1428492_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1428492/1428492_page_0004.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 309.91
+    },
+    {
+      "query_index": 13,
+      "query": "What milestones occurred in the development of Obee Network from 2018 to 2020?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1927393/1927393_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1927393/1927393_page_0006.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/5147063/5147063_page_0003.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/4561753/4561753_page_0011.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 284.91
+    },
+    {
+      "query_index": 14,
+      "query": "What strategies are suggested for building customer relationships on Mini Akiba?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1829600/1829600_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1829600/1829600_page_0001.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png",
+        "images/commerce_manufacturing/1657501/1657501_page_0026.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0010.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0009.png",
+        "images/commerce_manufacturing/1927393/1927393_page_0006.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 324.12
+    },
+    {
+      "query_index": 15,
+      "query": "What is the general trend of the loss function value during the training iterations?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5663148/5663148_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5663148/5663148_page_0020.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/2447534/2447534_page_0007.png",
+        "images/commerce_manufacturing/5147063/5147063_page_0003.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/1428492/1428492_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 331.08
+    },
+    {
+      "query_index": 16,
+      "query": "How does the Packet Error Rate (PER) change for BLE events with varying connection intervals in the test setup?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 281.1
+    },
+    {
+      "query_index": 17,
+      "query": "How has the regional distribution of 3M supplier spending changed between 2016 and 2020?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 571.47
+    },
+    {
+      "query_index": 18,
+      "query": "How did new car registrations in Spain compare to those in Germany over the years from 2007 to 2017?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/7215936/7215936_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/7215936/7215936_page_0005.png",
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0012.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 289.69
+    },
+    {
+      "query_index": 19,
+      "query": "What was the revenue change for Newmont-Ahafo from 2013 to 2014 according to the mining industry report?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+        "images/commerce_manufacturing/1470687/1470687_page_0017.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 436.21
+    },
+    {
+      "query_index": 20,
+      "query": "How did the trend of internal and external sales for VAA change from 2006 to 2017?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/7215936/7215936_page_0005.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0003.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 376.31
+    },
+    {
+      "query_index": 21,
+      "query": "What are the differences in e-commerce fees per item sold between major platforms like Ebay, Amazon, AliExpress, and UNIVERZ?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/6532134/6532134_page_0006.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0004.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 850.01
+    },
+    {
+      "query_index": 22,
+      "query": "How did the total units of Edge AI compare to Movable AI in 2021?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5147063/5147063_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5147063/5147063_page_0003.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/5663148/5663148_page_0020.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 591.0
+    },
+    {
+      "query_index": 23,
+      "query": "What was the percentage change in all-in production costs for Australia from 2013 to 2014?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 261.84
+    },
+    {
+      "query_index": 24,
+      "query": "How did the monthly message volume trends for SMS, EMS, and MMS differ from 2001 to 2006?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0003.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0001.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 352.34
+    },
+    {
+      "query_index": 25,
+      "query": "What percentage of 3M's supplier spend was allocated to the Asia Pacific region in 2020?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/1470687/1470687_page_0017.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 320.43
+    },
+    {
+      "query_index": 26,
+      "query": "What are the specific product allocations for locations on Tour 2 in the genetic algorithm solution?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 594.58
+    },
+    {
+      "query_index": 27,
+      "query": "What global employee count does 3M maintain?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/6981908/6981908_page_0003.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 284.83
+    },
+    {
+      "query_index": 28,
+      "query": "What is the trend of Zigbee PER as the BLE connection interval increases?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 332.06
+    },
+    {
+      "query_index": 29,
+      "query": "What are the design specifications of the glassware patented by D. Bennett in 1878?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1088635/1088635_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1088635/1088635_page_0013.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/2736831/2736831_page_0003.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0002.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0003.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 478.92
+    },
+    {
+      "query_index": 30,
+      "query": "What slogans or phrases are prominently displayed during SKF trade union meetings related to precarious work?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/1470687/1470687_page_0017.png",
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 276.22
+    },
+    {
+      "query_index": 31,
+      "query": "What is the expected weekly production volume for MALS A/Cs in the assembly process model?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 282.52
+    },
+    {
+      "query_index": 32,
+      "query": "What stages did Obee Network go through from concept initiation to Uniswap launch?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1927393/1927393_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1927393/1927393_page_0006.png",
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/1470687/1470687_page_0017.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/4561753/4561753_page_0011.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png",
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/1657501/1657501_page_0026.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 355.66
+    },
+    {
+      "query_index": 33,
+      "query": "What is the ISSN number for the February 2014 issue of the Journal of Environmental Protection?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0144801/0144801_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0144801/0144801_page_0012.png",
+        "images/commerce_manufacturing/4561753/4561753_page_0011.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/6109033/6109033_page_0007.png",
+        "images/commerce_manufacturing/2290435/2290435_page_0001.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/2736831/2736831_page_0003.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 275.14
+    },
+    {
+      "query_index": 34,
+      "query": "What are the different shipping options and their costs for an online purchase process?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6532134/6532134_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6532134/6532134_page_0006.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 442.42
+    },
+    {
+      "query_index": 35,
+      "query": "Which entities implement Samsung's sustainable cobalt supply criteria?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1470687/1470687_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1470687/1470687_page_0017.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0009.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 325.09
+    },
+    {
+      "query_index": 36,
+      "query": "What is the range of mean assembly times when there are 10 different modules?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 265.47
+    },
+    {
+      "query_index": 37,
+      "query": "What is the motto associated with SAP for businesses?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2290435/2290435_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2290435/2290435_page_0001.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0004.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0012.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0008.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 292.02
+    },
+    {
+      "query_index": 38,
+      "query": "What are the variable interaction values for resources A and B during the reaction process?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/2736831/2736831_page_0003.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 311.83
+    },
+    {
+      "query_index": 39,
+      "query": "What is the role of the Home Support Team in the organizational structure of the logistics project?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0013.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 327.99
+    },
+    {
+      "query_index": 40,
+      "query": "What are the specific services used by the company to handle delivery operations?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0010.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0013.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 447.27
+    },
+    {
+      "query_index": 41,
+      "query": "How are the product types distributed across different tours and locations based on compartment sizes?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 259.7
+    },
+    {
+      "query_index": 42,
+      "query": "What are the features of the ice cream cart used by Artisani?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1657501/1657501_page_0026.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1657501/1657501_page_0026.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0010.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0009.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0011.png",
+        "images/commerce_manufacturing/1088635/1088635_page_0013.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0010.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 568.83
+    },
+    {
+      "query_index": 43,
+      "query": "What is the configuration of tours and products as represented in the solution's structure?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/4561753/4561753_page_0011.png",
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 594.59
+    },
+    {
+      "query_index": 44,
+      "query": "What is the demand distribution for combinations of four components?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/7045239/7045239_page_0003.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 773.61
+    },
+    {
+      "query_index": 45,
+      "query": "What is the process flow from a Baseline Test Suite to a Test Log in a browser testing model?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1428492/1428492_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1428492/1428492_page_0004.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 412.06
+    },
+    {
+      "query_index": 46,
+      "query": "How did product search trends vary between different site categories in June 2012, and what role did heavy searchers play?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0009.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 6,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.16666666666666666,
+      "recall_at_5": 0.8333333333333334,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1139.37
+    },
+    {
+      "query_index": 47,
+      "query": "What are the delivery arrival schedules at the CC for 22 Bishopsgate, and how do they differ throughout the week?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5128450/5128450_page_0010.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0013.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5128450/5128450_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0013.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0010.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0011.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0010.png",
+        "images/commerce_manufacturing/6981908/6981908_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 6,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.16666666666666666,
+      "recall_at_5": 0.8333333333333334,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 261.91
+    },
+    {
+      "query_index": 48,
+      "query": "How did current taxes in Hong Kong and outside Hong Kong differ for the six months ended 30 September 2014 compared to 2013?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.75,
+      "latency_ms": 301.99
+    },
+    {
+      "query_index": 49,
+      "query": "What are the differences in total non-current assets between 30 June 2018 and 31 December 2017 for Pak Suzuki Motor Company Limited?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0007.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 694.3
+    },
+    {
+      "query_index": 50,
+      "query": "How does the OSHA permissible exposure limit for Ethyl Benzene compare to that of Xylene?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2736831/2736831_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2736831/2736831_page_0003.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/4498982/4498982_page_0008.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 660.02
+    },
+    {
+      "query_index": 51,
+      "query": "How did the segment assets for wholesale change between the years 2001 and 2002?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0009.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 281.24
+    },
+    {
+      "query_index": 52,
+      "query": "What are the supported data rates for the V.29 fax modulation compared to V.34?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2463121/2463121_page_0003.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0001.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0003.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0001.png",
+        "images/commerce_manufacturing/0289109/0289109_page_0009.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 243.09
+    },
+    {
+      "query_index": 53,
+      "query": "Which location has the lowest annual operating costs for a U.S. Central Warehouse site?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 465.26
+    },
+    {
+      "query_index": 54,
+      "query": "Identify the devices with the smallest mass per area ratio that are still feasible without a fixture.",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 278.72
+    },
+    {
+      "query_index": 55,
+      "query": "How did the net income before non-cash items change from March 31, 2019, to March 31, 2020, for Clarus Corporation?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0009.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 340.61
+    },
+    {
+      "query_index": 56,
+      "query": "How does the usage of sorting and filtering functions affect the average chosen room prices in different tasks?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3931681/3931681_page_0010.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3931681/3931681_page_0010.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0009.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5663148/5663148_page_0020.png",
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 272.07
+    },
+    {
+      "query_index": 57,
+      "query": "How did Clarus Corporation's adjusted EBITDA for the quarter ending March 31, 2019 compare to March 31, 2020?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0009.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0009.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0008.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 665.07
+    },
+    {
+      "query_index": 58,
+      "query": "How do heavy searchers impact the product search trends across different platforms according to the statistics and figures presented in the Journal of Law, Economics and Policy?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0010.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0009.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 6,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.16666666666666666,
+      "recall_at_5": 0.8333333333333334,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 348.32
+    },
+    {
+      "query_index": 59,
+      "query": "How does the capacity constraint of vehicles and the need for separate compartments for different product types affect the routing strategy in the MCVRP-CFCS model?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9166666666666666,
+      "latency_ms": 286.7
+    },
+    {
+      "query_index": 60,
+      "query": "How do the patterns of user types conducting searches on different platform categories relate to the stability of search visits at price comparison sites in 2012?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/0720547/0720547_page_0007.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0010.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0009.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 6,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.16666666666666666,
+      "recall_at_5": 0.8333333333333334,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1398.87
+    },
+    {
+      "query_index": 61,
+      "query": "How does the delivery arrival time at the logistics center affect the delivery schedule to 22 Bishopsgate?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5128450/5128450_page_0010.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0013.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5128450/5128450_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0013.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 6,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.16666666666666666,
+      "recall_at_5": 0.8333333333333334,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 300.2
+    },
+    {
+      "query_index": 62,
+      "query": "In what way do intelligent rack outlets manage power consumption to prevent equipment downtime?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 256.68
+    },
+    {
+      "query_index": 63,
+      "query": "How does PCB design influence the measurement of RθJA and RθJC in IC packages?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0007.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 302.36
+    },
+    {
+      "query_index": 64,
+      "query": "What is the impact of cable characteristics on the DP83TD510's operating modes and how is it mitigated?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 329.4
+    },
+    {
+      "query_index": 65,
+      "query": "What impact did the special dividend declared in 2016 have on the share premium?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0009.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 326.69
+    },
+    {
+      "query_index": 66,
+      "query": "How does video surveillance equipment detect unauthorized access and help in root cause analysis in data centers?",
+      "domain": "commerce_manufacturing",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0011.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0010.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 295.52
+    },
+    {
+      "query_index": 67,
+      "query": "How is the grinding fineness adjusted in the coffee machine?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6263182/6263182_page_0014.png",
+        "images/commerce_manufacturing/6263182/6263182_page_0013.png",
+        "images/commerce_manufacturing/6263182/6263182_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6263182/6263182_page_0014.png",
+        "images/commerce_manufacturing/6263182/6263182_page_0013.png",
+        "images/commerce_manufacturing/6263182/6263182_page_0015.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 346.34
+    },
+    {
+      "query_index": 68,
+      "query": "What safety regulations does Sony adhere to for its LAN technical standards?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2127372/2127372_page_0011.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0009.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0010.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0009.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0010.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0011.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0008.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 6,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.16666666666666666,
+      "recall_at_5": 0.8333333333333334,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 450.12
+    },
+    {
+      "query_index": 69,
+      "query": "What is the operating temperature range for the Testboy® 26?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5086662/5086662_page_0009.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0010.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0012.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png",
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.16666666666666666,
+      "recall_at_5": 0.3333333333333333,
+      "recall_at_10": 0.3333333333333333,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 250.58
+    },
+    {
+      "query_index": 70,
+      "query": "What is the lashing capacity of the ratchet tie-downs provided by Tool Vault?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0004.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0003.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 331.58
+    },
+    {
+      "query_index": 71,
+      "query": "What is the cycle time in seconds for the stamping process in the transformation factory described in the study?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 266.35
+    },
+    {
+      "query_index": 72,
+      "query": "What is the annual energy consumption of the NFE3 620 X refrigerator by TEKA?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1401818/1401818_page_0003.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0001.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0004.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1401818/1401818_page_0003.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0001.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0002.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0004.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0004.png",
+        "images/commerce_manufacturing/4498982/4498982_page_0008.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0005.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 287.03
+    },
+    {
+      "query_index": 73,
+      "query": "What output voltage setting corresponds to VSEL values 1, 1, 1, 0 for the TPS62745EVM-622 used by Texas Instruments?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0007.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 292.12
+    },
+    {
+      "query_index": 74,
+      "query": "What parsing method achieves the highest average precision in the IEEE study on pattern analysis?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2447534/2447534_page_0008.png",
+        "images/commerce_manufacturing/2447534/2447534_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2447534/2447534_page_0007.png",
+        "images/commerce_manufacturing/2447534/2447534_page_0008.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/3931681/3931681_page_0010.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/1428492/1428492_page_0004.png",
+        "images/commerce_manufacturing/4561753/4561753_page_0011.png",
+        "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+        "images/commerce_manufacturing/5663148/5663148_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 269.76
+    },
+    {
+      "query_index": 75,
+      "query": "What are the features and constraints related to vehicle capacities and compartments in the MCVRP-CFCS model?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/5663148/5663148_page_0020.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9166666666666666,
+      "latency_ms": 503.59
+    },
+    {
+      "query_index": 76,
+      "query": "What are the specifications of the 3 Metre Ratchet Tie-Down used by Tool Vault?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0004.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0003.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0005.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0003.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0002.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 261.37
+    },
+    {
+      "query_index": 77,
+      "query": "Which section discusses the Analog Inputs in the EVM document?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png",
+        "images/commerce_manufacturing/7045239/7045239_page_0003.png",
+        "images/commerce_manufacturing/7045239/7045239_page_0004.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 290.33
+    },
+    {
+      "query_index": 78,
+      "query": "What are the details of the payment schedule and menu options for the cafeteria concessionaire contract under ITB No. FB21-07-003BAC?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1740814/1740814_page_0005.png",
+        "images/commerce_manufacturing/1740814/1740814_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1740814/1740814_page_0006.png",
+        "images/commerce_manufacturing/1740814/1740814_page_0005.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0010.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0011.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0009.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/1657501/1657501_page_0026.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1314.58
+    },
+    {
+      "query_index": 79,
+      "query": "How would you summarize the overall impact of sales on the Group's segment profit margin over the six months ended 30 September 2011?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.7,
+      "latency_ms": 263.8
+    },
+    {
+      "query_index": 80,
+      "query": "What are the operational features of the 1/100-second stopwatch?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6981908/6981908_page_0002.png",
+        "images/commerce_manufacturing/6981908/6981908_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6981908/6981908_page_0002.png",
+        "images/commerce_manufacturing/6981908/6981908_page_0003.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0002.png",
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png",
+        "images/commerce_manufacturing/2463121/2463121_page_0003.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0004.png",
+        "images/commerce_manufacturing/6115986/6115986_page_0003.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 308.18
+    },
+    {
+      "query_index": 81,
+      "query": "What were the significant product updates HP made from October 2018 to March 2021?",
+      "domain": "commerce_manufacturing",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5562213/5562213_page_0008.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5562213/5562213_page_0009.png",
+        "images/commerce_manufacturing/5562213/5562213_page_0008.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0011.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/5147063/5147063_page_0003.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 270.33
+    },
+    {
+      "query_index": 82,
+      "query": "What is the estimated annual sales range for the store operated by Walmart Mexico y Centroamerica with the most outlets?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2024985/2024985_page_0003.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0004.png",
+        "images/commerce_manufacturing/6842360/6842360_page_0003.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0005.png",
+        "images/commerce_manufacturing/4350133/4350133_page_0026.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0016.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 530.9
+    },
+    {
+      "query_index": 83,
+      "query": "How did the exchange reserve change from January 1, 2016, to December 31, 2017?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0009.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 411.56
+    },
+    {
+      "query_index": 84,
+      "query": "What was the percent change in inventory turnover on sales for the Group from 2010 to 2011 for the period ending 30 September?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0014.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 292.48
+    },
+    {
+      "query_index": 85,
+      "query": "What are the maximum pressure and temperature specifications for the mobile A/C system sealant detection kit?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/4498982/4498982_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/2736831/2736831_page_0003.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png",
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.6666666666666666,
+      "recall_at_10": 0.6666666666666666,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 266.81
+    },
+    {
+      "query_index": 86,
+      "query": "What are the specifications of the terminal blocks mentioned in the mechanical components list for the PM24 circuit board?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/7045239/7045239_page_0003.png",
+        "images/commerce_manufacturing/7045239/7045239_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/7045239/7045239_page_0003.png",
+        "images/commerce_manufacturing/7045239/7045239_page_0004.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0007.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 281.49
+    },
+    {
+      "query_index": 87,
+      "query": "What features are offered by Schneider Electric's intelligent rack outlets for remote server management?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/6154919/6154919_page_0003.png",
+        "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0002.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 252.4
+    },
+    {
+      "query_index": 88,
+      "query": "What is the standby power consumption for the TV lift mechanism model TS750?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6797127/6797127_page_0003.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0004.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6797127/6797127_page_0004.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0003.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0002.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/1401818/1401818_page_0003.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 265.88
+    },
+    {
+      "query_index": 89,
+      "query": "What are the IP protection ratings associated with various detector types for harsh environments?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4498982/4498982_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4498982/4498982_page_0008.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0011.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0007.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0002.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 239.2
+    },
+    {
+      "query_index": 90,
+      "query": "What are the lumens specifications for the LED light that Tool Vault offers?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/7205095/7205095_page_0006.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png",
+        "images/commerce_manufacturing/2127372/2127372_page_0008.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0004.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0007.png",
+        "images/commerce_manufacturing/5086662/5086662_page_0008.png",
+        "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0003.png",
+        "images/commerce_manufacturing/6797127/6797127_page_0005.png",
+        "images/commerce_manufacturing/7045239/7045239_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 278.9
+    },
+    {
+      "query_index": 91,
+      "query": "What is the cost of a casual site for The Products at the market?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/2979370/2979370_page_0010.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0011.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/2979370/2979370_page_0009.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0011.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0010.png",
+        "images/commerce_manufacturing/2979370/2979370_page_0012.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0017.png",
+        "images/commerce_manufacturing/2024985/2024985_page_0004.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0015.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0013.png",
+        "images/commerce_manufacturing/2880557/2880557_page_0018.png",
+        "images/commerce_manufacturing/7205095/7205095_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 271.61
+    },
+    {
+      "query_index": 92,
+      "query": "Based on Hunt Design's quality management system, what sequence of actions is followed for processing a customer order?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0003.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+        "images/commerce_manufacturing/4496231/4496231_page_0006.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 290.69
+    },
+    {
+      "query_index": 93,
+      "query": "How are 'Human' and other components connected in the CRC ontology related to eco-friendly production?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/4561753/4561753_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/4561753/4561753_page_0011.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+        "images/commerce_manufacturing/1470687/1470687_page_0017.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+        "images/commerce_manufacturing/7510601/7510601_page_0014.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+        "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+        "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+        "images/commerce_manufacturing/2736831/2736831_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 292.65
+    },
+    {
+      "query_index": 94,
+      "query": "In the organizational setup of the logistics project, what functions does the Home Support Team perform?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0008.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0011.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0013.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0009.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+        "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0012.png",
+        "images/commerce_manufacturing/5128450/5128450_page_0010.png",
+        "images/commerce_manufacturing/3341761/3341761_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 314.08
+    },
+    {
+      "query_index": 95,
+      "query": "How large is the TPS62745EVM-622 evaluation board designed by Texas Instruments?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/3608674/3608674_page_0005.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0007.png",
+        "images/commerce_manufacturing/6574086/6574086_page_0001.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0008.png",
+        "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+        "images/commerce_manufacturing/2115069/2115069_page_0009.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0005.png",
+        "images/commerce_manufacturing/7595279/7595279_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 311.81
+    },
+    {
+      "query_index": 96,
+      "query": "How were currency exchange adjustments and actuarial improvements on pension obligations recorded at the start of 2016?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png",
+        "images/commerce_manufacturing/2762994/2762994_page_0017.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0009.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 325.75
+    },
+    {
+      "query_index": 97,
+      "query": "For the first half of the year ending September 30, 2013, what expense value was recorded for the wear and tear and value reduction of fixed assets?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+        "images/commerce_manufacturing/4426481/4426481_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8333333333333333,
+      "latency_ms": 302.8
+    },
+    {
+      "query_index": 98,
+      "query": "For the half-year ending on 30 September 2014, how much was the finance cost due to overdraft interest payable within five years?",
+      "domain": "commerce_manufacturing",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/6783432/6783432_page_0007.png",
+        "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0012.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0006.png",
+        "images/commerce_manufacturing/5278552/5278552_page_0021.png",
+        "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+        "images/commerce_manufacturing/5591674/5591674_page_0005.png",
+        "images/commerce_manufacturing/2640274/2640274_page_0013.png",
+        "images/commerce_manufacturing/4702442/4702442_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 957.67
+    },
+    {
+      "query_index": 99,
+      "query": "In what ways do Six Sigma and TQM vary in addressing organizational output consistency and customer satisfaction?",
+      "domain": "commerce_manufacturing",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/commerce_manufacturing/1352866/1352866_page_0002.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0007.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0003.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/commerce_manufacturing/1352866/1352866_page_0007.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0006.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0003.png",
+        "images/commerce_manufacturing/1352866/1352866_page_0002.png",
+        "images/commerce_manufacturing/0355944/0355944_page_0004.png",
+        "images/commerce_manufacturing/6591172/6591172_page_0002.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0003.png",
+        "images/commerce_manufacturing/3608674/3608674_page_0004.png",
+        "images/commerce_manufacturing/3274043/3274043_page_0006.png",
+        "images/commerce_manufacturing/3231473/3231473_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1607.21
+    }
+  ],
+  "meta": {
+    "timestamp": "20260327_002345",
+    "method": "proposed",
+    "domain": "commerce_manufacturing",
+    "top_k": 10
+  }
+}

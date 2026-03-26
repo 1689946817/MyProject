@@ -1,0 +1,4419 @@
+{
+  "summary": {
+    "method": "baseline_ocr",
+    "domain": "education",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.01,
+      "std": 0.1
+    },
+    "recall_at_5": {
+      "mean": 0.0375,
+      "std": 0.179
+    },
+    "recall_at_10": {
+      "mean": 0.1425,
+      "std": 0.3338
+    },
+    "mrr": {
+      "mean": 0.0387,
+      "std": 0.1243
+    },
+    "map_at_10": {
+      "mean": 0.0387,
+      "std": 0.1243
+    },
+    "latency_ms": {
+      "mean": 531.7593,
+      "std": 504.6898
+    },
+    "latency_ms_median": 318.86
+  },
+  "by_question_type": {
+    "causal_reasoning": {
+      "count": 10,
+      "recall_at_1": {
+        "mean": 0.1,
+        "std": 0.3162
+      },
+      "recall_at_5": {
+        "mean": 0.1,
+        "std": 0.3162
+      },
+      "recall_at_10": {
+        "mean": 0.1,
+        "std": 0.3162
+      },
+      "mrr": {
+        "mean": 0.1,
+        "std": 0.3162
+      },
+      "map_at_10": {
+        "mean": 0.1,
+        "std": 0.3162
+      }
+    },
+    "comparison": {
+      "count": 23,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.0217,
+        "std": 0.1043
+      },
+      "recall_at_10": {
+        "mean": 0.2174,
+        "std": 0.3939
+      },
+      "mrr": {
+        "mean": 0.0447,
+        "std": 0.0864
+      },
+      "map_at_10": {
+        "mean": 0.0447,
+        "std": 0.0864
+      }
+    },
+    "factual_retrieval": {
+      "count": 58,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.0388,
+        "std": 0.1862
+      },
+      "recall_at_10": {
+        "mean": 0.1164,
+        "std": 0.3114
+      },
+      "mrr": {
+        "mean": 0.0275,
+        "std": 0.0832
+      },
+      "map_at_10": {
+        "mean": 0.0275,
+        "std": 0.0832
+      }
+    },
+    "summarization": {
+      "count": 9,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 0.1667,
+        "std": 0.3536
+      },
+      "mrr": {
+        "mean": 0.027,
+        "std": 0.0546
+      },
+      "map_at_10": {
+        "mean": 0.027,
+        "std": 0.0546
+      }
+    }
+  },
+  "by_answer_type": {
+    "image_only": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.04,
+        "std": 0.1979
+      },
+      "recall_at_10": {
+        "mean": 0.13,
+        "std": 0.3321
+      },
+      "mrr": {
+        "mean": 0.0284,
+        "std": 0.0864
+      },
+      "map_at_10": {
+        "mean": 0.0284,
+        "std": 0.0864
+      }
+    },
+    "table_required": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.02,
+        "std": 0.1414
+      },
+      "recall_at_5": {
+        "mean": 0.035,
+        "std": 0.1598
+      },
+      "recall_at_10": {
+        "mean": 0.155,
+        "std": 0.3384
+      },
+      "mrr": {
+        "mean": 0.049,
+        "std": 0.1534
+      },
+      "map_at_10": {
+        "mean": 0.049,
+        "std": 0.1534
+      }
+    }
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "What distinguishes the Transformative Approach from the Additive Approach in multicultural education regarding curriculum modifications and the perspectives taught?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/6636406/6636406_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 366.83
+    },
+    {
+      "query_index": 1,
+      "query": "Identify the Unicode designation for the uppercase Greek letter eta.",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/3649245/3649245_page_0011.png",
+        "images/education/3649245/3649245_page_0009.png",
+        "images/education/3649245/3649245_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 341.94
+    },
+    {
+      "query_index": 2,
+      "query": "In Brad Bell’s design studios, what fundamental elements make up the repetitive systems in digital fabrication methods?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/2075709/2075709_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 382.11
+    },
+    {
+      "query_index": 3,
+      "query": "In the study, what relationship is observed between the error compared to the practice target and the average pitch error during transfer, as shown by an R Squared of 0.476?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6453473/6453473_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 528.35
+    },
+    {
+      "query_index": 4,
+      "query": "What causes some to interpret religious messages in a way that emphasizes hidden meanings and aligns with hyper faith concepts?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/0592458/0592458_page_0006.png",
+        "images/education/0592458/0592458_page_0005.png",
+        "images/education/0592458/0592458_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 362.17
+    },
+    {
+      "query_index": 5,
+      "query": "How does the Social Action Approach, according to Cumming-McCann, enhance multicultural education by involving students in addressing societal issues?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/6636406/6636406_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 399.18
+    },
+    {
+      "query_index": 6,
+      "query": "How does the duration above the reward level change over neurofeedback periods based on the analysis in the Asia Pacific Journal of Neurotherapy?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/3641703/3641703_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 260.22
+    },
+    {
+      "query_index": 7,
+      "query": "Can you provide the ISSN for the Environmental Protection journal from SCIRP?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7060952/7060952_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 297.95
+    },
+    {
+      "query_index": 8,
+      "query": "How many confirmed cases of the virus were reported in Japan by February 6, 2020?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/5138607/5138607_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 638.71
+    },
+    {
+      "query_index": 9,
+      "query": "In the context of the English system, which unit is used to measure kinematic viscosity as outlined in the dimensions chart?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/5427083/5427083_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 628.35
+    },
+    {
+      "query_index": 10,
+      "query": "In the Sustainable Design & Systems Medicine Lab's resources, how is the Sustainable Process Index quantified?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7643540/7643540_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 263.95
+    },
+    {
+      "query_index": 11,
+      "query": "How do the probability patterns for events X1, X2, X3, and X4 appear when employing multinomial sampling, considering combinations such as p12 and p1234?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1761393/1761393_page_0011.png",
+        "images/education/1761393/1761393_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 417.15
+    },
+    {
+      "query_index": 12,
+      "query": "What is the number of visual representations provided by the US Treasury Dept. in comparison to the World Health Organization based on the taxonomy?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7760727/7760727_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 381.04
+    },
+    {
+      "query_index": 13,
+      "query": "Which volume and issue of the 'Journal of Environmental Protection' from SCIRP corresponds to the release in February 2014?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7060952/7060952_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 281.41
+    },
+    {
+      "query_index": 14,
+      "query": "Can you provide the average score and consistency measure for the Raven Advanced test from the statistical data?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/2456459/2456459_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 262.88
+    },
+    {
+      "query_index": 15,
+      "query": "Identify the Unicode code U+0025 and its associated name for the symbol denoting a percentage.",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/3649245/3649245_page_0011.png",
+        "images/education/3649245/3649245_page_0009.png",
+        "images/education/3649245/3649245_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 280.68
+    },
+    {
+      "query_index": 16,
+      "query": "How are force and pressure measured in terms of dimensions and preferred units in S.I. and E.S. standards in the provided physics data?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/5427083/5427083_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 261.12
+    },
+    {
+      "query_index": 17,
+      "query": "Can you provide the teaching time for Instructor D in the adaptable classroom setup?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/1871769/1871769_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 532.81
+    },
+    {
+      "query_index": 18,
+      "query": "In the S.I. and E.S. systems, what are the dimensions and units used to express mass?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/5427083/5427083_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 296.12
+    },
+    {
+      "query_index": 19,
+      "query": "In the context of Outcome Based Education, what categories of learning preferences are recognized?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6551602/6551602_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 724.29
+    },
+    {
+      "query_index": 20,
+      "query": "How does the money collected by St. Barbara since July 1st compare to the planned figures?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/5399817/5399817_page_0006.png",
+        "images/education/5399817/5399817_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 343.93
+    },
+    {
+      "query_index": 21,
+      "query": "Which year marks the initial publication of the earliest novel in the list of works associated with the Carnation Revolution?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1236876/1236876_page_0012.png",
+        "images/education/1236876/1236876_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 577.15
+    },
+    {
+      "query_index": 22,
+      "query": "How do the cavalry figures differ between the French and Prussian armies in terms of representation during the Waterloo engagement?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/0931214/0931214_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 257.98
+    },
+    {
+      "query_index": 23,
+      "query": "How many educators completely concur that students in diverse classrooms are more receptive to new social ideas, based on research from 2021 in a sociology journal?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6851703/6851703_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 857.38
+    },
+    {
+      "query_index": 24,
+      "query": "Who supported the 'Speed Is No Game' effort financially?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6071633/6071633_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 281.7
+    },
+    {
+      "query_index": 25,
+      "query": "Which natural and man-made landmarks are indicated close to Encino Park on the 1985 topographic chart of a Texan city?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6734409/6734409_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 8,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.125,
+      "ap_at_10": 0.125,
+      "latency_ms": 1861.45
+    },
+    {
+      "query_index": 26,
+      "query": "What does the research by Nabirye, de Schryver, and Verhoeven reveal about the differences between Lusoga's sound transcriptions and written forms?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1729681/1729681_page_0004.png",
+        "images/education/1729681/1729681_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 275.05
+    },
+    {
+      "query_index": 27,
+      "query": "How does the Social Action Approach extend beyond the Transformative Approach in Allison Cumming-McCann's framework for multicultural teaching methods?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/6636406/6636406_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 273.62
+    },
+    {
+      "query_index": 28,
+      "query": "In the early 1900s, what were the measurements of the Winged Box kite utilized by Mr. Barton during British contests?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/3106261/3106261_page_0019.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 302.85
+    },
+    {
+      "query_index": 29,
+      "query": "Identify the character for U+002A in Unicode and describe its alternative forms as shown.",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/3649245/3649245_page_0011.png",
+        "images/education/3649245/3649245_page_0009.png",
+        "images/education/3649245/3649245_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 304.48
+    },
+    {
+      "query_index": 30,
+      "query": "How are the z-scores distributed for 'Can obtain beverages at school' across the different models of obesity risk classes?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 10,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.1,
+      "ap_at_10": 0.1,
+      "latency_ms": 443.83
+    },
+    {
+      "query_index": 31,
+      "query": "What causes the variation in PSC response between tactile and auditory stimuli in blind individuals in the first experiment?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/2535081/2535081_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 293.44
+    },
+    {
+      "query_index": 32,
+      "query": "What are the differences in years of experience between those who can and cannot perform the L-sit Cross position on the Spanish national gymnastics team?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/2442094/2442094_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1302.99
+    },
+    {
+      "query_index": 33,
+      "query": "What are the typical teacher responses when students struggle to answer in English language assessments?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/0876476/0876476_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 300.8
+    },
+    {
+      "query_index": 34,
+      "query": "How can learners connect new knowledge to what they already know in an adult education setting?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7243842/7243842_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 880.08
+    },
+    {
+      "query_index": 35,
+      "query": "Who is the educator assigned to the 12:20 time slot in the traditional setting?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/1871769/1871769_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 291.25
+    },
+    {
+      "query_index": 36,
+      "query": "In what ways can a lack of comprehension of the historical cultural context, like in Matt 19:24 or Rev 3:8, lead to incorrect interpretations of the Bible?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/0592458/0592458_page_0006.png",
+        "images/education/0592458/0592458_page_0005.png",
+        "images/education/0592458/0592458_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 2477.89
+    },
+    {
+      "query_index": 37,
+      "query": "Between maintaining a stable position and executing techniques while balanced, which action is more frequently used by Thai fighters than UK fighters based on the model?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6382901/6382901_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 382.29
+    },
+    {
+      "query_index": 38,
+      "query": "From which group did the highest quantity of visual content originate, focusing on academic sources?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7760727/7760727_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 238.19
+    },
+    {
+      "query_index": 39,
+      "query": "Who are the writers whose publications from the 1980s appear in the collection of stories about the Carnation Revolution noted in the Journal of Social Science Education, Spring 2015?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1236876/1236876_page_0012.png",
+        "images/education/1236876/1236876_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 318.9
+    },
+    {
+      "query_index": 40,
+      "query": "Based on the IOJET 2021 study, which methods for assessing homework are employed by over five educators?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/4176973/4176973_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 599.85
+    },
+    {
+      "query_index": 41,
+      "query": "What is the duration in days between when COVID-19 was identified and February 14, 2020, based on the data provided?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/5138607/5138607_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 373.43
+    },
+    {
+      "query_index": 42,
+      "query": "Among Year 10 students uncertain about their school work being marked constructively, what is the percentage who have tried cannabis?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/5466518/5466518_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 4,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.25,
+      "ap_at_10": 0.25,
+      "latency_ms": 325.28
+    },
+    {
+      "query_index": 43,
+      "query": "In what way do different organizations like government bodies and news media distribute their visualization sources?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7760727/7760727_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 282.05
+    },
+    {
+      "query_index": 44,
+      "query": "How do different statistical measures recommend the best model for obesity risk classes, considering criteria like the Bayesian Information Criterion?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7860274/7860274_page_0008.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 10,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.1,
+      "ap_at_10": 0.1,
+      "latency_ms": 296.68
+    },
+    {
+      "query_index": 45,
+      "query": "Which items did Léopold-Lévy employ while painting landscapes outside in the Provence region?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/4898783/4898783_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 336.35
+    },
+    {
+      "query_index": 46,
+      "query": "What is the reason for bar charts having the highest prevalence, at 25.4%, in governmental and international organization datasets compared to other sources?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7760727/7760727_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 909.89
+    },
+    {
+      "query_index": 47,
+      "query": "How do the reliability figures for measures like OSpan, SymSpan, and others compare?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/4426997/4426997_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 523.98
+    },
+    {
+      "query_index": 48,
+      "query": "Which wintertime outdoor tasks are highlighted in the PCA Elementary curriculum aimed at holistic growth?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/5538397/5538397_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 257.4
+    },
+    {
+      "query_index": 49,
+      "query": "What distinguishes the Contributions method from the Transformative method in terms of incorporating perspectives in multicultural education?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/6636406/6636406_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 298.51
+    },
+    {
+      "query_index": 50,
+      "query": "Which individual is credited with writing 'A Farmer’s Primer on Growing Rice,' linked to research by Dr. Vergara?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/1152966/1152966_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 335.19
+    },
+    {
+      "query_index": 51,
+      "query": "How does the normalized weight difference change across epochs for layers in the PFC and Hidden model?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7446776/7446776_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 247.89
+    },
+    {
+      "query_index": 52,
+      "query": "Which design elements linked to buildings are included in Escher's reimagined Prentententoonstelling studies?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7775045/7775045_page_0005.png",
+        "images/education/7775045/7775045_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 9,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.1111111111111111,
+      "ap_at_10": 0.1111111111111111,
+      "latency_ms": 288.98
+    },
+    {
+      "query_index": 53,
+      "query": "What was the amount received via postal envelopes in the collection for the May 8th and 9th weekend at the church?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/5399817/5399817_page_0006.png",
+        "images/education/5399817/5399817_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1574.09
+    },
+    {
+      "query_index": 54,
+      "query": "What role does engaging with new information play in enhancing recall within training frameworks for adults?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7243842/7243842_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 384.17
+    },
+    {
+      "query_index": 55,
+      "query": "In the second experiment, what confirmation rating is observed between the translator and publishing entities?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/2765782/2765782_page_0010.png",
+        "images/education/2765782/2765782_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 280.54
+    },
+    {
+      "query_index": 56,
+      "query": "How does the distribution of factor scores vary by age in the density analysis utilizing MAMBAC, MAXCOV, and L-Mode methods?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/0772076/0772076_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 263.63
+    },
+    {
+      "query_index": 57,
+      "query": "For Experiment 2, what values are given for probability and confirmation when 'beer' is paired with 'publishing'?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/2765782/2765782_page_0010.png",
+        "images/education/2765782/2765782_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 402.93
+    },
+    {
+      "query_index": 58,
+      "query": "According to the 2017 SNAAP report, what portion of recent graduates firmly believe they would have gained from financial management skills?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/3789776/3789776_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 731.99
+    },
+    {
+      "query_index": 59,
+      "query": "Based on the SNAAP Special Report 2017, how many alumni reported a strong agreement with their exposure to a wide-ranging network of creatives and leaders during their educational development?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/3789776/3789776_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 297.33
+    },
+    {
+      "query_index": 60,
+      "query": "What causes the variation in TERE values between traditional soy products and non-dairy soy alternatives, particularly concerning estradiol levels?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7909471/7909471_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 599.03
+    },
+    {
+      "query_index": 61,
+      "query": "In what ways are the approaches to inclusivity in classroom settings distinguished based on the stages outlined by the diversity inclusivity framework by Hanover Research from February 2018?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6636406/6636406_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 288.97
+    },
+    {
+      "query_index": 62,
+      "query": "Considering BIC and BLRT metrics along with simplicity, which class model is best suited for evaluating obesity risk related to home and school?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7860274/7860274_page_0008.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 10,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.1,
+      "ap_at_10": 0.1,
+      "latency_ms": 268.23
+    },
+    {
+      "query_index": 63,
+      "query": "Can you provide the skewness figures for the measures OspanS, SymspanS, and RspanS in tasks assessing working memory storage?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/2456459/2456459_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 560.88
+    },
+    {
+      "query_index": 64,
+      "query": "How does gender affect behavioral learning based on the statistical analysis results?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1871769/1871769_page_0007.png",
+        "images/education/1871769/1871769_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 2161.07
+    },
+    {
+      "query_index": 65,
+      "query": "How is 'malaria' expressed in Lusoga, and what is its translation along with the phonetic representation?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1729681/1729681_page_0004.png",
+        "images/education/1729681/1729681_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 292.36
+    },
+    {
+      "query_index": 66,
+      "query": "To what extent did attendees perceive the diversity training as receptive to others' opinions, rated on a 1 to 5 scale?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6978229/6978229_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 300.02
+    },
+    {
+      "query_index": 67,
+      "query": "In Study 3B's AMP, what chance is there for a positive response when experimental primes are used in the error classification?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6488717/6488717_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 6,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.16666666666666666,
+      "ap_at_10": 0.16666666666666666,
+      "latency_ms": 250.17
+    },
+    {
+      "query_index": 68,
+      "query": "In Lusoga phonetic transcription, how is the act of producing a hissing noise represented?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1729681/1729681_page_0004.png",
+        "images/education/1729681/1729681_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 265.11
+    },
+    {
+      "query_index": 69,
+      "query": "In the multinomial sampling model, how are the relationships between X1, X2, X3, and X4 defined using probabilities like p12, p13, and p123?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1761393/1761393_page_0011.png",
+        "images/education/1761393/1761393_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1850.02
+    },
+    {
+      "query_index": 70,
+      "query": "During educational sessions dedicated to arts and music, which particular tasks are students engaged in?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/5334866/5334866_page_0007.png",
+        "images/education/5334866/5334866_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 834.12
+    },
+    {
+      "query_index": 71,
+      "query": "In the investigation conducted by Pfizer and Rowan, what are the input rates for IPA and water in the waste stream of the celecoxib production?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7643540/7643540_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 277.07
+    },
+    {
+      "query_index": 72,
+      "query": "According to Hanover Research's 2018 Diversity Inclusivity Continuum, how should course content evolve to better incorporate multicultural elements?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6636406/6636406_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 297.11
+    },
+    {
+      "query_index": 73,
+      "query": "How do persuasion outcomes vary between individuals with high and low levels of knowledge in immediate and delayed assessments, based on the elaboration-likelihood model study?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/3275963/3275963_page_0024.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 271.99
+    },
+    {
+      "query_index": 74,
+      "query": "In the Leabra algorithm-based study, how does the ability to generalize vary between different PFC network setups when they are trained on the complete set of tasks?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7446776/7446776_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 274.14
+    },
+    {
+      "query_index": 75,
+      "query": "In the 2021 study published in the Borno Medical Journal, what fraction of participants expressed indecision regarding the preventative extraction of wisdom teeth?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/5847064/5847064_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 258.99
+    },
+    {
+      "query_index": 76,
+      "query": "On another world, what option best signifies the clothing donned by the monarch the Little Prince met?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/3176286/3176286_page_0011.png",
+        "images/education/3176286/3176286_page_0010.png",
+        "images/education/3176286/3176286_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 283.51
+    },
+    {
+      "query_index": 77,
+      "query": "In group NE, what is the variation in /i/ response proportions across spectral steps from /ɪ/ to /i/ during time T4?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/4413512/4413512_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 2041.27
+    },
+    {
+      "query_index": 78,
+      "query": "What is the comparative binding affinity of genistein to estrogen receptors in newer soy food versions versus traditional ones, based on the provided data?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/7909471/7909471_page_0014.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 276.55
+    },
+    {
+      "query_index": 79,
+      "query": "How do the success rates change over quartiles during a paired memory task controlled by specific software?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/1980675/1980675_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 855.25
+    },
+    {
+      "query_index": 80,
+      "query": "Which holiday precedes the SCC Teams gathering on the evening of April 13th?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/3096415/3096415_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 287.29
+    },
+    {
+      "query_index": 81,
+      "query": "By five years old, what communication skills should children have, such as extended conversational turns, and what steps can be taken if there are concerns about these abilities?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/6107519/6107519_page_0017.png",
+        "images/education/6107519/6107519_page_0023.png",
+        "images/education/6107519/6107519_page_0018.png",
+        "images/education/6107519/6107519_page_0024.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 5,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.25,
+      "recall_at_10": 0.25,
+      "reciprocal_rank": 0.2,
+      "ap_at_10": 0.2,
+      "latency_ms": 275.22
+    },
+    {
+      "query_index": 82,
+      "query": "How does arranging new concepts in line with what is already known help decrease confusion while studying?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7243842/7243842_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 282.9
+    },
+    {
+      "query_index": 83,
+      "query": "What are the artillery numbers for the French, Anglo-Allied, and Prussian forces during Waterloo as per the 2025 figures?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/0931214/0931214_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 374.37
+    },
+    {
+      "query_index": 84,
+      "query": "Which methods are outlined in Lukas Einkemmer's thesis from the University of Innsbruck's math department for addressing non-linear differential equations?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/3732319/3732319_page_0001.png",
+        "images/education/3732319/3732319_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1195.63
+    },
+    {
+      "query_index": 85,
+      "query": "In what way does the breakdown of isospin for pN → NNπ processes correspond to the isospin conditions of nucleon pairs such as those represented by σ10(d) or σ10(np) + σ11?",
+      "domain": "education",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/0694776/0694776_page_0002.png",
+        "images/education/0694776/0694776_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 265.89
+    },
+    {
+      "query_index": 86,
+      "query": "Can you provide the linear regression coefficients for specific instructors involved in the behavioral learning study?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/1871769/1871769_page_0007.png",
+        "images/education/1871769/1871769_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 264.97
+    },
+    {
+      "query_index": 87,
+      "query": "Which elements constitute the unified data exchange in the realm of big data, featuring both internal systems and Hadoop clusters?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/0418260/0418260_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 318.81
+    },
+    {
+      "query_index": 88,
+      "query": "How do the free parameters (k) for Noncompliance compare between GMM and LCGA at six classes?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/0772076/0772076_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 374.48
+    },
+    {
+      "query_index": 89,
+      "query": "At an angle of 142.5, how do the Value and Chroma differ between conditions 1-3 and 4-6 in the Munsell color system?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/4316818/4316818_page_0019.png",
+        "images/education/4316818/4316818_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 2741.41
+    },
+    {
+      "query_index": 90,
+      "query": "How does the weighting pattern of /i/-related cues change from the first to the fifth duration step for group KA?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/4413512/4413512_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 354.7
+    },
+    {
+      "query_index": 91,
+      "query": "How do the Contributions, Additive, Transformative, and Social Action methods impact content integration challenges in multicultural education?",
+      "domain": "education",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/6636406/6636406_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 388.15
+    },
+    {
+      "query_index": 92,
+      "query": "How does average spine density change through developmental stages for ace-1(p1000);ace-2(g72) versus unc-17(e113) in studies involving C. elegans neural circuits?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/0615714/0615714_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 261.91
+    },
+    {
+      "query_index": 93,
+      "query": "Between dense flint and crown glasses, which exhibits a larger disparity in refractive indices at the wavelengths 656.3 nm and 404.7 nm?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/0982243/0982243_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 289.31
+    },
+    {
+      "query_index": 94,
+      "query": "How do the ace-1(p1000);ace-2(g72) and unc-17(e113) genetic alterations affect dendritic spine density during different growth stages in C. elegans?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/0615714/0615714_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 378.21
+    },
+    {
+      "query_index": 95,
+      "query": "At what levels, including micro, meso, and macro, does Health Policy and Systems Research (HPSR) operate?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/4813144/4813144_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 274.26
+    },
+    {
+      "query_index": 96,
+      "query": "How many visual representations originate from scientific journals, particularly Nature, and what count of these stand alone?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/education/7760727/7760727_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 674.4
+    },
+    {
+      "query_index": 97,
+      "query": "In Study 3B, what is the comparison of standardized mean evaluations for groups based on accuracy in explicit assessments?",
+      "domain": "education",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/6488717/6488717_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 6,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.16666666666666666,
+      "ap_at_10": 0.16666666666666666,
+      "latency_ms": 1751.5
+    },
+    {
+      "query_index": 98,
+      "query": "Which reading items are part of the 24-hour reading activities organized by Lizzie Williams, as seen in the OU RfP site?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/1340664/1340664_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 440.21
+    },
+    {
+      "query_index": 99,
+      "query": "What is the arrangement of data flow in merged systems for analytics that includes processes like extraction and the use of data marts?",
+      "domain": "education",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/education/0418260/0418260_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/education/3096415/3096415_page_0004.png",
+        "images/education/3106261/3106261_page_0019.png",
+        "images/education/4426997/4426997_page_0006.png",
+        "images/education/5466518/5466518_page_0006.png",
+        "images/education/6107519/6107519_page_0024.png",
+        "images/education/6488717/6488717_page_0012.png",
+        "images/education/6636406/6636406_page_0006.png",
+        "images/education/6734409/6734409_page_0013.png",
+        "images/education/7775045/7775045_page_0006.png",
+        "images/education/7860274/7860274_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 293.78
+    }
+  ],
+  "meta": {
+    "timestamp": "20260325_121405",
+    "method": "baseline_ocr",
+    "domain": "education",
+    "top_k": 10
+  }
+}
