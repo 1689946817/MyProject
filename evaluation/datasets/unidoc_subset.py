@@ -96,3 +96,37 @@ def get_domain_image_records(domain: str, subset_root: str | Path) -> List[dict]
             print(f"[SKIP] Image not found on disk: {abs_path}")
 
     return records
+
+
+def get_all_image_records(subset_root: str | Path) -> List[dict]:
+    """
+    返回所有领域候选集合并后的图像记录列表（用于跨领域检索实验）。
+
+    候选集 = 所有 8 个领域的 gt_image_paths 并集（去重，只含磁盘存在的文件）。
+    每条记录：{"id": 相对路径, "file_path": 绝对路径}
+    """
+    import pandas as pd
+
+    subset_root = Path(subset_root)
+    all_rel_paths: Set[str] = set()
+    for domain in DOMAINS:
+        parquet_path = subset_root / "data" / f"{domain}-00000-of-00001.parquet"
+        if not parquet_path.exists():
+            print(f"[SKIP] Parquet not found: {parquet_path}")
+            continue
+        df = pd.read_parquet(parquet_path)
+        for _, row in df.iterrows():
+            gt_paths = row.get("gt_image_paths", [])
+            if gt_paths is not None:
+                for p in gt_paths:
+                    all_rel_paths.add(str(p))
+
+    records = []
+    for rel_path in sorted(all_rel_paths):
+        abs_path = subset_root / rel_path
+        if abs_path.exists():
+            records.append({"id": rel_path, "file_path": str(abs_path)})
+        else:
+            print(f"[SKIP] Image not found on disk: {abs_path}")
+
+    return records

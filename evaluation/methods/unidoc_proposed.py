@@ -170,6 +170,14 @@ def _append_cache_record(cache_file: Path, record: Dict[str, Any]) -> None:
         os.fsync(f.fileno())
 
 
+def _clone_record_for_dataset(cache_record: Dict[str, Any], *, dataset_name: str, file_path: str) -> Dict[str, Any]:
+    cloned = dict(cache_record)
+    cloned["dataset_name"] = dataset_name
+    cloned["file_path"] = file_path
+    cloned["updated_at"] = _utc_now_iso()
+    return cloned
+
+
 def _build_records_by_image_id(records: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
     grouped: Dict[str, List[Dict[str, Any]]] = {}
     for record in records:
@@ -180,9 +188,14 @@ def _build_records_by_image_id(records: List[Dict[str, Any]]) -> Dict[str, List[
     return grouped
 
 
-def _identity_matches(cache_record: Dict[str, Any], current_identity: Dict[str, str]) -> bool:
+def _identity_matches(
+    cache_record: Dict[str, Any],
+    current_identity: Dict[str, str],
+    *,
+    allow_dataset_name_mismatch: bool = False,
+    allow_domain_mismatch: bool = False,
+) -> bool:
     required_keys = [
-        "dataset_name",
         "domain",
         "image_id",
         "file_hash",
@@ -190,16 +203,28 @@ def _identity_matches(cache_record: Dict[str, Any], current_identity: Dict[str, 
         "prompt_hash",
         "generation_config_hash",
     ]
+    if not allow_dataset_name_mismatch:
+        required_keys = ["dataset_name", *required_keys]
+    if allow_domain_mismatch:
+        required_keys = [k for k in required_keys if k != "domain"]
     return all(str(cache_record.get(key, "")) == current_identity[key] for key in required_keys)
 
 
 def _find_latest_matching_record(
     records_by_image_id: Dict[str, List[Dict[str, Any]]],
     current_identity: Dict[str, str],
+    *,
+    allow_dataset_name_mismatch: bool = False,
+    allow_domain_mismatch: bool = False,
 ) -> Dict[str, Any] | None:
     candidates = records_by_image_id.get(current_identity["image_id"], [])
     for record in reversed(candidates):
-        if _identity_matches(record, current_identity):
+        if _identity_matches(
+            record,
+            current_identity,
+            allow_dataset_name_mismatch=allow_dataset_name_mismatch,
+            allow_domain_mismatch=allow_domain_mismatch,
+        ):
             return record
     return None
 
@@ -294,6 +319,7 @@ def build_index(
     resume: bool = True,
     retry_failed: bool = False,
     force_refresh: bool = False,
+    reuse_cache_dataset_names: List[str] | None = None,
 ) -> None:
     """构建 MLLM 描述向量索引，支持本地缓存与断点续传。"""
     chain = get_image_description_chain()
@@ -309,6 +335,20 @@ def build_index(
 
     cache_root = Path(cache_dir) if cache_dir else PROJECT_ROOT / "data" / "cache" / "unidoc_proposed"
     cache_file = _resolve_cache_file(cache_root, dataset_name, domain)
+    reuse_cache_dataset_names = reuse_cache_dataset_names or []
+    reuse_cache_dataset_names = [name for name in reuse_cache_dataset_names if name and name != dataset_name]
+    reuse_cache_files = []
+    for reuse_dataset_name in reuse_cache_dataset_names:
+        reuse_dataset_root = cache_root / reuse_dataset_name
+        if reuse_dataset_root.exists():
+            # 枚举该 dataset 下所有领域子目录，避免 domain key 不匹配
+            domain_dirs = [d for d in reuse_dataset_root.iterdir() if d.is_dir()]
+            for domain_dir in domain_dirs:
+                candidate = domain_dir / "descriptions.jsonl"
+                if candidate.exists():
+                    reuse_cache_files.append(candidate)
+        else:
+            reuse_cache_files.append(_resolve_cache_file(cache_root, reuse_dataset_name, domain))
 
     chat_model = chain.chat_model
     current_signature = {
@@ -324,6 +364,10 @@ def build_index(
     }
 
     print(f"Using cache file: {cache_file}")
+    if reuse_cache_files:
+        print("Reusing historical cache files:")
+        for reuse_cache_file in reuse_cache_files:
+            print(f"  - {reuse_cache_file}")
     print(
         "Run signature: "
         f"dataset={current_signature['dataset_name']}  "
@@ -348,12 +392,28 @@ def build_index(
             print(f"  - {message}")
         print("[WARN] Mismatched cached records will not be reused for this run.")
 
+    historical_records_by_image_id_list: List[Dict[str, List[Dict[str, Any]]]] = []
+    for reuse_cache_file in reuse_cache_files:
+        historical_cache_records = _load_cache_records(reuse_cache_file)
+        historical_cache_warnings = _summarize_cache_warnings(
+            historical_cache_records,
+            {**current_signature, "dataset_name": Path(reuse_cache_file).parent.parent.name},
+            current_file_hashes,
+        )
+        if historical_cache_warnings:
+            print(f"[WARN] Found {len(historical_cache_warnings)} cache identity warning(s) in {reuse_cache_file}:")
+            for message in historical_cache_warnings:
+                print(f"  - {message}")
+            print("[WARN] Only records matching current image/model/prompt signature will be reused.")
+        historical_records_by_image_id_list.append(_build_records_by_image_id(historical_cache_records))
+
     ids: List[str] = []
     descriptions: List[str] = []
     metadatas: List[Dict[str, Any]] = []
     failed_files: List[tuple[str, str]] = []
 
     reused_success = 0
+    reused_historical_success = 0
     skipped_cached_failures = 0
     regenerated_success = 0
     regenerated_failures = 0
@@ -368,6 +428,17 @@ def build_index(
             "file_hash": current_file_hashes[image_id],
         }
         cached_record = _find_latest_matching_record(records_by_image_id, current_identity)
+        historical_cached_record = None
+        if not force_refresh and resume and cached_record is None:
+            for historical_records_by_image_id in historical_records_by_image_id_list:
+                historical_cached_record = _find_latest_matching_record(
+                    historical_records_by_image_id,
+                    current_identity,
+                    allow_dataset_name_mismatch=True,
+                    allow_domain_mismatch=True,
+                )
+                if historical_cached_record is not None:
+                    break
 
         if not force_refresh and resume and cached_record and cached_record.get("status") == "success":
             description = str(cached_record.get("description", ""))
@@ -380,6 +451,24 @@ def build_index(
                 "dataset_name": dataset_name,
             })
             reused_success += 1
+        elif not force_refresh and resume and historical_cached_record and historical_cached_record.get("status") == "success":
+            description = str(historical_cached_record.get("description", ""))
+            promoted_record = _clone_record_for_dataset(
+                historical_cached_record,
+                dataset_name=dataset_name,
+                file_path=file_path,
+            )
+            _append_cache_record(cache_file, promoted_record)
+            records_by_image_id.setdefault(image_id, []).append(promoted_record)
+            ids.append(image_id)
+            descriptions.append(description)
+            metadatas.append({
+                "file_path": file_path,
+                "domain": domain,
+                "source": "unidoc_proposed",
+                "dataset_name": dataset_name,
+            })
+            reused_historical_success += 1
         elif (
             not force_refresh
             and resume
@@ -422,8 +511,8 @@ def build_index(
         if i % 10 == 0 or i == len(valid_records):
             print(
                 f"  {i}/{len(valid_records)} done | "
-                f"reused={reused_success} regenerated={regenerated_success} "
-                f"failed={len(failed_files)}"
+                f"reused_current={reused_success} reused_history={reused_historical_success} "
+                f"regenerated={regenerated_success} failed={len(failed_files)}"
             )
             if i < len(valid_records):
                 time.sleep(2)
@@ -431,6 +520,7 @@ def build_index(
     print(
         "Description processing summary: "
         f"reused_success={reused_success}, "
+        f"reused_historical_success={reused_historical_success}, "
         f"regenerated_success={regenerated_success}, "
         f"regenerated_failures={regenerated_failures}, "
         f"skipped_cached_failures={skipped_cached_failures}"

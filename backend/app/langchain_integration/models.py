@@ -9,6 +9,7 @@ LangChain 模型集成模块
 """
 import base64
 import mimetypes
+from io import BytesIO
 from typing import Any, Dict, List, Optional, Union
 
 from langchain_core.callbacks import CallbackManagerForLLMRun
@@ -40,6 +41,66 @@ def build_image_data_url(image_b64: str, mime_type: Optional[str] = None) -> str
     """构造带 MIME 类型的 base64 data URL。"""
     actual_mime_type = mime_type or "image/jpeg"
     return f"data:{actual_mime_type};base64,{image_b64}"
+
+
+def _prepare_image_bytes_for_embedding(
+    image_path: str,
+    max_bytes: int = 5_000_000,
+    target_format: str = "JPEG",
+) -> tuple[bytes, str]:
+    """为多模态 embedding 准备图片字节，必要时压缩超限图片。"""
+    with open(image_path, "rb") as f:
+        image_data = f.read()
+
+    if len(image_data) <= max_bytes:
+        return image_data, guess_image_mime_type(image_path)
+
+    from PIL import Image
+
+    print(
+        f"[WARN] Image exceeds embedding size limit, compressing before upload: "
+        f"{image_path} ({len(image_data) / 1024:.1f}KB)"
+    )
+
+    image = Image.open(BytesIO(image_data))
+    if image.mode not in ("RGB", "L"):
+        image = image.convert("RGB")
+    elif image.mode == "L":
+        image = image.convert("RGB")
+
+    quality_candidates = [90, 80, 70, 60, 50, 40, 30]
+    scale_candidates = [1.0, 0.85, 0.7, 0.55, 0.4]
+
+    for scale in scale_candidates:
+        if scale < 1.0:
+            resized = image.resize(
+                (
+                    max(1, int(image.width * scale)),
+                    max(1, int(image.height * scale)),
+                ),
+                Image.Resampling.LANCZOS,
+            )
+        else:
+            resized = image
+
+        for quality in quality_candidates:
+            buffer = BytesIO()
+            save_kwargs: Dict[str, Any] = {"format": target_format, "optimize": True}
+            if target_format.upper() in {"JPEG", "WEBP"}:
+                save_kwargs["quality"] = quality
+            resized.save(buffer, **save_kwargs)
+            compressed = buffer.getvalue()
+            if len(compressed) <= max_bytes:
+                print(
+                    f"[INFO] Compressed image for embedding: {image_path} -> "
+                    f"{len(compressed) / 1024:.1f}KB (scale={scale:.2f}, quality={quality})"
+                )
+                return compressed, "image/jpeg"
+
+    raise ValueError(
+        "Image is too large for multimodal embedding even after compression: "
+        f"{image_path}"
+    )
 
 
 class MultimodalChatModel(BaseChatModel):
@@ -376,12 +437,10 @@ class DashScopeEmbeddings(Embeddings):
 
         embeddings = []
         for image_path in image_paths:
-            # 读取图像并转换为 base64
-            with open(image_path, "rb") as f:
-                image_data = f.read()
-                image_b64 = base64.b64encode(image_data).decode("utf-8")
+            image_data, mime_type = _prepare_image_bytes_for_embedding(image_path)
+            image_b64 = base64.b64encode(image_data).decode("utf-8")
 
-            input_data = [{"image": build_image_data_url(image_b64, guess_image_mime_type(image_path))}]
+            input_data = [{"image": build_image_data_url(image_b64, mime_type)}]
             response = MultiModalEmbedding.call(
                 model=self.model_name,
                 input=input_data

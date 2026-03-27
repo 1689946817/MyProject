@@ -32,7 +32,7 @@ _OCR_SCRIPT = """
 import sys, json
 from paddleocr import PaddleOCR
 ocr = PaddleOCR(use_angle_cls=True, lang="en", show_log=False)
-paths = json.loads(sys.argv[1])
+paths = json.loads(sys.stdin.read())
 results = {}
 for p in paths:
     try:
@@ -51,7 +51,8 @@ print(json.dumps(results, ensure_ascii=False))
 def _run_ocr_subprocess(image_paths: list[str]) -> dict[str, str]:
     paddle_python = os.environ.get("PADDLEOCR_PYTHON") or sys.executable
     proc = subprocess.run(
-        [paddle_python, "-c", _OCR_SCRIPT, json.dumps(image_paths)],
+        [paddle_python, "-c", _OCR_SCRIPT],
+        input=json.dumps(image_paths),
         capture_output=True,
         text=True,
         encoding="utf-8",
