@@ -25,6 +25,7 @@ from app.langchain_integration.models import (
     MultimodalChatModel,
 )
 from app.langchain_integration.retrievers import MultimodalRetriever, get_multimodal_retriever
+from app.langchain_integration.vectorstores import DocumentVectorStore, get_document_vector_store
 from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
 
 
@@ -157,7 +158,9 @@ class RAGChain:
         self,
         chat_model: Optional[MultimodalChatModel] = None,
         retriever: Optional[MultimodalRetriever] = None,
+        doc_vector_store: Optional[DocumentVectorStore] = None,
         top_k: int = 5,
+        text_top_k: int = 3,
     ):
         """
         初始化 RAG Chain
@@ -165,11 +168,15 @@ class RAGChain:
         Args:
             chat_model: 聊天模型实例，默认使用全局实例
             retriever: 检索器实例，默认使用全局实例
-            top_k: 检索结果数量
+            doc_vector_store: 文档文本向量存储实例，默认使用全局实例
+            top_k: 图像检索结果数量
+            text_top_k: 文本片段检索数量
         """
         self.chat_model = chat_model or get_chat_model()
         self.retriever = retriever or get_multimodal_retriever(top_k=top_k)
+        self.doc_vector_store = doc_vector_store or get_document_vector_store()
         self.top_k = top_k
+        self.text_top_k = text_top_k
 
         # 构建 LCEL Chain
         self._chain = self._build_chain()
@@ -183,20 +190,21 @@ class RAGChain:
         """
         # 定义系统提示词
         system_prompt = (
-            "你是一个多模态知识库问答助手。你将看到若干张检索到的相关图像，"
-            "以及用户提出的问题。请仔细观察这些图像的内容，基于图像中的视觉信息回答用户的问题。\n\n"
-            "请基于图像内容进行回答，可以自然地引用相关图像，例如'根据第一张图像，可以看到……'。"
-            "如果图像信息不足以回答某些部分，请明确说明不确定。"
+            "你是一个多模态知识库问答助手。你将看到从知识库中检索到的相关文本片段和图像，"
+            "以及用户提出的问题。请综合利用文本和图像中的信息回答用户的问题。\n\n"
+            "回答时可自然引用来源，例如'根据文档内容……'或'根据第N张图像……'。"
+            "如果现有信息不足以回答某些部分，请明确说明不确定。"
         )
 
-        # 1. 检索步骤
+        # 1. 检索步骤（同时检索图像和文本）
         def retrieve_documents(inputs: Dict[str, Any]) -> Dict[str, Any]:
             query = inputs["query"]
-            # 使用检索器获取相关文档
-            documents = self.retriever.search_with_dict_output(query, top_k=self.top_k)
+            image_docs = self.retriever.search_with_dict_output(query, top_k=self.top_k)
+            text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
             return {
                 "query": query,
-                "documents": documents,
+                "documents": image_docs,
+                "text_chunks": text_chunks,
             }
 
         retrieve_runnable = RunnableLambda(retrieve_documents)
@@ -205,6 +213,7 @@ class RAGChain:
         def prepare_messages(inputs: Dict[str, Any]) -> List[Dict[str, Any]]:
             query = inputs["query"]
             documents = inputs["documents"]
+            text_chunks = inputs.get("text_chunks") or []
 
             # 构建消息内容
             content = []
@@ -214,6 +223,14 @@ class RAGChain:
 
             # 添加用户问题
             content.append({"type": "text", "text": f"\n\n用户问题：{query}\n\n"})
+
+            # 添加检索到的文本片段
+            if text_chunks:
+                text_context = "\n".join(
+                    f"[文本片段 {i+1}] {chunk['content']}"
+                    for i, chunk in enumerate(text_chunks)
+                )
+                content.append({"type": "text", "text": f"相关文档文本：\n{text_context}\n\n"})
 
             # 添加检索到的图像
             for idx, doc in enumerate(documents, start=1):

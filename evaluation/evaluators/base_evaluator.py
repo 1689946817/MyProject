@@ -24,11 +24,10 @@ from langchain.chains.transform import TransformChain
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.runnables import RunnableLambda
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.output_parsers import BooleanOutputParser, OutputFixingParser
 from transformers import LlavaNextForConditionalGeneration
 from evaluation.evaluators.evaluator_interface import EvaluatorInterface
-from utils.azure_config import get_azure_config
 from utils.model_loading_and_prompting.llava import llava_call
 
 
@@ -81,17 +80,17 @@ class BaseEvaluator(EvaluatorInterface):
         >>> evaluator = MyEvaluator(model=gpt4v_model, user_query="What is X?")
         >>> result = evaluator.run_evaluation()
     """
-    def __init__(self, model, tokenizer=None, **kwargs):
+    def __init__(self, tokenizer=None, **kwargs):
         """
         初始化评估器基类。
-        
-        根据是否提供tokenizer判断使用哪种评估模型：
-        - 有tokenizer：使用LLaVA模型，需要额外的格式修正步骤
-        - 无tokenizer：使用GPT-4V模型，直接解析JSON输出
-        
-        :param model: 评估模型实例
-        :param tokenizer: 分词器实例，可选。提供时使用LLaVA，否则使用GPT-4V
-        
+
+        模型通过环境变量自动构造，无需外部传入：
+        - EVAL_BASE_URL: API端点（默认 https://api.openai.com/v1）
+        - EVAL_API_KEY: API密钥
+        - EVAL_MODEL: 模型名称（默认 gpt-4o）
+
+        :param tokenizer: 分词器实例，可选。提供时使用LLaVA，否则使用OpenAI兼容模型
+
         关键字参数:
             user_query (str): 用户问题
             generated_answer (str): RAG系统生成的答案
@@ -99,8 +98,14 @@ class BaseEvaluator(EvaluatorInterface):
             context (str): 检索到的文本上下文
             image (str): 检索到的图像（base64编码）
         """
-        self.model = model
-        self.model_type = type(self.model)
+        self.model = ChatOpenAI(
+            base_url=os.environ.get("EVAL_BASE_URL", "https://api.openai.com/v1"),
+            api_key=os.environ.get("EVAL_API_KEY"),
+            model=os.environ.get("EVAL_MODEL", "gpt-4o"),
+            max_tokens=int(os.environ.get("EVAL_MAX_TOKENS", "1000")),
+            temperature=0,
+        )
+        self.model_type = ChatOpenAI
         self.json_parser = JsonOutputParser(pydantic_object=EvaluationResult)
         self.boolean_parser = BooleanOutputParser()
         self.kwargs = kwargs
@@ -109,22 +114,11 @@ class BaseEvaluator(EvaluatorInterface):
             output_variables=["grade", "reason"],
             transform=self.get_numeric_score
         )
-        
+
         if tokenizer:
             self.tokenizer = tokenizer
-            self.config = get_azure_config()
-            gpt4v_config = self.config['gpt4']
-            fixing_llm = AzureChatOpenAI(
-                openai_api_version=gpt4v_config["openai_api_version"],
-                azure_endpoint=gpt4v_config["openai_endpoint"],
-                azure_deployment=gpt4v_config["deployment_name"],
-                model=gpt4v_config["model_version"],
-                api_key=os.environ.get("GPT4V_API_KEY"),
-                max_tokens=500
-            )
-        
-            self.fix_format_parser = OutputFixingParser.from_llm(parser=self.json_parser, llm=fixing_llm)
-        
+            self.fix_format_parser = OutputFixingParser.from_llm(parser=self.json_parser, llm=self.model)
+
         else:
             self.tokenizer = None
             

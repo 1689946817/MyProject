@@ -63,8 +63,17 @@ def build_index(domain: str, image_records: List[dict]) -> None:
 
 
 def retrieve(query: str, domain: str, top_k: int = 10) -> List[str]:
+    import time
     embedder = get_multimodal_embedding_model()
-    emb = embedder.embed_query(query)
+    for attempt in range(5):
+        try:
+            emb = embedder.embed_query(query)
+            break
+        except Exception as e:
+            if attempt == 4:
+                raise
+            print(f"embed_query failed (attempt {attempt+1}/5): {e}, retrying in 3s...")
+            time.sleep(3)
     col = _client.get_or_create_collection(name=_collection_name(domain))
     results = col.query(query_embeddings=[emb], n_results=top_k)
     return [str(i) for i in results.get("ids", [[]])[0]]

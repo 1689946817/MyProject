@@ -169,9 +169,18 @@ data/val2017/
 data/val2017_subset/
 data/annotations/
 
+# Large data files (local only)
+data/UniDoc-Bench/
+data/UniDoc-Bench-subset/
+data/annotations_trainval2017.zip
+
 frontend/node_modules/
 frontend/dist/
 frontend/package-lock.json
+
+# Large data / batch outputs
+data/rag_outputs/
+data/cache/
 
 # Test files
 test_*.py

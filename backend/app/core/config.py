@@ -74,6 +74,11 @@ class Settings(BaseSettings):
     LLM_API_KEY: Optional[str] = None  # 文本生成模型 API 密钥
     LLM_MODEL_NAME: Optional[str] = None  # 文本生成模型名称
 
+    # 生成器评估器模型配置（OpenAI 兼容格式）
+    EVAL_BASE_URL: Optional[str] = None
+    EVAL_API_KEY: Optional[str] = None
+    EVAL_MODEL: Optional[str] = None
+
     class Config:
         """配置类的配置
         
