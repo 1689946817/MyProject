@@ -262,6 +262,20 @@ class LangChainAdapter:
                 {"query": query, "chat_history": chat_history or []}
             )
 
+    async def rag_chat_stream(
+        self,
+        query: str,
+        top_k: int = 5,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
+    ):
+        """
+        RAG 问答流式版本（仅支持文本查询）
+        """
+        async for chunk, docs in self.rag_chain.astream(
+            {"query": query, "chat_history": chat_history or []}
+        ):
+            yield chunk, docs
+
     def _rebuild_bm25_index(self) -> None:
         """全量重建 BM25 索引（仅用于启动和手动触发）"""
         try:

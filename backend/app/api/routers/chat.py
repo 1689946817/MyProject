@@ -4,6 +4,7 @@ RAG 聊天 API 路由模块（LangChain 版本）
 该模块定义了 RAG（检索增强生成）聊天相关的 API 路由，包括：
 - RAG 聊天接口：基于用户查询（文本或图像）生成回答
 - 支持多轮对话（session_id）
+- 支持流式响应（SSE）
 
 使用 LangChain 框架实现，所有路由都以 /api/rag 为前缀。
 """
@@ -12,6 +13,7 @@ from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, File, Form, UploadFile
+from fastapi.responses import StreamingResponse
 
 from app.application.schemas import ChatResponse, SearchResultItem
 from app.core.config import settings
@@ -84,3 +86,61 @@ async def rag_chat_endpoint(
             )
         )
     return ChatResponse(answer=answer, results=results, session_id=sid)
+
+
+@router.post("/chat/stream")
+async def rag_chat_stream_endpoint(
+    query: str = Form(...),
+    top_k: int = Form(5),
+    session_id: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
+):
+    """RAG 聊天流式接口（SSE）"""
+    import json
+
+    sid = session_id or str(uuid.uuid4())
+    history = _get_history(sid)
+
+    adapter = get_langchain_adapter()
+
+    async def event_generator():
+        # 发送 session_id
+        yield f"data: {json.dumps({'type': 'session', 'session_id': sid})}\n\n"
+
+        full_answer = ""
+        retrieved_docs = []
+
+        if image is not None:
+            # 图像查询不支持流式
+            answer, retrieved = await adapter.rag_chat(
+                query=query, top_k=top_k, image=image, chat_history=history
+            )
+            yield f"data: {json.dumps({'type': 'content', 'content': answer})}\n\n"
+            full_answer = answer
+            retrieved_docs = retrieved
+        else:
+            # 文本查询流式
+            async for chunk, docs in adapter.rag_chat_stream(
+                query=query, top_k=top_k, chat_history=history
+            ):
+                full_answer += chunk
+                retrieved_docs = docs
+                yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
+
+        # 保存对话
+        _save_turn(sid, query, full_answer)
+
+        # 发送检索结果
+        results = [
+            {
+                "id": item.get("id"),
+                "file_path": item.get("metadata", {}).get("file_path"),
+                "description": item.get("document"),
+                "score": float(item.get("score", 0.0)),
+            }
+            for item in retrieved_docs
+        ]
+        yield f"data: {json.dumps({'type': 'results', 'results': results})}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

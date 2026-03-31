@@ -292,6 +292,33 @@ class RAGChain:
 
         return answer, documents
 
+    async def astream(self, inputs: Dict[str, Any]):
+        """
+        异步流式执行 RAG Chain（完整管线 + 流式输出）
+        """
+        query = inputs["query"]
+        chat_history = inputs.get("chat_history") or []
+
+        # 异步检索
+        documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
+        text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
+
+        # 上下文压缩
+        from app.langchain_integration.context_compression import compress_context
+        documents = await compress_context(query, documents)
+
+        # 准备输入
+        chain_inputs = {
+            "query": query,
+            "documents": documents,
+            "text_chunks": text_chunks,
+            "chat_history": chat_history,
+        }
+
+        # 流式生成
+        async for chunk in self._chain.astream(chain_inputs):
+            yield chunk, documents
+
     async def ainvoke_with_image(
         self,
         query: str,

@@ -298,6 +298,50 @@ class MultimodalChatModel(BaseChatModel):
 
         return ChatResult(generations=[generation])
 
+    async def _astream(
+        self,
+        messages: List[BaseMessage],
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[CallbackManagerForLLMRun] = None,
+        **kwargs: Any,
+    ):
+        """异步流式生成"""
+        import httpx
+        import json
+
+        api_messages = [self._convert_message_to_dict(m) for m in messages]
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        payload: Dict[str, Any] = {
+            "model": self.model_name,
+            "messages": api_messages,
+            "temperature": self.temperature,
+            "stream": True,
+        }
+        if self.max_tokens is not None:
+            payload["max_tokens"] = self.max_tokens
+        if stop:
+            payload["stop"] = stop
+
+        async with httpx.AsyncClient(base_url=self.base_url, timeout=120) as client:
+            async with client.stream("POST", "/v1/chat/completions", headers=headers, json=payload) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if line.startswith("data: "):
+                        data_str = line[6:]
+                        if data_str.strip() == "[DONE]":
+                            break
+                        try:
+                            chunk = json.loads(data_str)
+                            delta = chunk["choices"][0].get("delta", {})
+                            content = delta.get("content", "")
+                            if content:
+                                yield ChatGeneration(message=AIMessage(content=content))
+                        except Exception:
+                            continue
+
     async def agenerate_description(
         self,
         image_b64: str,
