@@ -140,8 +140,8 @@ class LangChainAdapter:
                 },
             )
 
-            # 更新 BM25 索引
-            self._rebuild_bm25_index()
+            # 增量更新 BM25 索引
+            self._bm25_add_document(image_id, description)
 
             return record, description
 
@@ -272,13 +272,38 @@ class LangChainAdapter:
             return await self.rag_chain.ainvoke({"query": query})
 
     def _rebuild_bm25_index(self) -> None:
-        """重建 BM25 全量索引"""
+        """全量重建 BM25 索引（仅用于启动和手动触发）"""
         try:
             from app.retrieval.hybrid import rebuild_bm25_index
             rebuild_bm25_index()
         except Exception as e:
             import logging
             logging.getLogger(__name__).warning(f"[Adapter] BM25 索引重建失败: {e}")
+
+    def _bm25_add_document(self, doc_id: str, text: str) -> None:
+        """增量添加单篇文档到 BM25 索引"""
+        try:
+            from app.retrieval.hybrid import get_bm25_index
+            index = get_bm25_index()
+            index.add_document(doc_id, text)
+            index.save()
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"[Adapter] BM25 增量更新失败: {e}")
+
+    def _bm25_add_chunks(self, doc_id: str, text_chunks: List[str], image_count: int) -> None:
+        """增量添加 PDF 的文本片段到 BM25 索引"""
+        try:
+            from app.retrieval.hybrid import get_bm25_index
+            index = get_bm25_index()
+            for i, chunk in enumerate(text_chunks):
+                chunk_id = f"{doc_id}_chunk_{i}"
+                index.add_document(chunk_id, chunk)
+            if text_chunks or image_count > 0:
+                index.save()
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"[Adapter] BM25 增量更新失败: {e}")
 
     def get_vector_store_stats(self) -> Dict[str, Any]:
         """
@@ -408,8 +433,8 @@ class LangChainAdapter:
             db.commit()
             db.refresh(record)
 
-            # 更新 BM25 索引
-            self._rebuild_bm25_index()
+            # 增量更新 BM25 索引（文本片段 + 图片描述）
+            self._bm25_add_chunks(doc_id, text_chunks, processed_image_count)
 
         except Exception as e:
             record.status = "Failed"

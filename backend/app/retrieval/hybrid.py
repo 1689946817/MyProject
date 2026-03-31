@@ -55,6 +55,18 @@ class BM25Index:
         self._bm25 = BM25Okapi(self._corpus)
         logger.info(f"[BM25] 索引构建完成: {len(doc_ids)} 篇文档")
 
+    def add_document(self, doc_id: str, text: str) -> None:
+        """增量添加单篇文档到索引（避免全量重建）"""
+        from rank_bm25 import BM25Okapi
+
+        if doc_id in set(self._doc_ids):
+            return  # 已存在，跳过
+
+        self._doc_ids.append(doc_id)
+        self._corpus.append(_tokenize(text))
+        self._bm25 = BM25Okapi(self._corpus)
+        logger.debug(f"[BM25] 增量添加文档: {doc_id}, 当前共 {len(self._doc_ids)} 篇")
+
     def search(self, query: str, top_k: int = 20) -> List[Dict[str, Any]]:
         """BM25 检索，返回 top_k 结果"""
         if not self.is_ready:

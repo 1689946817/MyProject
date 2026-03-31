@@ -2,10 +2,11 @@
 PDF 文档解析工具
 
 从 PDF 文件中提取：
-- 文本片段（滑动窗口分块）
+- 文本片段（语义分块：按句子边界切分后合并）
 - 嵌入图片字节
 - 含表格的页面整页渲染为 PNG 图片字节
 """
+import re
 from typing import List, Tuple
 
 import fitz  # PyMuPDF
@@ -14,21 +15,60 @@ import fitz  # PyMuPDF
 DEFAULT_CHUNK_SIZE = 500
 DEFAULT_CHUNK_OVERLAP = 100
 
+# 中英文句子结束符
+_SENTENCE_SPLIT_RE = re.compile(r'(?<=[。！？.!?\n])\s*')
 
-def _sliding_window_chunks(text: str, chunk_size: int, overlap: int) -> List[str]:
-    """将文本按滑动窗口分块。"""
+
+def _sentence_aware_chunks(text: str, chunk_size: int, overlap: int) -> List[str]:
+    """
+    按句子边界切分文本，合并至 chunk_size 以内。
+    保证不在句子中间截断，提升检索语义完整性。
+    """
     if not text.strip():
         return []
+
+    # 按句子边界拆分
+    sentences = _SENTENCE_SPLIT_RE.split(text)
+    sentences = [s.strip() for s in sentences if s.strip()]
+
+    if not sentences:
+        return []
+
     chunks: List[str] = []
-    start = 0
-    while start < len(text):
-        end = start + chunk_size
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
-        if end >= len(text):
-            break
-        start += chunk_size - overlap
+    current_chunk: List[str] = []
+    current_len = 0
+
+    for sent in sentences:
+        sent_len = len(sent)
+
+        # 单句超过 chunk_size，直接作为独立 chunk
+        if sent_len > chunk_size:
+            if current_chunk:
+                chunks.append("".join(current_chunk))
+                current_chunk = []
+                current_len = 0
+            chunks.append(sent)
+            continue
+
+        if current_len + sent_len > chunk_size and current_chunk:
+            chunks.append("".join(current_chunk))
+            # overlap: 保留最后几个句子作为下一个 chunk 的开头
+            overlap_chunk: List[str] = []
+            overlap_len = 0
+            for s in reversed(current_chunk):
+                if overlap_len + len(s) > overlap:
+                    break
+                overlap_chunk.insert(0, s)
+                overlap_len += len(s)
+            current_chunk = overlap_chunk
+            current_len = overlap_len
+
+        current_chunk.append(sent)
+        current_len += sent_len
+
+    if current_chunk:
+        chunks.append("".join(current_chunk))
+
     return chunks
 
 
@@ -59,9 +99,9 @@ def parse_pdf(
     seen_xrefs: set = set()  # 避免重复提取同一张嵌入图片
 
     for page in doc:
-        # --- 文本提取与分块 ---
+        # --- 文本提取与分块（语义分块） ---
         page_text = page.get_text("text")
-        chunks = _sliding_window_chunks(page_text, chunk_size, chunk_overlap)
+        chunks = _sentence_aware_chunks(page_text, chunk_size, chunk_overlap)
         text_chunks.extend(chunks)
 
         # --- 嵌入图片提取 ---

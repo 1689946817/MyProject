@@ -9,6 +9,7 @@ P0 升级后的检索流程：
     → top-N 候选送入 CrossEncoder 精排
     → 返回 top-K
 """
+import asyncio
 import base64
 import logging
 from typing import Any, Dict, List, Optional, Tuple
@@ -74,8 +75,16 @@ async def _multi_query_hybrid_search(
         queries = [query]
 
     all_results: Dict[str, Dict[str, Any]] = {}
-    for q in queries:
-        hits = _hybrid_search_sync(q, vector_store, candidate_k)
+
+    # 并行执行各子查询的混合检索
+    loop = asyncio.get_event_loop()
+    tasks = [
+        loop.run_in_executor(None, _hybrid_search_sync, q, vector_store, candidate_k)
+        for q in queries
+    ]
+    all_hits = await asyncio.gather(*tasks)
+
+    for hits in all_hits:
         for hit in hits:
             doc_id = hit["id"]
             new_score = hit.get("rrf_score", hit.get("score", 0.0))
