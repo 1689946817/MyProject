@@ -14,7 +14,7 @@
 | BM25 增量更新 | ✅ 通过 | add_document() 成功添加文档，索引从 2 篇增至 3 篇 |
 | Agentic RAG 图构建 | ✅ 通过 | LangGraph 成功编译，包含 7 个节点 |
 | 上下文压缩模块 | ✅ 通过 | compress_context 导入成功 |
-| 评估器扩展 | ⚠️ 部分通过 | evaluators_agentic.py 创建成功，但依赖旧版 base_evaluator |
+| 评估器扩展 | ✅ 通过 | evaluators_agentic.py 已修复并成功导入 |
 
 ---
 
@@ -70,9 +70,30 @@ graph = build_agentic_rag_graph()
 | app.langchain_integration.agentic_rag | ✅ 成功 |
 | app.langchain_integration.context_compression | ✅ 成功 |
 | app.retrieval.hybrid | ✅ 成功 |
-| evaluation.evaluators.evaluators_agentic | ⚠️ 依赖问题 |
+| evaluation.evaluators.evaluators_agentic | ✅ 成功 |
 
-**说明**: 前 3 个核心模块导入成功。evaluators_agentic 依赖旧版 base_evaluator（使用已废弃的 langchain.chains），需要后续修复。
+**说明**: 前 3 个核心模块导入成功。evaluators_agentic 已修复 langchain 废弃 API，现已成功导入。
+
+---
+
+## 修复记录
+
+### evaluators_agentic 依赖修复（commit 97f40ba）
+
+**问题**: base_evaluator.py 使用了 langchain 已废弃的 API
+- `langchain.chains.transform.TransformChain`
+- `langchain.output_parsers.OutputFixingParser`
+- `langchain.output_parsers.BooleanOutputParser`
+- `langchain_core.pydantic_v1`
+
+**修复方案**:
+1. 用 `RunnableLambda` 替换 `TransformChain`
+2. 移除 `OutputFixingParser`（未使用）
+3. 用简单逻辑替换 `BooleanOutputParser`: `"YES" -> 1, "NO" -> 0`
+4. 从 `pydantic` 直接导入 `BaseModel`
+5. evaluators_agentic.py 创建独立的 `BaseAgenticEvaluator`，避免依赖 utils 模块
+
+**结果**: ✅ 所有评估器模块现已兼容 langchain 最新版本
 
 ---
 
@@ -103,7 +124,7 @@ rank-bm25==0.2.2
 
 ## 建议
 
-1. **修复 base_evaluator.py**: 更新为 langchain 新版本 API
+1. ~~修复 base_evaluator.py: 更新为 langchain 新版本 API~~ ✅ 已完成
 2. **集成测试**: 配置完整环境后进行端到端测试
 3. **性能测试**: 对比升级前后的检索速度和准确率
 4. **评估测试**: 使用 UniDoc 数据集验证 Agentic RAG 效果
@@ -112,6 +133,6 @@ rank-bm25==0.2.2
 
 ## 结论
 
-✅ **核心功能实现正确，模块导入成功，基础单元测试通过。**
+✅ **所有核心功能实现正确，模块导入成功，基础单元测试通过，langchain 兼容性问题已修复。**
 
-所有 P0-P3 升级代码已推送至 GitHub dev 分支，建议在完整环境中进行集成测试。
+所有 P0-P3 升级代码已推送至 GitHub dev 分支（共 10 个 commits），建议在完整环境中进行集成测试。
