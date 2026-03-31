@@ -86,6 +86,7 @@ class ChatResponse(BaseModel):
     """
     answer: str  # 生成的回答
     results: List[SearchResultItem]  # 检索到的相关图像列表
+    session_id: Optional[str] = None  # 会话 ID（多轮对话）
 
 
 class DocumentRecordOut(BaseModel):

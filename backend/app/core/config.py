@@ -88,6 +88,12 @@ class Settings(BaseSettings):
     HYBRID_VECTOR_WEIGHT: float = 0.6
     HYBRID_BM25_WEIGHT: float = 0.4
 
+    # P2 升级：上下文压缩
+    CONTEXT_COMPRESSION_ENABLED: bool = True
+
+    # P2 升级：对话记忆
+    CHAT_HISTORY_MAX_TURNS: int = 5
+
     # 生成器评估器模型配置（OpenAI 兼容格式）
     EVAL_BASE_URL: Optional[str] = None
     EVAL_API_KEY: Optional[str] = None

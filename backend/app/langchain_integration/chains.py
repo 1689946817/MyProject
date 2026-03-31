@@ -199,9 +199,17 @@ class RAGChain:
             query = inputs["query"]
             documents = inputs.get("documents") or []
             text_chunks = inputs.get("text_chunks") or []
+            chat_history = inputs.get("chat_history") or []
 
             content = []
             content.append({"type": "text", "text": system_prompt})
+
+            # 添加对话历史
+            if chat_history:
+                history_text = "\n".join(
+                    f"用户：{q}\n助手：{a}" for q, a in chat_history[-5:]
+                )
+                content.append({"type": "text", "text": f"\n\n对话历史：\n{history_text}\n"})
             content.append({"type": "text", "text": f"\n\n用户问题：{query}\n\n"})
 
             if text_chunks:
@@ -260,16 +268,26 @@ class RAGChain:
 
     async def ainvoke(self, inputs: Dict[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        异步执行 RAG Chain（完整 P0 管线：Multi-Query + 混合检索 + 精排）
+        异步执行 RAG Chain（完整管线：Multi-Query + 混合检索 + 精排 + 上下文压缩）
         """
         query = inputs["query"]
+        chat_history = inputs.get("chat_history") or []
 
         # 异步检索（走完整 Multi-Query 管线）
         documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
         text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
-        # 将预检索结果注入 chain
-        chain_inputs = {"query": query, "documents": documents, "text_chunks": text_chunks}
+        # 上下文压缩：过滤无关文档
+        from app.langchain_integration.context_compression import compress_context
+        documents = await compress_context(query, documents)
+
+        # 将预检索结果注入 chain（含对话历史）
+        chain_inputs = {
+            "query": query,
+            "documents": documents,
+            "text_chunks": text_chunks,
+            "chat_history": chat_history,
+        }
         answer = await self._chain.ainvoke(chain_inputs)
 
         return answer, documents

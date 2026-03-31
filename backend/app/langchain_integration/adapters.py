@@ -250,26 +250,17 @@ class LangChainAdapter:
         query: str,
         top_k: int = 5,
         image: Optional[UploadFile] = None,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
     ) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        RAG 问答
-
-        替代原有的 rag_engine.rag_chat 功能。
-
-        Args:
-            query: 用户问题
-            top_k: 检索结果数量
-            image: 可选的查询图像
-
-        Returns:
-            Tuple[str, List[Dict]]: (生成的回答, 检索结果列表)
+        RAG 问答（支持多轮对话历史）
         """
         if image is not None:
-            # 图像查询
             return await self.rag_chain.ainvoke_with_image(query, image, top_k=top_k)
         else:
-            # 文本查询
-            return await self.rag_chain.ainvoke({"query": query})
+            return await self.rag_chain.ainvoke(
+                {"query": query, "chat_history": chat_history or []}
+            )
 
     def _rebuild_bm25_index(self) -> None:
         """全量重建 BM25 索引（仅用于启动和手动触发）"""
