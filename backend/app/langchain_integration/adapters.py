@@ -253,14 +253,31 @@ class LangChainAdapter:
         chat_history: Optional[List[Tuple[str, str]]] = None,
     ) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        RAG 问答（支持多轮对话历史）
+        RAG 问答（支持多轮对话历史 + Agentic RAG）
         """
         if image is not None:
             return await self.rag_chain.ainvoke_with_image(query, image, top_k=top_k)
-        else:
-            return await self.rag_chain.ainvoke(
-                {"query": query, "chat_history": chat_history or []}
-            )
+
+        # 如果启用 Agentic RAG，使用 LangGraph 流程
+        from app.core.config import settings
+        if settings.AGENTIC_RAG_ENABLED:
+            from app.langchain_integration.agentic_rag import get_agentic_rag_graph
+            graph = get_agentic_rag_graph()
+            result = await graph.ainvoke({
+                "query": query,
+                "chat_history": chat_history or [],
+                "documents": [],
+                "answer": "",
+                "route": "",
+                "relevance_score": 0.0,
+                "needs_retry": False,
+            })
+            return result["answer"], result["documents"]
+
+        # 否则使用标准 RAG
+        return await self.rag_chain.ainvoke(
+            {"query": query, "chat_history": chat_history or []}
+        )
 
     async def rag_chat_stream(
         self,

@@ -94,6 +94,9 @@ class Settings(BaseSettings):
     # P2 升级：对话记忆
     CHAT_HISTORY_MAX_TURNS: int = 5
 
+    # P3 升级：Agentic RAG
+    AGENTIC_RAG_ENABLED: bool = False  # 默认关闭，需手动启用
+
     # 生成器评估器模型配置（OpenAI 兼容格式）
     EVAL_BASE_URL: Optional[str] = None
     EVAL_API_KEY: Optional[str] = None

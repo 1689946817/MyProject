@@ -22,3 +22,6 @@ FlagEmbedding>=1.2.0
 
 # P1 修复：中文 BM25 分词
 jieba>=0.42.1
+
+# P3 升级：Agentic RAG
+langgraph>=0.2.0
