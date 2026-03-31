@@ -20,12 +20,10 @@
 
 import os
 from abc import abstractmethod
-from langchain.chains.transform import TransformChain
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.runnables import RunnableLambda
 from langchain_openai import ChatOpenAI
-from langchain.output_parsers import BooleanOutputParser, OutputFixingParser
+from pydantic import BaseModel, Field
 from transformers import LlavaNextForConditionalGeneration
 from evaluation.evaluators.evaluator_interface import EvaluatorInterface
 from utils.model_loading_and_prompting.llava import llava_call
@@ -67,9 +65,7 @@ class BaseEvaluator(EvaluatorInterface):
         tokenizer: 分词器实例（仅LLaVA需要，GPT-4V为None）
         model_type: 模型类型，用于区分评估链的构建方式
         json_parser: JSON输出解析器，用于解析评估结果
-        boolean_parser: 布尔输出解析器，用于将YES/NO转换为布尔值
-        check_grade_chain: 评分转换链，将评分转换为数值
-        fix_format_parser: 格式修正解析器，用于修正LLM输出的格式错误
+        check_grade_chain: 评分转换链，将YES/NO转换为1/0
         kwargs: 评估所需的其他参数（如用户问题、生成答案等）
     
     使用示例:
@@ -107,18 +103,11 @@ class BaseEvaluator(EvaluatorInterface):
         )
         self.model_type = ChatOpenAI
         self.json_parser = JsonOutputParser(pydantic_object=EvaluationResult)
-        self.boolean_parser = BooleanOutputParser()
         self.kwargs = kwargs
-        self.check_grade_chain = TransformChain(
-            input_variables=["grade", "reason"],
-            output_variables=["grade", "reason"],
-            transform=self.get_numeric_score
-        )
+        self.check_grade_chain = RunnableLambda(self.get_numeric_score)
 
         if tokenizer:
             self.tokenizer = tokenizer
-            self.fix_format_parser = OutputFixingParser.from_llm(parser=self.json_parser, llm=self.model)
-
         else:
             self.tokenizer = None
             
@@ -156,13 +145,13 @@ class BaseEvaluator(EvaluatorInterface):
         :param inputs: 包含grade和reason的字典
         
         :return: 更新后的字典，grade字段转换为数值
-        
+
         示例:
             >>> inputs = {"grade": "YES", "reason": "答案正确"}
             >>> result = self.get_numeric_score(inputs)
             >>> print(result["grade"])  # 1
         """
-        inputs["grade"] = int(self.boolean_parser.parse(inputs["grade"]))
+        inputs["grade"] = 1 if inputs["grade"].upper() == "YES" else 0
         return inputs
 
     def run_evaluation(self) -> dict:

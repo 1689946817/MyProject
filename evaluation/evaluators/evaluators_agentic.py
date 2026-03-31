@@ -8,10 +8,38 @@
 from typing import Dict, List, Any
 
 from langchain_core.messages import HumanMessage
-from evaluation.evaluators.base_evaluator import BaseEvaluator
+from langchain_core.output_parsers import JsonOutputParser
+from pydantic import BaseModel, Field
 
 
-class RetryRateEvaluator(BaseEvaluator):
+class EvaluationResult(BaseModel):
+    """评估结果数据模型"""
+    grade: str = Field(description="the grade after evaluating the metric (YES or NO)")
+    reason: str = Field(description="The reasoning behind the grading decision")
+
+
+class BaseAgenticEvaluator:
+    """简化的 Agentic 评估器基类"""
+    def __init__(self, **kwargs):
+        self.json_parser = JsonOutputParser(pydantic_object=EvaluationResult)
+        self.kwargs = kwargs
+
+    def get_prompt(self, inputs: dict):
+        raise NotImplementedError
+
+    async def run_evaluation(self, model) -> dict:
+        """运行评估"""
+        prompt = self.get_prompt(self.kwargs)
+        result = await model._agenerate([prompt])
+        content = result.generations[0][0].text
+        parsed = self.json_parser.parse(content)
+        return {
+            "grade": 1 if parsed["grade"].upper() == "YES" else 0,
+            "reason": parsed["reason"],
+        }
+
+
+class RetryRateEvaluator(BaseAgenticEvaluator):
     """
     重试率评估器
 
@@ -58,7 +86,7 @@ Give the reason as a string, not a list.
         return [HumanMessage(content=[message])]
 
 
-class GroundingRateEvaluator(BaseEvaluator):
+class GroundingRateEvaluator(BaseAgenticEvaluator):
     """
     接地率评估器
 
