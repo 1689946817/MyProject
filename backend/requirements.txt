@@ -15,3 +15,7 @@ langchain-community>=0.3.0
 # 可选：LangChain 特定提供商支持
 # langchain-openai  # OpenAI 支持
 # langchain-anthropic  # Anthropic 支持
+
+# P0 升级：混合检索 + 重排序
+rank-bm25>=0.2.2
+FlagEmbedding>=1.2.0

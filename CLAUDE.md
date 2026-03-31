@@ -117,3 +117,44 @@ API 调用通过 `src/api/` 下的模块封装，Axios 实例配置在 `src/api/
 - CORS 使用正则匹配 `localhost` 和 `127.0.0.1` 的 5173-5175 端口
 - `ImageRecord.status` 取值：`Processing` | `Completed` | `Failed`
 - 评估模块在 `evaluation/` 目录，独立于后端服务运行
+
+## 评估模块架构
+
+### 数据集
+
+| 数据集 | 加载器 | 数据位置 | 规模 |
+|--------|--------|----------|------|
+| COCO subset | `datasets/coco_subset.py` | `data/coco_subset_eval.json` | 预处理 JSON |
+| UniDoc subset | `datasets/unidoc_subset.py` | `data/UniDoc-Bench-subset/data/{domain}-*.parquet` | 8 领域 × 100 QA |
+| UniDoc full | `datasets/unidoc_full.py` | `data/UniDoc-Bench/data/{domain}-*.parquet` | 8 领域 × 200 QA |
+
+8 个领域：`commerce_manufacturing`, `construction`, `crm`, `education`, `energy`, `finance`, `healthcare`, `legal`
+
+### 评估方法（UniDoc 生成器实验）
+
+| 方法 | 检索 | 生成输入 | ChromaDB 集合 |
+|------|------|----------|---------------|
+| `proposed` | MLLM 描述 → 文本 Embedding 检索 | 原始图片 + query | `unidoc_{domain}_proposed` |
+| `baseline_clip` | qwen3-vl-embedding 多模态检索 | 原始图片 + query | `unidoc_{domain}_clip` |
+| `baseline_ocr` | OCR 文本 → 文本 Embedding 检索 | OCR 文本片段 + query（纯文本） | `unidoc_{domain}_ocr` |
+| `no_rag` | 无检索 | 仅 query | 无 |
+
+跨领域实验使用 `domain=crossdomain`，集合名如 `unidoc_crossdomain_proposed`。
+
+### 推理脚本
+
+- `run_unidoc_gen.py`：实时逐条 API 推理，支持断点续传（按 `(query, domain)` 去重），输出到 `data/rag_outputs/unidoc_gen/`
+- `run_unidoc_gen_batch.py`：阿里百炼 Batch API 三阶段流水线（Phase1 构造 JSONL → Phase2 提交/轮询 → Phase3 解析合并），输出到 `data/rag_outputs/unidoc_gen_batch/`
+- `backfill_failed.py`：对批量结果中缺失/`[ERROR]` 条目用实时 API 补跑回填
+- `run_unidoc_score.py`：对生成结果进行 LLM 评分
+
+### query_id 生成规则
+
+所有脚本统一使用 `md5(f"{query}||{domain}")[:16]` 作为 `query_id`，确保跨脚本一致。
+
+### 批量推理注意事项
+
+- 单行请求体限制 6MB，超限时自动降级压缩图片（1024px / quality=75）
+- 单批次文件限制 480MB，超限自动分批
+- `baseline_ocr` 的生成输入是纯文本（OCR 片段），不传图片；其余方法传 base64 图片
+- Batch API 结果中 `content` 为 null 但有 `reasoning_content` 的条目会被标记为 `[ERROR] reasoning_only`

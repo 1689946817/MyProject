@@ -74,6 +74,20 @@ class Settings(BaseSettings):
     LLM_API_KEY: Optional[str] = None  # 文本生成模型 API 密钥
     LLM_MODEL_NAME: Optional[str] = None  # 文本生成模型名称
 
+    # P0 升级：查询重写
+    QUERY_REWRITE_ENABLED: bool = True
+    QUERY_MULTI_QUERY_COUNT: int = 3
+
+    # P0 升级：重排序
+    RERANK_MODEL_NAME: str = "BAAI/bge-reranker-base"
+    RERANK_TOP_K: int = 5
+    RERANK_CANDIDATE_K: int = 20
+
+    # P0 升级：混合检索
+    BM25_INDEX_PATH: str = "storage/bm25_index.pkl"
+    HYBRID_VECTOR_WEIGHT: float = 0.6
+    HYBRID_BM25_WEIGHT: float = 0.4
+
     # 生成器评估器模型配置（OpenAI 兼容格式）
     EVAL_BASE_URL: Optional[str] = None
     EVAL_API_KEY: Optional[str] = None

@@ -140,6 +140,9 @@ class LangChainAdapter:
                 },
             )
 
+            # 更新 BM25 索引
+            self._rebuild_bm25_index()
+
             return record, description
 
         except Exception as e:
@@ -268,6 +271,15 @@ class LangChainAdapter:
             # 文本查询
             return await self.rag_chain.ainvoke({"query": query})
 
+    def _rebuild_bm25_index(self) -> None:
+        """重建 BM25 全量索引"""
+        try:
+            from app.retrieval.hybrid import rebuild_bm25_index
+            rebuild_bm25_index()
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"[Adapter] BM25 索引重建失败: {e}")
+
     def get_vector_store_stats(self) -> Dict[str, Any]:
         """
         获取向量存储统计信息
@@ -395,6 +407,9 @@ class LangChainAdapter:
             record.status = "Completed"
             db.commit()
             db.refresh(record)
+
+            # 更新 BM25 索引
+            self._rebuild_bm25_index()
 
         except Exception as e:
             record.status = "Failed"

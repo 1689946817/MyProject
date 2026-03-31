@@ -1,34 +1,108 @@
 """
 LangChain 检索器集成模块
 
-该模块提供基于 LangChain 的检索器实现，包括：
-- 多模态检索器（支持文本和图像查询）
-- 自定义检索逻辑封装
-- 与 LangChain Chain 的集成
+P0 升级后的检索流程：
+  原始 query
+    → QueryRewriter.expand() 生成多个子查询
+    → 每个子查询执行混合检索（向量 + BM25，RRF 融合）
+    → 多查询结果按 doc_id 去重合并（取最高分）
+    → top-N 候选送入 CrossEncoder 精排
+    → 返回 top-K
 """
 import base64
+import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import UploadFile
 from langchain_core.documents import Document
 
+from app.core.config import settings
 from app.langchain_integration.models import get_chat_model, MultimodalChatModel
 from app.langchain_integration.vectorstores import ChromaVectorStore, get_vector_store
-from app.retrieval.rerank import simple_rerank
+from app.retrieval.rerank import cross_encoder_rerank, simple_rerank
 from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
 
+logger = logging.getLogger(__name__)
+
+
+def _hybrid_search_sync(
+    query: str,
+    vector_store: ChromaVectorStore,
+    candidate_k: int,
+) -> List[Dict[str, Any]]:
+    """
+    同步混合检索（向量 + BM25 + RRF 融合）。
+    BM25 索引未就绪时退化为纯向量检索。
+    """
+    from app.retrieval.hybrid import get_bm25_index, reciprocal_rank_fusion
+
+    vector_hits = vector_store.search_by_text(query, top_k=candidate_k)
+
+    bm25_index = get_bm25_index()
+    if bm25_index.is_ready:
+        bm25_hits = bm25_index.search(query, top_k=candidate_k)
+        id_to_doc = {h["id"]: h.get("document", "") for h in vector_hits}
+        for hit in bm25_hits:
+            if "document" not in hit:
+                hit["document"] = id_to_doc.get(hit["id"], "")
+        return reciprocal_rank_fusion(vector_hits, bm25_hits)
+
+    logger.debug("[Retriever] BM25 索引未就绪，使用纯向量检索")
+    return vector_hits
+
+
+async def _multi_query_hybrid_search(
+    query: str,
+    vector_store: ChromaVectorStore,
+    candidate_k: int,
+) -> List[Dict[str, Any]]:
+    """
+    Multi-Query + 混合检索：
+    1. 如果启用查询重写，扩展为多个子查询
+    2. 每个子查询独立执行混合检索
+    3. 按 doc_id 去重合并（取最高分）
+    """
+    if settings.QUERY_REWRITE_ENABLED:
+        try:
+            from app.langchain_integration.query_transform import get_query_rewriter
+            rewriter = get_query_rewriter()
+            queries = await rewriter.expand(query)
+        except Exception as e:
+            logger.warning(f"[Retriever] 查询扩展失败，使用原始查询: {e}")
+            queries = [query]
+    else:
+        queries = [query]
+
+    all_results: Dict[str, Dict[str, Any]] = {}
+    for q in queries:
+        hits = _hybrid_search_sync(q, vector_store, candidate_k)
+        for hit in hits:
+            doc_id = hit["id"]
+            new_score = hit.get("rrf_score", hit.get("score", 0.0))
+            existing_score = all_results.get(doc_id, {}).get("rrf_score", -1)
+            if doc_id not in all_results or new_score > existing_score:
+                hit["rrf_score"] = new_score
+                all_results[doc_id] = hit
+
+    merged = sorted(
+        all_results.values(),
+        key=lambda x: x.get("rrf_score", x.get("score", 0.0)),
+        reverse=True,
+    )
+
+    logger.info(
+        f"[Retriever] Multi-Query 合并: {len(queries)} 个查询 → {len(merged)} 个去重结果"
+    )
+    return merged
 
 
 class MultimodalRetriever:
     """
-    多模态检索器
+    多模态检索器（P0 升级版）
 
     支持：
-    - 文本到图像检索
+    - 文本到图像检索（Multi-Query + 混合检索 + CrossEncoder 精排）
     - 图像到图像检索（通过生成描述）
-    - 结果重排序
-
-    是双路检索调度的 LangChain 实现。
     """
 
     def __init__(
@@ -37,95 +111,9 @@ class MultimodalRetriever:
         chat_model: Optional[MultimodalChatModel] = None,
         top_k: int = 10,
     ):
-        """
-        初始化多模态检索器
-
-        Args:
-            vector_store: 向量存储实例，默认使用全局实例
-            chat_model: 聊天模型实例，默认使用全局实例
-            top_k: 返回结果数量
-        """
         self.vector_store = vector_store or get_vector_store()
         self.chat_model = chat_model or get_chat_model()
         self.top_k = top_k
-
-    def _rerank_documents(self, documents: List[Document]) -> List[Document]:
-        """
-        对文档进行重排序
-
-        Args:
-            documents: 文档列表
-
-        Returns:
-            List[Document]: 重排序后的文档列表
-        """
-        # 转换为简单重排序所需的格式
-        hits = []
-        for doc in documents:
-            hits.append({
-                "id": doc.metadata.get("id", ""),
-                "document": doc.page_content,
-                "metadata": doc.metadata,
-                "score": doc.metadata.get("score", 0.0),
-            })
-
-        # 重排序
-        reranked = simple_rerank(hits)
-
-        # 转换回 Document 列表
-        result = []
-        for hit in reranked:
-            doc = Document(
-                page_content=hit["document"],
-                metadata=hit["metadata"],
-            )
-            result.append(doc)
-
-        return result
-
-    async def image_to_image_search(
-        self,
-        file: UploadFile,
-        top_k: Optional[int] = None,
-    ) -> Tuple[List[Document], str]:
-        """
-        图像到图像检索
-
-        先用多模态模型生成输入图像的描述，再基于描述进行文本检索。
-
-        Args:
-            file: 上传的图像文件
-            top_k: 返回结果数量，默认使用初始化时的值
-
-        Returns:
-            Tuple[List[Document], str]: (检索结果列表, 生成的描述)
-        """
-        k = top_k or self.top_k
-
-        # 读取文件内容
-        contents = await file.read()
-        # 将图像转为 base64 编码
-        b64_image = base64.b64encode(contents).decode("utf-8")
-
-        # 生成图像描述
-        description = await self.chat_model.agenerate_description(
-            image_b64=b64_image,
-            prompt=IMAGE_DESCRIPTION_PROMPT,
-        )
-
-        # 基于描述进行文本检索
-        results = self.vector_store.similarity_search_with_score(description, k=k)
-
-        # 转换为 Document 列表
-        documents = []
-        for doc, score in results:
-            doc.metadata["score"] = float(score)
-            documents.append(doc)
-
-        # 重排序
-        reranked = self._rerank_documents(documents)
-
-        return reranked, description
 
     async def text_to_image_search(
         self,
@@ -133,28 +121,50 @@ class MultimodalRetriever:
         top_k: Optional[int] = None,
     ) -> List[Document]:
         """
-        文本到图像检索
+        文本到图像检索（完整 P0 流程）
 
-        Args:
-            query: 查询文本
-            top_k: 返回结果数量，默认使用初始化时的值
-
-        Returns:
-            List[Document]: 检索结果列表
+        query → Multi-Query 扩展 → 混合检索(向量+BM25) → RRF 融合 → CrossEncoder 精排 → top-K
         """
         k = top_k or self.top_k
+        candidate_k = settings.RERANK_CANDIDATE_K
 
-        # 文本到图像检索
-        results = self.vector_store.similarity_search_with_score(query, k=k)
+        candidates = await _multi_query_hybrid_search(
+            query, self.vector_store, candidate_k
+        )
 
-        # 转换为 Document 列表
+        reranked = cross_encoder_rerank(query, candidates, top_k=k)
+
         documents = []
-        for doc, score in results:
-            doc.metadata["score"] = float(score)
+        for hit in reranked:
+            doc = Document(
+                page_content=hit.get("document", ""),
+                metadata=hit.get("metadata", {}),
+            )
+            doc.metadata["score"] = hit.get(
+                "rerank_score", hit.get("rrf_score", hit.get("score", 0.0))
+            )
             documents.append(doc)
 
-        # 重排序
-        return self._rerank_documents(documents)
+        return documents
+
+    async def image_to_image_search(
+        self,
+        file: UploadFile,
+        top_k: Optional[int] = None,
+    ) -> Tuple[List[Document], str]:
+        """图像到图像检索：先生成描述，再走文本检索路径。"""
+        k = top_k or self.top_k
+
+        contents = await file.read()
+        b64_image = base64.b64encode(contents).decode("utf-8")
+
+        description = await self.chat_model.agenerate_description(
+            image_b64=b64_image,
+            prompt=IMAGE_DESCRIPTION_PROMPT,
+        )
+
+        documents = await self.text_to_image_search(description, top_k=k)
+        return documents, description
 
     def search_with_dict_output(
         self,
@@ -162,36 +172,24 @@ class MultimodalRetriever:
         top_k: Optional[int] = None,
     ) -> List[Dict[str, Any]]:
         """
-        检索并返回字典格式结果（兼容现有接口）
+        同步检索并返回字典格式结果（兼容 RAGChain 等现有接口）。
 
-        Args:
-            query: 查询文本
-            top_k: 返回结果数量
-
-        Returns:
-            List[Dict[str, Any]]: 搜索结果列表
+        同步方法无法使用 Multi-Query（需要 async LLM 调用），
+        此处使用混合检索 + CrossEncoder 精排。
         """
         k = top_k or self.top_k
-        documents = self.vector_store.search_by_text(query, top_k=k)
-        return simple_rerank(documents)
+        candidate_k = settings.RERANK_CANDIDATE_K
+
+        candidates = _hybrid_search_sync(query, self.vector_store, candidate_k)
+        return cross_encoder_rerank(query, candidates, top_k=k)
 
 
 # 全局检索器实例缓存
 _retriever: Optional[MultimodalRetriever] = None
 
 
-def get_multimodal_retriever(
-    top_k: int = 10,
-) -> MultimodalRetriever:
-    """
-    获取多模态检索器实例（单例模式）
-
-    Args:
-        top_k: 返回结果数量
-
-    Returns:
-        MultimodalRetriever: 检索器实例
-    """
+def get_multimodal_retriever(top_k: int = 10) -> MultimodalRetriever:
+    """获取多模态检索器实例（单例模式）"""
     global _retriever
     if _retriever is None:
         _retriever = MultimodalRetriever(top_k=top_k)

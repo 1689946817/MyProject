@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
-from .api.routers import chat, kb, search, docs
+from .api.routers import chat, kb, search, docs, admin
 from .core.config import settings
 from .data.database import Base, engine
 # 导入所有 ORM 模型，确保 Base.metadata.create_all() 建表时能发现它们
@@ -54,6 +54,7 @@ def create_app() -> FastAPI:
     app.include_router(search.router)  # 搜索路由
     app.include_router(chat.router)  # RAG 聊天路由
     app.include_router(docs.router)  # 文档知识库路由
+    app.include_router(admin.router)  # 管理端点路由
 
     # 挂载静态文件目录，供前端预览图片
     storage_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage")
