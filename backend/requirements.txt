@@ -19,3 +19,6 @@ langchain-community>=0.3.0
 # P0 升级：混合检索 + 重排序
 rank-bm25>=0.2.2
 FlagEmbedding>=1.2.0
+
+# P1 修复：中文 BM25 分词
+jieba>=0.42.1

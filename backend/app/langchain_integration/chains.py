@@ -8,15 +8,15 @@ LangChain Chain 集成模块
 使用 LCEL 构建可组合的链式流程，遵循 LangChain 最佳实践。
 """
 import base64
+import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import UploadFile
 from langchain_core.documents import Document
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough, RunnableSequence
+from langchain_core.runnables import RunnableLambda, RunnableSequence
 
 from app.langchain_integration.models import (
     build_image_data_url,
@@ -183,10 +183,8 @@ class RAGChain:
 
     def _build_chain(self) -> RunnableSequence:
         """
-        构建 LCEL Chain
-
-        Returns:
-            RunnableSequence: 可运行的 Chain
+        构建 LCEL Chain（仅负责 消息构建 → 模型调用 → 解析输出）。
+        检索由 invoke/ainvoke 在外部完成后注入，避免双重检索。
         """
         # 定义系统提示词
         system_prompt = (
@@ -196,35 +194,16 @@ class RAGChain:
             "如果现有信息不足以回答某些部分，请明确说明不确定。"
         )
 
-        # 1. 检索步骤（同时检索图像和文本）
-        def retrieve_documents(inputs: Dict[str, Any]) -> Dict[str, Any]:
-            query = inputs["query"]
-            image_docs = self.retriever.search_with_dict_output(query, top_k=self.top_k)
-            text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
-            return {
-                "query": query,
-                "documents": image_docs,
-                "text_chunks": text_chunks,
-            }
-
-        retrieve_runnable = RunnableLambda(retrieve_documents)
-
-        # 2. 准备多模态消息
+        # 准备多模态消息（输入已包含预检索的 documents 和 text_chunks）
         def prepare_messages(inputs: Dict[str, Any]) -> List[Dict[str, Any]]:
             query = inputs["query"]
-            documents = inputs["documents"]
+            documents = inputs.get("documents") or []
             text_chunks = inputs.get("text_chunks") or []
 
-            # 构建消息内容
             content = []
-
-            # 添加系统提示词
             content.append({"type": "text", "text": system_prompt})
-
-            # 添加用户问题
             content.append({"type": "text", "text": f"\n\n用户问题：{query}\n\n"})
 
-            # 添加检索到的文本片段
             if text_chunks:
                 text_context = "\n".join(
                     f"[文本片段 {i+1}] {chunk['content']}"
@@ -232,7 +211,6 @@ class RAGChain:
                 )
                 content.append({"type": "text", "text": f"相关文档文本：\n{text_context}\n\n"})
 
-            # 添加检索到的图像
             for idx, doc in enumerate(documents, start=1):
                 meta = doc.get("metadata") or {}
                 file_path = meta.get("file_path", "")
@@ -253,60 +231,46 @@ class RAGChain:
                             "text": f"\n[图像 {idx}]",
                         })
                     except Exception as e:
-                        print(f"警告：无法读取图像文件 {file_path}: {e}")
+                        logging.getLogger(__name__).warning(f"无法读取图像文件 {file_path}: {e}")
 
             return [HumanMessage(content=content)]
 
         prepare_msg_runnable = RunnableLambda(prepare_messages)
-
-        # 3. 调用模型
         call_model = self.chat_model
-
-        # 4. 解析输出
         output_parser = StrOutputParser()
 
-        # 组合 Chain
-        chain = retrieve_runnable | prepare_msg_runnable | call_model | output_parser
-
+        chain = prepare_msg_runnable | call_model | output_parser
         return chain
 
     def invoke(self, inputs: Dict[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        同步执行 RAG Chain
-
-        Args:
-            inputs: 输入字典，包含 query
-
-        Returns:
-            Tuple[str, List[Dict]]: (生成的回答, 检索结果列表)
+        同步执行 RAG Chain（检索使用同步路径，无 Multi-Query）
         """
         query = inputs["query"]
 
-        # 执行检索
+        # 检索一次
         documents = self.retriever.search_with_dict_output(query, top_k=self.top_k)
+        text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
-        # 执行 Chain 生成回答
-        answer = self._chain.invoke(inputs)
+        # 将预检索结果注入 chain
+        chain_inputs = {"query": query, "documents": documents, "text_chunks": text_chunks}
+        answer = self._chain.invoke(chain_inputs)
 
         return answer, documents
 
     async def ainvoke(self, inputs: Dict[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        异步执行 RAG Chain
-
-        Args:
-            inputs: 输入字典，包含 query
-
-        Returns:
-            Tuple[str, List[Dict]]: (生成的回答, 检索结果列表)
+        异步执行 RAG Chain（完整 P0 管线：Multi-Query + 混合检索 + 精排）
         """
         query = inputs["query"]
 
-        # 执行检索
-        documents = self.retriever.search_with_dict_output(query, top_k=self.top_k)
+        # 异步检索（走完整 Multi-Query 管线）
+        documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
+        text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
-        # 执行 Chain 生成回答
-        answer = await self._chain.ainvoke(inputs)
+        # 将预检索结果注入 chain
+        chain_inputs = {"query": query, "documents": documents, "text_chunks": text_chunks}
+        answer = await self._chain.ainvoke(chain_inputs)
 
         return answer, documents
 

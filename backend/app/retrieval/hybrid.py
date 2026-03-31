@@ -19,8 +19,16 @@ _BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 
 
 def _tokenize(text: str) -> List[str]:
-    """简单分词：按非字母数字字符和中文字符边界切分"""
-    return re.findall(r'[\u4e00-\u9fff]|[a-zA-Z0-9]+', text.lower())
+    """中文 jieba 分词 + 英文按词切分，过滤停用词和单字符"""
+    text = text.lower()
+    try:
+        import jieba
+        tokens = list(jieba.cut(text))
+    except ImportError:
+        logger.warning("[BM25] jieba 未安装，退化为正则分词")
+        tokens = re.findall(r'[\u4e00-\u9fff]|[a-zA-Z0-9]+', text)
+    # 过滤空白和纯标点
+    return [t.strip() for t in tokens if t.strip() and re.search(r'[\u4e00-\u9fff]|[a-zA-Z0-9]', t)]
 
 
 class BM25Index:

@@ -15,14 +15,11 @@ from sqlalchemy.orm import Session
 from app.application.schemas import ImageRecordOut, UploadImagesResponse
 from app.data.database import get_db
 from app.data.models import ImageRecord
-from app.langchain_integration.adapters import LangChainAdapter
+from app.langchain_integration.adapters import get_langchain_adapter
 
 
 # 创建 API 路由器，设置前缀和标签
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
-
-# 创建 LangChain 适配器实例
-adapter = LangChainAdapter()
 
 
 @router.get("/list", response_model=List[ImageRecordOut])
@@ -71,6 +68,7 @@ async def upload_images(
         UploadImagesResponse: 上传结果，包含处理后的图片记录列表
     """
     # 使用 LangChain 适配器处理上传的图片
+    adapter = get_langchain_adapter()
     processed = await adapter.process_image_uploads(
         db=db,
         files=files,

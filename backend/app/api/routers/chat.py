@@ -11,14 +11,11 @@ from typing import List, Optional
 from fastapi import APIRouter, File, Form, UploadFile
 
 from app.application.schemas import ChatResponse, SearchResultItem
-from app.langchain_integration.adapters import LangChainAdapter
+from app.langchain_integration.adapters import get_langchain_adapter
 
 
 # 创建 API 路由器，设置前缀和标签
 router = APIRouter(prefix="/api/rag", tags=["rag"])
-
-# 创建 LangChain 适配器实例
-adapter = LangChainAdapter()
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -41,6 +38,7 @@ async def rag_chat_endpoint(
         ChatResponse: 聊天结果，包含生成的回答和检索到的相关图像列表
     """
     # 调用 LangChain 适配器的 RAG 聊天服务
+    adapter = get_langchain_adapter()
     answer, retrieved = await adapter.rag_chat(query=query, top_k=top_k, image=image)
     # 处理检索结果
     results: List[SearchResultItem] = []

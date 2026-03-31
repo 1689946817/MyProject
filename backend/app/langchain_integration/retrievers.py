@@ -172,7 +172,7 @@ class MultimodalRetriever:
         top_k: Optional[int] = None,
     ) -> List[Dict[str, Any]]:
         """
-        同步检索并返回字典格式结果（兼容 RAGChain 等现有接口）。
+        同步检索并返回字典格式结果（兼容旧接口）。
 
         同步方法无法使用 Multi-Query（需要 async LLM 调用），
         此处使用混合检索 + CrossEncoder 精排。
@@ -181,6 +181,22 @@ class MultimodalRetriever:
         candidate_k = settings.RERANK_CANDIDATE_K
 
         candidates = _hybrid_search_sync(query, self.vector_store, candidate_k)
+        return cross_encoder_rerank(query, candidates, top_k=k)
+
+    async def async_search_with_dict_output(
+        self,
+        query: str,
+        top_k: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        异步检索并返回字典格式结果（完整 P0 管线：Multi-Query + 混合检索 + 精排）。
+        """
+        k = top_k or self.top_k
+        candidate_k = settings.RERANK_CANDIDATE_K
+
+        candidates = await _multi_query_hybrid_search(
+            query, self.vector_store, candidate_k
+        )
         return cross_encoder_rerank(query, candidates, top_k=k)
 
 
