@@ -1,122 +1,200 @@
 <template>
   <div class="search-page">
     <el-row :gutter="20">
+      <!-- 文本检索 -->
       <el-col :span="12">
-        <el-card>
-          <template #header> 文本 → 图像检索 </template>
+        <el-card class="search-card glass-card">
+          <template #header>
+            <div class="card-header">
+              <i class="i-ep-search mr-2 accent-icon"></i>
+              <span>{{ t('search.textToImage') }}</span>
+            </div>
+          </template>
+
           <el-input
             v-model="textQuery"
-            placeholder="输入要检索的图像内容，如：一个在草地上玩球的小孩"
+            :placeholder="t('search.textQueryPlaceholder')"
+            type="textarea"
+            :rows="3"
+            class="dark-input"
           />
+
           <el-button
             type="primary"
-            style="margin-top: 12px"
+            class="search-btn"
             :loading="loadingText"
             @click="doTextSearch"
           >
-            检索
+            <i class="i-ep-search mr-2"></i>
+            {{ t('search.searchBtn') }}
           </el-button>
+
           <el-divider />
-          <el-table :data="textResults" height="320">
-            <el-table-column prop="id" label="ID" width="220" />
-            <el-table-column prop="file_path" label="路径" />
-            <el-table-column prop="score" label="相似度" width="120" />
-          </el-table>
+
+          <!-- 文本检索结果 -->
+          <div class="results-section">
+            <h4 class="section-title">
+              <span v-if="textResults.length > 0">{{ t('search.similarity') }} ({{ textResults.length }})</span>
+              <span v-else>{{ t('search.noResults') }}</span>
+            </h4>
+            <div v-if="textResults.length > 0" class="result-grid">
+              <ImageCard
+                v-for="item in textResults"
+                :key="item.id"
+                :src="getImageSrc(item.file_path || '')"
+                :title="item.id"
+                :description="item.description"
+                :score="1 - item.score"
+                @click="openPreview(item)"
+              />
+            </div>
+            <el-empty v-else-if="!loadingText" :description="t('search.noResults')" />
+          </div>
         </el-card>
       </el-col>
 
+      <!-- 以图搜图 -->
       <el-col :span="12">
-        <el-card>
-          <template #header> 图像 → 图像检索 </template>
-          <el-upload
-            drag
-            :auto-upload="false"
-            :file-list="imageFileList"
-            :on-change="onImageChange"
-          >
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">
-              拖拽或点击上传待检索的图片
+        <el-card class="search-card glass-card">
+          <template #header>
+            <div class="card-header">
+              <i class="i-ep-picture mr-2 accent-icon"></i>
+              <span>{{ t('search.imageToImage') }}</span>
             </div>
-          </el-upload>
+          </template>
+
+          <UploadZone
+            v-model:files="imageFiles"
+            :text="t('search.imageQueryPlaceholder')"
+            :accept="'image/*'"
+            :multiple="false"
+          />
+
           <el-button
             type="primary"
-            style="margin-top: 12px"
+            class="search-btn"
             :loading="loadingImage"
             @click="doImageSearch"
           >
-            检索相似图片
+            <i class="i-ep-picture mr-2"></i>
+            {{ t('search.imageSearchBtn') }}
           </el-button>
-          <p v-if="imageQueryDescription" style="margin-top: 12px">
-            生成的查询描述：{{ imageQueryDescription }}
-          </p>
+
+          <!-- MLLM 生成的查询描述 -->
+          <div v-if="imageQueryDescription" class="query-desc-card">
+            <div class="query-desc-header">
+              <i class="i-ep-bot mr-2"></i>
+              <span>{{ t('search.queryDescription') }}</span>
+            </div>
+            <p class="query-desc-text">{{ imageQueryDescription }}</p>
+          </div>
+
           <el-divider />
-          <el-table :data="imageResults" height="260">
-            <el-table-column prop="id" label="ID" width="220" />
-            <el-table-column prop="file_path" label="路径" />
-            <el-table-column prop="score" label="相似度" width="120" />
-          </el-table>
+
+          <!-- 图像检索结果 -->
+          <div class="results-section">
+            <h4 class="section-title">
+              <span v-if="imageResults.length > 0">{{ t('search.similarity') }} ({{ imageResults.length }})</span>
+              <span v-else>{{ t('search.noResults') }}</span>
+            </h4>
+            <div v-if="imageResults.length > 0" class="result-grid">
+              <ImageCard
+                v-for="item in imageResults"
+                :key="item.id"
+                :src="getImageSrc(item.file_path || '')"
+                :title="item.id"
+                :description="item.description"
+                :score="1 - item.score"
+                @click="openPreview(item)"
+              />
+            </div>
+            <el-empty v-else-if="!loadingImage" :description="t('search.noResults')" />
+          </div>
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 图片预览 -->
+    <ImagePreviewModal
+      v-model:visible="previewVisible"
+      :src="previewItem?.file_path ? getImageSrc(previewItem.file_path) : ''"
+      :title="previewItem?.id"
+      :description="previewItem?.description"
+      :id="previewItem?.id"
+      :score="previewItem ? 1 - previewItem.score : undefined"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import type { UploadFile, UploadFiles } from "element-plus";
-import { ElMessage } from "element-plus";
-
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { ElMessage } from 'element-plus'
+import type { UploadFile, UploadFiles } from 'element-plus'
 import {
   textToImageSearch,
   imageToImageSearch,
   type SearchResultItem
-} from "@/api/search";
+} from '@/api/search'
+import { imgSrc } from '@/utils/image'
+import UploadZone from '@/components/UploadZone.vue'
+import ImageCard from '@/components/ImageCard.vue'
+import ImagePreviewModal from '@/components/ImagePreviewModal.vue'
 
-const textQuery = ref("");
-const textResults = ref<SearchResultItem[]>([]);
-const loadingText = ref(false);
+const { t } = useI18n()
 
-const imageFileList = ref<UploadFiles>([]);
-const imageResults = ref<SearchResultItem[]>([]);
-const imageQueryDescription = ref("");
-const loadingImage = ref(false);
+const textQuery = ref('')
+const textResults = ref<SearchResultItem[]>([])
+const loadingText = ref(false)
 
-function onImageChange(file: UploadFile, files: UploadFiles) {
-  imageFileList.value = files.slice(-1);
+const imageFiles = ref<File[]>([])
+const imageResults = ref<SearchResultItem[]>([])
+const imageQueryDescription = ref('')
+const loadingImage = ref(false)
+
+const previewVisible = ref(false)
+const previewItem = ref<SearchResultItem | null>(null)
+
+function getImageSrc(filePath: string): string {
+  return imgSrc(filePath)
+}
+
+function openPreview(item: SearchResultItem) {
+  previewItem.value = item
+  previewVisible.value = true
 }
 
 async function doTextSearch() {
   if (!textQuery.value.trim()) {
-    ElMessage.warning("请输入文本查询内容");
-    return;
+    ElMessage.warning(t('search.enterQuery'))
+    return
   }
   try {
-    loadingText.value = true;
-    const resp = await textToImageSearch(textQuery.value, 10);
-    textResults.value = resp.results;
+    loadingText.value = true
+    const resp = await textToImageSearch(textQuery.value, 10)
+    textResults.value = resp.results
   } catch (e) {
-    ElMessage.error("文本检索失败，请检查后端服务是否已启动");
+    ElMessage.error(t('search.textSearchFailed'))
   } finally {
-    loadingText.value = false;
+    loadingText.value = false
   }
 }
 
 async function doImageSearch() {
-  const file = imageFileList.value[0]?.raw;
+  const file = imageFiles.value[0]
   if (!file) {
-    ElMessage.warning("请先选择一张图片作为查询");
-    return;
+    ElMessage.warning(t('search.selectImage'))
+    return
   }
   try {
-    loadingImage.value = true;
-    const resp = await imageToImageSearch(file, 10);
-    imageQueryDescription.value = resp.query_description;
-    imageResults.value = resp.results;
+    loadingImage.value = true
+    const resp = await imageToImageSearch(file, 10)
+    imageQueryDescription.value = resp.query_description
+    imageResults.value = resp.results
   } catch (e) {
-    ElMessage.error("以图搜图失败，请检查后端服务是否已启动");
+    ElMessage.error(t('search.imageSearchFailed'))
   } finally {
-    loadingImage.value = false;
+    loadingImage.value = false
   }
 }
 </script>
@@ -125,5 +203,80 @@ async function doImageSearch() {
 .search-page {
   padding: 0 8px;
 }
-</style>
 
+.search-card {
+  height: calc(100vh - 160px);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+}
+
+.accent-icon {
+  color: var(--accent-primary);
+  font-size: 18px;
+}
+
+.dark-input :deep(.el-textarea__inner) {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-input :deep(.el-textarea__inner:focus) {
+  border-color: var(--accent-primary);
+}
+
+.search-btn {
+  margin-top: 16px;
+  width: 100%;
+  background: var(--accent-gradient);
+  border: none;
+}
+
+.results-section {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.section-title {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+/* MLLM 查询描述卡片 */
+.query-desc-card {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-secondary);
+}
+
+.query-desc-header {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--accent-secondary);
+  margin-bottom: 8px;
+}
+
+.query-desc-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+</style>

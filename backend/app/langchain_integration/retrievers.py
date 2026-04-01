@@ -42,10 +42,14 @@ def _hybrid_search_sync(
     bm25_index = get_bm25_index()
     if bm25_index.is_ready:
         bm25_hits = bm25_index.search(query, top_k=candidate_k)
+        # 构建 id -> document 和 id -> metadata 映射，用于补全 BM25 结果缺失的字段
         id_to_doc = {h["id"]: h.get("document", "") for h in vector_hits}
+        id_to_meta = {h["id"]: h.get("metadata", {}) for h in vector_hits}
         for hit in bm25_hits:
             if "document" not in hit:
                 hit["document"] = id_to_doc.get(hit["id"], "")
+            if "metadata" not in hit:
+                hit["metadata"] = id_to_meta.get(hit["id"], {})
         return reciprocal_rank_fusion(vector_hits, bm25_hits)
 
     logger.debug("[Retriever] BM25 索引未就绪，使用纯向量检索")

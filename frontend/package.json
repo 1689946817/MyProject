@@ -11,13 +11,16 @@
     "vue": "latest",
     "vue-router": "latest",
     "axios": "latest",
-    "element-plus": "latest"
+    "element-plus": "latest",
+    "vue-i18n": "latest"
   },
   "devDependencies": {
     "vite": "latest",
     "typescript": "latest",
     "@vitejs/plugin-vue": "latest",
-    "vue-tsc": "latest"
+    "vue-tsc": "latest",
+    "unocss": "latest",
+    "@unocss/preset-uno": "latest",
+    "@unocss/preset-icons": "latest"
   }
 }
-

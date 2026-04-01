@@ -27,6 +27,15 @@ def ensure_chat_sources_column(db: Session) -> None:
     db.commit()
 
 
+def ensure_retrieval_params_column(db: Session) -> None:
+    inspector = inspect(db.bind)
+    columns = {column["name"] for column in inspector.get_columns("chat_messages")}
+    if "retrieval_params_json" in columns:
+        return
+    db.execute(text("ALTER TABLE chat_messages ADD COLUMN retrieval_params_json TEXT"))
+    db.commit()
+
+
 def dump_message_sources(sources: Optional[List[dict[str, Any]]]) -> Optional[str]:
     if sources is None:
         return None
@@ -47,8 +56,29 @@ def load_message_sources(sources_json: Optional[str]) -> List[dict[str, Any]]:
     return [item for item in loaded if isinstance(item, dict)]
 
 
+def dump_json_field(data: Optional[dict[str, Any]]) -> Optional[str]:
+    """Serialize a dict to JSON string, compatible with sources serialization."""
+    if data is None:
+        return None
+    return json.dumps(data, ensure_ascii=False)
+
+
+def load_json_field(json_str: Optional[str]) -> Optional[dict[str, Any]]:
+    """Deserialize JSON string to dict, returns None on failure."""
+    if not json_str:
+        return None
+    try:
+        loaded = json.loads(json_str)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return None
+    if not isinstance(loaded, dict):
+        return None
+    return loaded
+
+
 def create_session(db: Session, title: Optional[str] = None) -> ChatSession:
     ensure_chat_sources_column(db)
+    ensure_retrieval_params_column(db)
     session = ChatSession(title=title)
     db.add(session)
     db.commit()
@@ -58,6 +88,7 @@ def create_session(db: Session, title: Optional[str] = None) -> ChatSession:
 
 def list_sessions(db: Session, limit: int = 50, offset: int = 0) -> List[ChatSession]:
     ensure_chat_sources_column(db)
+    ensure_retrieval_params_column(db)
     return (
         db.query(ChatSession)
         .order_by(ChatSession.updated_at.desc(), ChatSession.created_at.desc())
@@ -69,6 +100,7 @@ def list_sessions(db: Session, limit: int = 50, offset: int = 0) -> List[ChatSes
 
 def get_session(db: Session, session_id: str) -> Optional[ChatSession]:
     ensure_chat_sources_column(db)
+    ensure_retrieval_params_column(db)
     return db.query(ChatSession).filter(ChatSession.id == session_id).first()
 
 
@@ -96,17 +128,20 @@ def add_message(
     *,
     has_image: bool = False,
     sources: Optional[List[dict[str, Any]]] = None,
+    retrieval_params: Optional[dict[str, Any]] = None,
 ) -> ChatMessage:
     if role not in VALID_ROLES:
         raise ValueError(f"invalid role: {role}")
 
     ensure_chat_sources_column(db)
+    ensure_retrieval_params_column(db)
     message = ChatMessage(
         session_id=session.id,
         role=role,
         content=content,
         has_image=has_image,
         sources_json=dump_message_sources(sources),
+        retrieval_params_json=dump_json_field(retrieval_params),
     )
     session.updated_at = datetime.utcnow()
     db.add(message)

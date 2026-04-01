@@ -122,6 +122,7 @@ class ChatMessageOut(BaseModel):
     content: str
     has_image: bool = False
     sources: List[ChatSourceItem] = Field(default_factory=list)
+    retrieval_params: Optional[dict[str, Any]] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

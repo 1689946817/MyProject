@@ -1,0 +1,54 @@
+/* 深色/浅色双主题 CSS 变量 */
+
+:root {
+  /* 深色模式（默认） */
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #252540;
+  --accent-primary: #00d4ff;
+  --accent-secondary: #7c3aed;
+  --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0b0;
+  --border-color: #2d2d4a;
+
+  /* Element Plus 深色变量覆盖 */
+  --el-bg-color: #1a1a2e;
+  --el-bg-color-overlay: #252540;
+  --el-text-color-primary: #ffffff;
+  --el-text-color-regular: #a0a0b0;
+  --el-border-color: #2d2d4a;
+  --el-border-color-light: #3d3d5a;
+  --el-fill-color-blank: #1a1a2e;
+}
+
+/* 浅色模式 */
+:root.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --bg-tertiary: #e8ecf1;
+  --accent-primary: #409eff;
+  --accent-secondary: #7c3aed;
+  --accent-gradient: linear-gradient(135deg, #409eff 0%, #7c3aed 100%);
+  --text-primary: #303133;
+  --text-secondary: #909399;
+  --border-color: #dcdfe6;
+
+  /* Element Plus 浅色变量 */
+  --el-bg-color: #ffffff;
+  --el-bg-color-overlay: #ffffff;
+  --el-text-color-primary: #303133;
+  --el-text-color-regular: #909399;
+  --el-border-color: #dcdfe6;
+  --el-border-color-light: #e4e7ed;
+  --el-fill-color-blank: #ffffff;
+}
+
+/* 过渡动画 */
+:root {
+  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+* {
+  transition: var(--theme-transition);
+}

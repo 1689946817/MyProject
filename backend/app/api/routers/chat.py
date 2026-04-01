@@ -18,6 +18,8 @@ from app.application.chat_service import (
     get_session_or_raise,
     list_sessions,
     load_message_sources,
+    load_json_field,
+    dump_json_field,
 )
 from app.application.schemas import (
     ChatMessageOut,
@@ -156,6 +158,7 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
 
 def _to_chat_message_out(message) -> ChatMessageOut:
     sources = [ChatSourceItem.model_validate(item) for item in load_message_sources(getattr(message, "sources_json", None))]
+    retrieval_params = load_json_field(getattr(message, "retrieval_params_json", None))
     return ChatMessageOut(
         id=message.id,
         session_id=message.session_id,
@@ -163,6 +166,7 @@ def _to_chat_message_out(message) -> ChatMessageOut:
         content=message.content,
         has_image=message.has_image,
         sources=sources,
+        retrieval_params=retrieval_params,
         created_at=message.created_at,
     )
 
@@ -256,13 +260,15 @@ async def rag_chat_endpoint(
     )
     sources = _normalize_chat_sources(retrieved)
 
-    add_message(db, session, "user", query, has_image=image is not None)
+    retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": False}
+    add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
     add_message(
         db,
         session,
         "assistant",
         answer,
         sources=[source.model_dump() for source in sources],
+        retrieval_params=retrieval_params,
     )
 
     return ChatResponse(
@@ -316,7 +322,8 @@ async def rag_chat_stream_endpoint(
                 retrieved_docs = docs
                 yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
 
-        add_message(db, session, "user", query, has_image=image is not None)
+        retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": True}
+        add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
         sources = _normalize_chat_sources(retrieved_docs)
         add_message(
             db,
@@ -324,6 +331,7 @@ async def rag_chat_stream_endpoint(
             "assistant",
             full_answer,
             sources=[source.model_dump() for source in sources],
+            retrieval_params=retrieval_params,
         )
 
         yield f"data: {json.dumps({'type': 'results', 'results': [item.model_dump() for item in _build_results(retrieved_docs)], 'sources': [source.model_dump() for source in sources]})}\n\n"
