@@ -1,146 +1,332 @@
 """
-RAG 聊天 API 路由模块（LangChain 版本）
-
-该模块定义了 RAG（检索增强生成）聊天相关的 API 路由，包括：
-- RAG 聊天接口：基于用户查询（文本或图像）生成回答
-- 支持多轮对话（session_id）
-- 支持流式响应（SSE）
-
-使用 LangChain 框架实现，所有路由都以 /api/rag 为前缀。
+RAG 聊天 API 路由模块（LangChain 版本）。
 """
-import uuid
-from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple
+import json
+import os
+from typing import Any, List, Optional
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
+from sqlalchemy.orm import Session
 
-from app.application.schemas import ChatResponse, SearchResultItem
+from app.application.chat_service import (
+    ChatSessionNotFoundError,
+    add_message,
+    create_session,
+    delete_session,
+    get_recent_history,
+    get_session_or_raise,
+    list_sessions,
+    load_message_sources,
+)
+from app.application.schemas import (
+    ChatMessageOut,
+    ChatResponse,
+    ChatSessionCreateResponse,
+    ChatSessionDetailResponse,
+    ChatSessionRenameRequest,
+    ChatSourceItem,
+    DeleteResponse,
+    SearchResultItem,
+)
 from app.core.config import settings
+from app.data.database import get_db
 from app.langchain_integration.adapters import get_langchain_adapter
 
 
-# 创建 API 路由器，设置前缀和标签
-router = APIRouter(prefix="/api/rag", tags=["rag"])
-
-# 内存会话存储：session_id → [(query, answer), ...]
-_chat_sessions: OrderedDict[str, List[Tuple[str, str]]] = OrderedDict()
-_MAX_SESSIONS = 200  # 最多保留的会话数
+router = APIRouter(tags=["chat"])
+rag_router = APIRouter(prefix="/api/rag", tags=["rag"])
 
 
-def _get_history(session_id: Optional[str]) -> List[Tuple[str, str]]:
-    """获取会话历史"""
-    if not session_id or session_id not in _chat_sessions:
-        return []
-    return _chat_sessions[session_id]
+def _build_results(retrieved: List[dict]) -> List[SearchResultItem]:
+    results: List[SearchResultItem] = []
+    for item in retrieved:
+        if not isinstance(item, dict):
+            continue
+        meta = item.get("metadata") or {}
+        result_id = item.get("id") or meta.get("id") or item.get("doc_id") or meta.get("doc_id")
+        if result_id is None:
+            continue
+        description = item.get("document") or item.get("content")
+        results.append(
+            SearchResultItem(
+                id=str(result_id),
+                file_path=meta.get("file_path"),
+                description=description,
+                score=float(item.get("score", 0.0)),
+            )
+        )
+    return results
 
 
-def _save_turn(session_id: str, query: str, answer: str) -> None:
-    """保存一轮对话"""
-    if session_id not in _chat_sessions:
-        _chat_sessions[session_id] = []
-        # LRU 淘汰
-        while len(_chat_sessions) > _MAX_SESSIONS:
-            _chat_sessions.popitem(last=False)
-    history = _chat_sessions[session_id]
-    history.append((query, answer))
-    # 只保留最近 N 轮
-    max_turns = settings.CHAT_HISTORY_MAX_TURNS
-    if len(history) > max_turns:
-        _chat_sessions[session_id] = history[-max_turns:]
+def _safe_score(value: Any) -> Optional[float]:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
-@router.post("/chat", response_model=ChatResponse)
+def _fallback_source_id(item: dict, metadata: dict[str, Any]) -> str:
+    candidates = [
+        item.get("id"),
+        metadata.get("id"),
+        item.get("doc_id"),
+        metadata.get("doc_id"),
+        metadata.get("file_path"),
+        item.get("document"),
+        item.get("content"),
+    ]
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        text = str(candidate).strip()
+        if text:
+            return text
+    return "unknown-source"
+
+
+def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
+    normalized: List[ChatSourceItem] = []
+    for item in retrieved:
+        if not isinstance(item, dict):
+            continue
+
+        raw_metadata = item.get("metadata")
+        metadata = dict(raw_metadata) if isinstance(raw_metadata, dict) else {}
+        is_document_chunk = item.get("doc_id") is not None or item.get("chunk_index") is not None or "content" in item
+
+        if is_document_chunk:
+            doc_id = item.get("doc_id") or metadata.get("doc_id") or item.get("id") or metadata.get("id")
+            chunk_index = item.get("chunk_index")
+            if chunk_index is None:
+                chunk_index = metadata.get("chunk_index")
+            if doc_id is not None:
+                metadata.setdefault("doc_id", doc_id)
+            if chunk_index is not None:
+                metadata.setdefault("chunk_index", chunk_index)
+
+            source_id = (
+                f"{doc_id}#chunk-{chunk_index}"
+                if doc_id is not None and chunk_index is not None
+                else _fallback_source_id(item, metadata)
+            )
+            file_path = metadata.get("file_path")
+            title = metadata.get("file_name")
+            if not title and file_path:
+                title = os.path.basename(file_path)
+            if not title:
+                title = str(doc_id or source_id)
+
+            normalized.append(
+                ChatSourceItem(
+                    source_type="document_chunk",
+                    source_id=str(source_id),
+                    title=title,
+                    file_path=file_path,
+                    content=item.get("content"),
+                    score=_safe_score(item.get("score")),
+                    metadata=metadata,
+                )
+            )
+            continue
+
+        source_id = item.get("id") or metadata.get("id") or _fallback_source_id(item, metadata)
+        file_path = metadata.get("file_path")
+        title = metadata.get("filename")
+        if not title and file_path:
+            title = os.path.basename(file_path)
+        if not title:
+            title = str(source_id)
+
+        normalized.append(
+            ChatSourceItem(
+                source_type="image",
+                source_id=str(source_id),
+                title=title,
+                file_path=file_path,
+                content=item.get("document"),
+                score=_safe_score(item.get("score")),
+                metadata=metadata,
+            )
+        )
+    return normalized
+
+
+def _to_chat_message_out(message) -> ChatMessageOut:
+    sources = [ChatSourceItem.model_validate(item) for item in load_message_sources(getattr(message, "sources_json", None))]
+    return ChatMessageOut(
+        id=message.id,
+        session_id=message.session_id,
+        role=message.role,
+        content=message.content,
+        has_image=message.has_image,
+        sources=sources,
+        created_at=message.created_at,
+    )
+
+
+@router.post("/api/chat/sessions", response_model=ChatSessionCreateResponse)
+def create_chat_session(db: Session = Depends(get_db)) -> ChatSessionCreateResponse:
+    session = create_session(db)
+    return ChatSessionCreateResponse.model_validate(session)
+
+
+@router.get("/api/chat/sessions", response_model=List[ChatSessionCreateResponse])
+def list_chat_sessions(
+    limit: int = 50,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+) -> List[ChatSessionCreateResponse]:
+    sessions = list_sessions(db, limit=limit, offset=offset)
+    return [ChatSessionCreateResponse.model_validate(session) for session in sessions]
+
+
+@router.get("/api/chat/sessions/{session_id}", response_model=ChatSessionDetailResponse)
+def get_chat_session(
+    session_id: str,
+    db: Session = Depends(get_db),
+) -> ChatSessionDetailResponse:
+    try:
+        session = get_session_or_raise(db, session_id)
+    except ChatSessionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="会话不存在") from exc
+
+    return ChatSessionDetailResponse(
+        id=session.id,
+        title=session.title,
+        created_at=session.created_at,
+        updated_at=session.updated_at,
+        messages=[_to_chat_message_out(message) for message in session.messages],
+    )
+
+
+@router.patch("/api/chat/sessions/{session_id}", response_model=ChatSessionCreateResponse)
+def rename_chat_session(
+    session_id: str,
+    body: ChatSessionRenameRequest,
+    db: Session = Depends(get_db),
+) -> ChatSessionCreateResponse:
+    try:
+        session = get_session_or_raise(db, session_id)
+    except ChatSessionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="会话不存在") from exc
+
+    session.title = body.title
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+    return ChatSessionCreateResponse.model_validate(session)
+
+
+@router.delete("/api/chat/sessions/{session_id}", response_model=DeleteResponse)
+def delete_chat_session(
+    session_id: str,
+    db: Session = Depends(get_db),
+) -> DeleteResponse:
+    success = delete_session(db, session_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="会话不存在")
+    return DeleteResponse(success=True)
+
+
+@rag_router.post("/chat", response_model=ChatResponse)
 async def rag_chat_endpoint(
     query: str = Form(...),
     top_k: int = Form(5),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
 ) -> ChatResponse:
-    """RAG 聊天接口（支持多轮对话）"""
-    # 生成或复用 session_id
-    sid = session_id or str(uuid.uuid4())
+    """RAG 聊天接口（支持持久化多轮对话）。"""
+    try:
+        session = get_session_or_raise(db, session_id) if session_id else create_session(db)
+    except ChatSessionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="会话不存在") from exc
 
-    # 获取历史
-    history = _get_history(sid)
+    history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
 
-    # 调用 LangChain 适配器的 RAG 聊天服务
     adapter = get_langchain_adapter()
     answer, retrieved = await adapter.rag_chat(
-        query=query, top_k=top_k, image=image, chat_history=history,
+        query=query,
+        top_k=top_k,
+        image=image,
+        chat_history=history,
+    )
+    sources = _normalize_chat_sources(retrieved)
+
+    add_message(db, session, "user", query, has_image=image is not None)
+    add_message(
+        db,
+        session,
+        "assistant",
+        answer,
+        sources=[source.model_dump() for source in sources],
     )
 
-    # 保存本轮对话
-    _save_turn(sid, query, answer)
-
-    # 处理检索结果
-    results: List[SearchResultItem] = []
-    for item in retrieved:
-        meta = item.get("metadata") or {}
-        results.append(
-            SearchResultItem(
-                id=item.get("id"),
-                file_path=meta.get("file_path"),
-                description=item.get("document"),
-                score=float(item.get("score", 0.0)),
-            )
-        )
-    return ChatResponse(answer=answer, results=results, session_id=sid)
+    return ChatResponse(
+        answer=answer,
+        results=_build_results(retrieved),
+        sources=sources,
+        session_id=session.id,
+    )
 
 
-@router.post("/chat/stream")
+@rag_router.post("/chat/stream")
 async def rag_chat_stream_endpoint(
     query: str = Form(...),
     top_k: int = Form(5),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
 ):
-    """RAG 聊天流式接口（SSE）"""
-    import json
+    """RAG 聊天流式接口（SSE）。"""
+    try:
+        session = get_session_or_raise(db, session_id) if session_id else create_session(db)
+    except ChatSessionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="会话不存在") from exc
 
-    sid = session_id or str(uuid.uuid4())
-    history = _get_history(sid)
-
+    history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
     adapter = get_langchain_adapter()
 
     async def event_generator():
-        # 发送 session_id
-        yield f"data: {json.dumps({'type': 'session', 'session_id': sid})}\n\n"
+        yield f"data: {json.dumps({'type': 'session', 'session_id': session.id})}\n\n"
 
         full_answer = ""
         retrieved_docs = []
 
         if image is not None:
-            # 图像查询不支持流式
             answer, retrieved = await adapter.rag_chat(
-                query=query, top_k=top_k, image=image, chat_history=history
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=history,
             )
             yield f"data: {json.dumps({'type': 'content', 'content': answer})}\n\n"
             full_answer = answer
             retrieved_docs = retrieved
         else:
-            # 文本查询流式
             async for chunk, docs in adapter.rag_chat_stream(
-                query=query, top_k=top_k, chat_history=history
+                query=query,
+                top_k=top_k,
+                chat_history=history,
             ):
                 full_answer += chunk
                 retrieved_docs = docs
                 yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
 
-        # 保存对话
-        _save_turn(sid, query, full_answer)
+        add_message(db, session, "user", query, has_image=image is not None)
+        sources = _normalize_chat_sources(retrieved_docs)
+        add_message(
+            db,
+            session,
+            "assistant",
+            full_answer,
+            sources=[source.model_dump() for source in sources],
+        )
 
-        # 发送检索结果
-        results = [
-            {
-                "id": item.get("id"),
-                "file_path": item.get("metadata", {}).get("file_path"),
-                "description": item.get("document"),
-                "score": float(item.get("score", 0.0)),
-            }
-            for item in retrieved_docs
-        ]
-        yield f"data: {json.dumps({'type': 'results', 'results': results})}\n\n"
+        yield f"data: {json.dumps({'type': 'results', 'results': [item.model_dump() for item in _build_results(retrieved_docs)], 'sources': [source.model_dump() for source in sources]})}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

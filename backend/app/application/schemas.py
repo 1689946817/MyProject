@@ -14,7 +14,7 @@
 from datetime import datetime
 from typing import Any, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ImageRecordOut(BaseModel):
@@ -72,11 +72,23 @@ class TextSearchResponse(BaseModel):
 
 class ImageSearchResponse(BaseModel):
     """图像搜索响应模型
-    
+
     用于返回图像搜索的结果，包括生成的查询描述。
     """
     query_description: str  # 基于输入图像生成的查询描述
     results: List[SearchResultItem]  # 搜索结果列表
+
+
+class ChatSourceItem(BaseModel):
+    """聊天来源快照项。"""
+
+    source_type: str
+    source_id: str
+    title: Optional[str] = None
+    file_path: Optional[str] = None
+    content: Optional[str] = None
+    score: Optional[float] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ChatResponse(BaseModel):
@@ -85,8 +97,58 @@ class ChatResponse(BaseModel):
     用于返回 RAG 聊天的结果，包括生成的回答和检索到的图像。
     """
     answer: str  # 生成的回答
-    results: List[SearchResultItem]  # 检索到的相关图像列表
+    results: List[SearchResultItem] = Field(default_factory=list)  # 检索到的相关图像列表
+    sources: List[ChatSourceItem] = Field(default_factory=list)
     session_id: Optional[str] = None  # 会话 ID（多轮对话）
+
+
+class ChatSessionCreateResponse(BaseModel):
+    """创建聊天会话响应。"""
+
+    id: str
+    title: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ChatMessageOut(BaseModel):
+    """聊天消息输出模型。"""
+
+    id: int
+    session_id: str
+    role: str
+    content: str
+    has_image: bool = False
+    sources: List[ChatSourceItem] = Field(default_factory=list)
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ChatSessionDetailResponse(BaseModel):
+    """聊天会话详情响应。"""
+
+    id: str
+    title: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    messages: List[ChatMessageOut] = Field(default_factory=list)
+
+    model_config = {"from_attributes": True}
+
+
+class ChatSessionRenameRequest(BaseModel):
+    """聊天会话重命名请求。"""
+
+    title: str
+
+
+class DeleteResponse(BaseModel):
+    """删除结果响应。"""
+
+    success: bool
 
 
 class DocumentRecordOut(BaseModel):
