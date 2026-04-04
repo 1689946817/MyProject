@@ -40,6 +40,7 @@ class BM25Index:
         )
         self._bm25 = None
         self._doc_ids: List[str] = []
+        self._doc_ids_set: set[str] = set()
         self._corpus: List[List[str]] = []
 
     @property
@@ -51,6 +52,7 @@ class BM25Index:
         from rank_bm25 import BM25Okapi
 
         self._doc_ids = doc_ids
+        self._doc_ids_set = set(doc_ids)
         self._corpus = [_tokenize(t) for t in texts]
         self._bm25 = BM25Okapi(self._corpus)
         logger.info(f"[BM25] 索引构建完成: {len(doc_ids)} 篇文档")
@@ -59,10 +61,11 @@ class BM25Index:
         """增量添加单篇文档到索引（避免全量重建）"""
         from rank_bm25 import BM25Okapi
 
-        if doc_id in set(self._doc_ids):
+        if doc_id in self._doc_ids_set:
             return  # 已存在，跳过
 
         self._doc_ids.append(doc_id)
+        self._doc_ids_set.add(doc_id)
         self._corpus.append(_tokenize(text))
         self._bm25 = BM25Okapi(self._corpus)
         logger.debug(f"[BM25] 增量添加文档: {doc_id}, 当前共 {len(self._doc_ids)} 篇")
@@ -111,6 +114,7 @@ class BM25Index:
             with open(self.index_path, "rb") as f:
                 data = pickle.load(f)
             self._doc_ids = data["doc_ids"]
+            self._doc_ids_set = set(self._doc_ids)
             self._corpus = data["corpus"]
             self._bm25 = BM25Okapi(self._corpus)
             logger.info(f"[BM25] 索引已加载: {len(self._doc_ids)} 篇文档")

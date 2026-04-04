@@ -9,6 +9,9 @@
  */
 import { http } from "./http";
 import type { SearchResultItem } from "./search";
+import type { ChatMessage, ChatSession } from "@/types";
+
+export type { ChatMessage, ChatSession } from "@/types";
 
 /**
  * 聊天响应接口
@@ -21,68 +24,10 @@ export interface ChatResponse {
 }
 
 /**
- * 聊天会话接口
+ * 会话详情接口（对齐后端 ChatSessionDetailResponse）
  */
-export interface ChatSession {
-  id: string;
-  title: string;
-  created_at: string;
-  updated_at: string;
-}
-
-/**
- * 聊天消息接口（对齐后端 ChatMessageOut）
- */
-export interface ChatMessage {
-  id: number;
-  session_id: string;
-  role: string;
-  content: string;
-  has_image: boolean;
-  sources: ChatSourceItem[];
-  retrieval_params: Record<string, any> | null;
-  created_at: string;
-}
-
-/**
- * 来源项接口（对齐后端 ChatSourceItem）
- */
-export interface ChatSourceItem {
-  source_type: string;
-  source_id: string;
-  title?: string;
-  file_path?: string;
-  content?: string;
-  score?: number;
-  metadata: Record<string, any>;
-}
-
-/**
- * RAG 聊天
- *
- * 基于用户查询（文本或图像）检索相关图像，然后生成回答。
- *
- * @param query 用户问题
- * @param topK 返回的检索结果数量，默认为 5
- * @param image 可选的上传图像，用于图像检索
- * @param sessionId 会话 ID
- * @returns 聊天结果，包含生成的回答和检索到的相关图像列表
- */
-export async function ragChat(query: string, topK = 5, image?: File, sessionId?: string): Promise<ChatResponse> {
-  const form = new FormData();
-  form.append('query', query);
-  form.append('top_k', String(topK));
-  if (image) {
-    form.append('image', image);
-  }
-  if (sessionId) {
-    form.append('session_id', sessionId);
-  }
-
-  const { data } = await http.post<ChatResponse>('/api/rag/chat', form, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
-  return data;
+export interface ChatSessionDetail extends ChatSession {
+  messages: ChatMessage[];
 }
 
 /**
@@ -132,6 +77,6 @@ export async function deleteSession(id: string): Promise<void> {
  * @returns 消息列表
  */
 export async function getSessionMessages(id: string): Promise<ChatMessage[]> {
-  const { data } = await http.get<ChatMessage[]>(`/api/chat/sessions/${id}`);
-  return data;
+  const { data } = await http.get<ChatSessionDetail>(`/api/chat/sessions/${id}`);
+  return data.messages;
 }

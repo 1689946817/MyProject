@@ -138,7 +138,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import { Upload, Loading } from '@element-plus/icons-vue'
+import { Loading } from '@element-plus/icons-vue'
 import type { UploadFile } from 'element-plus'
 import {
   uploadDocument,

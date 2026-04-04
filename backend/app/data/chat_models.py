@@ -2,7 +2,7 @@
 聊天会话与消息 ORM 模型。
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
@@ -17,8 +17,13 @@ class ChatSession(Base):
 
     id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     title = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, nullable=False, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     messages = relationship(
         "ChatMessage",
@@ -40,6 +45,6 @@ class ChatMessage(Base):
     has_image = Column(Boolean, nullable=False, default=False)
     sources_json = Column(Text, nullable=True)
     retrieval_params_json = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     session = relationship("ChatSession", back_populates="messages")

@@ -2,19 +2,37 @@
  * 图片工具函数
  */
 
+const BACKEND_BASE_URL = 'http://127.0.0.1:9090'
+
 /**
  * 生成图片 URL
  * @param filePath 图片文件路径
  * @returns 可访问的图片 URL
  */
 export function imgSrc(filePath: string): string {
-  // 将反斜杠统一为正斜杠，取 storage/ 之后的部分
+  if (!filePath) return ''
+
+  // 将反斜杠统一为正斜杠
   const normalized = filePath.replace(/\\/g, '/')
+
+  // 已经是完整 URL
+  if (/^https?:\/\//.test(normalized)) {
+    return normalized
+  }
+
+  // 已经是 /static/... 路径
+  if (normalized.startsWith('/static/')) {
+    return `${BACKEND_BASE_URL}${normalized}`
+  }
+
+  // 包含 storage/ 前缀的后端文件路径
   const idx = normalized.indexOf('storage/')
   if (idx !== -1) {
-    return `http://localhost:9090/static/${normalized.slice(idx + 'storage/'.length)}`
+    return `${BACKEND_BASE_URL}/static/${normalized.slice(idx + 'storage/'.length)}`
   }
-  return ''
+
+  // 兜底：当传入仅文件名或相对路径时，按静态目录拼接
+  return `${BACKEND_BASE_URL}/static/${normalized.replace(/^\/+/, '')}`
 }
 
 /**
@@ -58,7 +76,7 @@ export function similarityPercent(score: number): string {
  * @returns Element Plus tag type
  */
 export function statusType(status: string): string {
-  if (status === 'Completed' || status === 'Completed') return 'success'
+  if (status === 'Completed') return 'success'
   if (status === 'Failed') return 'danger'
   if (status === 'Processing') return 'warning'
   return 'info'

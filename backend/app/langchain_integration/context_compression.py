@@ -70,8 +70,8 @@ async def compress_context(
 
         try:
             from langchain_core.messages import HumanMessage
-            result = await chat_model._agenerate([[HumanMessage(content=prompt)]])
-            extracted = result.generations[0][0].text.strip()
+            result = await chat_model._agenerate([HumanMessage(content=prompt)])
+            extracted = result.generations[0].message.content.strip()
 
             if extracted and "无关" not in extracted[:5]:
                 new_doc = dict(doc)

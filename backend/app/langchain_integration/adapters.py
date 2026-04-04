@@ -9,6 +9,7 @@ LangChain 适配器模块
 确保 LangChain 重构后的系统与现有前端、数据库、文件存储等无缝集成。
 """
 import base64
+import logging
 import os
 import uuid
 from typing import Any, Dict, List, Optional, Tuple
@@ -28,6 +29,8 @@ from app.langchain_integration.chains import (
 from app.langchain_integration.doc_parser import parse_pdf
 from app.langchain_integration.retrievers import get_multimodal_retriever
 from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
+
+logger = logging.getLogger(__name__)
 
 
 class LangChainAdapter:
@@ -255,16 +258,16 @@ class LangChainAdapter:
         """
         RAG 问答（支持多轮对话历史 + Agentic RAG）
         """
-        if image is not None:
-            return await self.rag_chain.ainvoke_with_image(query, image, top_k=top_k)
-
         # 如果启用 Agentic RAG，使用 LangGraph 流程
         from app.core.config import settings
         if settings.AGENTIC_RAG_ENABLED:
             from app.langchain_integration.agentic_rag import get_agentic_rag_graph
             graph = get_agentic_rag_graph()
+            graph_query = query
+            if image is not None:
+                _, graph_query = await self.retriever.image_to_image_search(image, top_k=top_k)
             result = await graph.ainvoke({
-                "query": query,
+                "query": graph_query,
                 "chat_history": chat_history or [],
                 "documents": [],
                 "answer": "",
@@ -273,6 +276,14 @@ class LangChainAdapter:
                 "needs_retry": False,
             })
             return result["answer"], result["documents"]
+
+        if image is not None:
+            return await self.rag_chain.ainvoke_with_image(
+                query,
+                image,
+                top_k=top_k,
+                chat_history=chat_history,
+            )
 
         # 否则使用标准 RAG
         return await self.rag_chain.ainvoke(
@@ -283,11 +294,35 @@ class LangChainAdapter:
         self,
         query: str,
         top_k: int = 5,
+        image: Optional[UploadFile] = None,
         chat_history: Optional[List[Tuple[str, str]]] = None,
     ):
         """
-        RAG 问答流式版本（仅支持文本查询）
+        RAG 问答流式版本。
         """
+        from app.core.config import settings
+
+        if image is not None and settings.AGENTIC_RAG_ENABLED:
+            answer, docs = await self.rag_chat(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+            )
+            for ch in answer:
+                yield ch, docs
+            return
+
+        if image is not None:
+            async for chunk, docs in self.rag_chain.astream_with_image(
+                query=query,
+                image=image,
+                top_k=top_k,
+                chat_history=chat_history,
+            ):
+                yield chunk, docs
+            return
+
         async for chunk, docs in self.rag_chain.astream(
             {"query": query, "chat_history": chat_history or []}
         ):
@@ -445,8 +480,13 @@ class LangChainAdapter:
                     db.commit()
 
                     processed_image_count += 1
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning(
+                        "[Adapter] PDF 图片处理失败: file=%s index=%s error=%s",
+                        file_name,
+                        idx,
+                        exc,
+                    )
 
             # 更新文档记录
             record.chunk_count = len(text_chunks)

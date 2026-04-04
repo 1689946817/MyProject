@@ -2,7 +2,7 @@
 聊天会话服务。
 """
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, List, Optional, Tuple
 
 from sqlalchemy import inspect, text
@@ -143,7 +143,7 @@ def add_message(
         sources_json=dump_message_sources(sources),
         retrieval_params_json=dump_json_field(retrieval_params),
     )
-    session.updated_at = datetime.utcnow()
+    session.updated_at = datetime.now(timezone.utc)
     db.add(message)
     db.add(session)
     db.commit()

@@ -51,7 +51,7 @@
           :key="img.id"
           :src="getImageSrc(img.file_path)"
           :title="img.id"
-          :description="img.generated_description"
+          :description="img.generated_description || ''"
           :status="img.status"
           @click="openPreview(img)"
         />
@@ -87,7 +87,7 @@
       v-model:visible="previewVisible"
       :src="previewImage?.file_path ? getImageSrc(previewImage.file_path) : ''"
       :title="previewImage?.id"
-      :description="previewImage?.generated_description"
+      :description="previewImage?.generated_description || ''"
       :id="previewImage?.id"
       :upload-time="previewImage?.upload_time"
     />
@@ -98,7 +98,6 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import type { UploadFile, UploadFiles } from 'element-plus'
 import { listImages, uploadImages, type ImageRecord } from '@/api/kb'
 import { imgSrc } from '@/utils/image'
 import UploadZone from '@/components/UploadZone.vue'

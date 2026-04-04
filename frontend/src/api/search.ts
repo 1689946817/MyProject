@@ -8,18 +8,9 @@
  * 提供类型定义和异步函数，方便前端组件调用。
  */
 import { http } from "./http";
+import type { SearchResultItem } from "@/types";
 
-/**
- * 搜索结果项接口
- * 
- * 表示单个搜索结果，包含图像信息和相似度分数。
- */
-export interface SearchResultItem {
-  id: string; // 图像唯一标识符
-  file_path?: string; // 图像文件路径
-  description?: string; // 图像描述
-  score: number; // 相似度分数，值越小相似度越高
-}
+export type { SearchResultItem } from "@/types";
 
 /**
  * 文本搜索响应接口
@@ -79,4 +70,3 @@ export async function imageToImageSearch(file: File, topK = 10): Promise<ImageSe
   });
   return data;
 }
-

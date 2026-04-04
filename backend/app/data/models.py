@@ -7,7 +7,7 @@
 所有模型都继承自 Base 基类，与数据库表结构一一对应。
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, String, Text
 
@@ -29,7 +29,7 @@ class ImageRecord(Base):
     file_path = Column(String, nullable=False)
     
     # 上传时间，默认使用当前 UTC 时间
-    upload_time = Column(DateTime, default=datetime.utcnow)
+    upload_time = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     # 生成的图像语义描述，可为空（处理中或失败时）
     generated_description = Column(Text, nullable=True)
@@ -45,4 +45,3 @@ class ImageRecord(Base):
     
     # 额外元数据，使用文本格式存储，可为空
     extra_metadata = Column(Text, nullable=True)
-

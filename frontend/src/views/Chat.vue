@@ -7,9 +7,10 @@
           <SessionList
             :sessions="sessions"
             :active-id="currentSessionId"
-            @select="loadSession"
+            @select="selectSession"
             @create="handleCreateSession"
             @rename="handleRenameSession"
+            @update-title="updateSessionTitle"
             @delete="handleDeleteSession"
             ref="sessionListRef"
           />
@@ -118,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import type { UploadFile } from 'element-plus'
@@ -186,7 +187,7 @@ async function loadSessions() {
 }
 
 async function loadSession(id: string) {
-  currentSessionId.value = id
+  messages.value = []
   try {
     const msgs = await getSessionMessages(id)
     messages.value = msgs
@@ -194,16 +195,28 @@ async function loadSession(id: string) {
     currentSessionTitle.value = session?.title || ''
   } catch (e) {
     console.error('加载会话消息失败:', e)
+    messages.value = []
   }
 }
+
+function selectSession(id: string) {
+  currentSessionId.value = id
+}
+
+watch(currentSessionId, (newId) => {
+  if (newId) {
+    loadSession(newId)
+  } else {
+    messages.value = []
+    currentSessionTitle.value = ''
+  }
+})
 
 async function handleCreateSession() {
   try {
     const session = await createSession()
     sessions.value.unshift(session)
     currentSessionId.value = session.id
-    currentSessionTitle.value = session.title || ''
-    messages.value = []
   } catch (e) {
     console.error('创建会话失败:', e)
     ElMessage.error('创建会话失败')
@@ -247,15 +260,23 @@ async function handleDeleteSession(id: string) {
 }
 
 function onImageChange(file: UploadFile) {
+  revokeAttachedPreview()
   attachedImage.value = file.raw || null
   if (file.raw) {
     attachedImagePreview.value = URL.createObjectURL(file.raw)
   }
 }
 
+function revokeAttachedPreview() {
+  if (attachedImagePreview.value) {
+    URL.revokeObjectURL(attachedImagePreview.value)
+    attachedImagePreview.value = ''
+  }
+}
+
 function removeAttached() {
   attachedImage.value = null
-  attachedImagePreview.value = ''
+  revokeAttachedPreview()
 }
 
 async function doChat() {
@@ -280,7 +301,7 @@ async function doChat() {
     role: 'user',
     content: query.value,
     created_at: new Date().toISOString(),
-    has_image: false,
+    has_image: Boolean(attachedImage.value),
     sources: [],
     retrieval_params: null
   }
@@ -303,7 +324,7 @@ async function doChat() {
     }
 
     // 调用流式接口
-    const response = await fetch('http://localhost:9090/api/rag/chat/stream', {
+    const response = await fetch('/api/rag/chat/stream', {
       method: 'POST',
       body: formData
     })
@@ -324,7 +345,7 @@ async function doChat() {
       retrieval_params: null
     }
     messages.value.push(assistantMessage)
-    streamingId.value = assistantMessage.id
+    streamingId.value = String(assistantMessage.id)
 
     // 处理 SSE 流
     const reader = response.body?.getReader()
@@ -354,20 +375,19 @@ async function doChat() {
                 assistantMessage.session_id = parsed.session_id
               } else if (parsed.type === 'content' && parsed.content) {
                 assistantMessage.content += parsed.content
-              } else if (parsed.type === 'results' && parsed.results) {
-                // 解析 sources 并构建图片映射
+              } else if (parsed.type === 'results') {
+                const items = Array.isArray(parsed.sources) ? parsed.sources : parsed.results
                 const sources: SourceItem[] = []
-                parsed.results.forEach((item: any) => {
-                  if (item.source_id || item.id) {
-                    const source: SourceItem = {
+                items?.forEach((item: any) => {
+                  if (item?.source_id || item?.id) {
+                    sources.push({
                       source_type: item.source_type || 'image',
                       source_id: item.source_id || item.id,
                       title: item.title,
                       file_path: item.file_path,
                       content: item.content,
                       score: item.score
-                    }
-                    sources.push(source)
+                    })
                   }
                 })
                 assistantMessage.sources = sources
@@ -433,8 +453,16 @@ function onImgError(e: Event) {
   (e.target as HTMLImageElement).style.display = 'none'
 }
 
-onMounted(() => {
-  loadSessions()
+onMounted(async () => {
+  await loadSessions()
+  // 如果有会话但当前未选中，自动选中第一个
+  if (!currentSessionId.value && sessions.value.length > 0) {
+    currentSessionId.value = sessions.value[0].id
+  }
+})
+
+onBeforeUnmount(() => {
+  revokeAttachedPreview()
 })
 </script>
 

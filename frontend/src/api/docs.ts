@@ -2,16 +2,9 @@
  * 文档知识库 API 模块
  */
 import { http } from "./http";
+import type { DocumentRecord, DocParseResult } from "@/types";
 
-export interface DocumentRecord {
-  id: string;
-  file_name: string;
-  file_path: string;
-  upload_time: string;
-  status: string;
-  chunk_count: number;
-  image_count: number;
-}
+export type { DocumentRecord, DocParseResult } from "@/types";
 
 export interface UploadDocumentResponse {
   document: DocumentRecord;
@@ -30,12 +23,6 @@ export interface DocImage {
   file_path: string;
   generated_description?: string | null;
   status: string;
-}
-
-export interface DocParseResult {
-  document: DocumentRecord;
-  chunks: DocChunk[];
-  images: DocImage[];
 }
 
 export async function uploadDocument(file: File): Promise<UploadDocumentResponse> {

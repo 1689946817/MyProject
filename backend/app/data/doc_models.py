@@ -4,7 +4,7 @@
 定义 document_records 表的 ORM 模型，用于跟踪 PDF 文档的上传和处理状态。
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, Integer, String, Text
 
@@ -28,7 +28,7 @@ class DocumentRecord(Base):
     file_path = Column(String, nullable=False)
 
     # 上传时间
-    upload_time = Column(DateTime, default=datetime.utcnow)
+    upload_time = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # 处理状态：Processing / Completed / Failed
     status = Column(String, default="Processing", index=True)

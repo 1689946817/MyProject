@@ -8,20 +8,9 @@
  * 提供类型定义和异步函数，方便前端组件调用。
  */
 import { http } from "./http";
+import type { ImageRecord } from "@/types";
 
-/**
- * 图像记录接口
- * 
- * 表示数据库中的图像记录，包含元数据和生成的描述。
- */
-export interface ImageRecord {
-  id: string; // 图像唯一标识符
-  file_path: string; // 图像文件路径
-  upload_time: string; // 上传时间
-  generated_description?: string | null; // 生成的图像描述
-  status: string; // 处理状态（Processing、Completed、Failed）
-  source_dataset?: string | null; // 图像来源数据集
-}
+export type { ImageRecord } from "@/types";
 
 /**
  * 上传图像响应接口
@@ -68,4 +57,3 @@ export async function uploadImages(files: File[]): Promise<UploadImagesResponse>
   });
   return data;
 }
-

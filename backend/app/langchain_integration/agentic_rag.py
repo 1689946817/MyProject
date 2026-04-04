@@ -114,8 +114,8 @@ async def generate_answer(state: AgenticRAGState) -> AgenticRAGState:
 
     model = get_chat_model()
     from langchain_core.messages import HumanMessage
-    result = await model._agenerate([[HumanMessage(content=prompt)]])
-    answer = result.generations[0][0].text
+    result = await model._agenerate([HumanMessage(content=prompt)])
+    answer = result.generations[0].message.content
 
     state["answer"] = answer
     logger.info(f"[Generate] 生成答案: {answer[:50]}...")

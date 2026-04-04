@@ -302,25 +302,15 @@ async def rag_chat_stream_endpoint(
         full_answer = ""
         retrieved_docs = []
 
-        if image is not None:
-            answer, retrieved = await adapter.rag_chat(
-                query=query,
-                top_k=top_k,
-                image=image,
-                chat_history=history,
-            )
-            yield f"data: {json.dumps({'type': 'content', 'content': answer})}\n\n"
-            full_answer = answer
-            retrieved_docs = retrieved
-        else:
-            async for chunk, docs in adapter.rag_chat_stream(
-                query=query,
-                top_k=top_k,
-                chat_history=history,
-            ):
-                full_answer += chunk
-                retrieved_docs = docs
-                yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
+        async for chunk, docs in adapter.rag_chat_stream(
+            query=query,
+            top_k=top_k,
+            image=image,
+            chat_history=history,
+        ):
+            full_answer += chunk
+            retrieved_docs = docs
+            yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
 
         retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": True}
         add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)

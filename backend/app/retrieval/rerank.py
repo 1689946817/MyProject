@@ -17,6 +17,15 @@ _reranker = None
 _reranker_load_attempted = False
 
 
+def _resolve_top_k(top_k: Optional[int], result_count: int) -> int:
+    """解析重排序返回数量，屏蔽 None/0/负数等无效值。"""
+    configured_top_k = settings.RERANK_TOP_K
+    candidate = top_k if top_k and top_k > 0 else configured_top_k
+    if not candidate or candidate <= 0:
+        candidate = result_count
+    return max(1, min(candidate, result_count))
+
+
 def _get_reranker():
     """懒加载 FlagReranker 单例"""
     global _reranker, _reranker_load_attempted
@@ -25,9 +34,10 @@ def _get_reranker():
     _reranker_load_attempted = True
     try:
         from FlagEmbedding import FlagReranker
-        model_name = settings.RERANK_MODEL_NAME
-        logger.info(f"[Rerank] 加载 CrossEncoder 模型: {model_name}")
-        _reranker = FlagReranker(model_name, use_fp16=True)
+        # 优先使用本地路径，避免 HuggingFace 网络问题
+        model_path = settings.RERANK_MODEL_PATH or settings.RERANK_MODEL_NAME
+        logger.info(f"[Rerank] 加载 CrossEncoder 模型: {model_path}")
+        _reranker = FlagReranker(model_path, use_fp16=True)
         logger.info("[Rerank] CrossEncoder 模型加载成功")
     except Exception as e:
         logger.warning(f"[Rerank] FlagEmbedding 不可用，降级为 simple_rerank: {e}")
@@ -36,7 +46,13 @@ def _get_reranker():
 
 
 def simple_rerank(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """简单重排序（按 Chroma 距离从小到大排序）"""
+    """简单重排序（优先按 RRF 分数降序；否则按向量距离升序）"""
+    if not results:
+        return results
+
+    if any("rrf_score" in item for item in results):
+        return sorted(results, key=lambda x: x.get("rrf_score", 0.0), reverse=True)
+
     return sorted(results, key=lambda x: x.get("score", 0.0))
 
 
@@ -59,7 +75,7 @@ def cross_encoder_rerank(
     if not results:
         return results
 
-    top_k = top_k or settings.RERANK_TOP_K
+    top_k = _resolve_top_k(top_k, len(results))
     reranker = _get_reranker()
 
     if reranker is None:

@@ -252,16 +252,22 @@ class RAGChain:
 
     def invoke(self, inputs: Dict[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        同步执行 RAG Chain（检索使用同步路径，无 Multi-Query）
+        同步执行 RAG Chain。
         """
         query = inputs["query"]
+        chat_history = inputs.get("chat_history") or []
 
         # 检索一次
         documents = self.retriever.search_with_dict_output(query, top_k=self.top_k)
         text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
         # 将预检索结果注入 chain
-        chain_inputs = {"query": query, "documents": documents, "text_chunks": text_chunks}
+        chain_inputs = {
+            "query": query,
+            "documents": documents,
+            "text_chunks": text_chunks,
+            "chat_history": chat_history,
+        }
         answer = self._chain.invoke(chain_inputs)
 
         return answer, documents
@@ -324,6 +330,7 @@ class RAGChain:
         query: str,
         image: UploadFile,
         top_k: Optional[int] = None,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
     ) -> Tuple[str, List[Dict[str, Any]]]:
         """
         使用图像查询执行 RAG Chain
@@ -351,11 +358,51 @@ class RAGChain:
                 "score": doc.metadata.get("score", 0.0),
             })
 
-        # 使用生成的描述作为查询执行 RAG
-        inputs = {"query": description}
+        text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
+
+        # 使用生成的描述作为查询执行 RAG，并保留历史和检索上下文
+        inputs = {
+            "query": description,
+            "documents": dict_documents,
+            "text_chunks": text_chunks,
+            "chat_history": chat_history or [],
+        }
         answer = await self._chain.ainvoke(inputs)
 
         return answer, dict_documents
+
+    async def astream_with_image(
+        self,
+        query: str,
+        image: UploadFile,
+        top_k: Optional[int] = None,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
+    ):
+        """
+        使用图像查询流式执行 RAG Chain。
+        """
+        k = top_k or self.top_k
+        documents, description = await self.retriever.image_to_image_search(image, top_k=k)
+
+        dict_documents = []
+        for doc in documents:
+            dict_documents.append({
+                "id": doc.metadata.get("id", ""),
+                "document": doc.page_content,
+                "metadata": doc.metadata,
+                "score": doc.metadata.get("score", 0.0),
+            })
+
+        text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
+        inputs = {
+            "query": description,
+            "documents": dict_documents,
+            "text_chunks": text_chunks,
+            "chat_history": chat_history or [],
+        }
+
+        async for chunk in self._chain.astream(inputs):
+            yield chunk, dict_documents
 
 
 # 全局 Chain 实例缓存

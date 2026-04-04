@@ -24,6 +24,16 @@ export interface SearchResultItem {
   score: number
 }
 
+export interface ChatSourceItem {
+  source_type: string
+  source_id: string
+  title?: string
+  file_path?: string
+  content?: string
+  score?: number
+  metadata?: Record<string, any>
+}
+
 /**
  * 聊天会话
  */
@@ -38,11 +48,13 @@ export interface ChatSession {
  * 聊天消息
  */
 export interface ChatMessage {
-  id: string
+  id: string | number
   session_id: string
   role: 'user' | 'assistant'
   content: string
-  image_ids?: string[]
+  has_image?: boolean
+  sources?: ChatSourceItem[]
+  retrieval_params?: Record<string, any> | null
   created_at: string
 }
 
@@ -52,6 +64,7 @@ export interface ChatMessage {
 export interface DocumentRecord {
   id: string
   file_name: string
+  file_path?: string
   upload_time: string
   status: 'Processing' | 'Completed' | 'Failed'
   chunk_count: number

@@ -44,7 +44,7 @@
                 :src="getImageSrc(item.file_path || '')"
                 :title="item.id"
                 :description="item.description"
-                :score="1 - item.score"
+                :score="clampScore(item.score)"
                 @click="openPreview(item)"
               />
             </div>
@@ -104,7 +104,7 @@
                 :src="getImageSrc(item.file_path || '')"
                 :title="item.id"
                 :description="item.description"
-                :score="1 - item.score"
+                :score="clampScore(item.score)"
                 @click="openPreview(item)"
               />
             </div>
@@ -121,7 +121,7 @@
       :title="previewItem?.id"
       :description="previewItem?.description"
       :id="previewItem?.id"
-      :score="previewItem ? 1 - previewItem.score : undefined"
+      :score="previewItem ? clampScore(previewItem.score) : undefined"
     />
   </div>
 </template>
@@ -130,7 +130,6 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import type { UploadFile, UploadFiles } from 'element-plus'
 import {
   textToImageSearch,
   imageToImageSearch,
@@ -155,6 +154,14 @@ const loadingImage = ref(false)
 const previewVisible = ref(false)
 const previewItem = ref<SearchResultItem | null>(null)
 
+function clampScore(score: number): number {
+  return Math.max(0, Math.min(1, 1 - score))
+}
+
+function getErrorMessage(error: any, fallback: string): string {
+  return error?.response?.data?.detail || error?.message || fallback
+}
+
 function getImageSrc(filePath: string): string {
   return imgSrc(filePath)
 }
@@ -174,7 +181,8 @@ async function doTextSearch() {
     const resp = await textToImageSearch(textQuery.value, 10)
     textResults.value = resp.results
   } catch (e) {
-    ElMessage.error(t('search.textSearchFailed'))
+    textResults.value = []
+    ElMessage.error(getErrorMessage(e, t('search.textSearchFailed')))
   } finally {
     loadingText.value = false
   }
@@ -192,7 +200,9 @@ async function doImageSearch() {
     imageQueryDescription.value = resp.query_description
     imageResults.value = resp.results
   } catch (e) {
-    ElMessage.error(t('search.imageSearchFailed'))
+    imageQueryDescription.value = ''
+    imageResults.value = []
+    ElMessage.error(getErrorMessage(e, t('search.imageSearchFailed')))
   } finally {
     loadingImage.value = false
   }
