@@ -30,6 +30,25 @@ from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
 logger = logging.getLogger(__name__)
 
 
+def _asset_priority(hit: Dict[str, Any]) -> int:
+    asset_type = str((hit.get("metadata") or {}).get("asset_type", "")).strip().lower()
+    if asset_type == "table_crop":
+        return 0
+    if asset_type == "table_page_render":
+        return 2
+    return 1
+
+
+def _prefer_table_crops(hits: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return sorted(
+        hits,
+        key=lambda hit: (
+            -float(hit.get("rerank_score", hit.get("rrf_score", hit.get("score", 0.0))) or 0.0),
+            _asset_priority(hit),
+        ),
+    )
+
+
 def _hybrid_search_sync(
     query: str,
     vector_store: ChromaVectorStore,
@@ -160,6 +179,7 @@ class MultimodalRetriever:
         candidates = filter_enabled_image_hit_dicts(candidates)
 
         reranked = cross_encoder_rerank(query, candidates, top_k=k)
+        reranked = _prefer_table_crops(reranked)
 
         documents = []
         for hit in reranked:
@@ -210,7 +230,7 @@ class MultimodalRetriever:
 
         candidates = _hybrid_search_sync(query, self.vector_store, candidate_k)
         candidates = filter_enabled_image_hit_dicts(candidates)
-        return cross_encoder_rerank(query, candidates, top_k=k)
+        return _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=k))
 
     async def async_search_with_dict_output(
         self,
@@ -234,7 +254,7 @@ class MultimodalRetriever:
             enable_query_rewrite=not use_fast_path,
         )
         candidates = filter_enabled_image_hit_dicts(candidates)
-        return cross_encoder_rerank(query, candidates, top_k=k)
+        return _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=k))
 
 
 # 全局检索器实例缓存

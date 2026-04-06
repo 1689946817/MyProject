@@ -17,6 +17,13 @@ export interface ImageRecord {
   notes?: string | null
   enabled?: boolean
   custom_metadata?: Record<string, any>
+  asset_type?: string | null
+  page_number?: number | null
+  table_index_on_page?: number | null
+  table_group_id?: string | null
+  continued_from_previous_page?: boolean
+  continued_to_next_page?: boolean
+  fallback_reason?: string | null
 }
 
 /**
@@ -27,6 +34,11 @@ export interface SearchResultItem {
   file_path?: string
   description?: string
   score: number
+  asset_type?: string | null
+  page_number?: number | null
+  table_group_id?: string | null
+  continued_from_previous_page?: boolean
+  continued_to_next_page?: boolean
 }
 
 export interface ChatSourceItem {

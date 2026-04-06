@@ -106,6 +106,15 @@ export default {
     refresh: 'Refresh',
     chunksTitle: 'Text Chunks',
     imagesTitle: 'Extracted Images',
+    chunkReadableHint: 'The actual parsed chunk content is shown below so you can inspect text quality directly.',
+    chunksLoadMismatch: 'The document record says chunks exist, but the result readback is empty. Refresh or reprocess the document.',
+    tableCrop: 'Table Crop',
+    tablePageRender: 'Page Fallback',
+    pageRender: 'Full Page',
+    crossPageContinued: 'Cross-page continuation',
+    crossPageGroup: 'Cross-page table group',
+    pageLabel: 'Page {page}',
+    tableIndexLabel: 'Table #{index} on page',
     noChunks: 'No text chunks',
     noImages: 'No extracted images',
     uploadSuccess: 'Upload successful',
@@ -122,7 +131,14 @@ export default {
     deleteFailed: 'Failed to delete document',
     deleteConfirm: 'Delete document "{title}"? This will also remove {chunks} text chunks and {images} derived images.',
     reprocessSuccess: 'Document reprocessed',
-    reprocessFailed: 'Failed to reprocess document'
+    reprocessFailed: 'Failed to reprocess document',
+    fallbackReason: {
+      important_nearby_text: 'Kept full-page context',
+      small_table_needs_context: 'Small table kept with page context',
+      invalid_bbox: 'Invalid table box, fell back to full page',
+      crop_render_failed: 'Table crop failed, fell back to full page',
+      fragmented_or_filtered_images: 'Too many fragmented visuals, kept as a full page'
+    }
   },
   common: {
     loading: 'Loading...',

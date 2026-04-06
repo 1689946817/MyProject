@@ -15,7 +15,7 @@ import json
 from datetime import datetime
 from typing import Any, List, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 def _parse_tags(value: Any) -> List[str]:
@@ -58,6 +58,52 @@ class ImageRecordOut(BaseModel):
     notes: Optional[str] = None
     enabled: bool = True
     custom_metadata: dict[str, Any] = Field(default_factory=dict)
+    asset_type: Optional[str] = None
+    page_number: Optional[int] = None
+    table_index_on_page: Optional[int] = None
+    table_group_id: Optional[str] = None
+    continued_from_previous_page: bool = False
+    continued_to_next_page: bool = False
+    fallback_reason: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def enrich_from_extra_metadata(cls, value: Any) -> Any:
+        if isinstance(value, dict):
+            payload = dict(value)
+        else:
+            payload = {
+                "id": getattr(value, "id", None),
+                "file_path": getattr(value, "file_path", None),
+                "upload_time": getattr(value, "upload_time", None),
+                "generated_description": getattr(value, "generated_description", None),
+                "status": getattr(value, "status", None),
+                "source_dataset": getattr(value, "source_dataset", None),
+                "title": getattr(value, "title", None),
+                "tags": getattr(value, "tags", None),
+                "notes": getattr(value, "notes", None),
+                "enabled": getattr(value, "enabled", True),
+                "custom_metadata": getattr(value, "custom_metadata", None),
+            }
+            extra_metadata = getattr(value, "extra_metadata", None)
+            payload["extra_metadata"] = extra_metadata
+
+        extra = _parse_json_dict(payload.get("extra_metadata"))
+        payload.setdefault("asset_type", extra.get("asset_type"))
+        payload.setdefault("page_number", extra.get("page_number"))
+        payload.setdefault("table_index_on_page", extra.get("table_index_on_page"))
+        payload.setdefault("table_group_id", extra.get("table_group_id"))
+        payload.setdefault(
+            "continued_from_previous_page",
+            bool(extra.get("continued_from_previous_page", False)),
+        )
+        payload.setdefault(
+            "continued_to_next_page",
+            bool(extra.get("continued_to_next_page", False)),
+        )
+        payload.setdefault("fallback_reason", extra.get("fallback_reason"))
+        payload.pop("extra_metadata", None)
+        return payload
 
     @field_validator("tags", mode="before")
     @classmethod
@@ -90,6 +136,11 @@ class SearchResultItem(BaseModel):
     file_path: Optional[str] = None  # 图像文件路径，可为空
     description: Optional[str] = None  # 图像描述，可为空
     score: float  # 相似度分数，值越小相似度越高
+    asset_type: Optional[str] = None
+    page_number: Optional[int] = None
+    table_group_id: Optional[str] = None
+    continued_from_previous_page: bool = False
+    continued_to_next_page: bool = False
 
 
 class TextSearchRequest(BaseModel):

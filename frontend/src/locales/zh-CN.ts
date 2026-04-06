@@ -106,6 +106,15 @@ export default {
     refresh: '刷新',
     chunksTitle: '文本片段',
     imagesTitle: '提取的图片',
+    chunkReadableHint: '以下为实际解析出的文本片段内容，可直接核对原文质量。',
+    chunksLoadMismatch: '文档记录显示存在文本片段，但结果回读为空，建议刷新或重新解析。',
+    tableCrop: '表格裁图',
+    tablePageRender: '整页兜底图',
+    pageRender: '整页图',
+    crossPageContinued: '跨页连续',
+    crossPageGroup: '跨页表格组',
+    pageLabel: '第 {page} 页',
+    tableIndexLabel: '本页表格 #{index}',
     noChunks: '无文本片段',
     noImages: '无提取图片',
     uploadSuccess: '上传成功',
@@ -122,7 +131,14 @@ export default {
     deleteFailed: '删除文档失败',
     deleteConfirm: '确认删除文档“{title}”？将同时删除 {chunks} 个文本片段和 {images} 张派生图片。',
     reprocessSuccess: '文档已重新解析',
-    reprocessFailed: '文档重新解析失败'
+    reprocessFailed: '文档重新解析失败',
+    fallbackReason: {
+      important_nearby_text: '保留整页上下文说明',
+      small_table_needs_context: '表格较小，保留页级语义',
+      invalid_bbox: '表格框异常，回退整页渲染',
+      crop_render_failed: '表格裁图失败，回退整页渲染',
+      fragmented_or_filtered_images: '局部碎片图过多，改为整页保留'
+    }
   },
   common: {
     loading: '加载中...',

@@ -67,6 +67,17 @@
                         class="ref-image-item"
                         @click="showPreview(source)"
                       >
+                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source)" class="ref-image-badges">
+                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">
+                            {{ getSourceAssetLabel(source) }}
+                          </span>
+                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">
+                            {{ getSourcePageLabel(source) }}
+                          </span>
+                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">
+                            {{ t("docs.crossPageContinued") }}
+                          </span>
+                        </div>
                         <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
                     </div>
@@ -91,6 +102,17 @@
                         class="ref-image-item"
                         @click="showPreview(source)"
                       >
+                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source)" class="ref-image-badges">
+                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">
+                            {{ getSourceAssetLabel(source) }}
+                          </span>
+                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">
+                            {{ getSourcePageLabel(source) }}
+                          </span>
+                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">
+                            {{ t("docs.crossPageContinued") }}
+                          </span>
+                        </div>
                         <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
                     </div>
@@ -333,6 +355,29 @@ function getModeLabel(msg: Message): string {
     default:
       return '知识库回答'
   }
+}
+
+function getSourceAssetLabel(source: SourceItem): string {
+  const assetType = String(source.metadata?.asset_type || '').trim()
+  if (assetType === 'table_crop') return t('docs.tableCrop')
+  if (assetType === 'table_page_render') return t('docs.tablePageRender')
+  if (assetType === 'page_render') return t('docs.pageRender')
+  return ''
+}
+
+function getSourcePageLabel(source: SourceItem): string {
+  const pageNumber = source.metadata?.page_number
+  if (typeof pageNumber === 'number') {
+    return t('docs.pageLabel', { page: pageNumber })
+  }
+  return ''
+}
+
+function isCrossPageSource(source: SourceItem): boolean {
+  return Boolean(
+    source.metadata?.continued_from_previous_page ||
+    source.metadata?.continued_to_next_page
+  )
 }
 
 async function doChat() {
@@ -688,6 +733,41 @@ onBeforeUnmount(() => {
   min-height: 96px;
   object-fit: cover;
   display: block;
+}
+
+.ref-image-badges {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  z-index: 2;
+}
+
+.ref-image-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #fff;
+  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.ref-image-badge.primary {
+  background: rgba(0, 112, 243, 0.82);
+}
+
+.ref-image-badge.subtle {
+  background: rgba(15, 23, 42, 0.68);
+}
+
+.ref-image-badge.warn {
+  background: rgba(217, 119, 6, 0.82);
 }
 
 .message-text {

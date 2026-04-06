@@ -46,15 +46,24 @@ from app.langchain_integration.doc_parser import (
     ParsedPdfVisualAsset,
     build_pdf_text_chunks,
     extract_pdf_text_documents,
+    extract_pdf_visual_assets,
 )
 from app.langchain_integration.vectorstores import ChromaVectorStore
 from app.langchain_integration.retrievers import MultimodalRetriever
 from app.langchain_integration.adapters import LangChainAdapter
 from app.langchain_integration.agentic_rag import classify_chat_intent, generate_answer
 from app.langchain_integration.context_compression import compress_context
+from app.langchain_integration.models import (
+    MultimodalChatModel,
+    OpenAIEmbeddingsWrapper,
+    _build_httpx_client_kwargs,
+)
+from app.core.config import _disable_process_proxy_env
 from app.retrieval.rerank import cross_encoder_rerank
 from app.retrieval.hybrid import rebuild_bm25_index
 from app.application.schemas import DocumentRecordOut, ImageRecordOut
+from app.application.schemas import SearchResultItem
+from app.data.storage import BASE_STORAGE_DIR, DOC_STORAGE_DIR, STORAGE_ROOT
 
 
 def _build_isolated_adapter() -> LangChainAdapter:
@@ -69,6 +78,95 @@ def _build_isolated_adapter() -> LangChainAdapter:
     adapter._bm25_add_document = MagicMock()
     adapter._rebuild_bm25_index = MagicMock()
     return adapter
+
+
+class TestProxyBypassConfiguration(unittest.TestCase):
+    """测试禁用环境代理继承的基础配置。"""
+
+    def test_build_httpx_client_kwargs_disables_env_proxy(self):
+        """统一 HTTP 客户端参数必须显式禁用环境代理继承。"""
+        kwargs = _build_httpx_client_kwargs("https://example.com", 60)
+
+        self.assertEqual(kwargs["base_url"], "https://example.com")
+        self.assertEqual(kwargs["timeout"], 60)
+        self.assertFalse(kwargs["trust_env"])
+
+    @patch.dict(
+        os.environ,
+        {
+            "HTTP_PROXY": "http://127.0.0.1:7890",
+            "HTTPS_PROXY": "http://127.0.0.1:7890",
+            "ALL_PROXY": "socks5://127.0.0.1:7890",
+        },
+        clear=False,
+    )
+    def test_disable_process_proxy_env_clears_proxy_variables(self):
+        """后端进程启动时应清空代理环境变量并固定 NO_PROXY。"""
+        _disable_process_proxy_env()
+
+        self.assertNotIn("HTTP_PROXY", os.environ)
+        self.assertNotIn("HTTPS_PROXY", os.environ)
+        self.assertNotIn("ALL_PROXY", os.environ)
+        self.assertEqual(os.environ["NO_PROXY"], "*")
+        self.assertEqual(os.environ["no_proxy"], "*")
+
+
+class TestModelClientsDisableEnvProxy(unittest.IsolatedAsyncioTestCase):
+    """测试模型 HTTP 客户端不会继承系统代理。"""
+
+    @patch("httpx.Client")
+    def test_chat_model_generate_uses_trust_env_false(self, mock_client_cls):
+        """同步聊天请求必须显式传 trust_env=False。"""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "choices": [{"message": {"content": "ok"}}],
+        }
+        mock_response.raise_for_status = MagicMock()
+
+        mock_client = MagicMock()
+        mock_client.post.return_value = mock_response
+
+        mock_cm = MagicMock()
+        mock_cm.__enter__.return_value = mock_client
+        mock_cm.__exit__.return_value = False
+        mock_client_cls.return_value = mock_cm
+
+        model = MultimodalChatModel(
+            base_url="https://example.com",
+            api_key="test-key",
+            model_name="test-model",
+        )
+        result = model._generate([HumanMessage(content="hello")])
+
+        self.assertEqual(result.generations[0].message.content, "ok")
+        self.assertFalse(mock_client_cls.call_args.kwargs["trust_env"])
+
+    @patch("httpx.AsyncClient")
+    async def test_embedding_wrapper_async_uses_trust_env_false(self, mock_async_client_cls):
+        """异步 embedding 请求必须显式传 trust_env=False。"""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "data": [{"embedding": [0.1, 0.2, 0.3]}],
+        }
+        mock_response.raise_for_status = MagicMock()
+
+        mock_client = AsyncMock()
+        mock_client.post.return_value = mock_response
+
+        mock_cm = AsyncMock()
+        mock_cm.__aenter__.return_value = mock_client
+        mock_cm.__aexit__.return_value = False
+        mock_async_client_cls.return_value = mock_cm
+
+        wrapper = OpenAIEmbeddingsWrapper(
+            base_url="https://example.com",
+            api_key="test-key",
+            model_name="test-embedding",
+        )
+        embeddings = await wrapper.aembed_documents(["hello"])
+
+        self.assertEqual(embeddings, [[0.1, 0.2, 0.3]])
+        self.assertFalse(mock_async_client_cls.call_args.kwargs["trust_env"])
 
 
 class TestImageDescriptionChain(unittest.TestCase):
@@ -183,6 +281,39 @@ class TestChromaVectorStore(unittest.TestCase):
         self.assertEqual(results[0]["id"], doc_id)
 
 
+class TestChromaMetadataNormalization(unittest.TestCase):
+    """测试 Chroma metadata 归一化。"""
+
+    def test_add_texts_normalizes_empty_and_list_metadata_for_chroma(self):
+        """测试向量存储会归一化空列表和列表元数据，避免 Chroma upsert 报错。"""
+        vector_store = ChromaVectorStore.__new__(ChromaVectorStore)
+        vector_store._vectorstore = MagicMock()
+
+        vector_store.add_texts(
+            ["table doc"],
+            metadatas=[{"id": "img-1", "tags": [], "related_table_indices": [0, 1]}],
+            ids=["img-1"],
+        )
+
+        kwargs = vector_store._vectorstore.add_texts.call_args.kwargs
+        self.assertEqual(kwargs["metadatas"][0]["related_table_indices"], "[\"0\", \"1\"]")
+        self.assertNotIn("tags", kwargs["metadatas"][0])
+
+    def test_upsert_image_description_normalizes_tag_list_metadata(self):
+        """测试图像描述 upsert 会把 tag 列表归一化为 Chroma 可接受的标量。"""
+        vector_store = ChromaVectorStore.__new__(ChromaVectorStore)
+        vector_store._vectorstore = MagicMock()
+
+        vector_store.upsert_image_description(
+            "image-123",
+            "A beautiful sunset",
+            {"file_path": "/path/to/sunset.jpg", "tags": ["hr", "policy"]},
+        )
+
+        kwargs = vector_store._vectorstore.add_texts.call_args.kwargs
+        self.assertEqual(kwargs["metadatas"][0]["tags"], "hr,policy")
+
+
 class TestMultimodalRetriever(unittest.TestCase):
     """测试多模态检索器"""
 
@@ -216,7 +347,15 @@ class TestMultimodalRetriever(unittest.TestCase):
             "app.langchain_integration.retrievers._multi_query_hybrid_search",
             AsyncMock(return_value=[mock_hit]),
         ):
-            results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=1))
+            with patch(
+                "app.langchain_integration.retrievers.filter_enabled_image_hit_dicts",
+                return_value=[mock_hit],
+            ):
+                with patch(
+                    "app.langchain_integration.retrievers.filter_enabled_image_documents",
+                    side_effect=lambda docs: docs,
+                ):
+                    results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=1))
 
         # 验证结果
         self.assertEqual(len(results), 1)
@@ -237,7 +376,15 @@ class TestMultimodalRetriever(unittest.TestCase):
                     "app.langchain_integration.retrievers._multi_query_hybrid_search",
                     AsyncMock(return_value=[mock_hit]),
                 ) as mock_search:
-                    results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2, fast=True))
+                    with patch(
+                        "app.langchain_integration.retrievers.filter_enabled_image_hit_dicts",
+                        return_value=[mock_hit],
+                    ):
+                        with patch(
+                            "app.langchain_integration.retrievers.filter_enabled_image_documents",
+                            side_effect=lambda docs: docs,
+                        ):
+                            results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2, fast=True))
 
         self.assertEqual(len(results), 1)
         mock_search.assert_awaited_once_with(
@@ -262,7 +409,15 @@ class TestMultimodalRetriever(unittest.TestCase):
                     "app.langchain_integration.retrievers._multi_query_hybrid_search",
                     AsyncMock(return_value=[mock_hit]),
                 ) as mock_search:
-                    results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2, fast=True))
+                    with patch(
+                        "app.langchain_integration.retrievers.filter_enabled_image_hit_dicts",
+                        return_value=[mock_hit],
+                    ):
+                        with patch(
+                            "app.langchain_integration.retrievers.filter_enabled_image_documents",
+                            side_effect=lambda docs: docs,
+                        ):
+                            results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2, fast=True))
 
         self.assertEqual(len(results), 1)
         mock_search.assert_awaited_once_with(
@@ -387,6 +542,139 @@ class TestPdfParsing(unittest.TestCase):
         self.assertEqual(asset.page_number, 3)
         self.assertEqual(asset.asset_type, "table_page_render")
         self.assertEqual(asset.metadata["file_name"], "example.pdf")
+
+    def test_extract_pdf_visual_assets_prefers_table_crops_and_adds_page_fallback_when_context_matters(self):
+        """测试含表格页默认生成表格裁图，并在上下文依赖时保留整页兜底图。"""
+        fake_doc = MagicMock()
+        fake_doc.extract_image.return_value = {"image": b""}
+
+        page = MagicMock()
+        page.rect = MagicMock(width=1000, height=1200)
+        page.get_images.return_value = []
+        page.get_text.return_value = [
+            (80, 40, 920, 120, "工资发放流程说明", 0, 0, 0),
+        ]
+        crop_pixmap = MagicMock()
+        crop_pixmap.tobytes.return_value = b"crop-bytes"
+        full_pixmap = MagicMock()
+        full_pixmap.tobytes.return_value = b"page-bytes"
+        page.get_pixmap.side_effect = [crop_pixmap, full_pixmap]
+
+        table = MagicMock()
+        table.bbox = (100, 160, 900, 980)
+        page.find_tables.return_value = MagicMock(tables=[table])
+        fake_doc.__iter__.return_value = iter([page])
+
+        with patch("app.langchain_integration.doc_parser.fitz.open", return_value=fake_doc):
+            assets = extract_pdf_visual_assets(b"%PDF-test", file_name="policy.pdf")
+
+        self.assertEqual([asset.asset_type for asset in assets], ["table_crop", "table_page_render"])
+        self.assertEqual(assets[0].metadata["table_index_on_page"], 0)
+        self.assertEqual(assets[0].metadata["table_count_on_page"], 1)
+        self.assertEqual(assets[1].metadata["fallback_reason"], "important_nearby_text")
+
+    def test_extract_pdf_visual_assets_groups_cross_page_tables_conservatively(self):
+        """测试相邻页连续表格会被逻辑分组，并打上前后页连续标记。"""
+        fake_doc = MagicMock()
+        fake_doc.extract_image.return_value = {"image": b""}
+
+        page_one = MagicMock()
+        page_one.rect = MagicMock(width=1000, height=1200)
+        page_one.get_images.return_value = []
+        page_one.get_text.return_value = []
+        page_one.find_tables.return_value = MagicMock(tables=[MagicMock(bbox=(100, 120, 900, 1160))])
+        page_one_pix = MagicMock()
+        page_one_pix.tobytes.return_value = b"page-one-crop"
+        page_one.get_pixmap.return_value = page_one_pix
+
+        page_two = MagicMock()
+        page_two.rect = MagicMock(width=1000, height=1200)
+        page_two.get_images.return_value = []
+        page_two.get_text.return_value = []
+        page_two.find_tables.return_value = MagicMock(tables=[MagicMock(bbox=(105, 40, 905, 1080))])
+        page_two_pix = MagicMock()
+        page_two_pix.tobytes.return_value = b"page-two-crop"
+        page_two.get_pixmap.return_value = page_two_pix
+
+        fake_doc.__iter__.return_value = iter([page_one, page_two])
+
+        with patch("app.langchain_integration.doc_parser.fitz.open", return_value=fake_doc):
+            assets = extract_pdf_visual_assets(b"%PDF-test", file_name="policy.pdf")
+
+        self.assertEqual([asset.asset_type for asset in assets], ["table_crop", "table_crop"])
+        group_ids = [asset.metadata.get("table_group_id") for asset in assets]
+        self.assertEqual(group_ids[0], group_ids[1])
+        self.assertTrue(assets[0].metadata["continued_to_next_page"])
+        self.assertTrue(assets[1].metadata["continued_from_previous_page"])
+
+    def test_extract_pdf_visual_assets_skips_tiny_decorative_embedded_images(self):
+        """测试 PDF 会跳过明显的装饰性小图标，避免把无意义图案当作图片资产。"""
+        fake_doc = MagicMock()
+        fake_doc.extract_image.side_effect = [
+            {"image": b"x" * 512, "width": 24, "height": 24},
+            {"image": b"y" * 4096, "width": 320, "height": 200},
+        ]
+
+        page = MagicMock()
+        page.rect = MagicMock(width=1000, height=1200)
+        page.get_images.return_value = [(11,), (22,)]
+        page.get_image_rects.side_effect = [
+            [MagicMock(x0=20, y0=20, x1=44, y1=44)],
+            [MagicMock(x0=120, y0=180, x1=620, y1=520)],
+        ]
+        page.get_text.return_value = []
+        page.find_tables.return_value = MagicMock(tables=[])
+        fake_doc.__iter__.return_value = iter([page])
+
+        with patch("app.langchain_integration.doc_parser.fitz.open", return_value=fake_doc):
+            assets = extract_pdf_visual_assets(b"%PDF-test", file_name="policy.pdf")
+
+        self.assertEqual(len(assets), 1)
+        self.assertEqual(assets[0].asset_type, "embedded_image")
+        self.assertEqual(assets[0].metadata["image_width"], 320)
+        self.assertEqual(assets[0].metadata["image_height"], 200)
+
+    def test_extract_pdf_visual_assets_adds_page_render_when_page_only_contains_fragmented_images(self):
+        """测试页面只有大量碎片化图片时，会退化为整页渲染而不是收集一堆局部图案。"""
+        fake_doc = MagicMock()
+        fake_doc.extract_image.side_effect = [
+            {"image": b"x" * 800, "width": 32, "height": 32}
+            for _ in range(6)
+        ]
+
+        page = MagicMock()
+        page.rect = MagicMock(width=1000, height=1200)
+        page.get_images.return_value = [(11,), (12,), (13,), (14,), (15,), (16,)]
+        page.get_image_rects.side_effect = [
+            [MagicMock(x0=40, y0=120, x1=210, y1=290)],
+            [MagicMock(x0=220, y0=120, x1=390, y1=290)],
+            [MagicMock(x0=400, y0=120, x1=570, y1=290)],
+            [MagicMock(x0=40, y0=310, x1=210, y1=480)],
+            [MagicMock(x0=220, y0=310, x1=390, y1=480)],
+            [MagicMock(x0=400, y0=310, x1=570, y1=480)],
+        ]
+        page.get_text.return_value = []
+        page.find_tables.return_value = MagicMock(tables=[])
+        page_pixmap = MagicMock()
+        page_pixmap.tobytes.return_value = b"page-render"
+        page.get_pixmap.return_value = page_pixmap
+        fake_doc.__iter__.return_value = iter([page])
+
+        with patch("app.langchain_integration.doc_parser.fitz.open", return_value=fake_doc):
+            assets = extract_pdf_visual_assets(b"%PDF-test", file_name="poster.pdf")
+
+        self.assertEqual(len(assets), 1)
+        self.assertEqual(assets[0].asset_type, "page_render")
+        self.assertEqual(assets[0].metadata["fallback_reason"], "fragmented_or_filtered_images")
+
+
+class TestStoragePaths(unittest.TestCase):
+    """测试运行时存储路径共享同一个根目录。"""
+
+    def test_storage_paths_share_single_root(self):
+        self.assertEqual(BASE_STORAGE_DIR.parent, STORAGE_ROOT)
+        self.assertEqual(DOC_STORAGE_DIR.parent, STORAGE_ROOT)
+        self.assertTrue(str(STORAGE_ROOT).endswith("storage"))
 
 
 class TestRAGChain(unittest.TestCase):
@@ -668,11 +956,141 @@ class TestLangChainAdapter(unittest.TestCase):
         self.adapter.document_vector_store.upsert_chunks.assert_called_once_with(
             doc_id="doc-x",
             chunks=["第一页第一段"],
-            metadatas=[parsed_chunks[0].metadata],
+            metadatas=[
+                {
+                    **parsed_chunks[0].metadata,
+                    "enabled": False,
+                    "document_type": "pdf",
+                }
+            ],
         )
         stored_doc = self.adapter.vector_store.add_documents.call_args[0][0][0]
         self.assertEqual(stored_doc.metadata["page_number"], 2)
         self.assertEqual(stored_doc.metadata["asset_type"], "table_page_render")
+
+    def test_process_pdf_upload_preserves_table_crop_group_metadata(self):
+        """测试 PDF 上传会把表格裁图与跨页分组 metadata 写入图片向量库与记录。"""
+        self.adapter = _build_isolated_adapter()
+        self.adapter.image_description_chain.ainvoke = AsyncMock(return_value="跨页表格描述")
+
+        mock_db = MagicMock()
+        mock_db.add = MagicMock()
+        mock_db.commit = MagicMock()
+        mock_db.refresh = MagicMock()
+
+        mock_file = MagicMock()
+        mock_file.read = AsyncMock(return_value=b"%PDF-test")
+        mock_file.filename = "policy.pdf"
+
+        parsed_chunks = []
+        visual_assets = [
+            ParsedPdfVisualAsset(
+                image_bytes=b"crop-one",
+                page_number=2,
+                asset_type="table_crop",
+                metadata={
+                    "page_number": 2,
+                    "file_name": "policy.pdf",
+                    "asset_type": "table_crop",
+                    "table_index_on_page": 0,
+                    "table_count_on_page": 1,
+                    "table_group_id": "policy.pdf:table-group:1",
+                    "continued_to_next_page": True,
+                },
+            )
+        ]
+
+        with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x", "img-x"]):
+            with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[]):
+                with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
+                    with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=visual_assets):
+                        with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
+                            with patch("builtins.open", unittest.mock.mock_open()):
+                                asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
+
+        stored_doc = self.adapter.vector_store.add_documents.call_args[0][0][0]
+        self.assertEqual(stored_doc.metadata["asset_type"], "table_crop")
+        self.assertEqual(stored_doc.metadata["table_group_id"], "policy.pdf:table-group:1")
+        self.assertTrue(stored_doc.metadata["continued_to_next_page"])
+
+    def test_process_pdf_upload_retries_transient_chunk_upsert_failures(self):
+        """测试 PDF 上传遇到瞬时 embedding/SSL 错误时会重试文本向量写入。"""
+        self.adapter = _build_isolated_adapter()
+        self.adapter.image_description_chain.ainvoke = AsyncMock(return_value="表格页描述")
+        self.adapter.document_vector_store.upsert_chunks = MagicMock(
+            side_effect=[Exception("[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred"), None]
+        )
+
+        mock_db = MagicMock()
+        mock_db.add = MagicMock()
+        mock_db.commit = MagicMock()
+        mock_db.refresh = MagicMock()
+
+        mock_file = MagicMock()
+        mock_file.read = AsyncMock(return_value=b"%PDF-test")
+        mock_file.filename = "policy.pdf"
+
+        parsed_chunks = [
+            ParsedPdfTextChunk(
+                content="第一页第一段",
+                page_number=1,
+                chunk_index=0,
+                metadata={
+                    "doc_id": "doc-x",
+                    "page_number": 1,
+                    "file_name": "policy.pdf",
+                    "source_type": "pdf_text_chunk",
+                },
+            )
+        ]
+
+        with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x"]):
+            with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[]):
+                with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
+                    with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=[]):
+                        with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
+                            with patch("builtins.open", unittest.mock.mock_open()):
+                                with patch("app.langchain_integration.adapters.time.sleep", return_value=None):
+                                    record = asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
+
+        self.assertEqual(self.adapter.document_vector_store.upsert_chunks.call_count, 2)
+        self.assertEqual(record.status, "Completed")
+
+    def test_text_to_image_search_prefers_table_crop_when_scores_match(self):
+        """测试同等分数下 table_crop 优先于 table_page_render。"""
+        retriever = MultimodalRetriever(vector_store=MagicMock(), chat_model=MagicMock(), top_k=2)
+        crop_hit = {
+            "id": "crop-1",
+            "document": "工资表格裁图",
+            "metadata": {"id": "crop-1", "asset_type": "table_crop"},
+            "rerank_score": 0.9,
+        }
+        page_hit = {
+            "id": "page-1",
+            "document": "工资整页图",
+            "metadata": {"id": "page-1", "asset_type": "table_page_render"},
+            "rerank_score": 0.9,
+        }
+
+        with patch(
+            "app.langchain_integration.retrievers._multi_query_hybrid_search",
+            AsyncMock(return_value=[page_hit, crop_hit]),
+        ):
+            with patch(
+                "app.langchain_integration.retrievers.filter_enabled_image_hit_dicts",
+                return_value=[page_hit, crop_hit],
+            ):
+                with patch(
+                    "app.langchain_integration.retrievers.cross_encoder_rerank",
+                    return_value=[page_hit, crop_hit],
+                ):
+                    with patch(
+                        "app.langchain_integration.retrievers.filter_enabled_image_documents",
+                        side_effect=lambda docs: docs,
+                    ):
+                        results = asyncio.run(retriever.text_to_image_search("工资流程表", top_k=2))
+
+        self.assertEqual([doc.metadata["id"] for doc in results], ["crop-1", "page-1"])
 
     def test_delete_image_record_cleans_vector_and_rebuilds_bm25(self):
         self.adapter = _build_isolated_adapter()
@@ -731,6 +1149,28 @@ class TestLangChainAdapter(unittest.TestCase):
         self.adapter.vector_store.upsert_image_description.assert_called_once()
         self.adapter._rebuild_bm25_index.assert_called_once()
         self.assertEqual(warnings, [])
+
+    def test_reprocess_document_record_marks_failed_when_ingest_raises(self):
+        self.adapter = _build_isolated_adapter()
+        self.adapter.delete_document_record = MagicMock(return_value=[])
+        self.adapter._ingest_pdf_record = AsyncMock(side_effect=Exception("[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred"))
+        record = MagicMock()
+        record.id = "doc-1"
+        record.file_path = "storage/docs/doc-1.pdf"
+        record.file_name = "policy.pdf"
+        record.status = "Completed"
+        record.chunk_count = 5
+        record.image_count = 3
+        mock_db = MagicMock()
+
+        with patch("app.langchain_integration.adapters.Path.exists", return_value=True):
+            with patch("app.langchain_integration.adapters.Path.read_bytes", return_value=b"%PDF-test"):
+                with self.assertRaises(Exception):
+                    asyncio.run(self.adapter.reprocess_document_record(mock_db, record))
+
+        self.assertEqual(record.status, "Failed")
+        self.assertIn("SSL", record.extra_metadata)
+        self.adapter._rebuild_bm25_index.assert_not_called()
 
     def test_sync_document_record_vectors_updates_chunk_and_image_metadata(self):
         self.adapter = _build_isolated_adapter()
@@ -1130,6 +1570,49 @@ class TestRemediationRegressions(unittest.TestCase):
         payload = ImageRecordOut.model_validate(record)
         self.assertEqual(payload.tags, ["hr", "policy"])
         self.assertEqual(payload.custom_metadata["department"], "HR")
+
+    def test_image_record_out_exposes_table_asset_metadata(self):
+        record = MagicMock()
+        record.id = "img-table"
+        record.file_path = "storage/images/custom/img-table.jpg"
+        record.upload_time = "2025-01-01T00:00:00"
+        record.generated_description = "table desc"
+        record.status = "Completed"
+        record.source_dataset = "pdf"
+        record.title = "工资流程表"
+        record.tags = ""
+        record.notes = ""
+        record.enabled = True
+        record.custom_metadata = None
+        record.extra_metadata = (
+            '{"page_number":2,"asset_type":"table_crop","table_index_on_page":0,'
+            '"table_group_id":"policy.pdf:table-group:1","continued_to_next_page":true}'
+        )
+
+        payload = ImageRecordOut.model_validate(record)
+        self.assertEqual(payload.asset_type, "table_crop")
+        self.assertEqual(payload.page_number, 2)
+        self.assertEqual(payload.table_index_on_page, 0)
+        self.assertEqual(payload.table_group_id, "policy.pdf:table-group:1")
+        self.assertTrue(payload.continued_to_next_page)
+
+    def test_search_result_item_exposes_table_asset_metadata(self):
+        payload = SearchResultItem(
+            id="img-table",
+            file_path="storage/images/custom/img-table.jpg",
+            description="table desc",
+            score=0.12,
+            asset_type="table_crop",
+            page_number=3,
+            table_group_id="policy.pdf:table-group:2",
+            continued_from_previous_page=True,
+            continued_to_next_page=False,
+        )
+
+        self.assertEqual(payload.asset_type, "table_crop")
+        self.assertEqual(payload.page_number, 3)
+        self.assertEqual(payload.table_group_id, "policy.pdf:table-group:2")
+        self.assertTrue(payload.continued_from_previous_page)
 
     def test_document_record_out_splits_tags_and_custom_metadata(self):
         record = MagicMock()

@@ -128,34 +128,67 @@
           <el-descriptions-item :label="t('kb.tags')">{{ formatTags(parseResult.document.tags) }}</el-descriptions-item>
         </el-descriptions>
 
-        <el-divider content-position="left">{{ t("docs.chunksTitle") }}（{{ parseResult.chunks.length }} 条）</el-divider>
-        <div class="chunks-container">
-          <el-card
-            v-for="chunk in parseResult.chunks"
-            :key="chunk.chunk_index"
-            class="chunk-card glass-card"
-            shadow="never"
-          >
-            <template #header>
-              <span style="font-size:12px;color:var(--text-secondary)">片段 #{{ chunk.chunk_index + 1 }}</span>
-            </template>
-            <p class="chunk-content">{{ chunk.content }}</p>
-          </el-card>
-          <el-empty v-if="parseResult.chunks.length === 0" :description="t('docs.noChunks')" />
-        </div>
+        <el-tabs v-model="resultTab" class="doc-result-tabs">
+          <el-tab-pane :label="`${t('docs.chunksTitle')} (${parseResult.chunks.length})`" name="chunks">
+            <div class="chunks-toolbar">
+              <span class="chunks-hint">
+                {{ parseResult.chunks.length > 0 ? t("docs.chunkReadableHint") : t("docs.noChunks") }}
+              </span>
+            </div>
+            <div class="chunks-container">
+              <el-card
+                v-for="chunk in parseResult.chunks"
+                :key="chunk.chunk_index"
+                class="chunk-card glass-card"
+                shadow="never"
+              >
+                <template #header>
+                  <div class="chunk-header">
+                    <span>片段 #{{ chunk.chunk_index + 1 }}</span>
+                    <span>{{ chunk.content.length }} 字</span>
+                  </div>
+                </template>
+                <pre class="chunk-content">{{ chunk.content }}</pre>
+              </el-card>
+              <el-alert
+                v-if="parseResult.chunks.length === 0 && parseResult.document.chunk_count > 0"
+                :title="t('docs.chunksLoadMismatch')"
+                type="warning"
+                show-icon
+                :closable="false"
+              />
+              <el-empty v-else-if="parseResult.chunks.length === 0" :description="t('docs.noChunks')" />
+            </div>
+          </el-tab-pane>
 
-        <el-divider content-position="left">{{ t("docs.imagesTitle") }}（{{ parseResult.images.length }} 张）</el-divider>
-        <div class="images-grid">
-          <ImageCard
-            v-for="img in parseResult.images"
-            :key="img.id"
-            :src="imgSrc(img.file_path)"
-            :title="img.title || img.id"
-            :description="img.generated_description || ''"
-            :status="img.status"
-          />
-          <el-empty v-if="parseResult.images.length === 0" :description="t('docs.noImages')" />
-        </div>
+          <el-tab-pane :label="`${t('docs.imagesTitle')} (${parseResult.images.length})`" name="images">
+            <div class="images-grid">
+              <div v-for="img in sortedResultImages" :key="img.id" class="doc-image-item">
+                <div class="doc-image-badges">
+                  <el-tag v-if="assetTypeLabel(img)" size="small" type="primary" effect="dark">
+                    {{ assetTypeLabel(img) }}
+                  </el-tag>
+                  <el-tag v-if="img.page_number" size="small" effect="plain">
+                    {{ t("docs.pageLabel", { page: img.page_number }) }}
+                  </el-tag>
+                  <el-tag v-if="isCrossPageAsset(img)" size="small" type="warning" effect="plain">
+                    {{ t("docs.crossPageContinued") }}
+                  </el-tag>
+                </div>
+                <ImageCard
+                  :src="imgSrc(img.file_path)"
+                  :title="img.title || img.id"
+                  :description="img.generated_description || ''"
+                  :status="img.status"
+                />
+                <p v-if="assetDetailText(img)" class="doc-image-meta">
+                  {{ assetDetailText(img) }}
+                </p>
+              </div>
+              <el-empty v-if="parseResult.images.length === 0" :description="t('docs.noImages')" />
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </template>
     </el-drawer>
 
@@ -229,6 +262,7 @@ const drawerVisible = ref(false);
 const activeDoc = ref<DocumentRecord | null>(null);
 const parseResult = ref<DocParseResult | null>(null);
 const loadingResult = ref(false);
+const resultTab = ref("chunks");
 
 const editVisible = ref(false);
 const currentDocId = ref("");
@@ -238,6 +272,21 @@ const editForm = reactive({
   notes: "",
   enabled: true,
   document_type: "pdf",
+});
+
+const sortedResultImages = computed(() => {
+  if (!parseResult.value) return [];
+  return [...parseResult.value.images].sort((left, right) => {
+    const leftPage = left.page_number ?? Number.MAX_SAFE_INTEGER;
+    const rightPage = right.page_number ?? Number.MAX_SAFE_INTEGER;
+    if (leftPage !== rightPage) return leftPage - rightPage;
+
+    const leftIndex = left.table_index_on_page ?? Number.MAX_SAFE_INTEGER;
+    const rightIndex = right.table_index_on_page ?? Number.MAX_SAFE_INTEGER;
+    if (leftIndex !== rightIndex) return leftIndex - rightIndex;
+
+    return (left.title || left.id).localeCompare(right.title || right.id);
+  });
 });
 
 async function doUpload() {
@@ -286,10 +335,36 @@ function formatTags(tags?: string[]) {
   return tags?.length ? tags.join(", ") : "-";
 }
 
+function assetTypeLabel(img: DocParseResult["images"][number]) {
+  if (img.asset_type === "table_crop") return t("docs.tableCrop");
+  if (img.asset_type === "table_page_render") return t("docs.tablePageRender");
+  if (img.asset_type === "page_render") return t("docs.pageRender");
+  return "";
+}
+
+function isCrossPageAsset(img: DocParseResult["images"][number]) {
+  return Boolean(img.continued_from_previous_page || img.continued_to_next_page);
+}
+
+function assetDetailText(img: DocParseResult["images"][number]) {
+  const parts: string[] = [];
+  if (img.asset_type === "table_crop" && typeof img.table_index_on_page === "number") {
+    parts.push(t("docs.tableIndexLabel", { index: img.table_index_on_page + 1 }));
+  }
+  if ((img.asset_type === "table_page_render" || img.asset_type === "page_render") && img.fallback_reason) {
+    parts.push(t(`docs.fallbackReason.${img.fallback_reason}`));
+  }
+  if (img.table_group_id) {
+    parts.push(t("docs.crossPageGroup"));
+  }
+  return parts.join(" · ");
+}
+
 async function viewResult(doc: DocumentRecord) {
   activeDoc.value = doc;
   drawerVisible.value = true;
   loadingResult.value = true;
+  resultTab.value = "chunks";
   parseResult.value = null;
   try {
     parseResult.value = await getDocResult(doc.id);
@@ -441,8 +516,32 @@ async function handleReprocess(doc: DocumentRecord) {
   background: var(--bg-tertiary);
 }
 
+.doc-result-tabs :deep(.el-tabs__nav-wrap::after) {
+  background: var(--border-color);
+}
+
+.doc-result-tabs :deep(.el-tabs__item) {
+  color: var(--text-secondary);
+}
+
+.doc-result-tabs :deep(.el-tabs__item.is-active) {
+  color: var(--accent-primary);
+}
+
+.chunks-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.chunks-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 .chunks-container {
-  max-height: 400px;
+  max-height: 520px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -452,15 +551,37 @@ async function handleReprocess(doc: DocumentRecord) {
 
 .chunk-card {
   padding: 0;
+  height: auto;
+  overflow: visible;
+}
+
+.chunk-card :deep(.el-card__header) {
+  padding: 10px 16px;
+}
+
+.chunk-card :deep(.el-card__body) {
+  padding: 14px 16px;
+  overflow: visible;
+}
+
+.chunk-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .chunk-content {
   font-size: 13px;
   line-height: 1.6;
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: break-word;
   margin: 0;
   color: var(--text-primary);
+  user-select: text;
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
 }
 
 .images-grid {
@@ -468,5 +589,24 @@ async function handleReprocess(doc: DocumentRecord) {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
   margin-bottom: 16px;
+}
+
+.doc-image-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-image-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.doc-image-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 </style>

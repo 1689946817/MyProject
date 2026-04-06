@@ -38,15 +38,26 @@
               <span v-else>{{ t('search.noResults') }}</span>
             </h4>
             <div v-if="textResults.length > 0" class="result-grid">
-              <ImageCard
-                v-for="item in textResults"
-                :key="item.id"
-                :src="getImageSrc(item.file_path || '')"
-                :title="item.id"
-                :description="item.description"
-                :score="clampScore(item.score)"
-                @click="openPreview(item)"
-              />
+              <div v-for="item in textResults" :key="item.id" class="search-image-item">
+                <div v-if="resultBadgeVisible(item)" class="search-image-badges">
+                  <el-tag v-if="assetTypeLabel(item)" size="small" type="primary" effect="dark">
+                    {{ assetTypeLabel(item) }}
+                  </el-tag>
+                  <el-tag v-if="pageLabel(item)" size="small" effect="plain">
+                    {{ pageLabel(item) }}
+                  </el-tag>
+                  <el-tag v-if="isCrossPageResult(item)" size="small" type="warning" effect="plain">
+                    {{ t("docs.crossPageContinued") }}
+                  </el-tag>
+                </div>
+                <ImageCard
+                  :src="getImageSrc(item.file_path || '')"
+                  :title="item.id"
+                  :description="item.description"
+                  :score="clampScore(item.score)"
+                  @click="openPreview(item)"
+                />
+              </div>
             </div>
             <el-empty v-else-if="!loadingText" :description="t('search.noResults')" />
           </div>
@@ -98,15 +109,26 @@
               <span v-else>{{ t('search.noResults') }}</span>
             </h4>
             <div v-if="imageResults.length > 0" class="result-grid">
-              <ImageCard
-                v-for="item in imageResults"
-                :key="item.id"
-                :src="getImageSrc(item.file_path || '')"
-                :title="item.id"
-                :description="item.description"
-                :score="clampScore(item.score)"
-                @click="openPreview(item)"
-              />
+              <div v-for="item in imageResults" :key="item.id" class="search-image-item">
+                <div v-if="resultBadgeVisible(item)" class="search-image-badges">
+                  <el-tag v-if="assetTypeLabel(item)" size="small" type="primary" effect="dark">
+                    {{ assetTypeLabel(item) }}
+                  </el-tag>
+                  <el-tag v-if="pageLabel(item)" size="small" effect="plain">
+                    {{ pageLabel(item) }}
+                  </el-tag>
+                  <el-tag v-if="isCrossPageResult(item)" size="small" type="warning" effect="plain">
+                    {{ t("docs.crossPageContinued") }}
+                  </el-tag>
+                </div>
+                <ImageCard
+                  :src="getImageSrc(item.file_path || '')"
+                  :title="item.id"
+                  :description="item.description"
+                  :score="clampScore(item.score)"
+                  @click="openPreview(item)"
+                />
+              </div>
             </div>
             <el-empty v-else-if="!loadingImage" :description="t('search.noResults')" />
           </div>
@@ -169,6 +191,28 @@ function getImageSrc(filePath: string): string {
 function openPreview(item: SearchResultItem) {
   previewItem.value = item
   previewVisible.value = true
+}
+
+function assetTypeLabel(item: SearchResultItem): string {
+  if (item.asset_type === 'table_crop') return t('docs.tableCrop')
+  if (item.asset_type === 'table_page_render') return t('docs.tablePageRender')
+  if (item.asset_type === 'page_render') return t('docs.pageRender')
+  return ''
+}
+
+function pageLabel(item: SearchResultItem): string {
+  if (typeof item.page_number === 'number') {
+    return t('docs.pageLabel', { page: item.page_number })
+  }
+  return ''
+}
+
+function isCrossPageResult(item: SearchResultItem): boolean {
+  return Boolean(item.continued_from_previous_page || item.continued_to_next_page)
+}
+
+function resultBadgeVisible(item: SearchResultItem): boolean {
+  return Boolean(assetTypeLabel(item) || pageLabel(item) || isCrossPageResult(item))
 }
 
 async function doTextSearch() {
@@ -264,6 +308,18 @@ async function doImageSearch() {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
+}
+
+.search-image-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-image-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* MLLM 查询描述卡片 */

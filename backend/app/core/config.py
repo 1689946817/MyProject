@@ -21,6 +21,35 @@ from pydantic_settings import BaseSettings
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # backend/ 目录（.env 文件所在位置）
 _BACKEND_DIR = os.path.dirname(os.path.dirname(_BASE_DIR))
+_PROXY_ENV_KEYS = (
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+)
+_NO_PROXY_ENV_KEYS = ("NO_PROXY", "no_proxy")
+
+
+def _env_flag(name: str, default: bool) -> bool:
+    """从原始环境变量解析布尔开关。"""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _disable_process_proxy_env() -> None:
+    """在当前后端进程内禁用通过环境变量继承的代理。"""
+    for key in _PROXY_ENV_KEYS:
+        os.environ.pop(key, None)
+    for key in _NO_PROXY_ENV_KEYS:
+        os.environ[key] = "*"
+
+
+if _env_flag("DISABLE_OUTBOUND_PROXY", True):
+    _disable_process_proxy_env()
 
 
 class Settings(BaseSettings):
@@ -52,6 +81,7 @@ class Settings(BaseSettings):
     DOC_COLLECTION_NAME: str = "documents_text"  # 文档文本片段向量集合名称
     CHROMA_COLLECTION_NAME: Optional[str] = None  # 兼容旧 .env 的历史字段，已废弃
     PDF_TEXT_LOADER_BACKEND: str = "pymupdf"
+    DISABLE_OUTBOUND_PROXY: bool = True
 
     # 多模态模型配置（例如 阿里百炼上的 Qwen-VL）
     MLLM_BASE_URL: Optional[str] = None  # 多模态模型 API 基础 URL

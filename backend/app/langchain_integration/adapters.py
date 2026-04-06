@@ -12,6 +12,7 @@ import base64
 import json
 import logging
 import os
+import time
 import uuid
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Tuple
@@ -47,6 +48,15 @@ from app.langchain_integration.retrievers import get_multimodal_retriever
 from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
 
 logger = logging.getLogger(__name__)
+_TRANSIENT_EXTERNAL_ERROR_MARKERS = (
+    "unexpected_eof_while_reading",
+    "eof occurred in violation of protocol",
+    "connection reset",
+    "temporarily unavailable",
+    "read timed out",
+    "timed out",
+    "ssl",
+)
 
 
 class LangChainAdapter:
@@ -555,6 +565,38 @@ class LangChainAdapter:
             import logging
             logging.getLogger(__name__).warning(f"[Adapter] BM25 增量更新失败: {e}")
 
+    def _is_transient_external_error(self, exc: Exception) -> bool:
+        message = str(exc).strip().lower()
+        return any(marker in message for marker in _TRANSIENT_EXTERNAL_ERROR_MARKERS)
+
+    def _upsert_document_chunks_with_retry(
+        self,
+        doc_id: str,
+        chunks: List[str],
+        metadatas: List[Dict[str, Any]],
+        max_attempts: int = 3,
+    ) -> None:
+        for attempt in range(1, max_attempts + 1):
+            try:
+                self.document_vector_store.upsert_chunks(
+                    doc_id=doc_id,
+                    chunks=chunks,
+                    metadatas=metadatas,
+                )
+                return
+            except Exception as exc:
+                is_transient = self._is_transient_external_error(exc)
+                if attempt >= max_attempts or not is_transient:
+                    raise
+                logger.warning(
+                    "[Adapter] 文档向量写入失败，进行重试: doc=%s attempt=%s/%s error=%s",
+                    doc_id,
+                    attempt,
+                    max_attempts,
+                    exc,
+                )
+                time.sleep(min(0.5 * attempt, 1.5))
+
     def get_vector_store_stats(self) -> Dict[str, Any]:
         """
         获取向量存储统计信息
@@ -646,7 +688,7 @@ class LangChainAdapter:
         visual_assets = extract_pdf_visual_assets(contents, file_name=file_name)
 
         if parsed_text_chunks:
-            self.document_vector_store.upsert_chunks(
+            self._upsert_document_chunks_with_retry(
                 doc_id=doc_id,
                 chunks=[chunk.content for chunk in parsed_text_chunks],
                 metadatas=[
@@ -677,22 +719,37 @@ class LangChainAdapter:
                 from langchain_core.documents import Document as LCDoc
                 lc_doc = LCDoc(
                     page_content=description,
-                        metadata={
-                            "id": img_id,
-                            "source": record.document_type,
-                            "doc_id": doc_id,
-                            "file_name": file_name,
-                            "file_path": str(img_path),
-                            "page_number": asset.page_number,
-                            "asset_type": asset.asset_type,
-                            "enabled": True,
-                            "parent_doc_enabled": bool(record.enabled),
-                            "title": f"{file_name} 图片 {processed_image_count + 1}",
-                            "tags": [],
+                    metadata={
+                        "id": img_id,
+                        "source": record.document_type,
+                        "doc_id": doc_id,
+                        "file_name": file_name,
+                        "file_path": str(img_path),
+                        "page_number": asset.page_number,
+                        "asset_type": asset.asset_type,
+                        "enabled": True,
+                        "parent_doc_enabled": bool(record.enabled),
+                        "title": f"{file_name} 图片 {processed_image_count + 1}",
+                        "tags": [],
+                        **{
+                            key: value
+                            for key, value in asset.metadata.items()
+                            if not str(key).startswith("_")
                         },
-                    )
+                    },
+                )
                 self.vector_store.add_documents([lc_doc], ids=[img_id])
 
+                image_extra_metadata = {
+                    "doc_id": doc_id,
+                    "page_number": asset.page_number,
+                    "asset_type": asset.asset_type,
+                    **{
+                        key: value
+                        for key, value in asset.metadata.items()
+                        if not str(key).startswith("_")
+                    },
+                }
                 img_record = ImageRecord(
                     id=img_id,
                     file_path=str(img_path),
@@ -701,11 +758,7 @@ class LangChainAdapter:
                     status="Completed",
                     source_dataset=record.document_type,
                     extra_metadata=json.dumps(
-                        {
-                            "doc_id": doc_id,
-                            "page_number": asset.page_number,
-                            "asset_type": asset.asset_type,
-                        },
+                        image_extra_metadata,
                         ensure_ascii=False,
                     ),
                 )
@@ -780,12 +833,19 @@ class LangChainAdapter:
         db.commit()
         db.refresh(record)
 
-        await self._ingest_pdf_record(
-            db=db,
-            record=record,
-            contents=doc_path.read_bytes(),
-            file_name=record.file_name,
-        )
+        try:
+            await self._ingest_pdf_record(
+                db=db,
+                record=record,
+                contents=doc_path.read_bytes(),
+                file_name=record.file_name,
+            )
+        except Exception as exc:
+            record.status = "Failed"
+            record.extra_metadata = str(exc)
+            db.commit()
+            db.refresh(record)
+            raise
         try:
             self._rebuild_bm25_index()
         except Exception as exc:
@@ -878,6 +938,17 @@ class LangChainAdapter:
             metadata["page_number"] = extra["page_number"]
         if extra.get("asset_type"):
             metadata["asset_type"] = extra["asset_type"]
+        for key in (
+            "table_index_on_page",
+            "table_count_on_page",
+            "table_group_id",
+            "continued_from_previous_page",
+            "continued_to_next_page",
+            "fallback_reason",
+            "related_table_indices",
+        ):
+            if key in extra:
+                metadata[key] = extra[key]
         self.vector_store.upsert_image_description(record.id, record.generated_description or "", metadata)
 
     def sync_document_record_vectors(self, db: Session, record: DocumentRecord) -> None:
