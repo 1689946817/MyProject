@@ -136,7 +136,7 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
 
         source_id = item.get("id") or metadata.get("id") or _fallback_source_id(item, metadata)
         file_path = metadata.get("file_path")
-        title = metadata.get("filename")
+        title = metadata.get("title") or metadata.get("filename")
         if not title and file_path:
             title = os.path.basename(file_path)
         if not title:

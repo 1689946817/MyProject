@@ -1408,6 +1408,14 @@ class TestRemediationRegressions(unittest.TestCase):
         self.assertEqual(intent["execution_mode"], "uploaded_image_qa")
         self.assertFalse(intent["use_rag"])
 
+    def test_classify_chat_intent_routes_explicit_save_request_to_save_uploaded_image(self):
+        """测试带图且明确要求存入知识库时走 save_uploaded_image。"""
+        intent = asyncio.run(classify_chat_intent("帮我存一下这个图片到知识库", has_uploaded_image=True))
+
+        self.assertEqual(intent["presentation_mode"], "direct_answer")
+        self.assertEqual(intent["execution_mode"], "save_uploaded_image")
+        self.assertFalse(intent["use_rag"])
+
     def test_rag_chat_text_uses_direct_llm_when_agentic_intent_says_no_rag(self):
         """测试 Agentic 意图命中 direct_llm 时不走 RAG"""
         self.adapter = _build_isolated_adapter()
@@ -1552,6 +1560,53 @@ class TestRemediationRegressions(unittest.TestCase):
         self.assertEqual(documents, [])
         self.assertEqual(intent["execution_mode"], "uploaded_image_qa")
         self.adapter._answer_with_uploaded_image.assert_awaited_once()
+
+    def test_rag_chat_saves_uploaded_image_for_explicit_save_request(self):
+        """测试带图且明确要求存图时走 save_uploaded_image。"""
+        self.adapter = _build_isolated_adapter()
+        self.adapter._save_uploaded_image_to_kb = AsyncMock(
+            return_value=(
+                "已将图片“handover”存入图片知识库。",
+                [
+                    {
+                        "id": "img-saved",
+                        "document": "saved desc",
+                        "metadata": {
+                            "id": "img-saved",
+                            "file_path": "storage/images/custom/img-saved.jpg",
+                            "source_dataset": "chat_upload",
+                            "title": "handover",
+                        },
+                        "score": 1.0,
+                    }
+                ],
+            )
+        )
+        mock_file = MagicMock()
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "direct_answer",
+                        "execution_mode": "save_uploaded_image",
+                        "use_rag": False,
+                        "has_uploaded_image": True,
+                        "wants_images": False,
+                        "confidence": 0.95,
+                        "reason": "save_uploaded_image",
+                    }
+                ),
+            ):
+                answer, documents, intent = asyncio.run(
+                    self.adapter.rag_chat("帮我存一下这个图片到知识库", top_k=1, image=mock_file)
+                )
+
+        self.assertIn("存入图片知识库", answer)
+        self.assertEqual(documents[0]["id"], "img-saved")
+        self.assertEqual(intent["execution_mode"], "save_uploaded_image")
+        self.adapter._save_uploaded_image_to_kb.assert_awaited_once_with(mock_file)
 
     def test_image_record_out_splits_tags_and_custom_metadata(self):
         record = MagicMock()

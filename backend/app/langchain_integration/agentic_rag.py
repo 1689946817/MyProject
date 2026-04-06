@@ -30,6 +30,7 @@ class IntentClassification(TypedDict):
         "image_similarity",
         "image_grounded_answer",
         "uploaded_image_qa",
+        "save_uploaded_image",
     ]
     use_rag: bool
     has_uploaded_image: bool
@@ -93,6 +94,16 @@ _IMAGE_LOOKUP_HINTS = [
     "找一张",
     "找个",
 ]
+_SAVE_IMAGE_HINTS = [
+    "存一下",
+    "保存",
+    "存入",
+    "存到",
+    "加入知识库",
+    "加入图片知识库",
+    "放到知识库",
+    "收录到知识库",
+]
 _ANSWER_HINTS = [
     "什么",
     "怎么",
@@ -117,6 +128,7 @@ def _default_intent(
         "image_similarity",
         "image_grounded_answer",
         "uploaded_image_qa",
+        "save_uploaded_image",
     ],
     use_rag: bool,
     has_uploaded_image: bool,
@@ -141,12 +153,24 @@ def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentC
     asks_answer = any(token in normalized for token in _ANSWER_HINTS)
     asks_similarity = any(token in normalized for token in ["相似", "类似"])
     asks_find = any(token in normalized for token in ["找", "搜索", "给我", "帮我找"])
+    asks_save = any(token in normalized for token in _SAVE_IMAGE_HINTS)
     references_uploaded_image = any(token in normalized for token in ["这张图片", "这张图", "图里", "图片里", "图上", "图片上"])
     internal_knowledge = any(token in normalized for token in _INTERNAL_KNOWLEDGE_HINTS)
     common_fact = any(token in normalized for token in _COMMON_FACT_PATTERNS)
     explicit_explanation_request = any(
         token in normalized for token in ["告诉我", "并告诉我", "并说明", "解释", "回答", "分析", "讲讲", "说说"]
     )
+
+    if has_uploaded_image and asks_save and not (asks_similarity or asks_find or asks_answer):
+        return _default_intent(
+            presentation_mode=_DIRECT_ANSWER,
+            execution_mode="save_uploaded_image",
+            use_rag=False,
+            has_uploaded_image=True,
+            wants_images=False,
+            confidence=0.97,
+            reason="save_uploaded_image",
+        )
 
     if has_uploaded_image and asks_similarity and wants_images and not asks_answer:
         return _default_intent(
@@ -251,6 +275,7 @@ def _coerce_classifier_output(payload: Dict[str, Any], has_uploaded_image: bool)
             "image_similarity",
             "image_grounded_answer",
             "uploaded_image_qa",
+            "save_uploaded_image",
         }:
             return None
         return _default_intent(
@@ -297,6 +322,7 @@ async def classify_chat_intent(
 返回字段：
 - presentation_mode: direct_answer | rag_answer | image_only | image_plus_answer
 - execution_mode: direct_llm | multimodal_rag | image_similarity | image_grounded_answer | uploaded_image_qa
+ - execution_mode: direct_llm | multimodal_rag | image_similarity | image_grounded_answer | uploaded_image_qa | save_uploaded_image
 - use_rag: boolean
 - wants_images: boolean
 - confidence: 0 到 1
@@ -308,7 +334,8 @@ async def classify_chat_intent(
 3. 纯找图、找类似图，只返回图片时，走 image_similarity。
 4. 既要图片又要解释、要基于找到的图片回答时，走 image_grounded_answer。
 5. 用户上传了图片，且只是在问上传图本身内容时，走 uploaded_image_qa。
-6. 不确定时，优先进入检索增强路线，而不是 direct_llm。
+6. 用户上传了图片，且明确要求保存到知识库时，走 save_uploaded_image。
+7. 不确定时，优先进入检索增强路线，而不是 direct_llm。
 
 用户是否上传图片：{str(has_uploaded_image).lower()}
 用户问题：{query}

@@ -344,6 +344,9 @@ function shouldShowImagesAfterText(msg: Message): boolean {
 }
 
 function getModeLabel(msg: Message): string {
+  if (msg.execution_mode === 'save_uploaded_image') {
+    return '已存入知识库'
+  }
   switch (getPresentationMode(msg)) {
     case 'direct_answer':
       return '直接回答'

@@ -384,6 +384,17 @@ class LangChainAdapter:
             )
             return answer, [], intent
 
+        if execution_mode == "save_uploaded_image":
+            if image is None:
+                answer = await self._answer_directly(query=query, chat_history=chat_history)
+                return answer, [], {
+                    **intent,
+                    "reason": "save_uploaded_image_missing_fallback_to_direct",
+                    "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
+                }
+            answer, documents = await self._save_uploaded_image_to_kb(image)
+            return answer, documents, intent
+
         if execution_mode == "image_similarity":
             documents = await self._retrieve_images_for_query(query=query, image=image, top_k=top_k)
             answer = self._build_image_only_answer(documents)
@@ -501,6 +512,38 @@ class LangChainAdapter:
         if not documents:
             return "未找到相关图片。"
         return f"为你找到 {len(documents)} 张相关图片。"
+
+    async def _save_uploaded_image_to_kb(
+        self,
+        image: UploadFile,
+    ) -> Tuple[str, List[Dict[str, Any]]]:
+        """将聊天页上传图片直接存入图片知识库。"""
+        from app.data.database import SessionLocal
+
+        with SessionLocal() as db:
+            record, description = await self.process_image_upload(
+                db=db,
+                file=image,
+                split="custom",
+                source_dataset="chat_upload",
+            )
+
+        title = record.title or Path(record.file_path).stem
+        answer = f"已将图片“{title}”存入图片知识库。"
+        return answer, [
+            {
+                "id": record.id,
+                "document": description,
+                "metadata": {
+                    "id": record.id,
+                    "file_path": record.file_path,
+                    "source_dataset": record.source_dataset,
+                    "title": title,
+                    "enabled": bool(getattr(record, "enabled", True)),
+                },
+                "score": 1.0,
+            }
+        ]
 
     async def _answer_with_retrieved_images(
         self,

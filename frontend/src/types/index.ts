@@ -58,6 +58,7 @@ export type ExecutionMode =
   | "image_similarity"
   | "image_grounded_answer"
   | "uploaded_image_qa"
+  | "save_uploaded_image"
 
 /**
  * 聊天会话
