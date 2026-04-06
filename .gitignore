@@ -199,6 +199,20 @@ logs/
 .playwright-mcp/
 .opencode/
 finetune.zip
+events.jsonl
+config.json
+views.json
+backend/down.py
+upload.py
+finetune/
+labels/
+statuses/
+.claude-plugin/
+CUDA_VISIBLE_DEVICES=0 swift sft     --model 'ModelQwenQwen3.md
+整改.md
+进度汇报.txt
+打分脚本.md
+evaluation/export_unidoc_shared_subset.py
 
 # Claude Code
 .claude/
