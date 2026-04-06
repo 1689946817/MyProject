@@ -1,11 +1,10 @@
 <template>
   <div class="doc-kb">
-    <!-- 上传区域 -->
     <el-card class="glass-card">
       <template #header>
         <div class="card-header">
           <i class="i-ep-document mr-2 accent-icon"></i>
-          <span>{{ t('docs.title') }}</span>
+          <span>{{ t("docs.title") }}</span>
         </div>
       </template>
       <UploadZone
@@ -23,7 +22,7 @@
         @click="doUpload"
       >
         <i class="i-ep-upload mr-2"></i>
-        {{ t('docs.uploadBtn') }}
+        {{ t("docs.uploadBtn") }}
       </el-button>
       <el-alert
         v-if="uploadMsg"
@@ -35,22 +34,46 @@
       />
     </el-card>
 
-    <!-- 文档列表 -->
     <el-card class="glass-card" style="margin-top: 24px">
       <template #header>
         <div class="card-header">
-          <span>{{ t('docs.uploadedDocs') }}</span>
+          <span>{{ t("docs.uploadedDocs") }}</span>
           <el-button size="small" @click="loadDocList">
             <i class="i-ep-refresh mr-1"></i>
-            {{ t('docs.refresh') }}
+            {{ t("docs.refresh") }}
           </el-button>
         </div>
       </template>
+
+      <div class="filter-bar">
+        <el-input v-model="filters.keyword" :placeholder="t('docs.searchPlaceholder')" clearable @keyup.enter="loadDocList" />
+        <el-select v-model="filters.status" clearable :placeholder="t('docs.status')" @change="loadDocList">
+          <el-option label="Processing" value="Processing" />
+          <el-option label="Completed" value="Completed" />
+          <el-option label="Failed" value="Failed" />
+        </el-select>
+        <el-select v-model="filters.enabled" clearable :placeholder="t('kb.enabled')" @change="loadDocList">
+          <el-option :label="t('kb.enabledOnly')" :value="true" />
+          <el-option :label="t('kb.disabledOnly')" :value="false" />
+        </el-select>
+        <el-input v-model="filters.tag" :placeholder="t('kb.tagPlaceholder')" clearable @keyup.enter="loadDocList" />
+      </div>
+
       <el-table v-loading="loadingList" :data="docList" stripe class="dark-table">
-        <el-table-column prop="file_name" :label="t('docs.fileName')" min-width="160" show-overflow-tooltip />
+        <el-table-column prop="title" :label="t('docs.titleColumn')" min-width="180" show-overflow-tooltip>
+          <template #default="{ row }">{{ row.title || row.file_name }}</template>
+        </el-table-column>
+        <el-table-column prop="document_type" :label="t('docs.documentType')" width="110" />
         <el-table-column :label="t('docs.uploadTime')" width="180">
           <template #default="{ row }">
             {{ new Date(row.upload_time).toLocaleString() }}
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('kb.enabled')" width="110">
+          <template #default="{ row }">
+            <el-tag :type="row.enabled ? 'success' : 'info'">
+              {{ row.enabled ? t("kb.enabled") : t("kb.disabled") }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="t('docs.status')" width="110">
@@ -60,47 +83,52 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column :label="t('kb.tags')" min-width="140" show-overflow-tooltip>
+          <template #default="{ row }">{{ formatTags(row.tags) }}</template>
+        </el-table-column>
         <el-table-column :label="t('docs.chunks')" width="90" align="center" prop="chunk_count" />
         <el-table-column :label="t('docs.images')" width="80" align="center" prop="image_count" />
-        <el-table-column :label="t('docs.action')" width="100" align="center">
+        <el-table-column :label="t('docs.action')" width="280" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button
-              size="small"
-              type="primary"
-              :disabled="row.status !== 'Completed'"
-              @click="viewResult(row)"
-            >
-              {{ t('docs.view') }}
-            </el-button>
+            <div class="row-actions">
+              <el-button size="small" :disabled="row.status !== 'Completed'" @click="viewResult(row)">
+                {{ t("docs.view") }}
+              </el-button>
+              <el-button size="small" @click="openEdit(row)">{{ t("common.edit") }}</el-button>
+              <el-button size="small" @click="handleReprocess(row)">{{ t("kb.reprocess") }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(row)">{{ t("common.delete") }}</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <!-- 解析结果抽屉 -->
     <el-drawer
       v-model="drawerVisible"
-      :title="activeDoc?.file_name || '解析结果'"
+      :title="activeDoc?.title || activeDoc?.file_name || '解析结果'"
       size="60%"
       direction="rtl"
       class="dark-drawer"
     >
       <div v-if="loadingResult" style="text-align:center;padding:40px">
         <el-icon class="is-loading" style="font-size:32px"><Loading /></el-icon>
-        <p>{{ t('common.loading') }}</p>
+        <p>{{ t("common.loading") }}</p>
       </div>
       <template v-else-if="parseResult">
-        <!-- 统计信息 -->
         <el-descriptions :column="3" border style="margin-bottom: 20px" class="dark-descriptions">
           <el-descriptions-item :label="t('docs.chunks')">{{ parseResult.chunks.length }}</el-descriptions-item>
           <el-descriptions-item :label="t('docs.images')">{{ parseResult.images.length }}</el-descriptions-item>
           <el-descriptions-item :label="t('docs.status')">
             <el-tag :type="statusType(parseResult.document.status)">{{ parseResult.document.status }}</el-tag>
           </el-descriptions-item>
+          <el-descriptions-item :label="t('docs.documentType')">{{ parseResult.document.document_type }}</el-descriptions-item>
+          <el-descriptions-item :label="t('kb.enabled')">
+            {{ parseResult.document.enabled ? t("kb.enabled") : t("kb.disabled") }}
+          </el-descriptions-item>
+          <el-descriptions-item :label="t('kb.tags')">{{ formatTags(parseResult.document.tags) }}</el-descriptions-item>
         </el-descriptions>
 
-        <!-- 文本片段 -->
-        <el-divider content-position="left">{{ t('docs.chunksTitle') }}（{{ parseResult.chunks.length }} 条）</el-divider>
+        <el-divider content-position="left">{{ t("docs.chunksTitle") }}（{{ parseResult.chunks.length }} 条）</el-divider>
         <div class="chunks-container">
           <el-card
             v-for="chunk in parseResult.chunks"
@@ -116,14 +144,13 @@
           <el-empty v-if="parseResult.chunks.length === 0" :description="t('docs.noChunks')" />
         </div>
 
-        <!-- 提取的图片 -->
-        <el-divider content-position="left">{{ t('docs.imagesTitle') }}（{{ parseResult.images.length }} 张）</el-divider>
+        <el-divider content-position="left">{{ t("docs.imagesTitle") }}（{{ parseResult.images.length }} 张）</el-divider>
         <div class="images-grid">
           <ImageCard
             v-for="img in parseResult.images"
             :key="img.id"
             :src="imgSrc(img.file_path)"
-            :title="img.id"
+            :title="img.title || img.id"
             :description="img.generated_description || ''"
             :status="img.status"
           />
@@ -131,100 +158,218 @@
         </div>
       </template>
     </el-drawer>
+
+    <el-dialog v-model="editVisible" :title="t('docs.editTitle')" width="520px">
+      <el-form label-position="top">
+        <el-form-item :label="t('docs.titleColumn')">
+          <el-input v-model="editForm.title" />
+        </el-form-item>
+        <el-form-item :label="t('kb.tags')">
+          <el-input v-model="editForm.tagsText" :placeholder="t('kb.tagsTip')" />
+        </el-form-item>
+        <el-form-item :label="t('docs.documentType')">
+          <el-select v-model="editForm.document_type">
+            <el-option label="pdf" value="pdf" />
+            <el-option label="markdown" value="markdown" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="t('kb.enabled')">
+          <el-switch v-model="editForm.enabled" />
+        </el-form-item>
+        <el-form-item :label="t('kb.notes')">
+          <el-input v-model="editForm.notes" type="textarea" :rows="4" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="editVisible = false">{{ t("common.cancel") }}</el-button>
+        <el-button type="primary" :loading="saving" @click="submitEdit">{{ t("common.save") }}</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import { Loading } from '@element-plus/icons-vue'
-import type { UploadFile } from 'element-plus'
+import { computed, onMounted, reactive, ref } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Loading } from "@element-plus/icons-vue";
+import { useI18n } from "vue-i18n";
 import {
-  uploadDocument,
-  listDocuments,
+  deleteDocument,
   getDocResult,
-  type DocumentRecord,
+  listDocuments,
+  reprocessDocument,
+  updateDocument,
+  uploadDocument,
   type DocParseResult,
-} from '@/api/docs'
-import { imgSrc } from '@/utils/image'
-import UploadZone from '@/components/UploadZone.vue'
-import ImageCard from '@/components/ImageCard.vue'
+  type DocumentRecord,
+} from "@/api/docs";
+import ImageCard from "@/components/ImageCard.vue";
+import UploadZone from "@/components/UploadZone.vue";
+import { imgSrc } from "@/utils/image";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-// 上传
-const selectedFiles = ref<File[]>([])
-const selectedFile = computed(() => selectedFiles.value[0] || null)
-const uploading = ref(false)
-const uploadMsg = ref('')
-const uploadSuccess = ref(false)
+const selectedFiles = ref<File[]>([]);
+const selectedFile = computed(() => selectedFiles.value[0] || null);
+const uploading = ref(false);
+const uploadMsg = ref("");
+const uploadSuccess = ref(false);
+const saving = ref(false);
+
+const filters = reactive({
+  keyword: "",
+  status: "",
+  enabled: undefined as boolean | undefined,
+  tag: "",
+});
+
+const docList = ref<DocumentRecord[]>([]);
+const loadingList = ref(false);
+const drawerVisible = ref(false);
+const activeDoc = ref<DocumentRecord | null>(null);
+const parseResult = ref<DocParseResult | null>(null);
+const loadingResult = ref(false);
+
+const editVisible = ref(false);
+const currentDocId = ref("");
+const editForm = reactive({
+  title: "",
+  tagsText: "",
+  notes: "",
+  enabled: true,
+  document_type: "pdf",
+});
 
 async function doUpload() {
-  if (!selectedFile.value) return
-  uploading.value = true
-  uploadMsg.value = ''
+  if (!selectedFile.value) return;
+  uploading.value = true;
+  uploadMsg.value = "";
   try {
-    const res = await uploadDocument(selectedFile.value)
-    uploadSuccess.value = true
-    uploadMsg.value = res.message || t('docs.uploadSuccess')
-    selectedFiles.value = []
-    await loadDocList()
+    const res = await uploadDocument(selectedFile.value);
+    uploadSuccess.value = true;
+    uploadMsg.value = res.message || t("docs.uploadSuccess");
+    selectedFiles.value = [];
+    await loadDocList();
   } catch (e: any) {
-    uploadSuccess.value = false
-    uploadMsg.value = e?.response?.data?.detail || t('docs.uploadFailed')
+    uploadSuccess.value = false;
+    uploadMsg.value = e?.response?.data?.detail || t("docs.uploadFailed");
   } finally {
-    uploading.value = false
+    uploading.value = false;
   }
 }
-
-// 文档列表
-const docList = ref<DocumentRecord[]>([])
-const loadingList = ref(false)
 
 async function loadDocList() {
-  loadingList.value = true
+  loadingList.value = true;
   try {
-    docList.value = await listDocuments()
+    docList.value = await listDocuments({
+      keyword: filters.keyword || undefined,
+      status: filters.status || undefined,
+      enabled: filters.enabled,
+      tag: filters.tag || undefined,
+    });
   } catch {
-    ElMessage.error(t('docs.loadFailed'))
+    ElMessage.error(t("docs.loadFailed"));
   } finally {
-    loadingList.value = false
+    loadingList.value = false;
   }
 }
 
-onMounted(loadDocList)
+onMounted(loadDocList);
 
 function statusType(status: string) {
-  if (status === 'Completed') return 'success'
-  if (status === 'Failed') return 'danger'
-  return 'warning'
+  if (status === "Completed") return "success";
+  if (status === "Failed") return "danger";
+  return "warning";
 }
 
-// 查看解析结果
-const drawerVisible = ref(false)
-const activeDoc = ref<DocumentRecord | null>(null)
-const parseResult = ref<DocParseResult | null>(null)
-const loadingResult = ref(false)
+function formatTags(tags?: string[]) {
+  return tags?.length ? tags.join(", ") : "-";
+}
 
 async function viewResult(doc: DocumentRecord) {
-  activeDoc.value = doc
-  drawerVisible.value = true
-  loadingResult.value = true
-  parseResult.value = null
+  activeDoc.value = doc;
+  drawerVisible.value = true;
+  loadingResult.value = true;
+  parseResult.value = null;
   try {
-    parseResult.value = await getDocResult(doc.id)
+    parseResult.value = await getDocResult(doc.id);
   } catch {
-    ElMessage.error(t('docs.loadResultFailed'))
+    ElMessage.error(t("docs.loadResultFailed"));
   } finally {
-    loadingResult.value = false
+    loadingResult.value = false;
+  }
+}
+
+function openEdit(doc: DocumentRecord) {
+  currentDocId.value = doc.id;
+  editForm.title = doc.title || "";
+  editForm.tagsText = doc.tags?.join(", ") || "";
+  editForm.notes = doc.notes || "";
+  editForm.enabled = doc.enabled ?? true;
+  editForm.document_type = doc.document_type || "pdf";
+  editVisible.value = true;
+}
+
+async function submitEdit() {
+  try {
+    saving.value = true;
+    await updateDocument(currentDocId.value, {
+      title: editForm.title || null,
+      tags: editForm.tagsText.split(",").map((item) => item.trim()).filter(Boolean),
+      notes: editForm.notes || null,
+      enabled: editForm.enabled,
+      document_type: editForm.document_type,
+    });
+    ElMessage.success(t("docs.updateSuccess"));
+    editVisible.value = false;
+    await loadDocList();
+    if (activeDoc.value?.id === currentDocId.value) {
+      activeDoc.value = docList.value.find((item) => item.id === currentDocId.value) || activeDoc.value;
+    }
+  } catch {
+    ElMessage.error(t("docs.updateFailed"));
+  } finally {
+    saving.value = false;
+  }
+}
+
+async function handleDelete(doc: DocumentRecord) {
+  await ElMessageBox.confirm(
+    t("docs.deleteConfirm", { title: doc.title || doc.file_name, chunks: doc.chunk_count, images: doc.image_count }),
+    t("common.confirm"),
+    { type: "warning" }
+  );
+  try {
+    await deleteDocument(doc.id);
+    ElMessage.success(t("docs.deleteSuccess"));
+    if (activeDoc.value?.id === doc.id) {
+      drawerVisible.value = false;
+      activeDoc.value = null;
+      parseResult.value = null;
+    }
+    await loadDocList();
+  } catch {
+    ElMessage.error(t("docs.deleteFailed"));
+  }
+}
+
+async function handleReprocess(doc: DocumentRecord) {
+  try {
+    await reprocessDocument(doc.id);
+    ElMessage.success(t("docs.reprocessSuccess"));
+    await loadDocList();
+    if (activeDoc.value?.id === doc.id) {
+      await viewResult(doc);
+    }
+  } catch {
+    ElMessage.error(t("docs.reprocessFailed"));
   }
 }
 </script>
 
 <style scoped>
 .doc-kb {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -245,17 +390,23 @@ async function viewResult(doc: DocumentRecord) {
   border: none;
 }
 
-/* 表格 */
+.filter-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .dark-table {
   --el-table-bg-color: var(--bg-secondary);
   --el-table-tr-bg-color: var(--bg-secondary);
   --el-table-header-bg-color: var(--bg-tertiary);
-}
-
-/* 状态标签 */
-.status-tag {
-  display: inline-flex;
-  align-items: center;
 }
 
 .status-completed {
@@ -276,7 +427,6 @@ async function viewResult(doc: DocumentRecord) {
   --el-tag-text-color: var(--accent-primary);
 }
 
-/* 抽屉 */
 .dark-drawer :deep(.el-drawer__header) {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
@@ -287,12 +437,10 @@ async function viewResult(doc: DocumentRecord) {
   background: var(--bg-primary);
 }
 
-/* 描述列表 */
 .dark-descriptions :deep(.el-descriptions__label) {
   background: var(--bg-tertiary);
 }
 
-/* 片段容器 */
 .chunks-container {
   max-height: 400px;
   overflow-y: auto;
@@ -315,7 +463,6 @@ async function viewResult(doc: DocumentRecord) {
   color: var(--text-primary);
 }
 
-/* 图片网格 */
 .images-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

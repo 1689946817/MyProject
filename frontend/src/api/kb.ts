@@ -12,6 +12,25 @@ import type { ImageRecord } from "@/types";
 
 export type { ImageRecord } from "@/types";
 
+export interface ImageListParams {
+  skip?: number;
+  limit?: number;
+  keyword?: string;
+  status?: string;
+  enabled?: boolean;
+  source_dataset?: string;
+  tag?: string;
+}
+
+export interface ImageRecordUpdatePayload {
+  title?: string | null;
+  tags?: string[];
+  notes?: string | null;
+  enabled?: boolean;
+  source_dataset?: string | null;
+  custom_metadata?: Record<string, any>;
+}
+
 /**
  * 上传图像响应接口
  * 
@@ -30,11 +49,37 @@ export interface UploadImagesResponse {
  * @param limit 返回的最大记录数，默认为 100
  * @returns 图片记录列表
  */
-export async function listImages(skip: number = 0, limit: number = 100): Promise<ImageRecord[]> {
+export async function listImages(params: ImageListParams = {}): Promise<ImageRecord[]> {
   const { data } = await http.get<ImageRecord[]>('/api/knowledge-base/list', {
-    params: { skip, limit }
+    params: {
+      skip: params.skip ?? 0,
+      limit: params.limit ?? 100,
+      keyword: params.keyword,
+      status: params.status,
+      enabled: params.enabled,
+      source_dataset: params.source_dataset,
+      tag: params.tag,
+    }
   });
   return data;
+}
+
+export async function getImageDetail(id: string): Promise<ImageRecord> {
+  const { data } = await http.get<ImageRecord>(`/api/knowledge-base/${id}`);
+  return data;
+}
+
+export async function updateImage(id: string, payload: ImageRecordUpdatePayload): Promise<ImageRecord> {
+  const { data } = await http.patch<ImageRecord>(`/api/knowledge-base/${id}`, payload);
+  return data;
+}
+
+export async function deleteImage(id: string): Promise<void> {
+  await http.delete(`/api/knowledge-base/${id}`, { params: { confirm: true } });
+}
+
+export async function reprocessImage(id: string): Promise<void> {
+  await http.post(`/api/knowledge-base/${id}/reprocess`);
 }
 
 /**

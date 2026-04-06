@@ -12,6 +12,11 @@ export interface ImageRecord {
   generated_description?: string | null
   status: 'Processing' | 'Completed' | 'Failed'
   source_dataset?: string | null
+  title?: string | null
+  tags?: string[]
+  notes?: string | null
+  enabled?: boolean
+  custom_metadata?: Record<string, any>
 }
 
 /**
@@ -75,11 +80,17 @@ export interface ChatMessage {
 export interface DocumentRecord {
   id: string
   file_name: string
+  title?: string | null
   file_path?: string
   upload_time: string
   status: 'Processing' | 'Completed' | 'Failed'
   chunk_count: number
   image_count: number
+  document_type?: string
+  tags?: string[]
+  notes?: string | null
+  enabled?: boolean
+  custom_metadata?: Record<string, any>
 }
 
 /**

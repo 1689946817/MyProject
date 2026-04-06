@@ -35,7 +35,27 @@ export default {
     loadFailed: '加载图片列表失败',
     selectFiles: '请先选择要上传的图片',
     gridView: '网格视图',
-    tableView: '表格视图'
+    tableView: '表格视图',
+    searchPlaceholder: '按标题、描述或路径搜索',
+    titleColumn: '标题',
+    source: '来源',
+    enabled: '启用',
+    disabled: '禁用',
+    enabledOnly: '仅启用',
+    disabledOnly: '仅禁用',
+    tags: '标签',
+    tagPlaceholder: '按标签筛选',
+    tagsTip: '多个标签请用逗号分隔',
+    notes: '备注',
+    editTitle: '编辑图片元数据',
+    updateSuccess: '图片信息已更新',
+    updateFailed: '更新图片信息失败',
+    deleteSuccess: '图片已删除',
+    deleteFailed: '删除图片失败',
+    deleteConfirm: '确认删除图片“{title}”？此操作不可撤销。',
+    reprocess: '重新处理',
+    reprocessSuccess: '图片已重新处理',
+    reprocessFailed: '图片重新处理失败'
   },
   search: {
     title: '图像检索',
@@ -91,7 +111,18 @@ export default {
     uploadSuccess: '上传成功',
     uploadFailed: '上传失败',
     loadFailed: '加载文档列表失败',
-    loadResultFailed: '加载解析结果失败'
+    loadResultFailed: '加载解析结果失败',
+    searchPlaceholder: '按标题、文件名或备注搜索',
+    titleColumn: '标题',
+    documentType: '类型',
+    editTitle: '编辑文档元数据',
+    updateSuccess: '文档信息已更新',
+    updateFailed: '更新文档信息失败',
+    deleteSuccess: '文档已删除',
+    deleteFailed: '删除文档失败',
+    deleteConfirm: '确认删除文档“{title}”？将同时删除 {chunks} 个文本片段和 {images} 张派生图片。',
+    reprocessSuccess: '文档已重新解析',
+    reprocessFailed: '文档重新解析失败'
   },
   common: {
     loading: '加载中...',
@@ -101,6 +132,8 @@ export default {
     cancel: '取消',
     close: '关闭',
     delete: '删除',
+    edit: '编辑',
+    save: '保存',
     rename: '重命名',
     confirmDelete: '确认删除？'
   }

@@ -11,6 +11,7 @@ import pickle
 import re
 from typing import Any, Dict, List, Optional
 
+from app.application.knowledge_management import load_json_dict
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -130,6 +131,9 @@ def rebuild_bm25_index(bm25_index: Optional["BM25Index"] = None) -> "BM25Index":
 
     同时拉取图片描述集合和文档文本集合。
     """
+    from app.data.database import SessionLocal
+    from app.data.doc_models import DocumentRecord
+    from app.data.models import ImageRecord
     from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
 
     if bm25_index is None:
@@ -138,29 +142,56 @@ def rebuild_bm25_index(bm25_index: Optional["BM25Index"] = None) -> "BM25Index":
     doc_ids: List[str] = []
     texts: List[str] = []
 
-    # 拉取图片描述集合
-    try:
-        image_vs = get_vector_store()
-        collection = image_vs.vectorstore._collection
-        all_data = collection.get(include=["documents"])
-        if all_data and all_data["ids"]:
-            doc_ids.extend(all_data["ids"])
-            texts.extend(all_data["documents"])
-            logger.info(f"[BM25] 从图片集合拉取 {len(all_data['ids'])} 条")
-    except Exception as e:
-        logger.warning(f"[BM25] 拉取图片集合失败: {e}")
+    with SessionLocal() as db:
+        enabled_images = {
+            item.id: item
+            for item in db.query(ImageRecord).filter(ImageRecord.enabled.is_(True)).all()
+        }
+        enabled_docs = {
+            item.id
+            for item in db.query(DocumentRecord).filter(DocumentRecord.enabled.is_(True)).all()
+        }
 
-    # 拉取文档文本集合
-    try:
-        doc_vs = get_document_vector_store()
-        collection = doc_vs._vectorstore._collection
-        all_data = collection.get(include=["documents"])
-        if all_data and all_data["ids"]:
-            doc_ids.extend(all_data["ids"])
-            texts.extend(all_data["documents"])
-            logger.info(f"[BM25] 从文档集合拉取 {len(all_data['ids'])} 条")
-    except Exception as e:
-        logger.warning(f"[BM25] 拉取文档集合失败: {e}")
+        try:
+            image_vs = get_vector_store()
+            collection = image_vs.vectorstore._collection
+            all_data = collection.get(include=["documents", "metadatas"])
+            if all_data and all_data["ids"]:
+                for idx, item_id in enumerate(all_data["ids"]):
+                    image_record = enabled_images.get(item_id)
+                    if image_record is None:
+                        continue
+                    metadata = {}
+                    metadatas = all_data.get("metadatas") or []
+                    if idx < len(metadatas):
+                        metadata = metadatas[idx] or {}
+                    parent_doc_id = load_json_dict(getattr(image_record, "extra_metadata", None)).get("doc_id")
+                    if parent_doc_id and parent_doc_id not in enabled_docs:
+                        continue
+                    doc_ids.append(item_id)
+                    texts.append(all_data["documents"][idx])
+                logger.info(f"[BM25] 从图片集合拉取 {len(doc_ids)} 条启用内容")
+        except Exception as e:
+            logger.warning(f"[BM25] 拉取图片集合失败: {e}")
+
+        try:
+            doc_vs = get_document_vector_store()
+            collection = doc_vs._vectorstore._collection
+            all_data = collection.get(include=["documents", "metadatas"])
+            if all_data and all_data["ids"]:
+                added = 0
+                metadatas = all_data.get("metadatas") or []
+                for idx, item_id in enumerate(all_data["ids"]):
+                    metadata = metadatas[idx] if idx < len(metadatas) else {}
+                    doc_id = (metadata or {}).get("doc_id")
+                    if doc_id not in enabled_docs:
+                        continue
+                    doc_ids.append(item_id)
+                    texts.append(all_data["documents"][idx])
+                    added += 1
+                logger.info(f"[BM25] 从文档集合拉取 {added} 条启用内容")
+        except Exception as e:
+            logger.warning(f"[BM25] 拉取文档集合失败: {e}")
 
     if doc_ids:
         bm25_index.build(doc_ids, texts)

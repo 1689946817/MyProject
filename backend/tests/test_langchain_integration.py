@@ -41,12 +41,34 @@ from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 
 from app.langchain_integration.chains import ImageDescriptionChain, RAGChain
+from app.langchain_integration.doc_parser import (
+    ParsedPdfTextChunk,
+    ParsedPdfVisualAsset,
+    build_pdf_text_chunks,
+    extract_pdf_text_documents,
+)
 from app.langchain_integration.vectorstores import ChromaVectorStore
 from app.langchain_integration.retrievers import MultimodalRetriever
 from app.langchain_integration.adapters import LangChainAdapter
 from app.langchain_integration.agentic_rag import classify_chat_intent, generate_answer
 from app.langchain_integration.context_compression import compress_context
 from app.retrieval.rerank import cross_encoder_rerank
+from app.retrieval.hybrid import rebuild_bm25_index
+from app.application.schemas import DocumentRecordOut, ImageRecordOut
+
+
+def _build_isolated_adapter() -> LangChainAdapter:
+    """构造不依赖本地向量库环境的适配器测试实例。"""
+    adapter = LangChainAdapter.__new__(LangChainAdapter)
+    adapter.image_description_chain = MagicMock()
+    adapter.rag_chain = MagicMock()
+    adapter.vector_store = MagicMock()
+    adapter.retriever = MagicMock()
+    adapter.document_vector_store = MagicMock()
+    adapter._bm25_add_chunks = MagicMock()
+    adapter._bm25_add_document = MagicMock()
+    adapter._rebuild_bm25_index = MagicMock()
+    return adapter
 
 
 class TestImageDescriptionChain(unittest.TestCase):
@@ -250,6 +272,44 @@ class TestMultimodalRetriever(unittest.TestCase):
             enable_query_rewrite=True,
         )
 
+    def test_text_to_image_search_filters_disabled_hits_before_rerank(self):
+        """测试图片检索会在精排前过滤已禁用结果。"""
+        active_hit = {
+            "id": "img-active",
+            "document": "Active result",
+            "metadata": {"id": "img-active"},
+            "rerank_score": 0.9,
+        }
+        disabled_hit = {
+            "id": "img-disabled",
+            "document": "Disabled result",
+            "metadata": {"id": "img-disabled"},
+            "rerank_score": 0.8,
+        }
+
+        with patch(
+            "app.langchain_integration.retrievers._multi_query_hybrid_search",
+            AsyncMock(return_value=[active_hit, disabled_hit]),
+        ):
+            with patch(
+                "app.langchain_integration.retrievers.filter_enabled_image_hit_dicts",
+                return_value=[active_hit],
+            ) as mock_filter:
+                with patch(
+                    "app.langchain_integration.retrievers.filter_enabled_image_documents",
+                    side_effect=lambda docs: docs,
+                ) as mock_filter_docs:
+                    with patch(
+                    "app.langchain_integration.retrievers.cross_encoder_rerank",
+                    return_value=[active_hit],
+                    ) as mock_rerank:
+                        results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2))
+
+        self.assertEqual(len(results), 1)
+        mock_filter.assert_called_once()
+        mock_filter_docs.assert_called_once()
+        mock_rerank.assert_called_once_with("cat", [active_hit], top_k=2)
+
     async def test_image_to_image_search(self):
         """测试图像到图像检索"""
         # 模拟模型生成描述
@@ -274,6 +334,61 @@ class TestMultimodalRetriever(unittest.TestCase):
         self.assertEqual(len(results), 1)
 
 
+class TestPdfParsing(unittest.TestCase):
+    """测试 PDF 双通道解析"""
+
+    def test_extract_pdf_text_documents_uses_loader_and_normalizes_page_metadata(self):
+        """测试文本 loader 输出会规范化 page_number/file_name/source_type"""
+        mock_loader_docs = [
+            Document(page_content="第一页内容", metadata={"page": 0, "source": "temp.pdf"}),
+            Document(page_content="第二页内容", metadata={"page": 1}),
+        ]
+
+        with patch("app.langchain_integration.doc_parser._get_pdf_text_loader_cls") as mock_loader_factory:
+            mock_loader = MagicMock()
+            mock_loader.load.return_value = mock_loader_docs
+            mock_loader_cls = MagicMock(return_value=mock_loader)
+            mock_loader_factory.return_value = mock_loader_cls
+
+            documents = extract_pdf_text_documents("temp.pdf", file_name="example.pdf")
+
+        self.assertEqual(len(documents), 2)
+        mock_loader_cls.assert_called_once_with("temp.pdf")
+        self.assertEqual(documents[0].metadata["page_number"], 1)
+        self.assertEqual(documents[0].metadata["file_name"], "example.pdf")
+        self.assertEqual(documents[0].metadata["source_type"], "pdf_page")
+        self.assertEqual(documents[1].metadata["page_number"], 2)
+
+    def test_build_pdf_text_chunks_preserves_page_number_and_continuous_chunk_index(self):
+        """测试文本分块会保留页码并生成连续 chunk_index"""
+        documents = [
+            Document(page_content="第一句。第二句。", metadata={"page_number": 1, "file_name": "example.pdf"}),
+            Document(page_content="第三句。", metadata={"page_number": 2, "file_name": "example.pdf"}),
+        ]
+
+        chunks = build_pdf_text_chunks(documents, doc_id="doc-1", chunk_size=4, chunk_overlap=0)
+
+        self.assertGreaterEqual(len(chunks), 3)
+        self.assertEqual([chunk.chunk_index for chunk in chunks], list(range(len(chunks))))
+        self.assertEqual(chunks[0].page_number, 1)
+        self.assertEqual(chunks[-1].page_number, 2)
+        self.assertEqual(chunks[0].metadata["doc_id"], "doc-1")
+        self.assertEqual(chunks[0].metadata["source_type"], "pdf_text_chunk")
+
+    def test_parsed_pdf_visual_asset_exposes_page_and_asset_type(self):
+        """测试视觉资产类型包含页码和资产类型"""
+        asset = ParsedPdfVisualAsset(
+            image_bytes=b"img",
+            page_number=3,
+            asset_type="table_page_render",
+            metadata={"file_name": "example.pdf"},
+        )
+
+        self.assertEqual(asset.page_number, 3)
+        self.assertEqual(asset.asset_type, "table_page_render")
+        self.assertEqual(asset.metadata["file_name"], "example.pdf")
+
+
 class TestRAGChain(unittest.TestCase):
     """测试 RAG Chain"""
 
@@ -285,6 +400,7 @@ class TestRAGChain(unittest.TestCase):
         self.chain = RAGChain(
             chat_model=self.mock_chat_model,
             retriever=self.mock_retriever,
+            doc_vector_store=MagicMock(),
             top_k=3,
         )
 
@@ -394,10 +510,16 @@ class TestLangChainAdapter(unittest.TestCase):
         """测试前准备"""
         self.mock_chain = MagicMock()
         self.mock_rag_chain = MagicMock()
+        self.mock_vector_store = MagicMock()
+        self.mock_document_vector_store = MagicMock()
+        self.mock_retriever = MagicMock()
 
         with patch("app.langchain_integration.adapters.get_image_description_chain", return_value=self.mock_chain):
             with patch("app.langchain_integration.adapters.get_rag_chain", return_value=self.mock_rag_chain):
-                self.adapter = LangChainAdapter()
+                with patch("app.langchain_integration.adapters.get_vector_store", return_value=self.mock_vector_store):
+                    with patch("app.langchain_integration.adapters.get_document_vector_store", return_value=self.mock_document_vector_store):
+                        with patch("app.langchain_integration.adapters.get_multimodal_retriever", return_value=self.mock_retriever):
+                            self.adapter = LangChainAdapter()
 
     def test_initialization(self):
         """测试初始化"""
@@ -444,7 +566,7 @@ class TestLangChainAdapter(unittest.TestCase):
 
     def test_answer_with_retrieved_images_respects_context_budget_without_text_augment(self):
         """测试图文回答在禁用文本补充时会裁剪图片和历史，并跳过文本检索"""
-        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter = _build_isolated_adapter()
         self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="Budgeted answer")
         self.adapter.document_vector_store = MagicMock()
 
@@ -473,7 +595,7 @@ class TestLangChainAdapter(unittest.TestCase):
 
     def test_answer_with_retrieved_images_uses_configured_text_augment_k(self):
         """测试图文回答在启用文本补充时按配置数量检索文本片段"""
-        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter = _build_isolated_adapter()
         self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="Augmented answer")
         self.adapter.document_vector_store = MagicMock()
         self.adapter.document_vector_store.similarity_search.return_value = [{"content": "chunk-1"}]
@@ -498,6 +620,145 @@ class TestLangChainAdapter(unittest.TestCase):
             text_chunks=[{"content": "chunk-1"}],
             chat_history=[("q2", "a2"), ("q3", "a3")],
         )
+
+    def test_process_pdf_upload_uses_structured_pdf_outputs_and_page_metadata(self):
+        """测试 PDF 上传会消费结构化解析结果并把页码 metadata 写入向量库"""
+        self.adapter = _build_isolated_adapter()
+        self.adapter.image_description_chain.ainvoke = AsyncMock(return_value="表格页描述")
+
+        mock_db = MagicMock()
+        mock_db.add = MagicMock()
+        mock_db.commit = MagicMock()
+        mock_db.refresh = MagicMock()
+
+        mock_file = MagicMock()
+        mock_file.read = AsyncMock(return_value=b"%PDF-test")
+        mock_file.filename = "policy.pdf"
+
+        parsed_chunks = [
+            ParsedPdfTextChunk(
+                content="第一页第一段",
+                page_number=1,
+                chunk_index=0,
+                metadata={
+                    "doc_id": "doc-x",
+                    "page_number": 1,
+                    "file_name": "policy.pdf",
+                    "source_type": "pdf_text_chunk",
+                },
+            )
+        ]
+        visual_assets = [
+            ParsedPdfVisualAsset(
+                image_bytes=b"png-bytes",
+                page_number=2,
+                asset_type="table_page_render",
+                metadata={"page_number": 2, "file_name": "policy.pdf", "asset_type": "table_page_render"},
+            )
+        ]
+
+        with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x", "img-x"]):
+            with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[Document(page_content="第一页", metadata={"page_number": 1})]):
+                with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
+                    with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=visual_assets):
+                        with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
+                            with patch("builtins.open", unittest.mock.mock_open()):
+                                asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
+
+        self.adapter.document_vector_store.upsert_chunks.assert_called_once_with(
+            doc_id="doc-x",
+            chunks=["第一页第一段"],
+            metadatas=[parsed_chunks[0].metadata],
+        )
+        stored_doc = self.adapter.vector_store.add_documents.call_args[0][0][0]
+        self.assertEqual(stored_doc.metadata["page_number"], 2)
+        self.assertEqual(stored_doc.metadata["asset_type"], "table_page_render")
+
+    def test_delete_image_record_cleans_vector_and_rebuilds_bm25(self):
+        self.adapter = _build_isolated_adapter()
+        record = MagicMock()
+        record.id = "img-1"
+        record.file_path = "storage/images/custom/img-1.jpg"
+        mock_db = MagicMock()
+
+        with patch("app.langchain_integration.adapters.safe_unlink", return_value=True) as mock_unlink:
+            warnings = self.adapter.delete_image_record(mock_db, record)
+
+        self.adapter.vector_store.delete.assert_called_once_with(ids=["img-1"])
+        mock_db.delete.assert_called_once_with(record)
+        mock_db.commit.assert_called_once()
+        self.adapter._rebuild_bm25_index.assert_called_once()
+        mock_unlink.assert_called_once_with(record.file_path)
+        self.assertEqual(warnings, [])
+
+    def test_delete_document_record_removes_related_images_and_chunks(self):
+        self.adapter = _build_isolated_adapter()
+        record = MagicMock()
+        record.id = "doc-1"
+        record.file_path = "storage/docs/doc-1.pdf"
+        derived = MagicMock()
+        derived.id = "img-2"
+        derived.file_path = "storage/images/custom/img-2.jpg"
+        mock_db = MagicMock()
+
+        with patch("app.langchain_integration.adapters.get_document_image_records", return_value=[derived]):
+            with patch("app.langchain_integration.adapters.safe_unlink", return_value=True):
+                warnings = self.adapter.delete_document_record(mock_db, record)
+
+        self.adapter.document_vector_store.delete_document.assert_called_once_with("doc-1")
+        self.adapter.vector_store.delete.assert_called_once_with(ids=["img-2"])
+        self.assertEqual(mock_db.delete.call_count, 2)
+        self.adapter._rebuild_bm25_index.assert_called_once()
+        self.assertEqual(warnings, [])
+
+    def test_reprocess_image_record_updates_description_and_vector(self):
+        self.adapter = _build_isolated_adapter()
+        self.adapter.image_description_chain.ainvoke = AsyncMock(return_value="new description")
+        record = MagicMock()
+        record.id = "img-1"
+        record.file_path = "storage/images/custom/img-1.jpg"
+        record.source_dataset = "custom"
+        record.title = "Image 1"
+        record.tags = "tag1,tag2"
+        record.enabled = True
+        mock_db = MagicMock()
+
+        with patch("app.langchain_integration.adapters.Path.exists", return_value=True):
+            with patch("app.langchain_integration.adapters.Path.read_bytes", return_value=b"img-bytes"):
+                warnings = asyncio.run(self.adapter.reprocess_image_record(mock_db, record))
+
+        self.assertEqual(record.generated_description, "new description")
+        self.adapter.vector_store.upsert_image_description.assert_called_once()
+        self.adapter._rebuild_bm25_index.assert_called_once()
+        self.assertEqual(warnings, [])
+
+    def test_sync_document_record_vectors_updates_chunk_and_image_metadata(self):
+        self.adapter = _build_isolated_adapter()
+        self.adapter.document_vector_store.refresh_document_metadata = MagicMock()
+        record = MagicMock()
+        record.id = "doc-1"
+        record.enabled = False
+        record.document_type = "pdf"
+        record.file_name = "policy.pdf"
+        derived = MagicMock()
+        derived.generated_description = "desc"
+        derived.id = "img-1"
+        derived.file_path = "storage/images/custom/img-1.jpg"
+        derived.source_dataset = "pdf"
+        derived.title = "Image"
+        derived.tags = "a,b"
+        derived.enabled = True
+        derived.extra_metadata = '{"doc_id":"doc-1"}'
+        mock_db = MagicMock()
+
+        with patch("app.langchain_integration.adapters.get_document_image_records", return_value=[derived]):
+            self.adapter.sync_document_record_vectors(mock_db, record)
+
+        self.adapter.document_vector_store.refresh_document_metadata.assert_called_once_with(
+            "doc-1",
+            {"enabled": False, "document_type": "pdf", "file_name": "policy.pdf"},
+        )
+        self.adapter.vector_store.upsert_image_description.assert_called_once()
 
     async def test_rag_chat_text(self):
         """测试文本 RAG 问答"""
@@ -709,7 +970,7 @@ class TestRemediationRegressions(unittest.TestCase):
 
     def test_rag_chat_text_uses_direct_llm_when_agentic_intent_says_no_rag(self):
         """测试 Agentic 意图命中 direct_llm 时不走 RAG"""
-        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter = _build_isolated_adapter()
         self.adapter._answer_directly = AsyncMock(return_value="Direct answer")
         self.adapter.rag_chain.ainvoke = AsyncMock(return_value=("RAG answer", [{"id": "img-1"}]))
 
@@ -738,7 +999,7 @@ class TestRemediationRegressions(unittest.TestCase):
 
     def test_rag_chat_text_uses_multimodal_rag_for_grounded_questions(self):
         """测试知识库问题统一走 multimodal_rag"""
-        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter = _build_isolated_adapter()
         self.adapter.rag_chain.ainvoke = AsyncMock(return_value=("Grounded answer", [{"id": "img-2"}]))
 
         with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
@@ -765,7 +1026,7 @@ class TestRemediationRegressions(unittest.TestCase):
 
     def test_rag_chat_uses_image_similarity_for_image_only_requests(self):
         """测试纯找图请求走 image_similarity"""
-        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter = _build_isolated_adapter()
         self.adapter.text_to_image_search = AsyncMock(return_value=[{"id": "img-3"}])
 
         with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
@@ -792,7 +1053,7 @@ class TestRemediationRegressions(unittest.TestCase):
 
     def test_rag_chat_uses_fast_image_retrieval_for_image_grounded_answer(self):
         """测试图文回答图片检索走快路径，减少端到端耗时"""
-        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter = _build_isolated_adapter()
         self.adapter.text_to_image_search = AsyncMock(return_value=[{"id": "img-4"}])
         self.adapter._answer_with_retrieved_images = AsyncMock(return_value="Grounded image answer")
 
@@ -824,7 +1085,7 @@ class TestRemediationRegressions(unittest.TestCase):
 
     def test_rag_chat_uses_uploaded_image_qa_for_uploaded_image_question(self):
         """测试带图但只问上传图内容时走 uploaded_image_qa"""
-        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter = _build_isolated_adapter()
         self.adapter._answer_with_uploaded_image = AsyncMock(return_value="Uploaded image answer")
         mock_file = MagicMock()
 
@@ -851,6 +1112,131 @@ class TestRemediationRegressions(unittest.TestCase):
         self.assertEqual(documents, [])
         self.assertEqual(intent["execution_mode"], "uploaded_image_qa")
         self.adapter._answer_with_uploaded_image.assert_awaited_once()
+
+    def test_image_record_out_splits_tags_and_custom_metadata(self):
+        record = MagicMock()
+        record.id = "img-1"
+        record.file_path = "storage/images/custom/img-1.jpg"
+        record.upload_time = "2025-01-01T00:00:00"
+        record.generated_description = "desc"
+        record.status = "Completed"
+        record.source_dataset = "custom"
+        record.title = "Title"
+        record.tags = "hr,policy"
+        record.notes = "note"
+        record.enabled = True
+        record.custom_metadata = '{"department":"HR"}'
+
+        payload = ImageRecordOut.model_validate(record)
+        self.assertEqual(payload.tags, ["hr", "policy"])
+        self.assertEqual(payload.custom_metadata["department"], "HR")
+
+    def test_document_record_out_splits_tags_and_custom_metadata(self):
+        record = MagicMock()
+        record.id = "doc-1"
+        record.file_name = "policy.pdf"
+        record.title = "Policy"
+        record.file_path = "storage/docs/doc-1.pdf"
+        record.upload_time = "2025-01-01T00:00:00"
+        record.status = "Completed"
+        record.chunk_count = 3
+        record.image_count = 1
+        record.document_type = "pdf"
+        record.tags = "hr,policy"
+        record.notes = "note"
+        record.enabled = True
+        record.custom_metadata = '{"department":"HR"}'
+
+        payload = DocumentRecordOut.model_validate(record)
+        self.assertEqual(payload.tags, ["hr", "policy"])
+        self.assertEqual(payload.custom_metadata["department"], "HR")
+
+    def test_document_vector_similarity_search_filters_disabled_documents(self):
+        """测试文本 chunk 检索会过滤已禁用文档。"""
+        store = MagicMock()
+        doc_vs = store
+        doc_vs._vectorstore = MagicMock()
+        doc_vs._vectorstore.similarity_search_with_relevance_scores.return_value = [
+            (
+                Document(
+                    page_content="chunk-1",
+                    metadata={"doc_id": "doc-1", "chunk_index": 0},
+                ),
+                0.9,
+            ),
+            (
+                Document(
+                    page_content="chunk-2",
+                    metadata={"doc_id": "doc-2", "chunk_index": 1},
+                ),
+                0.8,
+            ),
+        ]
+
+        from app.langchain_integration.vectorstores import DocumentVectorStore
+
+        instance = DocumentVectorStore.__new__(DocumentVectorStore)
+        instance._vectorstore = doc_vs._vectorstore
+
+        with patch(
+            "app.langchain_integration.vectorstores.filter_enabled_text_chunk_hits",
+            return_value=[{"doc_id": "doc-1", "chunk_index": 0, "content": "chunk-1", "metadata": {"doc_id": "doc-1"}, "score": 0.9}],
+        ) as mock_filter:
+            hits = instance.similarity_search("query", k=2)
+
+        self.assertEqual(len(hits), 1)
+        mock_filter.assert_called_once()
+
+    def test_rebuild_bm25_index_only_includes_enabled_assets(self):
+        """测试 BM25 全量重建只纳入启用的图片和文档。"""
+        bm25_index = MagicMock()
+        mock_session = MagicMock()
+        enabled_image = MagicMock()
+        enabled_image.id = "img-1"
+        enabled_image.extra_metadata = None
+        disabled_image = MagicMock()
+        disabled_image.id = "img-2"
+        disabled_image.extra_metadata = None
+        enabled_doc = MagicMock()
+        enabled_doc.id = "doc-1"
+
+        image_query = MagicMock()
+        image_query.filter.return_value.all.return_value = [enabled_image]
+        doc_query = MagicMock()
+        doc_query.filter.return_value.all.return_value = [enabled_doc]
+        mock_session.query.side_effect = [image_query, doc_query]
+
+        image_collection = MagicMock()
+        image_collection.get.return_value = {
+            "ids": ["img-1", "img-2"],
+            "documents": ["enabled image", "disabled image"],
+            "metadatas": [{}, {}],
+        }
+        doc_collection = MagicMock()
+        doc_collection.get.return_value = {
+            "ids": ["doc-1_chunk_0", "doc-2_chunk_0"],
+            "documents": ["enabled chunk", "disabled chunk"],
+            "metadatas": [{"doc_id": "doc-1"}, {"doc_id": "doc-2"}],
+        }
+
+        image_vs = MagicMock()
+        image_vs.vectorstore._collection = image_collection
+        doc_vs = MagicMock()
+        doc_vs._vectorstore._collection = doc_collection
+
+        session_factory = MagicMock()
+        session_factory.return_value.__enter__.return_value = mock_session
+        session_factory.return_value.__exit__.return_value = False
+
+        with patch("app.data.database.SessionLocal", session_factory):
+            with patch("app.langchain_integration.vectorstores.get_vector_store", return_value=image_vs):
+                with patch("app.langchain_integration.vectorstores.get_document_vector_store", return_value=doc_vs):
+                    rebuild_bm25_index(bm25_index)
+
+        bm25_index.build.assert_called_once_with(
+            ["img-1", "doc-1_chunk_0"],
+            ["enabled image", "enabled chunk"],
+        )
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, String, Text
+from sqlalchemy import Boolean, Column, DateTime, String, Text
 
 from .database import Base
 
@@ -39,9 +39,21 @@ class ImageRecord(Base):
     
     # 图像来源数据集，可为空（自定义上传的图像）
     source_dataset = Column(String, nullable=True)
-    
+
+    # 图像标题，可为空
+    title = Column(String, nullable=True)
+
     # 图像标签，可为空
     tags = Column(String, nullable=True)
-    
+
+    # 管理备注，可为空
+    notes = Column(Text, nullable=True)
+
+    # 是否启用参与管理和后续治理流程
+    enabled = Column(Boolean, default=True, nullable=False, index=True)
+
+    # 自定义元数据，使用 JSON 字符串存储
+    custom_metadata = Column(Text, nullable=True)
+
     # 额外元数据，使用文本格式存储，可为空
     extra_metadata = Column(Text, nullable=True)

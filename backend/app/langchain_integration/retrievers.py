@@ -17,6 +17,10 @@ from typing import Any, Dict, List, Optional, Tuple
 from fastapi import UploadFile
 from langchain_core.documents import Document
 
+from app.application.knowledge_management import (
+    filter_enabled_image_documents,
+    filter_enabled_image_hit_dicts,
+)
 from app.core.config import settings
 from app.langchain_integration.models import get_chat_model, MultimodalChatModel
 from app.langchain_integration.vectorstores import ChromaVectorStore, get_vector_store
@@ -153,6 +157,7 @@ class MultimodalRetriever:
             candidate_k,
             enable_query_rewrite=not use_fast_path,
         )
+        candidates = filter_enabled_image_hit_dicts(candidates)
 
         reranked = cross_encoder_rerank(query, candidates, top_k=k)
 
@@ -167,7 +172,7 @@ class MultimodalRetriever:
             )
             documents.append(doc)
 
-        return documents
+        return filter_enabled_image_documents(documents)
 
     async def image_to_image_search(
         self,
@@ -204,6 +209,7 @@ class MultimodalRetriever:
         candidate_k = settings.RERANK_CANDIDATE_K
 
         candidates = _hybrid_search_sync(query, self.vector_store, candidate_k)
+        candidates = filter_enabled_image_hit_dicts(candidates)
         return cross_encoder_rerank(query, candidates, top_k=k)
 
     async def async_search_with_dict_output(
@@ -227,6 +233,7 @@ class MultimodalRetriever:
             candidate_k,
             enable_query_rewrite=not use_fast_path,
         )
+        candidates = filter_enabled_image_hit_dicts(candidates)
         return cross_encoder_rerank(query, candidates, top_k=k)
 
 

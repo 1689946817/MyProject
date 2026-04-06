@@ -35,7 +35,27 @@ export default {
     loadFailed: 'Failed to load images',
     selectFiles: 'Please select images to upload',
     gridView: 'Grid View',
-    tableView: 'Table View'
+    tableView: 'Table View',
+    searchPlaceholder: 'Search by title, description, or path',
+    titleColumn: 'Title',
+    source: 'Source',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    enabledOnly: 'Enabled only',
+    disabledOnly: 'Disabled only',
+    tags: 'Tags',
+    tagPlaceholder: 'Filter by tag',
+    tagsTip: 'Separate multiple tags with commas',
+    notes: 'Notes',
+    editTitle: 'Edit Image Metadata',
+    updateSuccess: 'Image updated',
+    updateFailed: 'Failed to update image',
+    deleteSuccess: 'Image deleted',
+    deleteFailed: 'Failed to delete image',
+    deleteConfirm: 'Delete image "{title}"? This cannot be undone.',
+    reprocess: 'Reprocess',
+    reprocessSuccess: 'Image reprocessed',
+    reprocessFailed: 'Failed to reprocess image'
   },
   search: {
     title: 'Image Retrieval',
@@ -91,7 +111,18 @@ export default {
     uploadSuccess: 'Upload successful',
     uploadFailed: 'Upload failed',
     loadFailed: 'Failed to load documents',
-    loadResultFailed: 'Failed to load parsing result'
+    loadResultFailed: 'Failed to load parsing result',
+    searchPlaceholder: 'Search by title, file name, or notes',
+    titleColumn: 'Title',
+    documentType: 'Type',
+    editTitle: 'Edit Document Metadata',
+    updateSuccess: 'Document updated',
+    updateFailed: 'Failed to update document',
+    deleteSuccess: 'Document deleted',
+    deleteFailed: 'Failed to delete document',
+    deleteConfirm: 'Delete document "{title}"? This will also remove {chunks} text chunks and {images} derived images.',
+    reprocessSuccess: 'Document reprocessed',
+    reprocessFailed: 'Failed to reprocess document'
   },
   common: {
     loading: 'Loading...',
@@ -101,6 +132,8 @@ export default {
     cancel: 'Cancel',
     close: 'Close',
     delete: 'Delete',
+    edit: 'Edit',
+    save: 'Save',
     rename: 'Rename',
     confirmDelete: 'Confirm delete?'
   }

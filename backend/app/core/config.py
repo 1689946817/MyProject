@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     COCO_PROPOSED_COLLECTION_NAME: str = "images_coco_proposed"  # COCO proposed baseline 专用集合
     DOC_COLLECTION_NAME: str = "documents_text"  # 文档文本片段向量集合名称
     CHROMA_COLLECTION_NAME: Optional[str] = None  # 兼容旧 .env 的历史字段，已废弃
+    PDF_TEXT_LOADER_BACKEND: str = "pymupdf"
 
     # 多模态模型配置（例如 阿里百炼上的 Qwen-VL）
     MLLM_BASE_URL: Optional[str] = None  # 多模态模型 API 基础 URL

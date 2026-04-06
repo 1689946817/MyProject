@@ -9,9 +9,11 @@ LangChain 适配器模块
 确保 LangChain 重构后的系统与现有前端、数据库、文件存储等无缝集成。
 """
 import base64
+import json
 import logging
 import os
 import uuid
+from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from fastapi import UploadFile
@@ -21,6 +23,12 @@ from sqlalchemy.orm import Session
 from app.data.doc_models import DocumentRecord
 from app.data.models import ImageRecord
 from app.data.storage import get_image_path, get_doc_path
+from app.application.knowledge_management import (
+    get_document_image_records,
+    load_tags,
+    load_json_dict,
+    safe_unlink,
+)
 from app.core.config import settings
 from app.langchain_integration.agentic_rag import classify_chat_intent
 from app.langchain_integration.chains import (
@@ -29,7 +37,11 @@ from app.langchain_integration.chains import (
     ImageDescriptionChain,
     RAGChain,
 )
-from app.langchain_integration.doc_parser import parse_pdf
+from app.langchain_integration.doc_parser import (
+    build_pdf_text_chunks,
+    extract_pdf_text_documents,
+    extract_pdf_visual_assets,
+)
 from app.langchain_integration.models import build_image_data_url, get_chat_model, guess_image_mime_type
 from app.langchain_integration.retrievers import get_multimodal_retriever
 from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
@@ -115,6 +127,7 @@ class LangChainAdapter:
             id=image_id,
             file_path=storage_path,
             source_dataset=source_dataset,
+            title=os.path.splitext(filename)[0],
             status="Processing",
         )
         db.add(record)
@@ -144,6 +157,10 @@ class LangChainAdapter:
                     "filename": filename,
                     "split": split,
                     "source_dataset": source_dataset,
+                    "title": os.path.splitext(filename)[0],
+                    "tags": [],
+                    "enabled": True,
+                    "parent_doc_enabled": True,
                 },
             )
 
@@ -591,7 +608,9 @@ class LangChainAdapter:
         record = DocumentRecord(
             id=doc_id,
             file_name=file_name,
+            title=os.path.splitext(file_name)[0],
             file_path=str(doc_path),
+            document_type="pdf",
             status="Processing",
         )
         db.add(record)
@@ -599,81 +618,12 @@ class LangChainAdapter:
         db.refresh(record)
 
         try:
-            # 解析 PDF
-            text_chunks, image_bytes_list = parse_pdf(contents)
-
-            # 文本片段向量化
-            if text_chunks:
-                self.document_vector_store.upsert_chunks(
-                    doc_id=doc_id,
-                    chunks=text_chunks,
-                    metadatas=[{"file_name": file_name}] * len(text_chunks),
-                )
-
-            # 图片向量化（复用图片上传流程）
-            processed_image_count = 0
-            for idx, img_bytes in enumerate(image_bytes_list):
-                try:
-                    img_id = str(uuid.uuid4())
-                    # 保存图片到 storage/images/custom/
-                    from app.data.storage import BASE_STORAGE_DIR
-                    img_dir = BASE_STORAGE_DIR / "custom"
-                    img_dir.mkdir(parents=True, exist_ok=True)
-                    img_path = img_dir / f"{img_id}.jpg"
-                    with open(str(img_path), "wb") as f:
-                        f.write(img_bytes)
-
-                    # 调用 MLLM 生成描述
-                    img_b64 = base64.b64encode(img_bytes).decode("utf-8")
-                    description = await self.image_description_chain.ainvoke(
-                        {"image_b64": img_b64}
-                    )
-
-                    # 写入图片向量存储
-                    from langchain_core.documents import Document as LCDoc
-                    lc_doc = LCDoc(
-                        page_content=description,
-                        metadata={
-                            "id": img_id,
-                            "source": "pdf",
-                            "doc_id": doc_id,
-                            "file_name": file_name,
-                        },
-                    )
-                    self.vector_store.add_documents([lc_doc], ids=[img_id])
-
-                    # 写入 SQLite image_records
-                    from app.data.models import ImageRecord
-                    img_record = ImageRecord(
-                        id=img_id,
-                        file_path=str(img_path),
-                        generated_description=description,
-                        status="Completed",
-                        source_dataset="pdf",
-                        extra_metadata=f'{{"doc_id": "{doc_id}"}}',
-                    )
-                    db.add(img_record)
-                    db.commit()
-
-                    processed_image_count += 1
-                except Exception as exc:
-                    logger.warning(
-                        "[Adapter] PDF 图片处理失败: file=%s index=%s error=%s",
-                        file_name,
-                        idx,
-                        exc,
-                    )
-
-            # 更新文档记录
-            record.chunk_count = len(text_chunks)
-            record.image_count = processed_image_count
-            record.status = "Completed"
-            db.commit()
-            db.refresh(record)
-
-            # 增量更新 BM25 索引（文本片段 + 图片描述）
-            self._bm25_add_chunks(doc_id, text_chunks, processed_image_count)
-
+            await self._ingest_pdf_record(
+                db=db,
+                record=record,
+                contents=contents,
+                file_name=file_name,
+            )
         except Exception as e:
             record.status = "Failed"
             record.extra_metadata = str(e)
@@ -681,6 +631,267 @@ class LangChainAdapter:
             db.refresh(record)
 
         return record
+
+    async def _ingest_pdf_record(
+        self,
+        db: Session,
+        record: DocumentRecord,
+        contents: bytes,
+        file_name: str,
+    ) -> None:
+        doc_id = record.id
+        doc_path = Path(record.file_path)
+        text_documents = extract_pdf_text_documents(str(doc_path), file_name=file_name)
+        parsed_text_chunks = build_pdf_text_chunks(text_documents, doc_id=doc_id)
+        visual_assets = extract_pdf_visual_assets(contents, file_name=file_name)
+
+        if parsed_text_chunks:
+            self.document_vector_store.upsert_chunks(
+                doc_id=doc_id,
+                chunks=[chunk.content for chunk in parsed_text_chunks],
+                metadatas=[
+                    {
+                        **chunk.metadata,
+                        "enabled": bool(record.enabled),
+                        "document_type": record.document_type,
+                    }
+                    for chunk in parsed_text_chunks
+                ],
+            )
+
+        processed_image_count = 0
+        for idx, asset in enumerate(visual_assets):
+            try:
+                img_id = str(uuid.uuid4())
+                img_bytes = asset.image_bytes
+                from app.data.storage import BASE_STORAGE_DIR
+                img_dir = BASE_STORAGE_DIR / "custom"
+                img_dir.mkdir(parents=True, exist_ok=True)
+                img_path = img_dir / f"{img_id}.jpg"
+                with open(str(img_path), "wb") as f:
+                    f.write(img_bytes)
+
+                img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+                description = await self.image_description_chain.ainvoke({"image_b64": img_b64})
+
+                from langchain_core.documents import Document as LCDoc
+                lc_doc = LCDoc(
+                    page_content=description,
+                        metadata={
+                            "id": img_id,
+                            "source": record.document_type,
+                            "doc_id": doc_id,
+                            "file_name": file_name,
+                            "file_path": str(img_path),
+                            "page_number": asset.page_number,
+                            "asset_type": asset.asset_type,
+                            "enabled": True,
+                            "parent_doc_enabled": bool(record.enabled),
+                            "title": f"{file_name} 图片 {processed_image_count + 1}",
+                            "tags": [],
+                        },
+                    )
+                self.vector_store.add_documents([lc_doc], ids=[img_id])
+
+                img_record = ImageRecord(
+                    id=img_id,
+                    file_path=str(img_path),
+                    title=f"{file_name} 图片 {processed_image_count + 1}",
+                    generated_description=description,
+                    status="Completed",
+                    source_dataset=record.document_type,
+                    extra_metadata=json.dumps(
+                        {
+                            "doc_id": doc_id,
+                            "page_number": asset.page_number,
+                            "asset_type": asset.asset_type,
+                        },
+                        ensure_ascii=False,
+                    ),
+                )
+                db.add(img_record)
+                db.commit()
+
+                processed_image_count += 1
+            except Exception as exc:
+                logger.warning(
+                    "[Adapter] PDF 图片处理失败: file=%s index=%s error=%s",
+                    file_name,
+                    idx,
+                    exc,
+                )
+
+        record.chunk_count = len(parsed_text_chunks)
+        record.image_count = processed_image_count
+        record.status = "Completed"
+        db.commit()
+        db.refresh(record)
+        self._bm25_add_chunks(doc_id, [chunk.content for chunk in parsed_text_chunks], processed_image_count)
+
+    async def reprocess_image_record(self, db: Session, record: ImageRecord) -> list[str]:
+        warnings: list[str] = []
+        image_path = Path(record.file_path)
+        if not image_path.exists():
+            raise FileNotFoundError(f"图片文件不存在: {record.file_path}")
+
+        record.status = "Processing"
+        db.commit()
+        db.refresh(record)
+
+        contents = image_path.read_bytes()
+        b64_image = base64.b64encode(contents).decode("utf-8")
+        description = await self.image_description_chain.ainvoke({"image_b64": b64_image})
+
+        record.generated_description = description
+        record.status = "Completed"
+        db.commit()
+        db.refresh(record)
+
+        metadata = {
+            "id": record.id,
+            "file_path": record.file_path,
+            "filename": image_path.name,
+            "source_dataset": record.source_dataset,
+            "title": record.title,
+            "tags": load_tags(record.tags),
+            "enabled": bool(record.enabled),
+            "parent_doc_enabled": True,
+        }
+        parent_doc_id = load_json_dict(record.extra_metadata).get("doc_id")
+        if isinstance(parent_doc_id, str) and parent_doc_id:
+            metadata["doc_id"] = parent_doc_id
+            metadata["parent_doc_enabled"] = True
+        self.vector_store.upsert_image_description(record.id, description, metadata)
+        try:
+            self._rebuild_bm25_index()
+        except Exception as exc:
+            warnings.append(f"BM25 索引重建失败: {exc}")
+        return warnings
+
+    async def reprocess_document_record(self, db: Session, record: DocumentRecord) -> list[str]:
+        warnings = self.delete_document_record(db, record, preserve_record=True)
+        doc_path = Path(record.file_path)
+        if not doc_path.exists():
+            raise FileNotFoundError(f"文档文件不存在: {record.file_path}")
+
+        record.status = "Processing"
+        record.chunk_count = 0
+        record.image_count = 0
+        db.commit()
+        db.refresh(record)
+
+        await self._ingest_pdf_record(
+            db=db,
+            record=record,
+            contents=doc_path.read_bytes(),
+            file_name=record.file_name,
+        )
+        try:
+            self._rebuild_bm25_index()
+        except Exception as exc:
+            warnings.append(f"BM25 索引重建失败: {exc}")
+        return warnings
+
+    def delete_image_record(self, db: Session, record: ImageRecord) -> list[str]:
+        warnings: list[str] = []
+        try:
+            self.vector_store.delete(ids=[record.id])
+        except Exception as exc:
+            warnings.append(f"图片向量删除失败: {exc}")
+
+        db.delete(record)
+        db.commit()
+
+        try:
+            safe_unlink(record.file_path)
+        except Exception as exc:
+            warnings.append(f"图片文件删除失败: {exc}")
+
+        try:
+            self._rebuild_bm25_index()
+        except Exception as exc:
+            warnings.append(f"BM25 索引重建失败: {exc}")
+        return warnings
+
+    def delete_document_record(
+        self,
+        db: Session,
+        record: DocumentRecord,
+        *,
+        preserve_record: bool = False,
+    ) -> list[str]:
+        warnings: list[str] = []
+        related_images = get_document_image_records(db, record.id)
+
+        try:
+            self.document_vector_store.delete_document(record.id)
+        except Exception as exc:
+            warnings.append(f"文档向量删除失败: {exc}")
+
+        for image_record in related_images:
+            try:
+                self.vector_store.delete(ids=[image_record.id])
+            except Exception as exc:
+                warnings.append(f"派生图片向量删除失败: {image_record.id}: {exc}")
+
+        for image_record in related_images:
+            db.delete(image_record)
+
+        if not preserve_record:
+            db.delete(record)
+        db.commit()
+
+        for image_record in related_images:
+            try:
+                safe_unlink(image_record.file_path)
+            except Exception as exc:
+                warnings.append(f"派生图片文件删除失败: {image_record.id}: {exc}")
+
+        if not preserve_record:
+            try:
+                safe_unlink(record.file_path)
+            except Exception as exc:
+                warnings.append(f"文档文件删除失败: {exc}")
+
+        try:
+            self._rebuild_bm25_index()
+        except Exception as exc:
+            warnings.append(f"BM25 索引重建失败: {exc}")
+        return warnings
+
+    def sync_image_record_vector(self, record: ImageRecord, *, parent_doc_enabled: bool = True) -> None:
+        """同步单张图片的向量 metadata。"""
+        metadata = {
+            "id": record.id,
+            "file_path": record.file_path,
+            "filename": Path(record.file_path).name,
+            "source_dataset": record.source_dataset,
+            "title": record.title,
+            "tags": load_tags(record.tags),
+            "enabled": bool(record.enabled),
+            "parent_doc_enabled": bool(parent_doc_enabled),
+        }
+        extra = load_json_dict(record.extra_metadata)
+        if extra.get("doc_id"):
+            metadata["doc_id"] = extra["doc_id"]
+        if extra.get("page_number") is not None:
+            metadata["page_number"] = extra["page_number"]
+        if extra.get("asset_type"):
+            metadata["asset_type"] = extra["asset_type"]
+        self.vector_store.upsert_image_description(record.id, record.generated_description or "", metadata)
+
+    def sync_document_record_vectors(self, db: Session, record: DocumentRecord) -> None:
+        """同步文档 chunks 与派生图片的启用状态到向量 metadata。"""
+        self.document_vector_store.refresh_document_metadata(
+            record.id,
+            {
+                "enabled": bool(record.enabled),
+                "document_type": record.document_type,
+                "file_name": record.file_name,
+            },
+        )
+        for image_record in get_document_image_records(db, record.id):
+            self.sync_image_record_vector(image_record, parent_doc_enabled=bool(record.enabled))
 
 
 # 全局适配器实例缓存

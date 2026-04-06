@@ -1,24 +1,26 @@
-"""
-知识库管理 API 路由模块（LangChain 版本）
-
-该模块定义了知识库管理相关的 API 路由，包括：
-- 获取已上传的图片记录列表
-- 上传图片并生成描述
-
-使用 LangChain 框架实现，所有路由都以 /api/knowledge-base 为前缀。
-"""
+"""图片知识库管理 API。"""
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
-from app.application.schemas import ImageRecordOut, UploadImagesResponse
+from app.application.knowledge_management import (
+    dump_json_dict,
+    dump_tags,
+    ensure_knowledge_management_columns,
+    get_image_record_or_raise,
+)
+from app.application.schemas import (
+    DeleteResponse,
+    ImageRecordOut,
+    ImageRecordUpdateRequest,
+    UploadImagesResponse,
+)
 from app.data.database import get_db
 from app.data.models import ImageRecord
 from app.langchain_integration.adapters import get_langchain_adapter
 
 
-# 创建 API 路由器，设置前缀和标签
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
 
 
@@ -26,24 +28,117 @@ router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
 async def list_images(
     db: Session = Depends(get_db),
     skip: int = 0,
-    limit: int = 100,
+    limit: int = Query(default=100, le=200),
+    keyword: Optional[str] = Query(default=None, max_length=100),
+    status: Optional[str] = Query(default=None, max_length=30),
+    enabled: Optional[bool] = None,
+    source_dataset: Optional[str] = Query(default=None, max_length=100),
+    tag: Optional[str] = Query(default=None, max_length=50),
 ) -> List[ImageRecordOut]:
-    """获取已上传的图片记录列表
-    
-    按上传时间倒序返回图片记录，支持分页。
-    
-    Args:
-        db: 数据库会话，通过依赖注入获取
-        skip: 跳过的记录数，默认为 0
-        limit: 返回的最大记录数，默认为 100
-    
-    Returns:
-        List[ImageRecordOut]: 图片记录列表
-    """
-    # 查询数据库，按上传时间倒序排序，支持分页
-    records = db.query(ImageRecord).order_by(ImageRecord.upload_time.desc()).offset(skip).limit(limit).all()
-    # 将 ORM 模型转换为响应模型
+    ensure_knowledge_management_columns(db)
+    query = db.query(ImageRecord)
+    if keyword:
+        like = f"%{keyword}%"
+        query = query.filter(
+            (ImageRecord.id.like(like))
+            | (ImageRecord.title.like(like))
+            | (ImageRecord.generated_description.like(like))
+            | (ImageRecord.file_path.like(like))
+        )
+    if status:
+        query = query.filter(ImageRecord.status == status)
+    if enabled is not None:
+        query = query.filter(ImageRecord.enabled == enabled)
+    if source_dataset:
+        query = query.filter(ImageRecord.source_dataset == source_dataset)
+    if tag:
+        query = query.filter(ImageRecord.tags.like(f"%{tag}%"))
+
+    records = query.order_by(ImageRecord.upload_time.desc()).offset(skip).limit(limit).all()
     return [ImageRecordOut.model_validate(r) for r in records]
+
+
+@router.get("/{image_id}", response_model=ImageRecordOut)
+async def get_image_detail(
+    image_id: str,
+    db: Session = Depends(get_db),
+) -> ImageRecordOut:
+    try:
+        record = get_image_record_or_raise(db, image_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return ImageRecordOut.model_validate(record)
+
+
+@router.patch("/{image_id}", response_model=ImageRecordOut)
+async def update_image(
+    image_id: str,
+    payload: ImageRecordUpdateRequest,
+    db: Session = Depends(get_db),
+) -> ImageRecordOut:
+    try:
+        record = get_image_record_or_raise(db, image_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    enabled_changed = payload.enabled is not None and payload.enabled != bool(record.enabled)
+
+    if payload.title is not None:
+        record.title = payload.title.strip() or None
+    if payload.tags is not None:
+        record.tags = dump_tags(payload.tags)
+    if payload.notes is not None:
+        record.notes = payload.notes.strip() or None
+    if payload.enabled is not None:
+        record.enabled = payload.enabled
+    if payload.source_dataset is not None:
+        record.source_dataset = payload.source_dataset.strip() or None
+    if payload.custom_metadata is not None:
+        record.custom_metadata = dump_json_dict(payload.custom_metadata)
+
+    db.add(record)
+    db.commit()
+    db.refresh(record)
+    get_langchain_adapter().sync_image_record_vector(record)
+    if enabled_changed:
+        get_langchain_adapter()._rebuild_bm25_index()
+    return ImageRecordOut.model_validate(record)
+
+
+@router.delete("/{image_id}", response_model=DeleteResponse)
+async def delete_image(
+    image_id: str,
+    confirm: bool = Query(default=False),
+    db: Session = Depends(get_db),
+) -> DeleteResponse:
+    if not confirm:
+        raise HTTPException(status_code=400, detail="删除图片需要 confirm=true")
+
+    try:
+        record = get_image_record_or_raise(db, image_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    warnings = get_langchain_adapter().delete_image_record(db, record)
+    return DeleteResponse(success=True, message="图片已删除", warnings=warnings)
+
+
+@router.post("/{image_id}/reprocess", response_model=DeleteResponse)
+async def reprocess_image(
+    image_id: str,
+    db: Session = Depends(get_db),
+) -> DeleteResponse:
+    try:
+        record = get_image_record_or_raise(db, image_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    try:
+        warnings = await get_langchain_adapter().reprocess_image_record(db, record)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"图片重处理失败: {exc}") from exc
+    return DeleteResponse(success=True, message="图片已重新处理", warnings=warnings)
 
 
 @router.post("/upload", response_model=UploadImagesResponse)
@@ -53,21 +148,6 @@ async def upload_images(
     source_dataset: Optional[str] = None,
     db: Session = Depends(get_db),
 ) -> UploadImagesResponse:
-    """上传图片并生成描述
-    
-    批量上传图片，生成结构化描述，并将描述写入向量库。
-    使用 LangChain 框架实现图像处理和描述生成。
-    
-    Args:
-        files: 上传的文件列表
-        split: 数据集分割类型，默认为 "custom"
-        source_dataset: 图像来源数据集，可为空
-        db: 数据库会话，通过依赖注入获取
-    
-    Returns:
-        UploadImagesResponse: 上传结果，包含处理后的图片记录列表
-    """
-    # 使用 LangChain 适配器处理上传的图片
     adapter = get_langchain_adapter()
     processed = await adapter.process_image_uploads(
         db=db,
@@ -75,7 +155,5 @@ async def upload_images(
         split=split,
         source_dataset=source_dataset,
     )
-    # 提取处理后的记录
     records = [rec for rec, _desc in processed]
-    # 构建响应
     return UploadImagesResponse(images=[ImageRecordOut.model_validate(r) for r in records])

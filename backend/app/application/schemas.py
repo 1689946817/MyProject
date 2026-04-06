@@ -11,10 +11,35 @@
 
 这些模型用于 API 接口的参数验证和响应格式化。
 """
+import json
 from datetime import datetime
 from typing import Any, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+
+def _parse_tags(value: Any) -> List[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        return [item.strip() for item in value.split(",") if item.strip()]
+    return []
+
+
+def _parse_json_dict(value: Any) -> dict[str, Any]:
+    if value is None:
+        return {}
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, str):
+        try:
+            loaded = json.loads(value)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return {}
+        return loaded if isinstance(loaded, dict) else {}
+    return {}
 
 
 class ImageRecordOut(BaseModel):
@@ -28,6 +53,21 @@ class ImageRecordOut(BaseModel):
     generated_description: Optional[str] = None  # 生成的图像描述，可为空
     status: str  # 处理状态（Processing、Completed、Failed）
     source_dataset: Optional[str] = None  # 图像来源数据集，可为空
+    title: Optional[str] = None
+    tags: List[str] = Field(default_factory=list)
+    notes: Optional[str] = None
+    enabled: bool = True
+    custom_metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def validate_tags(cls, value: Any) -> List[str]:
+        return _parse_tags(value)
+
+    @field_validator("custom_metadata", mode="before")
+    @classmethod
+    def validate_custom_metadata(cls, value: Any) -> dict[str, Any]:
+        return _parse_json_dict(value)
 
     # 配置项，允许从 ORM 模型直接转换
     model_config = {"from_attributes": True}
@@ -154,19 +194,55 @@ class DeleteResponse(BaseModel):
     """删除结果响应。"""
 
     success: bool
+    message: str = ""
+    warnings: List[str] = Field(default_factory=list)
 
 
 class DocumentRecordOut(BaseModel):
     """文档记录输出模型"""
     id: str
     file_name: str
+    title: Optional[str] = None
     file_path: str
     upload_time: datetime
     status: str
     chunk_count: int = 0
     image_count: int = 0
+    document_type: str = "pdf"
+    tags: List[str] = Field(default_factory=list)
+    notes: Optional[str] = None
+    enabled: bool = True
+    custom_metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def validate_doc_tags(cls, value: Any) -> List[str]:
+        return _parse_tags(value)
+
+    @field_validator("custom_metadata", mode="before")
+    @classmethod
+    def validate_doc_custom_metadata(cls, value: Any) -> dict[str, Any]:
+        return _parse_json_dict(value)
 
     model_config = {"from_attributes": True}
+
+
+class ImageRecordUpdateRequest(BaseModel):
+    title: Optional[str] = Field(default=None, max_length=200)
+    tags: Optional[List[str]] = None
+    notes: Optional[str] = Field(default=None, max_length=2000)
+    enabled: Optional[bool] = None
+    source_dataset: Optional[str] = Field(default=None, max_length=100)
+    custom_metadata: Optional[dict[str, Any]] = None
+
+
+class DocumentRecordUpdateRequest(BaseModel):
+    title: Optional[str] = Field(default=None, max_length=200)
+    tags: Optional[List[str]] = None
+    notes: Optional[str] = Field(default=None, max_length=2000)
+    enabled: Optional[bool] = None
+    document_type: Optional[str] = Field(default=None, max_length=50)
+    custom_metadata: Optional[dict[str, Any]] = None
 
 
 class UploadDocumentResponse(BaseModel):
