@@ -80,8 +80,15 @@ class Settings(BaseSettings):
 
     # P0 升级：重排序
     RERANK_MODEL_NAME: str = "BAAI/bge-reranker-base"
+    RERANK_MODEL_PATH: Optional[str] = None  # 本地模型路径（优先于 RERANK_MODEL_NAME）
     RERANK_TOP_K: int = 5
     RERANK_CANDIDATE_K: int = 20
+    IMAGE_FAST_RETRIEVAL_ENABLED: bool = True
+    IMAGE_FAST_RETRIEVAL_CANDIDATE_K: int = 8
+    IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED: bool = False
+    IMAGE_GROUNDED_TEXT_TOP_K: int = 2
+    IMAGE_GROUNDED_MAX_IMAGES: int = 2
+    IMAGE_GROUNDED_MAX_HISTORY_TURNS: int = 2
 
     # P0 升级：混合检索
     BM25_INDEX_PATH: str = "storage/bm25_index.pkl"
@@ -129,4 +136,3 @@ def get_settings() -> Settings:
 
 # 全局配置实例，供其他模块直接使用
 settings = get_settings()
-

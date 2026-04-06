@@ -40,7 +40,7 @@
                 v-for="msg in messages"
                 :key="msg.id"
                 class="message-item"
-                :class="msg.role"
+                :class="[msg.role, msg.role === 'assistant' ? `mode-${getPresentationMode(msg)}` : '']"
               >
                 <div class="message-avatar">
                   <i v-if="msg.role === 'user'" class="i-ep-user"></i>
@@ -48,13 +48,45 @@
                 </div>
                 <div class="message-content">
                   <div class="message-bubble">
-                    <p class="message-text" :class="{ 'typing': msg.role === 'assistant' && String(msg.id) === streamingId }">
+                    <div
+                      v-if="msg.role === 'assistant'"
+                      class="assistant-meta"
+                    >
+                      <span class="assistant-mode-badge">
+                        {{ getModeLabel(msg) }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="shouldShowImagesFirst(msg)"
+                      class="referenced-images"
+                      :class="{ prominent: isImageFocusedMode(msg) }"
+                    >
+                      <div
+                        v-for="source in getImageSources(msg)"
+                        :key="source.source_id"
+                        class="ref-image-item"
+                        @click="showPreview(source)"
+                      >
+                        <img :src="getSourceImageSrc(source)" @error="onImgError" />
+                      </div>
+                    </div>
+                    <p
+                      v-if="msg.content"
+                      class="message-text"
+                      :class="[
+                        { 'typing': msg.role === 'assistant' && String(msg.id) === streamingId },
+                        msg.role === 'assistant' ? `mode-text-${getPresentationMode(msg)}` : ''
+                      ]"
+                    >
                       {{ msg.content }}
                     </p>
-                    <!-- 引用图片网格 -->
-                    <div v-if="msg.role === 'assistant' && msg.sources?.length" class="referenced-images">
+                    <div
+                      v-if="shouldShowImagesAfterText(msg)"
+                      class="referenced-images"
+                      :class="{ prominent: isImageFocusedMode(msg) }"
+                    >
                       <div
-                        v-for="source in msg.sources.filter(s => s.source_type === 'image')"
+                        v-for="source in getImageSources(msg)"
                         :key="source.source_id"
                         class="ref-image-item"
                         @click="showPreview(source)"
@@ -129,35 +161,18 @@ import {
   renameSession,
   deleteSession,
   getSessionMessages,
+  ragChat,
   type ChatSession
 } from '@/api/chat'
 import { imgSrc } from '@/utils/image'
 import SessionList from '@/components/SessionList.vue'
 import ImagePreviewModal from '@/components/ImagePreviewModal.vue'
+import type { ChatMessage, ChatSourceItem } from '@/types'
 
 const { t } = useI18n()
 
-// 来源项类型（对应后端 ChatSourceItem）
-interface SourceItem {
-  source_type: string
-  source_id: string
-  title?: string
-  file_path?: string
-  content?: string
-  score?: number
-}
-
-// 消息类型（用于本地渲染）
-interface Message {
-  id: number | string
-  session_id: string
-  role: string
-  content: string
-  has_image?: boolean
-  sources?: SourceItem[]
-  retrieval_params?: Record<string, any> | null
-  created_at: string
-}
+type SourceItem = ChatSourceItem
+type Message = ChatMessage
 
 const sessions = ref<ChatSession[]>([])
 const currentSessionId = ref<string | undefined>()
@@ -279,6 +294,47 @@ function removeAttached() {
   revokeAttachedPreview()
 }
 
+function getPresentationMode(msg: Message): string {
+  return msg.presentation_mode || msg.retrieval_params?.presentation_mode || 'rag_answer'
+}
+
+function getImageSources(msg: Message): SourceItem[] {
+  return (msg.sources || []).filter(source => source.source_type === 'image')
+}
+
+function isImageFocusedMode(msg: Message): boolean {
+  const mode = getPresentationMode(msg)
+  return mode === 'image_only' || mode === 'image_plus_answer'
+}
+
+function shouldShowImagesFirst(msg: Message): boolean {
+  if (msg.role !== 'assistant') {
+    return false
+  }
+  return isImageFocusedMode(msg) && getImageSources(msg).length > 0
+}
+
+function shouldShowImagesAfterText(msg: Message): boolean {
+  if (msg.role !== 'assistant') {
+    return false
+  }
+  return !isImageFocusedMode(msg) && getImageSources(msg).length > 0
+}
+
+function getModeLabel(msg: Message): string {
+  switch (getPresentationMode(msg)) {
+    case 'direct_answer':
+      return '直接回答'
+    case 'image_only':
+      return '图片结果'
+    case 'image_plus_answer':
+      return '图文回答'
+    case 'rag_answer':
+    default:
+      return '知识库回答'
+  }
+}
+
 async function doChat() {
   if (!query.value.trim() && !attachedImage.value) {
     ElMessage.warning(t('chat.enterQuestion'))
@@ -315,107 +371,50 @@ async function doChat() {
 
   try {
     loading.value = true
-    const formData = new FormData()
-    formData.append('query', userQuery)
-    formData.append('session_id', sessionId)
-    formData.append('top_k', '5')
-    if (attachedImage.value) {
-      formData.append('image', attachedImage.value)
-    }
-
-    // 调用流式接口
-    const response = await fetch('/api/rag/chat/stream', {
-      method: 'POST',
-      body: formData
+    const response = await ragChat({
+      query: userQuery,
+      sessionId,
+      topK: 5,
+      image: attachedImage.value
     })
 
-    if (!response.ok) {
-      throw new Error(`请求失败: ${response.status}`)
-    }
+    const effectiveSessionId = response.session_id || sessionId
+    currentSessionId.value = effectiveSessionId
 
-    // 创建助手消息
     const assistantMessage: Message = {
       id: (Date.now() + 1).toString(),
-      session_id: sessionId,
+      session_id: effectiveSessionId,
       role: 'assistant',
-      content: '',
+      content: response.answer,
       created_at: new Date().toISOString(),
       has_image: false,
-      sources: [],
-      retrieval_params: null
-    }
-    messages.value.push(assistantMessage)
-    streamingId.value = String(assistantMessage.id)
-
-    // 处理 SSE 流
-    const reader = response.body?.getReader()
-    const decoder = new TextDecoder()
-
-    if (reader) {
-      let buffer = ''
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6).trim()
-            if (data === '[DONE]') {
-              continue
-            }
-            try {
-              const parsed = JSON.parse(data)
-
-              if (parsed.type === 'session' && parsed.session_id) {
-                currentSessionId.value = parsed.session_id
-                assistantMessage.session_id = parsed.session_id
-              } else if (parsed.type === 'content' && parsed.content) {
-                assistantMessage.content += parsed.content
-              } else if (parsed.type === 'results') {
-                const items = Array.isArray(parsed.sources) ? parsed.sources : parsed.results
-                const sources: SourceItem[] = []
-                items?.forEach((item: any) => {
-                  if (item?.source_id || item?.id) {
-                    sources.push({
-                      source_type: item.source_type || 'image',
-                      source_id: item.source_id || item.id,
-                      title: item.title,
-                      file_path: item.file_path,
-                      content: item.content,
-                      score: item.score
-                    })
-                  }
-                })
-                assistantMessage.sources = sources
-              }
-            } catch (e) {
-              // 忽略解析错误
-            }
-          }
-        }
-
-        await nextTick()
-        scrollToBottom()
+      sources: response.sources || [],
+      presentation_mode: response.presentation_mode,
+      execution_mode: response.execution_mode,
+      use_rag: response.use_rag,
+      retrieval_params: {
+        presentation_mode: response.presentation_mode,
+        execution_mode: response.execution_mode,
+        use_rag: response.use_rag,
       }
     }
-
-    streamingId.value = ''
+    messages.value.push(assistantMessage)
 
     // 更新会话标题（如果是第一条用户消息）
     const userMsgCount = messages.value.filter(m => m.role === 'user').length
     if (userMsgCount === 1) {
       const title = userQuery.slice(0, 30) + (userQuery.length > 30 ? '...' : '')
-      await updateSessionTitle(sessionId, title)
+      await updateSessionTitle(effectiveSessionId, title)
     }
+
+    await nextTick()
+    scrollToBottom()
   } catch (e) {
     console.error('RAG 问答失败:', e)
     ElMessage.error(t('chat.chatFailed'))
   } finally {
     loading.value = false
+    streamingId.value = ''
     removeAttached()
   }
 }
@@ -596,6 +595,99 @@ onBeforeUnmount(() => {
   background: var(--bg-tertiary);
   color: var(--text-primary);
   border-bottom-left-radius: 4px;
+}
+
+.assistant-meta {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.assistant-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  background: rgba(0, 212, 255, 0.12);
+  color: var(--accent-primary);
+}
+
+.mode-direct_answer .assistant-mode-badge {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.mode-image_only .assistant-mode-badge,
+.mode-image_plus_answer .assistant-mode-badge {
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+}
+
+.message-text {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mode-text-image_only {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.mode-text-image_plus_answer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.mode-text-rag_answer {
+  color: var(--text-primary);
+}
+
+.mode-text-direct_answer {
+  color: var(--text-primary);
+}
+
+.referenced-images {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 10px;
+}
+
+.referenced-images.prominent {
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 12px;
+}
+
+.ref-image-item {
+  position: relative;
+  overflow: hidden;
+  min-height: 96px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ref-image-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-primary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.ref-image-item img {
+  width: 100%;
+  height: 100%;
+  min-height: 96px;
+  object-fit: cover;
+  display: block;
 }
 
 .message-text {

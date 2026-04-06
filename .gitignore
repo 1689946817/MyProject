@@ -151,6 +151,9 @@ backend/.env
 backend/app.db
 backend/chroma_data/
 backend/storage/
+storage/
+backend/models/
+backend/test_data/*.db
 backend/__pycache__/
 backend/app/__pycache__/
 backend/app/api/routers/__pycache__/
@@ -193,6 +196,9 @@ logs/
 # Temporary files
 *.tmp
 *.temp
+.playwright-mcp/
+.opencode/
+finetune.zip
 
 # Claude Code
 .claude/

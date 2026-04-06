@@ -287,14 +287,12 @@ class RAGChain:
         from app.langchain_integration.context_compression import compress_context
         documents = await compress_context(query, documents)
 
-        # 将预检索结果注入 chain（含对话历史）
-        chain_inputs = {
-            "query": query,
-            "documents": documents,
-            "text_chunks": text_chunks,
-            "chat_history": chat_history,
-        }
-        answer = await self._chain.ainvoke(chain_inputs)
+        answer = await self.agenerate_from_context(
+            query=query,
+            documents=documents,
+            text_chunks=text_chunks,
+            chat_history=chat_history,
+        )
 
         return answer, documents
 
@@ -313,16 +311,13 @@ class RAGChain:
         from app.langchain_integration.context_compression import compress_context
         documents = await compress_context(query, documents)
 
-        # 准备输入
-        chain_inputs = {
-            "query": query,
-            "documents": documents,
-            "text_chunks": text_chunks,
-            "chat_history": chat_history,
-        }
-
         # 流式生成
-        async for chunk in self._chain.astream(chain_inputs):
+        async for chunk in self.astream_from_context(
+            query=query,
+            documents=documents,
+            text_chunks=text_chunks,
+            chat_history=chat_history,
+        ):
             yield chunk, documents
 
     async def ainvoke_with_image(
@@ -361,13 +356,12 @@ class RAGChain:
         text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
 
         # 使用生成的描述作为查询执行 RAG，并保留历史和检索上下文
-        inputs = {
-            "query": description,
-            "documents": dict_documents,
-            "text_chunks": text_chunks,
-            "chat_history": chat_history or [],
-        }
-        answer = await self._chain.ainvoke(inputs)
+        answer = await self.agenerate_from_context(
+            query=description,
+            documents=dict_documents,
+            text_chunks=text_chunks,
+            chat_history=chat_history or [],
+        )
 
         return answer, dict_documents
 
@@ -394,15 +388,46 @@ class RAGChain:
             })
 
         text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
+        async for chunk in self.astream_from_context(
+            query=description,
+            documents=dict_documents,
+            text_chunks=text_chunks,
+            chat_history=chat_history or [],
+        ):
+            yield chunk, dict_documents
+
+    async def agenerate_from_context(
+        self,
+        query: str,
+        documents: List[Dict[str, Any]],
+        text_chunks: Optional[List[Dict[str, Any]]] = None,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
+    ) -> str:
+        """基于已准备好的图文上下文直接生成回答。"""
         inputs = {
-            "query": description,
-            "documents": dict_documents,
-            "text_chunks": text_chunks,
+            "query": query,
+            "documents": documents,
+            "text_chunks": text_chunks or [],
             "chat_history": chat_history or [],
         }
+        return await self._chain.ainvoke(inputs)
 
+    async def astream_from_context(
+        self,
+        query: str,
+        documents: List[Dict[str, Any]],
+        text_chunks: Optional[List[Dict[str, Any]]] = None,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
+    ):
+        """基于已准备好的图文上下文直接流式生成回答。"""
+        inputs = {
+            "query": query,
+            "documents": documents,
+            "text_chunks": text_chunks or [],
+            "chat_history": chat_history or [],
+        }
         async for chunk in self._chain.astream(inputs):
-            yield chunk, dict_documents
+            yield chunk
 
 
 # 全局 Chain 实例缓存

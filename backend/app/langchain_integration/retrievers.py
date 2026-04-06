@@ -60,6 +60,8 @@ async def _multi_query_hybrid_search(
     query: str,
     vector_store: ChromaVectorStore,
     candidate_k: int,
+    *,
+    enable_query_rewrite: bool = True,
 ) -> List[Dict[str, Any]]:
     """
     Multi-Query + 混合检索：
@@ -67,7 +69,7 @@ async def _multi_query_hybrid_search(
     2. 每个子查询独立执行混合检索
     3. 按 doc_id 去重合并（取最高分）
     """
-    if settings.QUERY_REWRITE_ENABLED:
+    if enable_query_rewrite and settings.QUERY_REWRITE_ENABLED:
         try:
             from app.langchain_integration.query_transform import get_query_rewriter
             rewriter = get_query_rewriter()
@@ -132,6 +134,7 @@ class MultimodalRetriever:
         self,
         query: str,
         top_k: Optional[int] = None,
+        fast: bool = False,
     ) -> List[Document]:
         """
         文本到图像检索（完整 P0 流程）
@@ -139,10 +142,16 @@ class MultimodalRetriever:
         query → Multi-Query 扩展 → 混合检索(向量+BM25) → RRF 融合 → CrossEncoder 精排 → top-K
         """
         k = top_k or self.top_k
+        use_fast_path = fast and settings.IMAGE_FAST_RETRIEVAL_ENABLED
         candidate_k = settings.RERANK_CANDIDATE_K
+        if use_fast_path:
+            candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
 
         candidates = await _multi_query_hybrid_search(
-            query, self.vector_store, candidate_k
+            query,
+            self.vector_store,
+            candidate_k,
+            enable_query_rewrite=not use_fast_path,
         )
 
         reranked = cross_encoder_rerank(query, candidates, top_k=k)
@@ -164,6 +173,7 @@ class MultimodalRetriever:
         self,
         file: UploadFile,
         top_k: Optional[int] = None,
+        fast: bool = False,
     ) -> Tuple[List[Document], str]:
         """图像到图像检索：先生成描述，再走文本检索路径。"""
         k = top_k or self.top_k
@@ -176,7 +186,7 @@ class MultimodalRetriever:
             prompt=IMAGE_DESCRIPTION_PROMPT,
         )
 
-        documents = await self.text_to_image_search(description, top_k=k)
+        documents = await self.text_to_image_search(description, top_k=k, fast=fast)
         return documents, description
 
     def search_with_dict_output(
@@ -200,15 +210,22 @@ class MultimodalRetriever:
         self,
         query: str,
         top_k: Optional[int] = None,
+        fast: bool = False,
     ) -> List[Dict[str, Any]]:
         """
         异步检索并返回字典格式结果（完整 P0 管线：Multi-Query + 混合检索 + 精排）。
         """
         k = top_k or self.top_k
+        use_fast_path = fast and settings.IMAGE_FAST_RETRIEVAL_ENABLED
         candidate_k = settings.RERANK_CANDIDATE_K
+        if use_fast_path:
+            candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
 
         candidates = await _multi_query_hybrid_search(
-            query, self.vector_store, candidate_k
+            query,
+            self.vector_store,
+            candidate_k,
+            enable_query_rewrite=not use_fast_path,
         )
         return cross_encoder_rerank(query, candidates, top_k=k)
 

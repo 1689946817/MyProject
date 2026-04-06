@@ -34,6 +34,14 @@ export interface ChatSourceItem {
   metadata?: Record<string, any>
 }
 
+export type PresentationMode = "direct_answer" | "rag_answer" | "image_only" | "image_plus_answer"
+export type ExecutionMode =
+  | "direct_llm"
+  | "multimodal_rag"
+  | "image_similarity"
+  | "image_grounded_answer"
+  | "uploaded_image_qa"
+
 /**
  * 聊天会话
  */
@@ -54,6 +62,9 @@ export interface ChatMessage {
   content: string
   has_image?: boolean
   sources?: ChatSourceItem[]
+  presentation_mode?: PresentationMode
+  execution_mode?: ExecutionMode
+  use_rag?: boolean
   retrieval_params?: Record<string, any> | null
   created_at: string
 }

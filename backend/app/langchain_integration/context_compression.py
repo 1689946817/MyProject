@@ -4,12 +4,14 @@
 在检索重排序后、LLM 生成前，用文本 LLM 过滤每个文档中与 query 无关的内容，
 减少噪声、降低 token 消耗、提升回答质量。
 """
+import asyncio
 import logging
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+_COMPRESSION_CONCURRENCY = 3
 
 COMPRESSION_PROMPT = """你是一个信息提取专家。给定用户查询和一段文档内容，请仅提取与查询直接相关的信息。
 
@@ -50,38 +52,41 @@ async def compress_context(
         return documents
 
     if chat_model is None:
-        from app.langchain_integration.models import MultimodalChatModel
-        chat_model = MultimodalChatModel(
-            base_url=settings.LLM_BASE_URL,
-            api_key=settings.LLM_API_KEY,
-            model_name=settings.LLM_MODEL_NAME,
-            temperature=0.0,
-        )
+        from app.langchain_integration.models import get_chat_model
+        chat_model = get_chat_model()
 
-    compressed = []
-    for doc in documents:
+    semaphore = asyncio.Semaphore(_COMPRESSION_CONCURRENCY)
+
+    async def _compress_single_document(doc: Dict[str, Any]) -> Dict[str, Any]:
         doc_text = doc.get("document", "")
         if not doc_text or len(doc_text) < 50:
             # 短文本不压缩
-            compressed.append(doc)
-            continue
+            return doc
 
         prompt = COMPRESSION_PROMPT.format(query=query, document=doc_text[:2000])
 
         try:
             from langchain_core.messages import HumanMessage
-            result = await chat_model._agenerate([HumanMessage(content=prompt)])
+
+            async with semaphore:
+                result = await chat_model._agenerate([HumanMessage(content=prompt)])
             extracted = result.generations[0].message.content.strip()
 
             if extracted and "无关" not in extracted[:5]:
                 new_doc = dict(doc)
                 new_doc["document"] = extracted
-                compressed.append(new_doc)
-            else:
-                logger.debug(f"[Compression] 过滤无关文档: {doc.get('id', 'unknown')}")
+                return new_doc
+
+            logger.debug(f"[Compression] 过滤无关文档: {doc.get('id', 'unknown')}")
+            return None
         except Exception as e:
             logger.warning(f"[Compression] 压缩失败，保留原文: {e}")
-            compressed.append(doc)
+            return doc
+
+    compressed = [
+        doc for doc in await asyncio.gather(*(_compress_single_document(doc) for doc in documents))
+        if doc is not None
+    ]
 
     logger.info(f"[Compression] {len(documents)} → {len(compressed)} 篇文档")
     return compressed

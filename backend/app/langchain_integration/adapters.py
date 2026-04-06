@@ -12,14 +12,17 @@ import base64
 import logging
 import os
 import uuid
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from fastapi import UploadFile
+from langchain_core.messages import HumanMessage
 from sqlalchemy.orm import Session
 
 from app.data.doc_models import DocumentRecord
 from app.data.models import ImageRecord
 from app.data.storage import get_image_path, get_doc_path
+from app.core.config import settings
+from app.langchain_integration.agentic_rag import classify_chat_intent
 from app.langchain_integration.chains import (
     get_image_description_chain,
     get_rag_chain,
@@ -27,6 +30,7 @@ from app.langchain_integration.chains import (
     RAGChain,
 )
 from app.langchain_integration.doc_parser import parse_pdf
+from app.langchain_integration.models import build_image_data_url, get_chat_model, guess_image_mime_type
 from app.langchain_integration.retrievers import get_multimodal_retriever
 from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
 
@@ -190,6 +194,7 @@ class LangChainAdapter:
         self,
         query: str,
         top_k: int = 10,
+        fast: bool = False,
     ) -> List[Dict[str, Any]]:
         """
         文本到图像检索
@@ -203,7 +208,7 @@ class LangChainAdapter:
         Returns:
             List[Dict[str, Any]]: 检索结果列表
         """
-        documents = await self.retriever.text_to_image_search(query, top_k=top_k)
+        documents = await self.retriever.text_to_image_search(query, top_k=top_k, fast=fast)
 
         # 转换为字典格式
         results = []
@@ -221,6 +226,7 @@ class LangChainAdapter:
         self,
         file: UploadFile,
         top_k: int = 10,
+        fast: bool = False,
     ) -> Tuple[List[Dict[str, Any]], str]:
         """
         图像到图像检索
@@ -234,7 +240,7 @@ class LangChainAdapter:
         Returns:
             Tuple[List[Dict], str]: (检索结果列表, 生成的描述)
         """
-        documents, description = await self.retriever.image_to_image_search(file, top_k=top_k)
+        documents, description = await self.retriever.image_to_image_search(file, top_k=top_k, fast=fast)
 
         # 转换为字典格式
         results = []
@@ -254,41 +260,34 @@ class LangChainAdapter:
         top_k: int = 5,
         image: Optional[UploadFile] = None,
         chat_history: Optional[List[Tuple[str, str]]] = None,
-    ) -> Tuple[str, List[Dict[str, Any]]]:
+    ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """
         RAG 问答（支持多轮对话历史 + Agentic RAG）
         """
         # 如果启用 Agentic RAG，使用 LangGraph 流程
         from app.core.config import settings
         if settings.AGENTIC_RAG_ENABLED:
-            from app.langchain_integration.agentic_rag import get_agentic_rag_graph
-            graph = get_agentic_rag_graph()
-            graph_query = query
-            if image is not None:
-                _, graph_query = await self.retriever.image_to_image_search(image, top_k=top_k)
-            result = await graph.ainvoke({
-                "query": graph_query,
-                "chat_history": chat_history or [],
-                "documents": [],
-                "answer": "",
-                "route": "",
-                "relevance_score": 0.0,
-                "needs_retry": False,
-            })
-            return result["answer"], result["documents"]
+            return await self._run_agentic_chat(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+            )
 
         if image is not None:
-            return await self.rag_chain.ainvoke_with_image(
+            answer, documents = await self.rag_chain.ainvoke_with_image(
                 query,
                 image,
                 top_k=top_k,
                 chat_history=chat_history,
             )
+            return answer, documents, self._build_default_intent(image is not None)
 
         # 否则使用标准 RAG
-        return await self.rag_chain.ainvoke(
+        answer, documents = await self.rag_chain.ainvoke(
             {"query": query, "chat_history": chat_history or []}
         )
+        return answer, documents, self._build_default_intent(image is not None)
 
     async def rag_chat_stream(
         self,
@@ -302,14 +301,14 @@ class LangChainAdapter:
         """
         from app.core.config import settings
 
-        if image is not None and settings.AGENTIC_RAG_ENABLED:
-            answer, docs = await self.rag_chat(
+        if settings.AGENTIC_RAG_ENABLED:
+            answer, docs, _intent = await self._run_agentic_chat(
                 query=query,
                 top_k=top_k,
                 image=image,
                 chat_history=chat_history,
             )
-            for ch in answer:
+            for ch in self._iter_answer_chunks(answer):
                 yield ch, docs
             return
 
@@ -327,6 +326,183 @@ class LangChainAdapter:
             {"query": query, "chat_history": chat_history or []}
         ):
             yield chunk, docs
+
+    async def _run_agentic_chat(
+        self,
+        query: str,
+        top_k: int,
+        image: Optional[UploadFile],
+        chat_history: Optional[List[Tuple[str, str]]],
+    ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
+        """执行带智能意图识别的 Agentic Chat 核心流程。"""
+        intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
+        execution_mode = intent["execution_mode"]
+
+        if execution_mode == "direct_llm":
+            answer = await self._answer_directly(query=query, chat_history=chat_history)
+            return answer, [], intent
+
+        if execution_mode == "uploaded_image_qa":
+            if image is None:
+                answer = await self._answer_directly(query=query, chat_history=chat_history)
+                return answer, [], {
+                    **intent,
+                    "reason": "uploaded_image_missing_fallback_to_direct",
+                    "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
+                }
+            answer = await self._answer_with_uploaded_image(
+                query=query,
+                image=image,
+                chat_history=chat_history,
+            )
+            return answer, [], intent
+
+        if execution_mode == "image_similarity":
+            documents = await self._retrieve_images_for_query(query=query, image=image, top_k=top_k)
+            answer = self._build_image_only_answer(documents)
+            return answer, documents, intent
+
+        if execution_mode == "image_grounded_answer":
+            documents = await self._retrieve_images_for_query(query=query, image=image, top_k=top_k)
+            answer = await self._answer_with_retrieved_images(
+                query=query,
+                documents=documents,
+                chat_history=chat_history,
+            )
+            return answer, documents, intent
+
+        if execution_mode == "multimodal_rag":
+            if image is not None:
+                answer, documents = await self.rag_chain.ainvoke_with_image(
+                    query=query,
+                    image=image,
+                    top_k=top_k,
+                    chat_history=chat_history,
+                )
+            else:
+                answer, documents = await self.rag_chain.ainvoke(
+                    {"query": query, "chat_history": chat_history or []}
+                )
+            return answer, documents, intent
+
+        answer = await self._answer_directly(query=query, chat_history=chat_history)
+        return answer, [], {
+            **intent,
+            "execution_mode": "direct_llm",
+            "presentation_mode": "direct_answer",
+            "use_rag": False,
+            "wants_images": False,
+            "reason": "unknown_execution_mode_fallback",
+        }
+
+    def _iter_answer_chunks(self, answer: str) -> Iterator[str]:
+        """将最终答案切成可回放的小块，供流式接口复用。"""
+        for ch in answer:
+            yield ch
+
+    def _build_default_intent(self, has_uploaded_image: bool) -> Dict[str, Any]:
+        """未启用 Agentic 时提供兼容的默认意图元数据。"""
+        return {
+            "presentation_mode": "rag_answer",
+            "execution_mode": "multimodal_rag",
+            "use_rag": True,
+            "has_uploaded_image": has_uploaded_image,
+            "wants_images": has_uploaded_image,
+            "confidence": 1.0,
+            "reason": "legacy_rag_path",
+        }
+
+    async def _answer_directly(
+        self,
+        query: str,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
+    ) -> str:
+        """不经过知识库检索，直接调用回答模型。"""
+        history_text = "\n".join(f"用户：{q}\n助手：{a}" for q, a in (chat_history or [])[-5:])
+        prompt = f"""你是一个专业问答助手，请直接回答用户问题。
+
+对话历史：
+{history_text}
+
+用户问题：{query}
+"""
+        model = get_chat_model()
+        result = await model._agenerate([HumanMessage(content=prompt)])
+        return result.generations[0].message.content
+
+    async def _answer_with_uploaded_image(
+        self,
+        query: str,
+        image: UploadFile,
+        chat_history: Optional[List[Tuple[str, str]]] = None,
+    ) -> str:
+        """只基于用户上传图片本身进行回答。"""
+        contents = await image.read()
+        await image.seek(0)
+        image_b64 = base64.b64encode(contents).decode("utf-8")
+        mime_type = image.content_type or guess_image_mime_type(image.filename)
+        history_text = "\n".join(f"用户：{q}\n助手：{a}" for q, a in (chat_history or [])[-5:])
+        prompt = (
+            "你是一个图片问答助手。只基于用户当前上传的图片内容回答问题，"
+            "不要引用知识库或臆测图片外信息。如果图片中没有足够信息，请明确说明。"
+            f"\n\n对话历史：\n{history_text}\n\n用户问题：{query}"
+        )
+        message = HumanMessage(
+            content=[
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": build_image_data_url(image_b64, mime_type)}},
+            ]
+        )
+        model = get_chat_model()
+        result = await model._agenerate([message])
+        return result.generations[0].message.content
+
+    async def _retrieve_images_for_query(
+        self,
+        query: str,
+        image: Optional[UploadFile],
+        top_k: int,
+    ) -> List[Dict[str, Any]]:
+        """根据文本或上传图片检索知识库图片。"""
+        if image is not None:
+            documents, _description = await self.image_to_image_search(image, top_k=top_k, fast=True)
+            return documents
+        return await self.text_to_image_search(query, top_k=top_k, fast=True)
+
+    def _build_image_only_answer(self, documents: List[Dict[str, Any]]) -> str:
+        """为纯找图请求生成简短说明。"""
+        if not documents:
+            return "未找到相关图片。"
+        return f"为你找到 {len(documents)} 张相关图片。"
+
+    async def _answer_with_retrieved_images(
+        self,
+        query: str,
+        documents: List[Dict[str, Any]],
+        chat_history: Optional[List[Tuple[str, str]]] = None,
+    ) -> str:
+        """基于检索到的图片和相关文本生成回答。"""
+        if not documents:
+            return "未找到相关图片，暂时无法根据知识库给出可靠回答。"
+
+        max_images = max(1, settings.IMAGE_GROUNDED_MAX_IMAGES)
+        max_history_turns = max(0, settings.IMAGE_GROUNDED_MAX_HISTORY_TURNS)
+        grounded_documents = documents[:max_images]
+        grounded_history = (chat_history or [])[-max_history_turns:] if max_history_turns else []
+
+        text_chunks: List[Dict[str, Any]] = []
+        if settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED and settings.IMAGE_GROUNDED_TEXT_TOP_K > 0:
+            text_chunks = self.document_vector_store.similarity_search(
+                query,
+                k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
+            )
+
+        return await self.rag_chain.agenerate_from_context(
+            query=query,
+            documents=grounded_documents,
+            text_chunks=text_chunks,
+            chat_history=grounded_history,
+        )
 
     def _rebuild_bm25_index(self) -> None:
         """全量重建 BM25 索引（仅用于启动和手动触发）"""

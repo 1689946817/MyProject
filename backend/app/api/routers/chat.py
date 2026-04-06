@@ -252,7 +252,7 @@ async def rag_chat_endpoint(
     history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
 
     adapter = get_langchain_adapter()
-    answer, retrieved = await adapter.rag_chat(
+    answer, retrieved, intent = await adapter.rag_chat(
         query=query,
         top_k=top_k,
         image=image,
@@ -260,7 +260,17 @@ async def rag_chat_endpoint(
     )
     sources = _normalize_chat_sources(retrieved)
 
-    retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": False}
+    retrieval_params = {
+        "top_k": top_k,
+        "has_image": image is not None,
+        "query": query,
+        "stream": False,
+        "presentation_mode": intent.get("presentation_mode"),
+        "execution_mode": intent.get("execution_mode"),
+        "use_rag": intent.get("use_rag"),
+        "classifier_reason": intent.get("reason"),
+        "classifier_confidence": intent.get("confidence"),
+    }
     add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
     add_message(
         db,
@@ -276,6 +286,10 @@ async def rag_chat_endpoint(
         results=_build_results(retrieved),
         sources=sources,
         session_id=session.id,
+        presentation_mode=intent.get("presentation_mode", "rag_answer"),
+        execution_mode=intent.get("execution_mode", "multimodal_rag"),
+        use_rag=bool(intent.get("use_rag", True)),
+        has_uploaded_image=image is not None,
     )
 
 

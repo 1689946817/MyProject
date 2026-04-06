@@ -8,10 +8,18 @@
  * 提供类型定义和异步函数，方便前端组件调用。
  */
 import { http } from "./http";
-import type { SearchResultItem } from "./search";
-import type { ChatMessage, ChatSession } from "@/types";
+import type {
+  ChatMessage,
+  ChatSession,
+  ChatSourceItem,
+  ExecutionMode,
+  PresentationMode,
+  SearchResultItem,
+} from "@/types";
 
 export type { ChatMessage, ChatSession } from "@/types";
+
+const CHAT_REQUEST_TIMEOUT_MS = 120000;
 
 /**
  * 聊天响应接口
@@ -21,6 +29,12 @@ export type { ChatMessage, ChatSession } from "@/types";
 export interface ChatResponse {
   answer: string; // 生成的回答
   results: SearchResultItem[]; // 检索到的相关图像列表
+  sources: ChatSourceItem[];
+  session_id: string;
+  presentation_mode: PresentationMode;
+  execution_mode: ExecutionMode;
+  use_rag: boolean;
+  has_uploaded_image: boolean;
 }
 
 /**
@@ -79,4 +93,33 @@ export async function deleteSession(id: string): Promise<void> {
 export async function getSessionMessages(id: string): Promise<ChatMessage[]> {
   const { data } = await http.get<ChatSessionDetail>(`/api/chat/sessions/${id}`);
   return data.messages;
+}
+
+/**
+ * 非流式 RAG 聊天
+ *
+ * @param params 聊天参数
+ * @returns 聊天响应
+ */
+export async function ragChat(params: {
+  query: string;
+  sessionId?: string;
+  topK?: number;
+  image?: File | null;
+}): Promise<ChatResponse> {
+  const form = new FormData();
+  form.append("query", params.query);
+  form.append("top_k", String(params.topK ?? 5));
+  if (params.sessionId) {
+    form.append("session_id", params.sessionId);
+  }
+  if (params.image) {
+    form.append("image", params.image);
+  }
+
+  const { data } = await http.post<ChatResponse>("/api/rag/chat", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+    timeout: CHAT_REQUEST_TIMEOUT_MS,
+  });
+  return data;
 }

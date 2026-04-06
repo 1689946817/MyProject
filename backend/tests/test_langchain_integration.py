@@ -44,7 +44,7 @@ from app.langchain_integration.chains import ImageDescriptionChain, RAGChain
 from app.langchain_integration.vectorstores import ChromaVectorStore
 from app.langchain_integration.retrievers import MultimodalRetriever
 from app.langchain_integration.adapters import LangChainAdapter
-from app.langchain_integration.agentic_rag import generate_answer
+from app.langchain_integration.agentic_rag import classify_chat_intent, generate_answer
 from app.langchain_integration.context_compression import compress_context
 from app.retrieval.rerank import cross_encoder_rerank
 
@@ -183,20 +183,72 @@ class TestMultimodalRetriever(unittest.TestCase):
 
     def test_text_to_image_search(self):
         """测试文本到图像检索"""
-        # 模拟向量存储返回结果
-        mock_doc = Document(
-            page_content="A cat sitting on a table",
-            metadata={"id": "img-1", "file_path": "/path/to/cat.jpg", "score": 0.9},
-        )
-        self.mock_vector_store.similarity_search_with_score.return_value = [(mock_doc, 0.9)]
+        mock_hit = {
+            "id": "img-1",
+            "document": "A cat sitting on a table",
+            "metadata": {"id": "img-1", "file_path": "/path/to/cat.jpg"},
+            "rerank_score": 0.9,
+        }
 
-        # 调用检索
-        import asyncio
-        results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=1))
+        with patch(
+            "app.langchain_integration.retrievers._multi_query_hybrid_search",
+            AsyncMock(return_value=[mock_hit]),
+        ):
+            results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=1))
 
         # 验证结果
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].page_content, "A cat sitting on a table")
+
+    def test_text_to_image_search_fast_path_uses_configured_candidate_k(self):
+        """测试图片快检索路径读取配置的 candidate_k 并关闭 query rewrite"""
+        mock_hit = {
+            "id": "img-fast",
+            "document": "Fast image result",
+            "metadata": {"id": "img-fast"},
+            "rerank_score": 0.9,
+        }
+
+        with patch("app.langchain_integration.retrievers.settings.IMAGE_FAST_RETRIEVAL_ENABLED", True):
+            with patch("app.langchain_integration.retrievers.settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K", 9):
+                with patch(
+                    "app.langchain_integration.retrievers._multi_query_hybrid_search",
+                    AsyncMock(return_value=[mock_hit]),
+                ) as mock_search:
+                    results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2, fast=True))
+
+        self.assertEqual(len(results), 1)
+        mock_search.assert_awaited_once_with(
+            "cat",
+            self.mock_vector_store,
+            9,
+            enable_query_rewrite=False,
+        )
+
+    def test_text_to_image_search_fast_path_can_be_disabled_by_config(self):
+        """测试关闭配置后 fast=True 也会回退到完整检索路径"""
+        mock_hit = {
+            "id": "img-full",
+            "document": "Full retrieval result",
+            "metadata": {"id": "img-full"},
+            "rerank_score": 0.9,
+        }
+
+        with patch("app.langchain_integration.retrievers.settings.IMAGE_FAST_RETRIEVAL_ENABLED", False):
+            with patch("app.langchain_integration.retrievers.settings.RERANK_CANDIDATE_K", 20):
+                with patch(
+                    "app.langchain_integration.retrievers._multi_query_hybrid_search",
+                    AsyncMock(return_value=[mock_hit]),
+                ) as mock_search:
+                    results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2, fast=True))
+
+        self.assertEqual(len(results), 1)
+        mock_search.assert_awaited_once_with(
+            "cat",
+            self.mock_vector_store,
+            20,
+            enable_query_rewrite=True,
+        )
 
     async def test_image_to_image_search(self):
         """测试图像到图像检索"""
@@ -367,6 +419,7 @@ class TestLangChainAdapter(unittest.TestCase):
         # 验证结果
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], "img-1")
+        self.adapter.retriever.text_to_image_search.assert_awaited_once_with("cat", top_k=1, fast=False)
 
     async def test_image_to_image_search(self):
         """测试图像到图像检索适配"""
@@ -387,6 +440,64 @@ class TestLangChainAdapter(unittest.TestCase):
         # 验证结果
         self.assertEqual(description, "A dog")
         self.assertEqual(len(results), 1)
+        self.adapter.retriever.image_to_image_search.assert_awaited_once_with(mock_file, top_k=1, fast=False)
+
+    def test_answer_with_retrieved_images_respects_context_budget_without_text_augment(self):
+        """测试图文回答在禁用文本补充时会裁剪图片和历史，并跳过文本检索"""
+        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="Budgeted answer")
+        self.adapter.document_vector_store = MagicMock()
+
+        documents = [{"id": "img-1"}, {"id": "img-2"}, {"id": "img-3"}]
+        history = [("q1", "a1"), ("q2", "a2"), ("q3", "a3")]
+
+        with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED", False):
+            with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_MAX_IMAGES", 2):
+                with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_MAX_HISTORY_TURNS", 1):
+                    answer = asyncio.run(
+                        self.adapter._answer_with_retrieved_images(
+                            query="帮我解释图片内容",
+                            documents=documents,
+                            chat_history=history,
+                        )
+                    )
+
+        self.assertEqual(answer, "Budgeted answer")
+        self.adapter.document_vector_store.similarity_search.assert_not_called()
+        self.adapter.rag_chain.agenerate_from_context.assert_awaited_once_with(
+            query="帮我解释图片内容",
+            documents=[{"id": "img-1"}, {"id": "img-2"}],
+            text_chunks=[],
+            chat_history=[("q3", "a3")],
+        )
+
+    def test_answer_with_retrieved_images_uses_configured_text_augment_k(self):
+        """测试图文回答在启用文本补充时按配置数量检索文本片段"""
+        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="Augmented answer")
+        self.adapter.document_vector_store = MagicMock()
+        self.adapter.document_vector_store.similarity_search.return_value = [{"content": "chunk-1"}]
+
+        with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED", True):
+            with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_TEXT_TOP_K", 2):
+                with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_MAX_IMAGES", 1):
+                    with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_MAX_HISTORY_TURNS", 2):
+                        answer = asyncio.run(
+                            self.adapter._answer_with_retrieved_images(
+                                query="帮我解释图片内容",
+                                documents=[{"id": "img-1"}, {"id": "img-2"}],
+                                chat_history=[("q1", "a1"), ("q2", "a2"), ("q3", "a3")],
+                            )
+                        )
+
+        self.assertEqual(answer, "Augmented answer")
+        self.adapter.document_vector_store.similarity_search.assert_called_once_with("帮我解释图片内容", k=2)
+        self.adapter.rag_chain.agenerate_from_context.assert_awaited_once_with(
+            query="帮我解释图片内容",
+            documents=[{"id": "img-1"}],
+            text_chunks=[{"content": "chunk-1"}],
+            chat_history=[("q2", "a2"), ("q3", "a3")],
+        )
 
     async def test_rag_chat_text(self):
         """测试文本 RAG 问答"""
@@ -394,11 +505,12 @@ class TestLangChainAdapter(unittest.TestCase):
         self.adapter.rag_chain.ainvoke = AsyncMock(return_value=("Answer text", [{"id": "img-1"}]))
 
         # 调用适配方法
-        answer, documents = await self.adapter.rag_chat("What is this?", top_k=1)
+        answer, documents, intent = await self.adapter.rag_chat("What is this?", top_k=1)
 
         # 验证结果
         self.assertEqual(answer, "Answer text")
         self.assertEqual(len(documents), 1)
+        self.assertEqual(intent["execution_mode"], "multimodal_rag")
 
     async def test_rag_chat_with_image(self):
         """测试带图像的 RAG 问答"""
@@ -410,30 +522,35 @@ class TestLangChainAdapter(unittest.TestCase):
         mock_file.read = AsyncMock(return_value=b"fake_image_data")
 
         # 调用适配方法
-        answer, documents = await self.adapter.rag_chat("What is this?", top_k=1, image=mock_file)
+        answer, documents, intent = await self.adapter.rag_chat("What is this?", top_k=1, image=mock_file)
 
         # 验证结果
         self.assertEqual(answer, "Image answer")
         self.assertEqual(len(documents), 1)
+        self.assertEqual(intent["execution_mode"], "multimodal_rag")
 
-    def test_rag_chat_with_image_uses_agentic_graph_when_enabled(self):
-        """测试启用 Agentic RAG 时图片问答走 Agentic 图"""
+    def test_rag_chat_with_image_uses_multimodal_rag_when_agentic_intent_requires_grounding(self):
+        """测试启用 Agentic RAG 时带图知识问答仍统一走 multimodal_rag"""
         mock_file = MagicMock()
         mock_file.read = AsyncMock(return_value=b"fake_image_data")
-        graph = MagicMock()
-        graph.ainvoke = AsyncMock(return_value={"answer": "Agentic answer", "documents": [{"id": "img-2"}]})
-
-        self.adapter.retriever.image_to_image_search = AsyncMock(
-            return_value=(
-                [Document(page_content="A dog playing", metadata={"id": "img-2", "score": 0.85})],
-                "A dog",
-            )
-        )
         self.adapter.rag_chain.ainvoke_with_image = AsyncMock(return_value=("Image answer", [{"id": "img-2"}]))
 
         with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
-            with patch("app.langchain_integration.agentic_rag.get_agentic_rag_graph", return_value=graph):
-                answer, documents = asyncio.run(
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "rag_answer",
+                        "execution_mode": "multimodal_rag",
+                        "use_rag": True,
+                        "has_uploaded_image": True,
+                        "wants_images": True,
+                        "confidence": 0.9,
+                        "reason": "grounded_with_uploaded_image",
+                    }
+                ),
+            ):
+                answer, documents, intent = asyncio.run(
                     self.adapter.rag_chat(
                         "What is this?",
                         top_k=1,
@@ -442,9 +559,49 @@ class TestLangChainAdapter(unittest.TestCase):
                     )
                 )
 
-        self.assertEqual(answer, "Agentic answer")
+        self.assertEqual(answer, "Image answer")
         self.assertEqual(documents, [{"id": "img-2"}])
-        graph.ainvoke.assert_awaited_once()
+        self.assertEqual(intent["execution_mode"], "multimodal_rag")
+        self.adapter.rag_chain.ainvoke_with_image.assert_awaited_once()
+
+    def test_rag_chat_stream_text_uses_agentic_core_when_enabled(self):
+        """测试启用 Agentic RAG 时文本流式也复用 Agentic 核心路径"""
+        async def ordinary_stream(_inputs):
+            yield "ordinary", [{"id": "img-ordinary"}]
+
+        self.adapter.rag_chain.astream = ordinary_stream
+        self.adapter.rag_chain.ainvoke = AsyncMock(return_value=("Agentic", [{"id": "img-1"}]))
+
+        async def collect():
+            items = []
+            async for chunk, docs in self.adapter.rag_chat_stream(
+                query="What is this?",
+                top_k=1,
+                chat_history=[("上一问", "上一答")],
+            ):
+                items.append((chunk, docs))
+            return items
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "rag_answer",
+                        "execution_mode": "multimodal_rag",
+                        "use_rag": True,
+                        "has_uploaded_image": False,
+                        "wants_images": False,
+                        "confidence": 0.92,
+                        "reason": "internal_knowledge",
+                    }
+                ),
+            ):
+                streamed = asyncio.run(collect())
+
+        self.assertEqual("".join(chunk for chunk, _ in streamed), "Agentic")
+        self.assertTrue(all(docs == [{"id": "img-1"}] for _, docs in streamed))
+        self.adapter.rag_chain.ainvoke.assert_awaited_once()
 
 
 class TestRemediationRegressions(unittest.TestCase):
@@ -507,6 +664,193 @@ class TestRemediationRegressions(unittest.TestCase):
                 reranked = cross_encoder_rerank("query", results, top_k=0)
 
         self.assertEqual(len(reranked), 2)
+
+    def test_classify_chat_intent_routes_common_fact_to_direct_llm(self):
+        """测试通识问题直接走直答"""
+        intent = asyncio.run(classify_chat_intent("长城在中国哪个城市附近？", has_uploaded_image=False))
+
+        self.assertEqual(intent["presentation_mode"], "direct_answer")
+        self.assertEqual(intent["execution_mode"], "direct_llm")
+        self.assertFalse(intent["use_rag"])
+
+    def test_classify_chat_intent_routes_internal_process_to_multimodal_rag(self):
+        """测试内部流程问题统一走 multimodal_rag"""
+        intent = asyncio.run(classify_chat_intent("公司的工资发放流程是什么？", has_uploaded_image=False))
+
+        self.assertEqual(intent["presentation_mode"], "rag_answer")
+        self.assertEqual(intent["execution_mode"], "multimodal_rag")
+        self.assertTrue(intent["use_rag"])
+
+    def test_classify_chat_intent_routes_image_lookup_to_similarity(self):
+        """测试纯找图问题走图片检索"""
+        intent = asyncio.run(classify_chat_intent("帮我找一张关于被通知裁员黄金一小时的图片", has_uploaded_image=False))
+
+        self.assertEqual(intent["presentation_mode"], "image_only")
+        self.assertEqual(intent["execution_mode"], "image_similarity")
+        self.assertFalse(intent["use_rag"])
+
+    def test_classify_chat_intent_keeps_find_image_request_as_image_only_even_if_query_contains_what(self):
+        """测试“找图”请求即使包含“什么”也不应升级为图文回答"""
+        intent = asyncio.run(
+            classify_chat_intent("帮我找一张关于被通知裁员黄金一小时应该做什么的图片", has_uploaded_image=False)
+        )
+
+        self.assertEqual(intent["presentation_mode"], "image_only")
+        self.assertEqual(intent["execution_mode"], "image_similarity")
+        self.assertFalse(intent["use_rag"])
+
+    def test_classify_chat_intent_routes_uploaded_image_question_to_uploaded_image_qa(self):
+        """测试带图但只问上传图内容时走 uploaded_image_qa"""
+        intent = asyncio.run(classify_chat_intent("这张图片里第2步应该做什么？", has_uploaded_image=True))
+
+        self.assertEqual(intent["presentation_mode"], "direct_answer")
+        self.assertEqual(intent["execution_mode"], "uploaded_image_qa")
+        self.assertFalse(intent["use_rag"])
+
+    def test_rag_chat_text_uses_direct_llm_when_agentic_intent_says_no_rag(self):
+        """测试 Agentic 意图命中 direct_llm 时不走 RAG"""
+        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter._answer_directly = AsyncMock(return_value="Direct answer")
+        self.adapter.rag_chain.ainvoke = AsyncMock(return_value=("RAG answer", [{"id": "img-1"}]))
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "direct_answer",
+                        "execution_mode": "direct_llm",
+                        "use_rag": False,
+                        "has_uploaded_image": False,
+                        "wants_images": False,
+                        "confidence": 0.95,
+                        "reason": "common_fact",
+                    }
+                ),
+            ):
+                answer, documents, intent = asyncio.run(self.adapter.rag_chat("长城在中国哪个城市附近？", top_k=1))
+
+        self.assertEqual(answer, "Direct answer")
+        self.assertEqual(documents, [])
+        self.assertEqual(intent["execution_mode"], "direct_llm")
+        self.adapter._answer_directly.assert_awaited_once()
+        self.adapter.rag_chain.ainvoke.assert_not_called()
+
+    def test_rag_chat_text_uses_multimodal_rag_for_grounded_questions(self):
+        """测试知识库问题统一走 multimodal_rag"""
+        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter.rag_chain.ainvoke = AsyncMock(return_value=("Grounded answer", [{"id": "img-2"}]))
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "rag_answer",
+                        "execution_mode": "multimodal_rag",
+                        "use_rag": True,
+                        "has_uploaded_image": False,
+                        "wants_images": False,
+                        "confidence": 0.91,
+                        "reason": "internal_knowledge",
+                    }
+                ),
+            ):
+                answer, documents, intent = asyncio.run(self.adapter.rag_chat("公司的工资发放流程是什么？", top_k=1))
+
+        self.assertEqual(answer, "Grounded answer")
+        self.assertEqual(documents, [{"id": "img-2"}])
+        self.assertEqual(intent["execution_mode"], "multimodal_rag")
+        self.adapter.rag_chain.ainvoke.assert_awaited_once()
+
+    def test_rag_chat_uses_image_similarity_for_image_only_requests(self):
+        """测试纯找图请求走 image_similarity"""
+        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter.text_to_image_search = AsyncMock(return_value=[{"id": "img-3"}])
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "image_only",
+                        "execution_mode": "image_similarity",
+                        "use_rag": False,
+                        "has_uploaded_image": False,
+                        "wants_images": True,
+                        "confidence": 0.88,
+                        "reason": "image_lookup",
+                    }
+                ),
+            ):
+                answer, documents, intent = asyncio.run(self.adapter.rag_chat("帮我找一张相关图片", top_k=1))
+
+        self.assertIn("找到", answer)
+        self.assertEqual(documents, [{"id": "img-3"}])
+        self.assertEqual(intent["execution_mode"], "image_similarity")
+        self.adapter.text_to_image_search.assert_awaited_once_with("帮我找一张相关图片", top_k=1, fast=True)
+
+    def test_rag_chat_uses_fast_image_retrieval_for_image_grounded_answer(self):
+        """测试图文回答图片检索走快路径，减少端到端耗时"""
+        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter.text_to_image_search = AsyncMock(return_value=[{"id": "img-4"}])
+        self.adapter._answer_with_retrieved_images = AsyncMock(return_value="Grounded image answer")
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "image_plus_answer",
+                        "execution_mode": "image_grounded_answer",
+                        "use_rag": True,
+                        "has_uploaded_image": False,
+                        "wants_images": True,
+                        "confidence": 0.9,
+                        "reason": "image_plus_answer",
+                    }
+                ),
+            ):
+                answer, documents, intent = asyncio.run(
+                    self.adapter.rag_chat("帮我找图并解释图片内容", top_k=2)
+                )
+
+        self.assertEqual(answer, "Grounded image answer")
+        self.assertEqual(documents, [{"id": "img-4"}])
+        self.assertEqual(intent["execution_mode"], "image_grounded_answer")
+        self.adapter.text_to_image_search.assert_awaited_once_with(
+            "帮我找图并解释图片内容", top_k=2, fast=True
+        )
+
+    def test_rag_chat_uses_uploaded_image_qa_for_uploaded_image_question(self):
+        """测试带图但只问上传图内容时走 uploaded_image_qa"""
+        self.adapter = LangChainAdapter(image_description_chain=MagicMock(), rag_chain=MagicMock())
+        self.adapter._answer_with_uploaded_image = AsyncMock(return_value="Uploaded image answer")
+        mock_file = MagicMock()
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "direct_answer",
+                        "execution_mode": "uploaded_image_qa",
+                        "use_rag": False,
+                        "has_uploaded_image": True,
+                        "wants_images": False,
+                        "confidence": 0.9,
+                        "reason": "uploaded_image_only",
+                    }
+                ),
+            ):
+                answer, documents, intent = asyncio.run(
+                    self.adapter.rag_chat("这张图片里第2步应该做什么？", top_k=1, image=mock_file)
+                )
+
+        self.assertEqual(answer, "Uploaded image answer")
+        self.assertEqual(documents, [])
+        self.assertEqual(intent["execution_mode"], "uploaded_image_qa")
+        self.adapter._answer_with_uploaded_image.assert_awaited_once()
 
 
 if __name__ == "__main__":
