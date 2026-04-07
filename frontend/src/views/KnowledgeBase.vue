@@ -1,5 +1,11 @@
 <template>
   <div class="kb-page">
+    <div class="page-intro">
+      <div class="page-intro-main">
+        <h1 class="page-title">{{ t("kb.title") }}</h1>
+        <p class="page-subtitle">{{ t("kb.subtitle") }}</p>
+      </div>
+    </div>
     <el-card class="upload-card glass-card">
       <template #header>
         <div class="card-header">
@@ -347,8 +353,6 @@ function statusLabel(status: string) {
 .upload-btn {
   margin-top: 16px;
   width: 100%;
-  background: var(--accent-gradient);
-  border: none;
 }
 
 .images-card {
@@ -402,6 +406,11 @@ function statusLabel(status: string) {
   --el-table-bg-color: var(--bg-secondary);
   --el-table-tr-bg-color: var(--bg-secondary);
   --el-table-header-bg-color: var(--bg-tertiary);
+}
+
+.images-card :deep(.el-card__body),
+.upload-card :deep(.el-card__body) {
+  padding: 22px;
 }
 
 .pulse-dot {

@@ -19,6 +19,7 @@ export default {
   },
   kb: {
     title: 'Knowledge Base Upload',
+    subtitle: 'Manage image assets, status, descriptions, and tags in one operational workspace.',
     uploadArea: 'Drag images here or click to upload',
     uploadBtn: 'Upload & Generate Descriptions',
     uploadedImages: 'Uploaded Images',
@@ -59,6 +60,7 @@ export default {
   },
   search: {
     title: 'Image Retrieval',
+    subtitle: 'Search by text or image, preview results quickly, and inspect table-aware visual sources.',
     textToImage: 'Text → Image Search',
     imageToImage: 'Image → Image Search',
     textQueryPlaceholder: 'Enter image content to search, e.g.: a child playing ball on grass',
@@ -84,15 +86,25 @@ export default {
     referencedImages: 'Referenced Images',
     newSession: 'New Session',
     noSessions: 'No session history',
+    emptyTitle: 'Start with a question',
+    emptySubtitle: 'Text Q&A, image-grounded answers, save-to-knowledge-base, and source traceability in one place.',
     sessionDeleted: 'Session deleted',
     sessionRenamed: 'Session renamed',
     inputPlaceholder: 'Enter question, press Enter to send...',
     ragTrace: 'RAG Trace',
     chatFailed: 'RAG chat failed, please check backend service',
-    enterQuestion: 'Please enter a question'
+    enterQuestion: 'Please enter a question',
+    attachedImage: 'Image attached',
+    attachedImageHint: 'It will be sent together with this prompt',
+    inputHint: 'Press Enter to send, Shift + Enter for newline',
+    thinking: 'Generating response…',
+    pendingSession: 'This conversation is still processing and kept locally for you',
+    sourceImages: 'Sources',
+    draftSession: 'Processing'
   },
   docs: {
     title: 'PDF Document Upload',
+    subtitle: 'Upload, parse, track progress, and review extracted results in one unified document workspace.',
     uploadArea: 'Drag PDF here or click to upload',
     uploadBtn: 'Upload & Parse',
     uploadTip: 'Only .pdf files supported, please wait patiently during parsing',

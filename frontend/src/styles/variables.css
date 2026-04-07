@@ -1,54 +1,81 @@
-/* 深色/浅色双主题 CSS 变量 */
+/* 统一浅色产品化主题（默认）与深色兼容主题 */
 
 :root {
-  /* 深色模式（默认） */
-  --bg-primary: #0f0f1a;
-  --bg-secondary: #1a1a2e;
-  --bg-tertiary: #252540;
-  --accent-primary: #00d4ff;
-  --accent-secondary: #7c3aed;
-  --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0b0;
-  --border-color: #2d2d4a;
+  --bg-primary: #f6f8fb;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f2f4f7;
+  --bg-elevated: #ffffff;
+  --bg-accent-soft: #eef5ff;
+  --accent-primary: #2563eb;
+  --accent-primary-hover: #1d4ed8;
+  --accent-secondary: #0f172a;
+  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --border-color: #dbe3ee;
+  --border-strong: #c6d1de;
+  --success-color: #15803d;
+  --warning-color: #b45309;
+  --danger-color: #dc2626;
+  --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --shadow-focus: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --page-max-width: 1440px;
 
-  /* Element Plus 深色变量覆盖 */
-  --el-bg-color: #1a1a2e;
-  --el-bg-color-overlay: #252540;
-  --el-text-color-primary: #ffffff;
-  --el-text-color-regular: #a0a0b0;
-  --el-border-color: #2d2d4a;
-  --el-border-color-light: #3d3d5a;
-  --el-fill-color-blank: #1a1a2e;
-}
-
-/* 浅色模式 */
-:root.light {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f5f7fa;
-  --bg-tertiary: #e8ecf1;
-  --accent-primary: #409eff;
-  --accent-secondary: #7c3aed;
-  --accent-gradient: linear-gradient(135deg, #409eff 0%, #7c3aed 100%);
-  --text-primary: #303133;
-  --text-secondary: #909399;
-  --border-color: #dcdfe6;
-
-  /* Element Plus 浅色变量 */
   --el-bg-color: #ffffff;
   --el-bg-color-overlay: #ffffff;
-  --el-text-color-primary: #303133;
-  --el-text-color-regular: #909399;
-  --el-border-color: #dcdfe6;
-  --el-border-color-light: #e4e7ed;
+  --el-text-color-primary: #0f172a;
+  --el-text-color-regular: #475569;
+  --el-text-color-secondary: #64748b;
+  --el-border-color: #dbe3ee;
+  --el-border-color-light: #e5edf6;
   --el-fill-color-blank: #ffffff;
+  --el-fill-color-light: #f8fafc;
+  --el-fill-color: #f2f4f7;
+  --el-color-primary: #2563eb;
+  --el-color-success: #15803d;
+  --el-color-warning: #b45309;
+  --el-color-danger: #dc2626;
 }
 
-/* 过渡动画 */
-:root {
-  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
+:root.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #111c33;
+  --bg-tertiary: #16233d;
+  --bg-elevated: #13203a;
+  --bg-accent-soft: rgba(37, 99, 235, 0.18);
+  --accent-primary: #60a5fa;
+  --accent-primary-hover: #93c5fd;
+  --accent-secondary: #e2e8f0;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  --text-primary: #e5edf7;
+  --text-secondary: #b7c4d6;
+  --text-tertiary: #7f8ea3;
+  --border-color: #24344f;
+  --border-strong: #324765;
+  --success-color: #4ade80;
+  --warning-color: #f59e0b;
+  --danger-color: #f87171;
+  --shadow-sm: 0 12px 28px rgba(2, 6, 23, 0.28);
+  --shadow-md: 0 22px 48px rgba(2, 6, 23, 0.34);
+  --shadow-focus: 0 0 0 4px rgba(96, 165, 250, 0.18);
 
-* {
-  transition: var(--theme-transition);
+  --el-bg-color: #111c33;
+  --el-bg-color-overlay: #13203a;
+  --el-text-color-primary: #e5edf7;
+  --el-text-color-regular: #b7c4d6;
+  --el-text-color-secondary: #94a3b8;
+  --el-border-color: #24344f;
+  --el-border-color-light: #324765;
+  --el-fill-color-blank: #111c33;
+  --el-fill-color-light: #16233d;
+  --el-fill-color: #1a2944;
+  --el-color-primary: #60a5fa;
+  --el-color-success: #4ade80;
+  --el-color-warning: #f59e0b;
+  --el-color-danger: #f87171;
 }

@@ -5,9 +5,12 @@
       <div class="sidebar-header">
         <div class="logo-area">
           <div class="logo-icon">
-            <i class="i-ep-grid pulse-glow"></i>
+            <i class="i-ep-grid"></i>
           </div>
-          <span class="logo-text gradient-text">{{ t('app.title') }}</span>
+          <div class="logo-copy">
+            <span class="logo-text">{{ t('app.title') }}</span>
+            <span class="logo-subtitle">Graduation Demo</span>
+          </div>
         </div>
       </div>
 
@@ -145,29 +148,16 @@ onUnmounted(() => {
   background: var(--bg-primary);
 }
 
-/* 侧边栏 */
 .sidebar {
-  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+  background: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-
-.sidebar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: radial-gradient(ellipse at top, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-  pointer-events: none;
+  box-shadow: 12px 0 32px rgba(15, 23, 42, 0.04);
 }
 
 .sidebar-header {
-  padding: 24px 16px;
+  padding: 24px 20px 18px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -178,71 +168,66 @@ onUnmounted(() => {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
   color: var(--accent-primary);
-  background: rgba(0, 212, 255, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  background: var(--bg-accent-soft);
+  border-radius: 14px;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+.logo-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .logo-text {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   white-space: nowrap;
+  color: var(--text-primary);
 }
 
-/* 菜单 */
+.logo-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
 .sidebar-menu {
   flex: 1;
   border-right: none;
   background: transparent;
-  padding: 12px 0;
+  padding: 14px 12px;
 }
 
 .sidebar-menu :deep(.el-menu-item) {
-  height: 48px;
-  line-height: 48px;
-  margin: 4px 8px;
-  border-radius: 8px;
+  height: 46px;
+  line-height: 46px;
+  margin: 6px 0;
+  border-radius: 12px;
   position: relative;
-  transition: all 0.3s ease;
-}
-
-.sidebar-menu :deep(.el-menu-item::before) {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: var(--accent-primary);
-  border-radius: 0 2px 2px 0;
-  transition: height 0.3s ease;
+  font-weight: 500;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
 .sidebar-menu :deep(.el-menu-item:hover) {
-  background: rgba(0, 212, 255, 0.1);
+  background: var(--bg-tertiary);
+  transform: translateX(2px);
 }
 
 .sidebar-menu :deep(.el-menu-item.is-active) {
-  background: rgba(0, 212, 255, 0.15);
+  background: var(--bg-accent-soft);
   color: var(--accent-primary);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
 }
 
-.sidebar-menu :deep(.el-menu-item.is-active::before) {
-  height: 24px;
-  box-shadow: 0 0 10px var(--accent-primary);
-}
-
-/* 页脚 */
 .sidebar-footer {
-  padding: 16px;
+  padding: 16px 20px 20px;
   border-top: 1px solid var(--border-color);
 }
 
@@ -254,24 +239,6 @@ onUnmounted(() => {
   color: var(--text-secondary);
 }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.status-dot.connected {
-  background: #67c23a;
-  box-shadow: 0 0 6px #67c23a;
-}
-
-.status-dot.disconnected {
-  background: #f56c6c;
-  box-shadow: 0 0 6px #f56c6c;
-}
-
-/* 主内容区 */
 .main-container {
   flex: 1;
   display: flex;
@@ -280,56 +247,60 @@ onUnmounted(() => {
 }
 
 .main-header {
-  height: 56px;
-  background: var(--bg-secondary);
+  height: 68px;
+  background: rgba(255, 255, 255, 0.72);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 16px;
+  padding: 0 24px;
+  backdrop-filter: blur(16px);
+}
+
+.is-dark .main-header {
+  background: rgba(17, 28, 51, 0.78);
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .header-btn {
+  min-height: 38px;
+  padding: 0 12px;
   color: var(--text-secondary);
   font-size: 14px;
+  border-radius: 12px;
 }
 
 .header-btn:hover {
   color: var(--accent-primary);
+  background: var(--bg-tertiary);
 }
 
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 28px;
   overflow-y: auto;
   background: var(--bg-primary);
 }
 
-/* 路由切换动画 */
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: all 0.3s ease;
-}
-
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-/* Dropdown */
 :deep(.el-dropdown-menu__item.is-active) {
   color: var(--accent-primary);
-  background: rgba(0, 212, 255, 0.1);
+  background: var(--bg-accent-soft);
+}
+
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 220px;
+  }
+}
+
+@media (max-width: 960px) {
+  .main-content {
+    padding: 20px;
+  }
 }
 </style>

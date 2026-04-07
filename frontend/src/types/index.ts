@@ -87,6 +87,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
   has_image?: boolean
+  local_image_url?: string
   sources?: ChatSourceItem[]
   presentation_mode?: PresentationMode
   execution_mode?: ExecutionMode

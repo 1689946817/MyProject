@@ -19,6 +19,7 @@ export default {
   },
   kb: {
     title: '知识库图片上传',
+    subtitle: '统一管理图片资产、状态、描述与标签，支持浏览与运维操作。',
     uploadArea: '将图片拖到此处，或点击上传',
     uploadBtn: '开始上传并生成描述',
     uploadedImages: '已上传图片',
@@ -59,6 +60,7 @@ export default {
   },
   search: {
     title: '图像检索',
+    subtitle: '支持文本搜图、图搜图与表格来源标记，结果可直接预览与比对。',
     textToImage: '文本 → 图像检索',
     imageToImage: '图像 → 图像检索',
     textQueryPlaceholder: '输入要检索的图像内容，如：一个在草地上玩球的小孩',
@@ -84,15 +86,25 @@ export default {
     referencedImages: '被引用的相关图像',
     newSession: '新建会话',
     noSessions: '暂无会话记录',
+    emptyTitle: '从一个问题开始',
+    emptySubtitle: '支持文本问答、图文问答、知识库存图与来源追溯，适合演示真实产品流程。',
     sessionDeleted: '会话已删除',
     sessionRenamed: '会话已重命名',
     inputPlaceholder: '输入问题，按 Enter 发送...',
     ragTrace: 'RAG 过程',
     chatFailed: 'RAG 问答失败，请检查后端服务是否已启动',
-    enterQuestion: '请输入问题内容'
+    enterQuestion: '请输入问题内容',
+    attachedImage: '已附带图片',
+    attachedImageHint: '发送后会和本次提问一起提交',
+    inputHint: 'Enter 发送，Shift + Enter 换行',
+    thinking: '系统正在生成回答…',
+    pendingSession: '对话处理中，已为你保留现场状态',
+    sourceImages: '相关来源',
+    draftSession: '处理中'
   },
   docs: {
     title: 'PDF 文档上传',
+    subtitle: '文档上传、解析、进度跟踪与结果复核整合在同一工作台中。',
     uploadArea: '将 PDF 拖到此处，或点击上传',
     uploadBtn: '开始上传并解析',
     uploadTip: '仅支持 .pdf 文件，解析过程中请耐心等待',

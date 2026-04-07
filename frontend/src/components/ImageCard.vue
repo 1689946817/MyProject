@@ -67,13 +67,14 @@ function onImgError(e: Event) {
 .image-card {
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .image-card:hover {
-  transform: scale(1.03);
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .card-image-wrapper {
@@ -88,11 +89,11 @@ function onImgError(e: Event) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.22s ease;
 }
 
 .image-card:hover .card-image {
-  transform: scale(1.1);
+  transform: scale(1.04);
 }
 
 .card-overlay {
@@ -101,7 +102,7 @@ function onImgError(e: Event) {
   left: 0;
   right: 0;
   padding: 12px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.82), transparent);
   transform: translateY(100%);
   transition: transform 0.3s ease;
 }
@@ -124,8 +125,8 @@ function onImgError(e: Event) {
   position: absolute;
   top: 8px;
   right: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
   font-size: 10px;
   font-weight: 500;
   display: flex;
@@ -137,17 +138,20 @@ function onImgError(e: Event) {
 
 .status-tag.processing {
   color: var(--accent-primary);
-  border: 1px solid var(--accent-primary);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .status-tag.completed {
-  color: #67c23a;
-  border: 1px solid #67c23a;
+  color: var(--success-color);
+  border: 1px solid rgba(21, 128, 61, 0.24);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .status-tag.failed {
-  color: #f56c6c;
-  border: 1px solid #f56c6c;
+  color: var(--danger-color);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .pulse-dot {
@@ -178,7 +182,7 @@ function onImgError(e: Event) {
 
 .score-fill {
   height: 100%;
-  background: var(--accent-gradient);
+  background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%);
   border-radius: 2px;
   transition: width 0.3s ease;
 }
@@ -193,11 +197,12 @@ function onImgError(e: Event) {
 }
 
 .card-info {
-  padding: 12px;
+  padding: 14px;
 }
 
 .card-title {
   font-size: 13px;
+  font-weight: 600;
   color: var(--text-primary);
   margin: 0;
   white-space: nowrap;

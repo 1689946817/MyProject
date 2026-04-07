@@ -1,5 +1,11 @@
 <template>
   <div class="search-page">
+    <div class="page-intro">
+      <div class="page-intro-main">
+        <h1 class="page-title">{{ t("search.title") }}</h1>
+        <p class="page-subtitle">{{ t("search.subtitle") }}</p>
+      </div>
+    </div>
     <el-row :gutter="20">
       <!-- 文本检索 -->
       <el-col :span="12">
@@ -255,11 +261,12 @@ async function doImageSearch() {
 
 <style scoped>
 .search-page {
-  padding: 0 8px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .search-card {
-  height: calc(100vh - 160px);
+  height: calc(100vh - 220px);
   display: flex;
   flex-direction: column;
 }
@@ -287,8 +294,6 @@ async function doImageSearch() {
 .search-btn {
   margin-top: 16px;
   width: 100%;
-  background: var(--accent-gradient);
-  border: none;
 }
 
 .results-section {
@@ -327,15 +332,15 @@ async function doImageSearch() {
   margin-top: 16px;
   padding: 12px;
   background: var(--bg-tertiary);
-  border-radius: 8px;
-  border-left: 3px solid var(--accent-secondary);
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
 }
 
 .query-desc-header {
   display: flex;
   align-items: center;
   font-size: 12px;
-  color: var(--accent-secondary);
+  color: var(--accent-primary);
   margin-bottom: 8px;
 }
 

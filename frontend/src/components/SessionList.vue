@@ -102,13 +102,14 @@ defineExpose({
   display: flex;
   flex-direction: column;
   height: 100%;
+  gap: 12px;
 }
 
 .new-session-btn {
   width: 100%;
   padding: 12px 16px;
   font-size: 14px;
-  margin-bottom: 16px;
+  font-weight: 600;
 }
 
 .sessions {
@@ -116,45 +117,31 @@ defineExpose({
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  padding-right: 4px;
 }
 
 .session-item {
-  padding: 12px;
-  border-radius: 8px;
+  padding: 14px;
+  border-radius: 14px;
   cursor: pointer;
   position: relative;
-  transition: all 0.3s ease;
-  background: var(--bg-tertiary);
-  border: 1px solid transparent;
-}
-
-.session-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: var(--accent-primary);
-  border-radius: 0 2px 2px 0;
-  transition: height 0.3s ease;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
 }
 
 .session-item:hover {
-  background: rgba(0, 212, 255, 0.1);
-  border-color: rgba(0, 212, 255, 0.3);
+  background: var(--bg-tertiary);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
 }
 
 .session-item.is-active {
-  background: rgba(0, 212, 255, 0.15);
-  border-color: var(--accent-primary);
-}
-
-.session-item.is-active::before {
-  height: 24px;
-  box-shadow: 0 0 10px var(--accent-primary);
+  background: var(--bg-accent-soft);
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.08);
 }
 
 .session-content {
@@ -163,16 +150,17 @@ defineExpose({
 
 .session-title {
   font-size: 14px;
+  font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .session-time {
-  font-size: 11px;
-  color: var(--text-secondary);
+  font-size: 12px;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
@@ -192,26 +180,30 @@ defineExpose({
 }
 
 .action-btn {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border: none;
-  background: var(--bg-secondary);
+  background: var(--bg-elevated);
   color: var(--text-secondary);
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
 }
 
 .action-btn:hover {
-  background: var(--accent-primary);
-  color: #fff;
+  background: var(--bg-accent-soft);
+  color: var(--accent-primary);
+  border-color: rgba(37, 99, 235, 0.18);
 }
 
 .action-btn.delete:hover {
-  background: #f56c6c;
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--danger-color);
+  border-color: rgba(220, 38, 38, 0.14);
 }
 </style>

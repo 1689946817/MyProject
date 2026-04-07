@@ -9,15 +9,15 @@ export type Theme = 'dark' | 'light'
 
 const STORAGE_KEY = 'multimodal-rag-theme'
 
-const isDark = ref(true)
+const isDark = ref(false)
 let initialized = false
 
 function applyTheme(theme: Theme) {
   isDark.value = theme === 'dark'
   if (theme === 'dark') {
-    document.documentElement.classList.remove('light')
+    document.documentElement.classList.add('dark')
   } else {
-    document.documentElement.classList.add('light')
+    document.documentElement.classList.remove('dark')
   }
   localStorage.setItem(STORAGE_KEY, theme)
 }
@@ -25,7 +25,7 @@ function applyTheme(theme: Theme) {
 function ensureThemeInitialized() {
   if (initialized) return
   const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
-  applyTheme(saved || 'dark')
+  applyTheme(saved || 'light')
   initialized = true
 }
 

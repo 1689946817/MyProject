@@ -39,17 +39,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
+  files?: File[]
   text?: string
   hint?: string
   accept?: string
   multiple?: boolean
 }>(), {
+  files: () => [],
   text: '',
   hint: '',
   accept: 'image/*',
@@ -63,6 +65,14 @@ const emit = defineEmits<{
 const fileInput = ref<HTMLInputElement>()
 const isDragover = ref(false)
 const files = ref<File[]>([])
+
+watch(
+  () => props.files,
+  (nextFiles) => {
+    files.value = [...(nextFiles || [])]
+  },
+  { immediate: true }
+)
 
 function triggerInput() {
   fileInput.value?.click()
@@ -122,23 +132,23 @@ defineExpose({
 <style scoped>
 .upload-zone {
   border: 2px dashed var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 32px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
   background: var(--bg-secondary);
 }
 
 .upload-zone:hover {
-  border-color: var(--accent-primary);
-  background: rgba(0, 212, 255, 0.05);
+  border-color: var(--border-strong);
+  background: var(--bg-tertiary);
 }
 
 .upload-zone.is-dragover {
   border-color: var(--accent-primary);
-  background: rgba(0, 212, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+  background: var(--bg-accent-soft);
+  box-shadow: var(--shadow-focus);
 }
 
 .upload-content {
@@ -156,16 +166,16 @@ defineExpose({
   justify-content: center;
   font-size: 28px;
   color: var(--accent-primary);
-  background: rgba(0, 212, 255, 0.1);
-  border-radius: 12px;
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  transition: all 0.3s ease;
+  background: var(--bg-accent-soft);
+  border-radius: 16px;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .upload-zone:hover .upload-icon,
 .upload-zone.is-dragover .upload-icon {
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.14);
 }
 
 .upload-text {
@@ -192,7 +202,8 @@ defineExpose({
   align-items: center;
   padding: 8px 12px;
   background: var(--bg-tertiary);
-  border-radius: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
   font-size: 13px;
   color: var(--text-primary);
 }
@@ -226,7 +237,7 @@ defineExpose({
 }
 
 .remove-btn:hover {
-  background: rgba(245, 108, 108, 0.2);
-  color: #f56c6c;
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--danger-color);
 }
 </style>

@@ -1,5 +1,11 @@
 <template>
   <div class="doc-kb">
+    <div class="page-intro">
+      <div class="page-intro-main">
+        <h1 class="page-title">{{ t("docs.title") }}</h1>
+        <p class="page-subtitle">{{ t("docs.subtitle") }}</p>
+      </div>
+    </div>
     <el-card class="glass-card">
       <template #header>
         <div class="card-header">
@@ -569,8 +575,6 @@ onBeforeUnmount(() => {
 .upload-btn {
   margin-top: 16px;
   width: 100%;
-  background: var(--accent-gradient);
-  border: none;
 }
 
 .upload-progress-panel {
@@ -740,5 +744,9 @@ onBeforeUnmount(() => {
   font-size: 12px;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+.doc-kb :deep(.el-card__body) {
+  padding: 22px;
 }
 </style>
