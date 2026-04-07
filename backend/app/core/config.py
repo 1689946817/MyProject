@@ -82,6 +82,12 @@ class Settings(BaseSettings):
     CHROMA_COLLECTION_NAME: Optional[str] = None  # 兼容旧 .env 的历史字段，已废弃
     PDF_TEXT_LOADER_BACKEND: str = "pymupdf"
     DISABLE_OUTBOUND_PROXY: bool = True
+    DOC_PARSE_BACKEND: str = "local"
+    MINERU_API_BASE_URL: str = "https://mineru.net"
+    MINERU_API_TOKEN: Optional[str] = None
+    MINERU_MODEL_VERSION: str = "vlm"
+    MINERU_POLL_INTERVAL_SECONDS: float = 2.0
+    MINERU_TIMEOUT_SECONDS: int = 120
 
     # 多模态模型配置（例如 阿里百炼上的 Qwen-VL）
     MLLM_BASE_URL: Optional[str] = None  # 多模态模型 API 基础 URL

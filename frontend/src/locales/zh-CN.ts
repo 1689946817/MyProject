@@ -3,7 +3,7 @@
  */
 export default {
   app: {
-    title: '多模态 RAG 知识库系统',
+    title: '多模态 RAG 系统',
     connectionOk: '后端连接正常',
     connectionError: '后端连接失败'
   },
@@ -95,6 +95,11 @@ export default {
     uploadArea: '将 PDF 拖到此处，或点击上传',
     uploadBtn: '开始上传并解析',
     uploadTip: '仅支持 .pdf 文件，解析过程中请耐心等待',
+    uploadingProgress: '上传中',
+    processingProgress: '解析进度',
+    uploadingMessage: '正在上传文档：{percent}%',
+    uploadQueued: '文档已上传，正在后台解析',
+    reprocessQueued: '文档已加入重新解析队列',
     uploadedDocs: '已上传文档',
     fileName: '文件名',
     uploadTime: '上传时间',
@@ -132,6 +137,16 @@ export default {
     deleteConfirm: '确认删除文档“{title}”？将同时删除 {chunks} 个文本片段和 {images} 张派生图片。',
     reprocessSuccess: '文档已重新解析',
     reprocessFailed: '文档重新解析失败',
+    progressStages: {
+      uploading: '正在上传文档',
+      queued: '等待解析',
+      submitting: '正在提交解析任务',
+      parsing_text: '正在解析文本',
+      extracting_images: '正在提取图片与表格',
+      vectorizing: '正在写入向量索引',
+      completed: '解析完成',
+      failed: '解析失败'
+    },
     fallbackReason: {
       important_nearby_text: '保留整页上下文说明',
       small_table_needs_context: '表格较小，保留页级语义',

@@ -264,6 +264,10 @@ class DocumentRecordOut(BaseModel):
     notes: Optional[str] = None
     enabled: bool = True
     custom_metadata: dict[str, Any] = Field(default_factory=dict)
+    parse_backend: str = "local"
+    parse_stage: str = "queued"
+    progress_percent: int = 0
+    progress_message: Optional[str] = None
 
     @field_validator("tags", mode="before")
     @classmethod
@@ -300,6 +304,15 @@ class UploadDocumentResponse(BaseModel):
     """上传文档响应模型"""
     document: DocumentRecordOut
     message: str = ""
+
+
+class DocumentProgressResponse(BaseModel):
+    """文档上传/解析进度响应模型"""
+    document: DocumentRecordOut
+    status: str
+    stage: str
+    progress_percent: int = 0
+    message: Optional[str] = None
 
 
 class DocChunk(BaseModel):

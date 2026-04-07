@@ -95,6 +95,11 @@ export default {
     uploadArea: 'Drag PDF here or click to upload',
     uploadBtn: 'Upload & Parse',
     uploadTip: 'Only .pdf files supported, please wait patiently during parsing',
+    uploadingProgress: 'Uploading',
+    processingProgress: 'Parsing Progress',
+    uploadingMessage: 'Uploading document: {percent}%',
+    uploadQueued: 'Document uploaded and queued for background parsing',
+    reprocessQueued: 'Document queued for reprocessing',
     uploadedDocs: 'Uploaded Documents',
     fileName: 'File Name',
     uploadTime: 'Upload Time',
@@ -132,6 +137,16 @@ export default {
     deleteConfirm: 'Delete document "{title}"? This will also remove {chunks} text chunks and {images} derived images.',
     reprocessSuccess: 'Document reprocessed',
     reprocessFailed: 'Failed to reprocess document',
+    progressStages: {
+      uploading: 'Uploading document',
+      queued: 'Queued',
+      submitting: 'Submitting parse task',
+      parsing_text: 'Parsing text',
+      extracting_images: 'Extracting images and tables',
+      vectorizing: 'Writing vector index',
+      completed: 'Completed',
+      failed: 'Failed'
+    },
     fallbackReason: {
       important_nearby_text: 'Kept full-page context',
       small_table_needs_context: 'Small table kept with page context',

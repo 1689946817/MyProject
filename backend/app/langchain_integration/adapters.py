@@ -9,6 +9,7 @@ LangChain 适配器模块
 确保 LangChain 重构后的系统与现有前端、数据库、文件存储等无缝集成。
 """
 import base64
+import asyncio
 import json
 import logging
 import os
@@ -18,13 +19,16 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from fastapi import UploadFile
+from langchain_core.documents import Document as LCDoc
 from langchain_core.messages import HumanMessage
 from sqlalchemy.orm import Session
 
 from app.data.doc_models import DocumentRecord
+from app.data.database import SessionLocal
 from app.data.models import ImageRecord
-from app.data.storage import get_image_path, get_doc_path
+from app.data.storage import BASE_STORAGE_DIR, DOC_STORAGE_DIR, get_image_path, get_doc_path
 from app.application.knowledge_management import (
+    ensure_knowledge_management_columns,
     get_document_image_records,
     load_tags,
     load_json_dict,
@@ -42,7 +46,9 @@ from app.langchain_integration.doc_parser import (
     build_pdf_text_chunks,
     extract_pdf_text_documents,
     extract_pdf_visual_assets,
+    normalize_mineru_markdown_for_chunking,
 )
+from app.langchain_integration.mineru_client import MinerUClient, MinerUParseResult
 from app.langchain_integration.models import build_image_data_url, get_chat_model, guess_image_mime_type
 from app.langchain_integration.retrievers import get_multimodal_retriever
 from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
@@ -661,6 +667,135 @@ class LangChainAdapter:
                 "collection_name": self.vector_store.collection_name,
             }
 
+    async def create_document_upload_record(
+        self,
+        db: Session,
+        file: UploadFile,
+    ) -> DocumentRecord:
+        """创建文档记录并保存原始文件，不阻塞等待解析完成。"""
+        ensure_knowledge_management_columns(db)
+        doc_id = str(uuid.uuid4())
+        contents = await file.read()
+        file_name = file.filename or "document.pdf"
+
+        doc_path = get_doc_path(doc_id)
+        with open(str(doc_path), "wb") as f:
+            f.write(contents)
+
+        record = DocumentRecord(
+            id=doc_id,
+            file_name=file_name,
+            title=os.path.splitext(file_name)[0],
+            file_path=str(doc_path),
+            document_type="pdf",
+            status="Processing",
+            parse_backend=settings.DOC_PARSE_BACKEND,
+            parse_stage="queued",
+            progress_percent=0,
+            progress_message="文档已上传，等待解析",
+        )
+        db.add(record)
+        db.commit()
+        db.refresh(record)
+        return record
+
+    def _set_document_progress(
+        self,
+        db: Session,
+        record: DocumentRecord,
+        *,
+        stage: str,
+        percent: int,
+        message: Optional[str] = None,
+        status: Optional[str] = None,
+    ) -> None:
+        record.parse_stage = stage
+        record.progress_percent = max(0, min(100, int(percent)))
+        if message is not None:
+            record.progress_message = message
+        if status is not None:
+            record.status = status
+        db.add(record)
+        db.commit()
+        db.refresh(record)
+
+    async def process_document_record_task(self, doc_id: str) -> None:
+        """后台任务入口：按配置解析指定文档。"""
+        with SessionLocal() as db:
+            ensure_knowledge_management_columns(db)
+            record = db.query(DocumentRecord).filter(DocumentRecord.id == doc_id).first()
+            if record is None:
+                logger.warning("[Adapter] 文档后台解析目标不存在: %s", doc_id)
+                return
+            try:
+                await self._process_document_record(db, record)
+            except Exception as exc:
+                logger.exception("[Adapter] 文档后台解析失败: doc=%s error=%s", doc_id, exc)
+                self._set_document_progress(
+                    db,
+                    record,
+                    stage="failed",
+                    percent=100,
+                    message=str(exc),
+                    status="Failed",
+                )
+                record.extra_metadata = str(exc)
+                db.commit()
+
+    async def reprocess_document_record_task(self, doc_id: str) -> None:
+        """后台重处理任务入口。"""
+        with SessionLocal() as db:
+            ensure_knowledge_management_columns(db)
+            record = db.query(DocumentRecord).filter(DocumentRecord.id == doc_id).first()
+            if record is None:
+                logger.warning("[Adapter] 文档后台重处理目标不存在: %s", doc_id)
+                return
+            try:
+                self.delete_document_record(db, record, preserve_record=True)
+                record.chunk_count = 0
+                record.image_count = 0
+                db.commit()
+                await self._process_document_record(db, record)
+            except Exception as exc:
+                logger.exception("[Adapter] 文档后台重处理失败: doc=%s error=%s", doc_id, exc)
+                self._set_document_progress(
+                    db,
+                    record,
+                    stage="failed",
+                    percent=100,
+                    message=str(exc),
+                    status="Failed",
+                )
+                record.extra_metadata = str(exc)
+                db.commit()
+
+    async def _process_document_record(self, db: Session, record: DocumentRecord) -> None:
+        backend = (record.parse_backend or settings.DOC_PARSE_BACKEND or "local").strip().lower()
+        if backend not in {"local", "mineru"}:
+            raise ValueError(f"Unsupported document parse backend: {backend}")
+
+        self._set_document_progress(
+            db,
+            record,
+            stage="submitting",
+            percent=5,
+            message="正在准备解析任务",
+            status="Processing",
+        )
+        doc_path = Path(record.file_path)
+        if not doc_path.exists():
+            raise FileNotFoundError(f"文档文件不存在: {record.file_path}")
+
+        if backend == "mineru":
+            await self._ingest_document_record_with_mineru(db, record, doc_path.read_bytes())
+        else:
+            await self._ingest_pdf_record(
+                db=db,
+                record=record,
+                contents=doc_path.read_bytes(),
+                file_name=record.file_name,
+            )
+
     async def process_pdf_upload(self, db: Session, file: UploadFile) -> DocumentRecord:
         """
         处理 PDF 文档上传：解析文本和图片，分别向量化存储。
@@ -680,40 +815,21 @@ class LangChainAdapter:
         Returns:
             DocumentRecord: 文档记录
         """
-        doc_id = str(uuid.uuid4())
-        contents = await file.read()
-        file_name = file.filename or "document.pdf"
-
-        # 保存 PDF 文件
-        doc_path = get_doc_path(doc_id)
-        with open(str(doc_path), "wb") as f:
-            f.write(contents)
-
-        # 创建数据库记录
-        record = DocumentRecord(
-            id=doc_id,
-            file_name=file_name,
-            title=os.path.splitext(file_name)[0],
-            file_path=str(doc_path),
-            document_type="pdf",
-            status="Processing",
-        )
-        db.add(record)
-        db.commit()
-        db.refresh(record)
+        record = await self.create_document_upload_record(db, file)
+        doc_path = Path(record.file_path)
 
         try:
-            await self._ingest_pdf_record(
-                db=db,
-                record=record,
-                contents=contents,
-                file_name=file_name,
-            )
+            await self._process_document_record(db, record)
         except Exception as e:
-            record.status = "Failed"
             record.extra_metadata = str(e)
-            db.commit()
-            db.refresh(record)
+            self._set_document_progress(
+                db,
+                record,
+                stage="failed",
+                percent=100,
+                message=str(e),
+                status="Failed",
+            )
 
         return record
 
@@ -726,11 +842,32 @@ class LangChainAdapter:
     ) -> None:
         doc_id = record.id
         doc_path = Path(record.file_path)
+        self._set_document_progress(
+            db,
+            record,
+            stage="parsing_text",
+            percent=20,
+            message="正在解析文本内容",
+        )
         text_documents = extract_pdf_text_documents(str(doc_path), file_name=file_name)
         parsed_text_chunks = build_pdf_text_chunks(text_documents, doc_id=doc_id)
+        self._set_document_progress(
+            db,
+            record,
+            stage="extracting_images",
+            percent=45,
+            message="正在提取图片和表格",
+        )
         visual_assets = extract_pdf_visual_assets(contents, file_name=file_name)
 
         if parsed_text_chunks:
+            self._set_document_progress(
+                db,
+                record,
+                stage="vectorizing",
+                percent=70,
+                message="正在写入文本向量",
+            )
             self._upsert_document_chunks_with_retry(
                 doc_id=doc_id,
                 chunks=[chunk.content for chunk in parsed_text_chunks],
@@ -759,7 +896,6 @@ class LangChainAdapter:
                 img_b64 = base64.b64encode(img_bytes).decode("utf-8")
                 description = await self.image_description_chain.ainvoke({"image_b64": img_b64})
 
-                from langchain_core.documents import Document as LCDoc
                 lc_doc = LCDoc(
                     page_content=description,
                     metadata={
@@ -809,6 +945,15 @@ class LangChainAdapter:
                 db.commit()
 
                 processed_image_count += 1
+                if visual_assets:
+                    progress = 75 + int((processed_image_count / max(len(visual_assets), 1)) * 20)
+                    self._set_document_progress(
+                        db,
+                        record,
+                        stage="vectorizing",
+                        percent=progress,
+                        message=f"正在处理图片资产 {processed_image_count}/{len(visual_assets)}",
+                    )
             except Exception as exc:
                 logger.warning(
                     "[Adapter] PDF 图片处理失败: file=%s index=%s error=%s",
@@ -820,9 +965,220 @@ class LangChainAdapter:
         record.chunk_count = len(parsed_text_chunks)
         record.image_count = processed_image_count
         record.status = "Completed"
+        record.parse_stage = "completed"
+        record.progress_percent = 100
+        record.progress_message = "解析完成"
         db.commit()
         db.refresh(record)
         self._bm25_add_chunks(doc_id, [chunk.content for chunk in parsed_text_chunks], processed_image_count)
+
+    async def _ingest_document_record_with_mineru(
+        self,
+        db: Session,
+        record: DocumentRecord,
+        contents: bytes,
+    ) -> None:
+        if not settings.MINERU_API_TOKEN:
+            raise ValueError("DOC_PARSE_BACKEND=mineru 时必须配置 MINERU_API_TOKEN")
+
+        client = MinerUClient()
+        self._set_document_progress(
+            db,
+            record,
+            stage="submitting",
+            percent=10,
+            message="正在向 MinerU 提交解析任务",
+        )
+        batch_id, signed_url = await client.create_upload_task(record.file_name, record.id)
+        await client.upload_file(signed_url, contents)
+        self._set_document_progress(
+            db,
+            record,
+            stage="uploading",
+            percent=20,
+            message="文档已提交到 MinerU，等待解析",
+        )
+
+        status = None
+        while True:
+            status = await client.get_batch_result(batch_id, record.file_name)
+            if status.state == "done":
+                break
+            if status.state == "failed":
+                raise ValueError(status.err_msg or "MinerU 解析失败")
+
+            progress_percent = 25
+            if status.total_pages > 0:
+                progress_percent = 25 + int((status.progress_pages / status.total_pages) * 50)
+            self._set_document_progress(
+                db,
+                record,
+                stage="parsing_text",
+                percent=progress_percent,
+                message=f"MinerU 解析中：{status.progress_pages}/{status.total_pages or '?'} 页",
+            )
+            await asyncio.sleep(max(settings.MINERU_POLL_INTERVAL_SECONDS, 0.5))
+
+        if not status or not status.full_zip_url:
+            raise ValueError("MinerU 未返回结果压缩包地址")
+
+        self._set_document_progress(
+            db,
+            record,
+            stage="extracting_images",
+            percent=80,
+            message="正在下载 MinerU 解析结果",
+        )
+        result = await client.download_result_zip(status.full_zip_url)
+        cleaned_markdown = normalize_mineru_markdown_for_chunking(result.markdown_text)
+        artifact_paths = self._persist_mineru_artifacts(
+            record=record,
+            result=result,
+            cleaned_markdown=cleaned_markdown,
+        )
+        markdown_doc = LCDoc(
+            page_content=cleaned_markdown,
+            metadata={
+                "page_number": 1,
+                "file_name": record.file_name,
+                "source_type": "pdf_page",
+            },
+        )
+        parsed_text_chunks = build_pdf_text_chunks([markdown_doc], doc_id=record.id)
+
+        self._set_document_progress(
+            db,
+            record,
+            stage="vectorizing",
+            percent=88,
+            message="正在写入 MinerU 文本结果",
+        )
+        if parsed_text_chunks:
+            self._upsert_document_chunks_with_retry(
+                doc_id=record.id,
+                chunks=[chunk.content for chunk in parsed_text_chunks],
+                metadatas=[
+                    {
+                        **chunk.metadata,
+                        "enabled": bool(record.enabled),
+                        "document_type": record.document_type,
+                        "parse_backend": "mineru",
+                    }
+                    for chunk in parsed_text_chunks
+                ],
+            )
+
+        processed_image_count = 0
+        total_images = len(result.images)
+        for index, (image_name, image_bytes) in enumerate(result.images, start=1):
+            try:
+                img_id = str(uuid.uuid4())
+                img_dir = BASE_STORAGE_DIR / "custom"
+                img_dir.mkdir(parents=True, exist_ok=True)
+                suffix = Path(image_name).suffix or ".png"
+                img_path = img_dir / f"{img_id}{suffix}"
+                with open(str(img_path), "wb") as f:
+                    f.write(image_bytes)
+
+                description = await self.image_description_chain.ainvoke(
+                    {"image_b64": base64.b64encode(image_bytes).decode("utf-8")}
+                )
+                lc_doc = LCDoc(
+                    page_content=description,
+                    metadata={
+                        "id": img_id,
+                        "source": "pdf",
+                        "doc_id": record.id,
+                        "file_name": record.file_name,
+                        "file_path": str(img_path),
+                        "asset_type": "mineru_image",
+                        "enabled": True,
+                        "parent_doc_enabled": bool(record.enabled),
+                        "title": f"{record.file_name} MinerU 图片 {index}",
+                        "tags": [],
+                    },
+                )
+                self.vector_store.add_documents([lc_doc], ids=[img_id])
+                img_record = ImageRecord(
+                    id=img_id,
+                    file_path=str(img_path),
+                    title=f"{record.file_name} MinerU 图片 {index}",
+                    generated_description=description,
+                    status="Completed",
+                    source_dataset=record.document_type,
+                    extra_metadata=json.dumps(
+                        {
+                            "doc_id": record.id,
+                            "asset_type": "mineru_image",
+                            "source_name": image_name,
+                        },
+                        ensure_ascii=False,
+                    ),
+                )
+                db.add(img_record)
+                db.commit()
+                processed_image_count += 1
+                self._set_document_progress(
+                    db,
+                    record,
+                    stage="vectorizing",
+                    percent=88 + int((processed_image_count / max(total_images, 1)) * 10),
+                    message=f"正在写入 MinerU 图片结果 {processed_image_count}/{total_images}",
+                )
+            except Exception as exc:
+                logger.warning("[Adapter] MinerU 图片处理失败: file=%s index=%s error=%s", record.file_name, index, exc)
+
+        record.chunk_count = len(parsed_text_chunks)
+        record.image_count = processed_image_count
+        record.status = "Completed"
+        record.parse_stage = "completed"
+        record.progress_percent = 100
+        record.progress_message = "解析完成"
+        record.extra_metadata = json.dumps(
+            {
+                "mineru_batch_id": batch_id,
+                "mineru_full_zip_url": status.full_zip_url,
+                **artifact_paths,
+                **result.raw_metadata,
+            },
+            ensure_ascii=False,
+        )
+        db.commit()
+        db.refresh(record)
+        self._bm25_add_chunks(record.id, [chunk.content for chunk in parsed_text_chunks], processed_image_count)
+
+    def _persist_mineru_artifacts(
+        self,
+        *,
+        record: DocumentRecord,
+        result: MinerUParseResult,
+        cleaned_markdown: str,
+    ) -> Dict[str, str]:
+        """将 MinerU 原始产物落到本地，便于核查解析质量。"""
+        artifact_dir = DOC_STORAGE_DIR / "mineru" / record.id
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+
+        raw_markdown_name = result.markdown_file_name or "full.md"
+        raw_markdown_path = artifact_dir / raw_markdown_name
+        cleaned_markdown_path = artifact_dir / "full.cleaned.md"
+        zip_path = artifact_dir / "result.zip"
+        metadata_path = artifact_dir / "metadata.json"
+
+        raw_markdown_path.write_text(result.markdown_text, encoding="utf-8")
+        cleaned_markdown_path.write_text(cleaned_markdown, encoding="utf-8")
+        zip_path.write_bytes(result.zip_bytes)
+        metadata_path.write_text(
+            json.dumps(result.raw_metadata, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        return {
+            "mineru_artifact_dir": str(artifact_dir),
+            "mineru_markdown_path": str(raw_markdown_path),
+            "mineru_cleaned_markdown_path": str(cleaned_markdown_path),
+            "mineru_zip_path": str(zip_path),
+            "mineru_metadata_path": str(metadata_path),
+        }
 
     async def reprocess_image_record(self, db: Session, record: ImageRecord) -> list[str]:
         warnings: list[str] = []

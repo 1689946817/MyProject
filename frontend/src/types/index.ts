@@ -104,6 +104,10 @@ export interface DocumentRecord {
   notes?: string | null
   enabled?: boolean
   custom_metadata?: Record<string, any>
+  parse_backend?: string
+  parse_stage?: string
+  progress_percent?: number
+  progress_message?: string | null
 }
 
 /**

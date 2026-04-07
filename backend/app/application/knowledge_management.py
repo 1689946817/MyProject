@@ -46,6 +46,10 @@ def ensure_document_management_columns(db: Session) -> None:
         "notes": "ALTER TABLE document_records ADD COLUMN notes TEXT",
         "enabled": "ALTER TABLE document_records ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT 1",
         "custom_metadata": "ALTER TABLE document_records ADD COLUMN custom_metadata TEXT",
+        "parse_backend": "ALTER TABLE document_records ADD COLUMN parse_backend TEXT NOT NULL DEFAULT 'local'",
+        "parse_stage": "ALTER TABLE document_records ADD COLUMN parse_stage TEXT NOT NULL DEFAULT 'queued'",
+        "progress_percent": "ALTER TABLE document_records ADD COLUMN progress_percent INTEGER NOT NULL DEFAULT 0",
+        "progress_message": "ALTER TABLE document_records ADD COLUMN progress_message TEXT",
     }
     for column, ddl in statements.items():
         if column in columns:

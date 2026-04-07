@@ -59,3 +59,15 @@ class DocumentRecord(Base):
 
     # 额外元数据（JSON 字符串）
     extra_metadata = Column(Text, nullable=True)
+
+    # 解析后端：local / mineru
+    parse_backend = Column(String, default="local", nullable=False, index=True)
+
+    # 解析阶段：queued / submitting / parsing / vectorizing / completed / failed
+    parse_stage = Column(String, default="queued", nullable=False, index=True)
+
+    # 解析进度百分比
+    progress_percent = Column(Integer, default=0, nullable=False)
+
+    # 当前阶段提示文案
+    progress_message = Column(Text, nullable=True)

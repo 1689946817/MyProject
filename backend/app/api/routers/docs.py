@@ -1,7 +1,7 @@
 """文档知识库 API 路由。"""
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.application.knowledge_management import (
@@ -16,6 +16,7 @@ from app.application.schemas import (
     DeleteResponse,
     DocChunk,
     DocParseResult,
+    DocumentProgressResponse,
     DocumentRecordOut,
     DocumentRecordUpdateRequest,
     ImageRecordOut,
@@ -30,6 +31,7 @@ router = APIRouter(prefix="/api/docs", tags=["documents"])
 
 @router.post("/upload", response_model=UploadDocumentResponse)
 async def upload_document(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ) -> UploadDocumentResponse:
@@ -37,10 +39,11 @@ async def upload_document(
         raise HTTPException(status_code=400, detail="仅支持 PDF 文件")
 
     adapter = get_langchain_adapter()
-    record = await adapter.process_pdf_upload(db=db, file=file)
+    record = await adapter.create_document_upload_record(db=db, file=file)
+    background_tasks.add_task(adapter.process_document_record_task, record.id)
     return UploadDocumentResponse(
         document=DocumentRecordOut.model_validate(record),
-        message=f"解析完成：{record.chunk_count} 个文本片段，{record.image_count} 张图片",
+        message="文档已上传，正在后台解析",
     )
 
 
@@ -146,6 +149,7 @@ def delete_document(
 @router.post("/{doc_id}/reprocess", response_model=DeleteResponse)
 async def reprocess_document(
     doc_id: str,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> DeleteResponse:
     try:
@@ -153,13 +157,34 @@ async def reprocess_document(
     except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
+    record.status = "Processing"
+    record.parse_stage = "queued"
+    record.progress_percent = 0
+    record.progress_message = "文档已加入重新解析队列"
+    db.add(record)
+    db.commit()
+    db.refresh(record)
+    background_tasks.add_task(get_langchain_adapter().reprocess_document_record_task, record.id)
+    return DeleteResponse(success=True, message="文档已加入重新解析队列", warnings=[])
+
+
+@router.get("/{doc_id}/progress", response_model=DocumentProgressResponse)
+def get_document_progress(
+    doc_id: str,
+    db: Session = Depends(get_db),
+) -> DocumentProgressResponse:
     try:
-        warnings = await get_langchain_adapter().reprocess_document_record(db, record)
-    except FileNotFoundError as exc:
+        record = get_document_record_or_raise(db, doc_id)
+    except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"文档重处理失败: {exc}") from exc
-    return DeleteResponse(success=True, message="文档已重新解析", warnings=warnings)
+
+    return DocumentProgressResponse(
+        document=DocumentRecordOut.model_validate(record),
+        status=record.status,
+        stage=getattr(record, "parse_stage", "queued") or "queued",
+        progress_percent=int(getattr(record, "progress_percent", 0) or 0),
+        message=getattr(record, "progress_message", None),
+    )
 
 
 @router.get("/{doc_id}/result", response_model=DocParseResult)

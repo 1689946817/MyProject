@@ -24,6 +24,14 @@
         <i class="i-ep-upload mr-2"></i>
         {{ t("docs.uploadBtn") }}
       </el-button>
+      <div v-if="showProgressPanel" class="upload-progress-panel">
+        <div class="progress-header">
+          <span>{{ progressTitle }}</span>
+          <span>{{ progressPercent }}%</span>
+        </div>
+        <el-progress :percentage="progressPercent" :status="progressStatus" />
+        <p class="progress-message">{{ progressMessage }}</p>
+      </div>
       <el-alert
         v-if="uploadMsg"
         :title="uploadMsg"
@@ -222,17 +230,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import {
   deleteDocument,
+  getDocumentProgress,
   getDocResult,
   listDocuments,
   reprocessDocument,
   updateDocument,
   uploadDocument,
+  type DocumentProgressResponse,
   type DocParseResult,
   type DocumentRecord,
 } from "@/api/docs";
@@ -248,6 +258,12 @@ const uploading = ref(false);
 const uploadMsg = ref("");
 const uploadSuccess = ref(false);
 const saving = ref(false);
+const uploadPercent = ref(0);
+const progressDocId = ref("");
+const progressStage = ref("idle");
+const progressPercent = ref(0);
+const progressMessage = ref("");
+let progressTimer: number | null = null;
 
 const filters = reactive({
   keyword: "",
@@ -289,25 +305,100 @@ const sortedResultImages = computed(() => {
   });
 });
 
+const showProgressPanel = computed(() => uploading.value || !!progressDocId.value);
+
+const progressTitle = computed(() => {
+  if (uploading.value && uploadPercent.value < 100) return t("docs.uploadingProgress");
+  return t("docs.processingProgress");
+});
+
+const progressStatus = computed(() => {
+  if (progressStage.value === "failed") return "exception";
+  if (progressStage.value === "completed") return "success";
+  return undefined;
+});
+
+function clearProgressPolling() {
+  if (progressTimer !== null) {
+    window.clearTimeout(progressTimer);
+    progressTimer = null;
+  }
+}
+
+function stageFallbackLabel(stage: string) {
+  const fallbackMap: Record<string, string> = {
+    idle: "",
+    uploading: t("docs.progressStages.uploading"),
+    queued: t("docs.progressStages.queued"),
+    submitting: t("docs.progressStages.submitting"),
+    parsing_text: t("docs.progressStages.parsing_text"),
+    extracting_images: t("docs.progressStages.extracting_images"),
+    vectorizing: t("docs.progressStages.vectorizing"),
+    completed: t("docs.progressStages.completed"),
+    failed: t("docs.progressStages.failed"),
+  };
+  return fallbackMap[stage] || stage;
+}
+
+function applyProgress(progress: DocumentProgressResponse) {
+  progressStage.value = progress.stage;
+  progressPercent.value = progress.progress_percent ?? 0;
+  progressMessage.value = progress.message || stageFallbackLabel(progress.stage);
+}
+
+async function pollDocumentProgress(docId: string) {
+  clearProgressPolling();
+  progressDocId.value = docId;
+
+  const run = async () => {
+    try {
+      const progress = await getDocumentProgress(docId);
+      applyProgress(progress);
+      await loadDocList(false);
+      if (progress.status === "Completed" || progress.status === "Failed") {
+        progressDocId.value = "";
+        return;
+      }
+      progressTimer = window.setTimeout(run, 1500);
+    } catch {
+      progressTimer = window.setTimeout(run, 2500);
+    }
+  };
+
+  await run();
+}
+
 async function doUpload() {
   if (!selectedFile.value) return;
   uploading.value = true;
+  uploadPercent.value = 0;
   uploadMsg.value = "";
   try {
-    const res = await uploadDocument(selectedFile.value);
+    const res = await uploadDocument(selectedFile.value, (percent) => {
+      uploadPercent.value = percent;
+      progressStage.value = "uploading";
+      progressPercent.value = percent;
+      progressMessage.value = t("docs.uploadingMessage", { percent });
+    });
     uploadSuccess.value = true;
-    uploadMsg.value = res.message || t("docs.uploadSuccess");
+    uploadMsg.value = res.message || t("docs.uploadQueued");
     selectedFiles.value = [];
+    progressStage.value = res.document.parse_stage || "queued";
+    progressPercent.value = Math.max(progressPercent.value, res.document.progress_percent ?? 0);
+    progressMessage.value = res.document.progress_message || stageFallbackLabel(progressStage.value);
     await loadDocList();
+    await pollDocumentProgress(res.document.id);
   } catch (e: any) {
     uploadSuccess.value = false;
     uploadMsg.value = e?.response?.data?.detail || t("docs.uploadFailed");
+    progressStage.value = "failed";
+    progressMessage.value = uploadMsg.value;
   } finally {
     uploading.value = false;
   }
 }
 
-async function loadDocList() {
+async function loadDocList(autostartPoll = true) {
   loadingList.value = true;
   try {
     docList.value = await listDocuments({
@@ -316,14 +407,21 @@ async function loadDocList() {
       enabled: filters.enabled,
       tag: filters.tag || undefined,
     });
+    if (autostartPoll && !progressDocId.value) {
+      const processingDoc = docList.value.find((item) => item.status === "Processing");
+      if (processingDoc) {
+        progressStage.value = processingDoc.parse_stage || "queued";
+        progressPercent.value = processingDoc.progress_percent ?? 0;
+        progressMessage.value = processingDoc.progress_message || stageFallbackLabel(progressStage.value);
+        void pollDocumentProgress(processingDoc.id);
+      }
+    }
   } catch {
     ElMessage.error(t("docs.loadFailed"));
   } finally {
     loadingList.value = false;
   }
 }
-
-onMounted(loadDocList);
 
 function statusType(status: string) {
   if (status === "Completed") return "success";
@@ -431,8 +529,12 @@ async function handleDelete(doc: DocumentRecord) {
 async function handleReprocess(doc: DocumentRecord) {
   try {
     await reprocessDocument(doc.id);
-    ElMessage.success(t("docs.reprocessSuccess"));
-    await loadDocList();
+    ElMessage.success(t("docs.reprocessQueued"));
+    progressStage.value = "queued";
+    progressPercent.value = 0;
+    progressMessage.value = t("docs.reprocessQueued");
+    await loadDocList(false);
+    await pollDocumentProgress(doc.id);
     if (activeDoc.value?.id === doc.id) {
       await viewResult(doc);
     }
@@ -440,6 +542,12 @@ async function handleReprocess(doc: DocumentRecord) {
     ElMessage.error(t("docs.reprocessFailed"));
   }
 }
+
+onMounted(loadDocList);
+
+onBeforeUnmount(() => {
+  clearProgressPolling();
+});
 </script>
 
 <style scoped>
@@ -463,6 +571,30 @@ async function handleReprocess(doc: DocumentRecord) {
   width: 100%;
   background: var(--accent-gradient);
   border: none;
+}
+
+.upload-progress-panel {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-secondary);
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.progress-message {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .filter-bar {

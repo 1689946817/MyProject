@@ -30,6 +30,14 @@ export interface UploadDocumentResponse {
   message: string;
 }
 
+export interface DocumentProgressResponse {
+  document: DocumentRecord;
+  status: string;
+  stage: string;
+  progress_percent: number;
+  message?: string | null;
+}
+
 export interface DocChunk {
   doc_id: string;
   chunk_index: number;
@@ -44,11 +52,18 @@ export interface DocImage {
   status: string;
 }
 
-export async function uploadDocument(file: File): Promise<UploadDocumentResponse> {
+export async function uploadDocument(
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<UploadDocumentResponse> {
   const form = new FormData();
   form.append("file", file);
   const { data } = await http.post<UploadDocumentResponse>("/api/docs/upload", form, {
     headers: { "Content-Type": "multipart/form-data" },
+    onUploadProgress: (event) => {
+      if (!onProgress || !event.total) return;
+      onProgress(Math.min(100, Math.round((event.loaded * 100) / event.total)));
+    },
   });
   return data;
 }
@@ -84,6 +99,11 @@ export async function deleteDocument(docId: string): Promise<void> {
 
 export async function reprocessDocument(docId: string): Promise<void> {
   await http.post(`/api/docs/${docId}/reprocess`);
+}
+
+export async function getDocumentProgress(docId: string): Promise<DocumentProgressResponse> {
+  const { data } = await http.get<DocumentProgressResponse>(`/api/docs/${docId}/progress`);
+  return data;
 }
 
 export async function getDocResult(docId: string): Promise<DocParseResult> {

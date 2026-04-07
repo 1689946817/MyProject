@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 import re
 import tempfile
+import html
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type
 
@@ -43,6 +44,12 @@ DEFAULT_FRAGMENTED_IMAGE_MAX_DIMENSION = 64
 
 # 中英文句子结束符
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[。！？.!?\n])\s*")
+_HTML_TABLE_RE = re.compile(r"<table\b[^>]*>.*?</table>", re.IGNORECASE | re.DOTALL)
+_HTML_TR_RE = re.compile(r"<tr\b[^>]*>(.*?)</tr>", re.IGNORECASE | re.DOTALL)
+_HTML_CELL_RE = re.compile(r"<t[dh]\b[^>]*>(.*?)</t[dh]>", re.IGNORECASE | re.DOTALL)
+_HTML_TAG_RE = re.compile(r"</?[a-zA-Z][^>]*>")
+_MARKDOWN_IMAGE_RE = re.compile(r"!\[[^\]]*\]\([^)]+\)")
+_LATEX_COMMAND_RE = re.compile(r"\\([a-zA-Z]+)\s*(?:\{([^{}]*)\})?")
 
 
 @dataclass
@@ -172,6 +179,50 @@ def build_pdf_text_chunks(
             next_index += 1
 
     return chunks
+
+
+def _strip_html_fragment(text: str) -> str:
+    cleaned = _HTML_TAG_RE.sub(" ", text)
+    cleaned = html.unescape(cleaned)
+    cleaned = cleaned.replace("\xa0", " ")
+    cleaned = re.sub(r"\s+", " ", cleaned)
+    return cleaned.strip()
+
+
+def _convert_html_table_to_text(table_html: str) -> str:
+    rows: List[str] = []
+    for row_html in _HTML_TR_RE.findall(table_html):
+        cells = [_strip_html_fragment(cell) for cell in _HTML_CELL_RE.findall(row_html)]
+        cells = [cell for cell in cells if cell]
+        if cells:
+            rows.append(" | ".join(cells))
+    if rows:
+        return "\n".join(rows)
+    return _strip_html_fragment(table_html)
+
+
+def normalize_mineru_markdown_for_chunking(markdown_text: str) -> str:
+    """清洗 MinerU markdown 中混入的 HTML 表格，避免原始标签进入 chunk。"""
+    if not markdown_text:
+        return markdown_text
+
+    cleaned = _MARKDOWN_IMAGE_RE.sub(" ", markdown_text)
+    cleaned = cleaned.replace("", "\n- ").replace("•", "\n- ").replace("◦", "\n- ")
+    cleaned = _HTML_TABLE_RE.sub(lambda match: f"\n{_convert_html_table_to_text(match.group(0))}\n", cleaned)
+    cleaned = re.sub(r"<br\s*/?>", "\n", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"</?(p|div|section|article|header|footer|ul|ol|li)\b[^>]*>", "\n", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"</?(span|strong|em|b|i|thead|tbody|tfoot|caption|colgroup|col)\b[^>]*>", " ", cleaned, flags=re.IGNORECASE)
+    cleaned = _HTML_TAG_RE.sub("", cleaned)
+    cleaned = _LATEX_COMMAND_RE.sub(lambda m: "*" if m.group(1) == "star" else (m.group(2) or m.group(1)), cleaned)
+    cleaned = cleaned.replace("$", " ")
+    cleaned = cleaned.replace("{", " ").replace("}", " ")
+    cleaned = cleaned.replace("^", " ")
+    cleaned = cleaned.replace("\\", " ")
+    cleaned = html.unescape(cleaned).replace("\xa0", " ")
+    cleaned = re.sub(r"[ \t]+\n", "\n", cleaned)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+    cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
+    return cleaned.strip()
 
 
 def _get_page_dimensions(page: Any) -> Tuple[float, float]:

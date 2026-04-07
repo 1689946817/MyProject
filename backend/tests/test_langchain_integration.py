@@ -9,11 +9,14 @@ LangChain 集成测试
 """
 import base64
 import asyncio
+import io
 import os
 import sys
 import unittest
 import tempfile
 import shutil
+import zipfile
+from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock, AsyncMock
 from types import ModuleType
 
@@ -47,12 +50,14 @@ from app.langchain_integration.doc_parser import (
     build_pdf_text_chunks,
     extract_pdf_text_documents,
     extract_pdf_visual_assets,
+    normalize_mineru_markdown_for_chunking,
 )
 from app.langchain_integration.vectorstores import ChromaVectorStore
 from app.langchain_integration.retrievers import MultimodalRetriever
 from app.langchain_integration.adapters import LangChainAdapter
 from app.langchain_integration.agentic_rag import classify_chat_intent, generate_answer
 from app.langchain_integration.context_compression import compress_context
+from app.langchain_integration.mineru_client import MinerUClient, MinerUParseResult
 from app.langchain_integration.models import (
     MultimodalChatModel,
     OpenAIEmbeddingsWrapper,
@@ -530,6 +535,54 @@ class TestPdfParsing(unittest.TestCase):
         self.assertEqual(chunks[0].metadata["doc_id"], "doc-1")
         self.assertEqual(chunks[0].metadata["source_type"], "pdf_text_chunk")
 
+    def test_normalize_mineru_markdown_for_chunking_converts_html_tables(self):
+        """测试 MinerU markdown 中的 HTML 表格会在切块前转换为可读文本。"""
+        raw_markdown = (
+            "# 能力矩阵\n"
+            "<table><tr><td>模块</td><td>能力</td><td>L1</td></tr>"
+            "<tr><td>CI</td><td>CI 基础分析能力</td><td>✓</td></tr></table>"
+            "\n# 更多信息"
+        )
+
+        cleaned = normalize_mineru_markdown_for_chunking(raw_markdown)
+
+        self.assertIn("模块 | 能力 | L1", cleaned)
+        self.assertIn("CI | CI 基础分析能力 | ✓", cleaned)
+        self.assertIn("# 更多信息", cleaned)
+        self.assertNotIn("</td>", cleaned)
+        self.assertNotIn("<table>", cleaned)
+
+    def test_normalize_mineru_markdown_for_chunking_removes_image_refs(self):
+        """测试 MinerU markdown 中的图片引用不会进入文本 chunk。"""
+        raw_markdown = (
+            "![](images/abc.jpg)\n"
+            "NetEngine AR6121E\n"
+            "![](images/def.jpg)"
+        )
+
+        cleaned = normalize_mineru_markdown_for_chunking(raw_markdown)
+
+        self.assertIn("NetEngine AR6121E", cleaned)
+        self.assertNotIn("![](", cleaned)
+        self.assertNotIn("images/abc.jpg", cleaned)
+        self.assertNotIn("images/def.jpg", cleaned)
+
+    def test_normalize_mineru_markdown_for_chunking_flattens_common_latex_noise(self):
+        """测试 MinerU markdown 中常见的 LaTeX/符号包装会被压平成可读文本。"""
+        raw_markdown = (
+            " 固定WAN接口： $2 ^ { \\star } G E$ Combo，"
+            "1*10GE $\\mathsf { S F P + }$"
+        )
+
+        cleaned = normalize_mineru_markdown_for_chunking(raw_markdown)
+
+        self.assertIn("固定WAN接口", cleaned)
+        self.assertIn("2 * G E", cleaned)
+        self.assertIn("S F P +", cleaned)
+        self.assertNotIn("", cleaned)
+        self.assertNotIn("$", cleaned)
+        self.assertNotIn("\\mathsf", cleaned)
+
     def test_parsed_pdf_visual_asset_exposes_page_and_asset_type(self):
         """测试视觉资产类型包含页码和资产类型"""
         asset = ParsedPdfVisualAsset(
@@ -945,13 +998,17 @@ class TestLangChainAdapter(unittest.TestCase):
             )
         ]
 
-        with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x", "img-x"]):
-            with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[Document(page_content="第一页", metadata={"page_number": 1})]):
-                with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
-                    with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=visual_assets):
-                        with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
-                            with patch("builtins.open", unittest.mock.mock_open()):
-                                asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
+        with patch("app.langchain_integration.adapters.settings.DOC_PARSE_BACKEND", "local"):
+            with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x", "img-x"]):
+                with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[Document(page_content="第一页", metadata={"page_number": 1})]):
+                    with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
+                        with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=visual_assets):
+                            with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
+                                with patch("app.langchain_integration.adapters.ensure_knowledge_management_columns"):
+                                    with patch("builtins.open", unittest.mock.mock_open()):
+                                        with patch("app.langchain_integration.adapters.Path.exists", return_value=True):
+                                            with patch("app.langchain_integration.adapters.Path.read_bytes", return_value=b"%PDF-test"):
+                                                asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
 
         self.adapter.document_vector_store.upsert_chunks.assert_called_once_with(
             doc_id="doc-x",
@@ -1000,13 +1057,14 @@ class TestLangChainAdapter(unittest.TestCase):
             )
         ]
 
-        with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x", "img-x"]):
-            with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[]):
-                with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
-                    with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=visual_assets):
-                        with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
-                            with patch("builtins.open", unittest.mock.mock_open()):
-                                asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
+        with patch("app.langchain_integration.adapters.settings.DOC_PARSE_BACKEND", "local"):
+            with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x", "img-x"]):
+                with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[]):
+                    with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
+                        with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=visual_assets):
+                            with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
+                                with patch("builtins.open", unittest.mock.mock_open()):
+                                    asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
 
         stored_doc = self.adapter.vector_store.add_documents.call_args[0][0][0]
         self.assertEqual(stored_doc.metadata["asset_type"], "table_crop")
@@ -1044,14 +1102,15 @@ class TestLangChainAdapter(unittest.TestCase):
             )
         ]
 
-        with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x"]):
-            with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[]):
-                with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
-                    with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=[]):
-                        with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
-                            with patch("builtins.open", unittest.mock.mock_open()):
-                                with patch("app.langchain_integration.adapters.time.sleep", return_value=None):
-                                    record = asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
+        with patch("app.langchain_integration.adapters.settings.DOC_PARSE_BACKEND", "local"):
+            with patch("app.langchain_integration.adapters.uuid.uuid4", side_effect=["doc-x"]):
+                with patch("app.langchain_integration.adapters.extract_pdf_text_documents", return_value=[]):
+                    with patch("app.langchain_integration.adapters.build_pdf_text_chunks", return_value=parsed_chunks):
+                        with patch("app.langchain_integration.adapters.extract_pdf_visual_assets", return_value=[]):
+                            with patch("app.langchain_integration.adapters.get_doc_path", return_value="temp.pdf"):
+                                with patch("builtins.open", unittest.mock.mock_open()):
+                                    with patch("app.langchain_integration.adapters.time.sleep", return_value=None):
+                                        record = asyncio.run(self.adapter.process_pdf_upload(mock_db, mock_file))
 
         self.assertEqual(self.adapter.document_vector_store.upsert_chunks.call_count, 2)
         self.assertEqual(record.status, "Completed")
@@ -1688,6 +1747,114 @@ class TestRemediationRegressions(unittest.TestCase):
         payload = DocumentRecordOut.model_validate(record)
         self.assertEqual(payload.tags, ["hr", "policy"])
         self.assertEqual(payload.custom_metadata["department"], "HR")
+
+    def test_document_record_out_exposes_progress_fields(self):
+        record = MagicMock()
+        record.id = "doc-1"
+        record.file_name = "policy.pdf"
+        record.title = "Policy"
+        record.file_path = "storage/docs/doc-1.pdf"
+        record.upload_time = "2025-01-01T00:00:00"
+        record.status = "Processing"
+        record.chunk_count = 0
+        record.image_count = 0
+        record.document_type = "pdf"
+        record.tags = ""
+        record.notes = ""
+        record.enabled = True
+        record.custom_metadata = None
+        record.parse_backend = "mineru"
+        record.parse_stage = "vectorizing"
+        record.progress_percent = 92
+        record.progress_message = "正在写入向量"
+
+        payload = DocumentRecordOut.model_validate(record)
+        self.assertEqual(payload.parse_backend, "mineru")
+        self.assertEqual(payload.parse_stage, "vectorizing")
+        self.assertEqual(payload.progress_percent, 92)
+        self.assertEqual(payload.progress_message, "正在写入向量")
+
+    @patch("app.langchain_integration.adapters.settings.DOC_PARSE_BACKEND", "mineru")
+    def test_create_document_upload_record_sets_progress_defaults(self):
+        adapter = _build_isolated_adapter()
+        mock_db = MagicMock()
+        mock_db.refresh.side_effect = lambda record: record
+        mock_file = AsyncMock()
+        mock_file.filename = "policy.pdf"
+        mock_file.read.return_value = b"%PDF-1.4"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir) / "policy.pdf"
+            with patch("app.langchain_integration.adapters.get_doc_path", return_value=temp_path):
+                record = asyncio.run(adapter.create_document_upload_record(mock_db, mock_file))
+
+        self.assertEqual(record.file_name, "policy.pdf")
+        self.assertEqual(record.parse_backend, "mineru")
+        self.assertEqual(record.parse_stage, "queued")
+        self.assertEqual(record.progress_percent, 0)
+
+    @patch("app.langchain_integration.mineru_client.settings.MINERU_API_TOKEN", "token")
+    def test_mineru_client_download_result_zip_extracts_markdown_and_images(self):
+        markdown = "# Title\n\nHello MinerU"
+        image_bytes = b"fake-image"
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w") as archive:
+            archive.writestr("full.md", markdown)
+            archive.writestr("images/figure-1.png", image_bytes)
+            archive.writestr("metadata.json", "{\"ok\": true}")
+
+        mock_response = MagicMock()
+        mock_response.content = zip_buffer.getvalue()
+        mock_response.raise_for_status = MagicMock()
+
+        mock_client = AsyncMock()
+        mock_client.get.return_value = mock_response
+        mock_cm = AsyncMock()
+        mock_cm.__aenter__.return_value = mock_client
+        mock_cm.__aexit__.return_value = False
+
+        with patch("httpx.AsyncClient", return_value=mock_cm):
+            result = asyncio.run(MinerUClient().download_result_zip("https://example.com/result.zip"))
+
+        self.assertEqual(result.markdown_text, markdown)
+        self.assertEqual(result.markdown_file_name, "full.md")
+        self.assertEqual(len(result.images), 1)
+        self.assertEqual(result.images[0][0], "figure-1.png")
+        self.assertEqual(result.images[0][1], image_bytes)
+        self.assertEqual(result.zip_bytes, zip_buffer.getvalue())
+
+    def test_persist_mineru_artifacts_saves_raw_and_cleaned_markdown_locally(self):
+        adapter = _build_isolated_adapter()
+        record = MagicMock()
+        record.id = "doc-1"
+        result = MinerUParseResult(
+            markdown_text="# 原始\n<table><tr><td>A</td><td>B</td></tr></table>",
+            images=[],
+            raw_metadata={"files": ["full.md", "metadata.json"]},
+            zip_bytes=b"zip-bytes",
+            markdown_file_name="full.md",
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            storage_dir = Path(temp_dir)
+            with patch("app.langchain_integration.adapters.DOC_STORAGE_DIR", storage_dir):
+                paths = adapter._persist_mineru_artifacts(
+                    record=record,
+                    result=result,
+                    cleaned_markdown="# 清洗后\nA | B",
+                )
+
+            raw_path = Path(paths["mineru_markdown_path"])
+            cleaned_path = Path(paths["mineru_cleaned_markdown_path"])
+            zip_path = Path(paths["mineru_zip_path"])
+            metadata_path = Path(paths["mineru_metadata_path"])
+
+            self.assertTrue(raw_path.exists())
+            self.assertTrue(cleaned_path.exists())
+            self.assertTrue(zip_path.exists())
+            self.assertTrue(metadata_path.exists())
+            self.assertIn("<table>", raw_path.read_text(encoding="utf-8"))
+            self.assertIn("A | B", cleaned_path.read_text(encoding="utf-8"))
+            self.assertEqual(zip_path.read_bytes(), b"zip-bytes")
 
     def test_document_vector_similarity_search_filters_disabled_documents(self):
         """测试文本 chunk 检索会过滤已禁用文档。"""
