@@ -48,7 +48,15 @@ export interface ChatSourceItem {
   file_path?: string
   content?: string
   score?: number
+  rerank_score?: number
   metadata?: Record<string, any>
+}
+
+export interface RetrievalStepItem {
+  key: string
+  label: string
+  summary?: string
+  details?: Record<string, any>
 }
 
 export type PresentationMode = "direct_answer" | "rag_answer" | "image_only" | "image_plus_answer"
@@ -83,6 +91,7 @@ export interface ChatMessage {
   presentation_mode?: PresentationMode
   execution_mode?: ExecutionMode
   use_rag?: boolean
+  retrieval_steps?: RetrievalStepItem[]
   retrieval_params?: Record<string, any> | null
   created_at: string
 }

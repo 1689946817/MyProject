@@ -87,6 +87,7 @@ export default {
     sessionDeleted: 'Session deleted',
     sessionRenamed: 'Session renamed',
     inputPlaceholder: 'Enter question, press Enter to send...',
+    ragTrace: 'RAG Trace',
     chatFailed: 'RAG chat failed, please check backend service',
     enterQuestion: 'Please enter a question'
   },

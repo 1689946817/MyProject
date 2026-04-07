@@ -18,8 +18,8 @@ from app.application.chat_service import (
     get_session_or_raise,
     list_sessions,
     load_message_sources,
+    load_json_list,
     load_json_field,
-    dump_json_field,
 )
 from app.application.schemas import (
     ChatMessageOut,
@@ -129,6 +129,7 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
                     file_path=file_path,
                     content=item.get("content"),
                     score=_safe_score(item.get("score")),
+                    rerank_score=_safe_score(item.get("rerank_score") or metadata.get("rerank_score")),
                     metadata=metadata,
                 )
             )
@@ -150,6 +151,7 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
                 file_path=file_path,
                 content=item.get("document"),
                 score=_safe_score(item.get("score")),
+                rerank_score=_safe_score(item.get("rerank_score") or metadata.get("rerank_score")),
                 metadata=metadata,
             )
         )
@@ -159,6 +161,7 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
 def _to_chat_message_out(message) -> ChatMessageOut:
     sources = [ChatSourceItem.model_validate(item) for item in load_message_sources(getattr(message, "sources_json", None))]
     retrieval_params = load_json_field(getattr(message, "retrieval_params_json", None))
+    retrieval_steps = load_json_list(getattr(message, "retrieval_steps_json", None))
     return ChatMessageOut(
         id=message.id,
         session_id=message.session_id,
@@ -167,6 +170,7 @@ def _to_chat_message_out(message) -> ChatMessageOut:
         has_image=message.has_image,
         sources=sources,
         retrieval_params=retrieval_params,
+        retrieval_steps=retrieval_steps,
         created_at=message.created_at,
     )
 
@@ -259,6 +263,7 @@ async def rag_chat_endpoint(
         chat_history=history,
     )
     sources = _normalize_chat_sources(retrieved)
+    retrieval_steps = intent.get("retrieval_steps") or []
 
     retrieval_params = {
         "top_k": top_k,
@@ -279,6 +284,7 @@ async def rag_chat_endpoint(
         answer,
         sources=[source.model_dump() for source in sources],
         retrieval_params=retrieval_params,
+        retrieval_steps=retrieval_steps,
     )
 
     return ChatResponse(
@@ -290,6 +296,7 @@ async def rag_chat_endpoint(
         execution_mode=intent.get("execution_mode", "multimodal_rag"),
         use_rag=bool(intent.get("use_rag", True)),
         has_uploaded_image=image is not None,
+        retrieval_steps=retrieval_steps,
     )
 
 
@@ -315,8 +322,9 @@ async def rag_chat_stream_endpoint(
 
         full_answer = ""
         retrieved_docs = []
+        final_intent = None
 
-        async for chunk, docs in adapter.rag_chat_stream(
+        async for chunk, docs, intent in adapter.rag_chat_stream(
             query=query,
             top_k=top_k,
             image=image,
@@ -324,11 +332,14 @@ async def rag_chat_stream_endpoint(
         ):
             full_answer += chunk
             retrieved_docs = docs
+            if intent is not None:
+                final_intent = intent
             yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
 
         retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": True}
         add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
         sources = _normalize_chat_sources(retrieved_docs)
+        retrieval_steps = (final_intent or {}).get("retrieval_steps") or []
         add_message(
             db,
             session,
@@ -336,9 +347,10 @@ async def rag_chat_stream_endpoint(
             full_answer,
             sources=[source.model_dump() for source in sources],
             retrieval_params=retrieval_params,
+            retrieval_steps=retrieval_steps,
         )
 
-        yield f"data: {json.dumps({'type': 'results', 'results': [item.model_dump() for item in _build_results(retrieved_docs)], 'sources': [source.model_dump() for source in sources]})}\n\n"
+        yield f"data: {json.dumps({'type': 'results', 'results': [item.model_dump() for item in _build_results(retrieved_docs)], 'sources': [source.model_dump() for source in sources], 'retrieval_steps': retrieval_steps})}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

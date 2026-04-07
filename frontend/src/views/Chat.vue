@@ -67,12 +67,15 @@
                         class="ref-image-item"
                         @click="showPreview(source)"
                       >
-                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source)" class="ref-image-badges">
+                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source) || getSourceScoreLabel(source)" class="ref-image-badges">
                           <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">
                             {{ getSourceAssetLabel(source) }}
                           </span>
                           <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">
                             {{ getSourcePageLabel(source) }}
+                          </span>
+                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">
+                            {{ getSourceScoreLabel(source) }}
                           </span>
                           <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">
                             {{ t("docs.crossPageContinued") }}
@@ -91,6 +94,36 @@
                     >
                       {{ msg.content }}
                     </p>
+                    <details v-if="hasRetrievalSteps(msg)" class="trace-panel">
+                      <summary class="trace-summary">
+                        {{ t('chat.ragTrace') }}
+                      </summary>
+                      <div class="trace-list">
+                        <div
+                          v-for="step in msg.retrieval_steps"
+                          :key="`${msg.id}-${step.key}`"
+                          class="trace-step"
+                        >
+                          <div class="trace-step-header">
+                            <span class="trace-step-label">{{ step.label }}</span>
+                            <span v-if="step.summary" class="trace-step-summary">{{ step.summary }}</span>
+                          </div>
+                          <div
+                            v-if="step.details && Object.keys(step.details).length > 0"
+                            class="trace-step-details"
+                          >
+                            <div
+                              v-for="(value, key) in step.details"
+                              :key="`${msg.id}-${step.key}-${String(key)}`"
+                              class="trace-detail-row"
+                            >
+                              <span class="trace-detail-key">{{ key }}</span>
+                              <span class="trace-detail-value">{{ formatTraceDetailValue(value) }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </details>
                     <div
                       v-if="shouldShowImagesAfterText(msg)"
                       class="referenced-images"
@@ -102,12 +135,15 @@
                         class="ref-image-item"
                         @click="showPreview(source)"
                       >
-                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source)" class="ref-image-badges">
+                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source) || getSourceScoreLabel(source)" class="ref-image-badges">
                           <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">
                             {{ getSourceAssetLabel(source) }}
                           </span>
                           <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">
                             {{ getSourcePageLabel(source) }}
+                          </span>
+                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">
+                            {{ getSourceScoreLabel(source) }}
                           </span>
                           <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">
                             {{ t("docs.crossPageContinued") }}
@@ -383,6 +419,35 @@ function isCrossPageSource(source: SourceItem): boolean {
   )
 }
 
+function getSourceScoreLabel(source: SourceItem): string {
+  const rerankScore = Number(source.rerank_score)
+  if (!Number.isNaN(rerankScore)) {
+    return `R ${rerankScore.toFixed(3)}`
+  }
+  return ''
+}
+
+function hasRetrievalSteps(msg: Message): boolean {
+  return Array.isArray(msg.retrieval_steps) && msg.retrieval_steps.length > 0
+}
+
+function formatTraceDetailValue(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.join(', ')
+  }
+  if (value === null || value === undefined) {
+    return '-'
+  }
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value)
+    } catch (_err) {
+      return String(value)
+    }
+  }
+  return String(value)
+}
+
 async function doChat() {
   if (!query.value.trim() && !attachedImage.value) {
     ElMessage.warning(t('chat.enterQuestion'))
@@ -440,6 +505,7 @@ async function doChat() {
       presentation_mode: response.presentation_mode,
       execution_mode: response.execution_mode,
       use_rag: response.use_rag,
+      retrieval_steps: response.retrieval_steps || [],
       retrieval_params: {
         presentation_mode: response.presentation_mode,
         execution_mode: response.execution_mode,
@@ -771,6 +837,83 @@ onBeforeUnmount(() => {
 
 .ref-image-badge.warn {
   background: rgba(217, 119, 6, 0.82);
+}
+
+.ref-image-badge.score {
+  background: rgba(16, 185, 129, 0.82);
+}
+
+.trace-panel {
+  margin-top: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.trace-summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  list-style: none;
+}
+
+.trace-summary::-webkit-details-marker {
+  display: none;
+}
+
+.trace-list {
+  padding: 0 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trace-step {
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.trace-step-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.trace-step-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.trace-step-summary {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.trace-step-details {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.trace-detail-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.trace-detail-key {
+  color: var(--text-secondary);
+}
+
+.trace-detail-value {
+  color: var(--text-primary);
+  word-break: break-word;
 }
 
 .message-text {

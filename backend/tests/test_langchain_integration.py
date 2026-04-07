@@ -34,8 +34,62 @@ if "fastapi" not in sys.modules:
     class UploadFile:  # pragma: no cover - test import shim
         pass
 
+    class APIRouter:  # pragma: no cover - test import shim
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def post(self, *args, **kwargs):
+            def decorator(fn):
+                return fn
+            return decorator
+
+        def get(self, *args, **kwargs):
+            def decorator(fn):
+                return fn
+            return decorator
+
+        def patch(self, *args, **kwargs):
+            def decorator(fn):
+                return fn
+            return decorator
+
+        def delete(self, *args, **kwargs):
+            def decorator(fn):
+                return fn
+            return decorator
+
+    class HTTPException(Exception):  # pragma: no cover - test import shim
+        def __init__(self, status_code: int, detail: str):
+            self.status_code = status_code
+            self.detail = detail
+            super().__init__(detail)
+
+    def Depends(value=None):  # pragma: no cover - test import shim
+        return value
+
+    def File(default=None):  # pragma: no cover - test import shim
+        return default
+
+    def Form(default=None):  # pragma: no cover - test import shim
+        return default
+
+    fastapi.APIRouter = APIRouter
+    fastapi.Depends = Depends
+    fastapi.File = File
+    fastapi.Form = Form
+    fastapi.HTTPException = HTTPException
     fastapi.UploadFile = UploadFile
     sys.modules["fastapi"] = fastapi
+
+if "fastapi.responses" not in sys.modules:
+    fastapi_responses = ModuleType("fastapi.responses")
+
+    class StreamingResponse:  # pragma: no cover - test import shim
+        def __init__(self, *args, **kwargs):
+            pass
+
+    fastapi_responses.StreamingResponse = StreamingResponse
+    sys.modules["fastapi.responses"] = fastapi_responses
 
 if "fitz" not in sys.modules:
     sys.modules["fitz"] = ModuleType("fitz")
@@ -68,6 +122,8 @@ from app.retrieval.rerank import cross_encoder_rerank
 from app.retrieval.hybrid import rebuild_bm25_index
 from app.application.schemas import DocumentRecordOut, ImageRecordOut
 from app.application.schemas import SearchResultItem
+from app.application.chat_service import dump_json_list, load_json_list
+from app.api.routers.chat import _normalize_chat_sources
 from app.data.storage import BASE_STORAGE_DIR, DOC_STORAGE_DIR, STORAGE_ROOT
 
 
@@ -721,6 +777,37 @@ class TestPdfParsing(unittest.TestCase):
         self.assertEqual(assets[0].metadata["fallback_reason"], "fragmented_or_filtered_images")
 
 
+class TestChatObservabilityHelpers(unittest.TestCase):
+    """测试聊天可观测辅助逻辑。"""
+
+    def test_json_list_roundtrip_for_retrieval_steps(self):
+        """测试 retrieval_steps JSON 序列化与反序列化。"""
+        steps = [{"key": "retrieval", "label": "检索", "summary": "召回 3 条结果"}]
+
+        dumped = dump_json_list(steps)
+        loaded = load_json_list(dumped)
+
+        self.assertEqual(loaded, steps)
+
+    def test_normalize_chat_sources_exposes_rerank_score(self):
+        """测试聊天来源会显式暴露 rerank_score，供前端可视化。"""
+        sources = _normalize_chat_sources(
+            [
+                {
+                    "id": "img-1",
+                    "document": "流程图",
+                    "rerank_score": 0.91,
+                    "score": 0.77,
+                    "metadata": {"id": "img-1", "file_path": "/tmp/a.jpg"},
+                }
+            ]
+        )
+
+        self.assertEqual(len(sources), 1)
+        self.assertEqual(sources[0].rerank_score, 0.91)
+        self.assertEqual(sources[0].score, 0.77)
+
+
 class TestStoragePaths(unittest.TestCase):
     """测试运行时存储路径共享同一个根目录。"""
 
@@ -1262,7 +1349,9 @@ class TestLangChainAdapter(unittest.TestCase):
     async def test_rag_chat_text(self):
         """测试文本 RAG 问答"""
         # 模拟 RAG Chain
-        self.adapter.rag_chain.ainvoke = AsyncMock(return_value=("Answer text", [{"id": "img-1"}]))
+        self.adapter.rag_chain.ainvoke = AsyncMock(
+            return_value=("Answer text", [{"id": "img-1", "rerank_score": 0.83, "score": 0.61}])
+        )
 
         # 调用适配方法
         answer, documents, intent = await self.adapter.rag_chat("What is this?", top_k=1)
@@ -1271,6 +1360,9 @@ class TestLangChainAdapter(unittest.TestCase):
         self.assertEqual(answer, "Answer text")
         self.assertEqual(len(documents), 1)
         self.assertEqual(intent["execution_mode"], "multimodal_rag")
+        self.assertTrue(intent["retrieval_steps"])
+        self.assertEqual(intent["retrieval_steps"][0]["key"], "intent")
+        self.assertEqual(intent["retrieval_steps"][-1]["key"], "grading")
 
     async def test_rag_chat_with_image(self):
         """测试带图像的 RAG 问答"""
@@ -1334,7 +1426,7 @@ class TestLangChainAdapter(unittest.TestCase):
 
         async def collect():
             items = []
-            async for chunk, docs in self.adapter.rag_chat_stream(
+            async for chunk, docs, _intent in self.adapter.rag_chat_stream(
                 query="What is this?",
                 top_k=1,
                 chat_history=[("上一问", "上一答")],
@@ -1362,6 +1454,28 @@ class TestLangChainAdapter(unittest.TestCase):
         self.assertEqual("".join(chunk for chunk, _ in streamed), "Agentic")
         self.assertTrue(all(docs == [{"id": "img-1"}] for _, docs in streamed))
         self.adapter.rag_chain.ainvoke.assert_awaited_once()
+
+    def test_build_retrieval_steps_includes_rerank_summary(self):
+        """测试 retrieval_steps 会汇总 rerank_score，供前端展示和调试。"""
+        self.adapter = _build_isolated_adapter()
+
+        steps = self.adapter._build_retrieval_steps(
+            query="公司的工资发放流程是什么？",
+            top_k=3,
+            execution_mode="multimodal_rag",
+            presentation_mode="rag_answer",
+            use_rag=True,
+            documents=[
+                {"id": "img-1", "rerank_score": 0.9, "metadata": {"asset_type": "image"}},
+                {"id": "img-2", "rerank_score": 0.6, "metadata": {"asset_type": "table_crop"}},
+            ],
+            has_uploaded_image=False,
+            classifier_reason="internal_knowledge",
+        )
+
+        self.assertEqual([step["key"] for step in steps], ["intent", "query", "retrieval", "grading"])
+        self.assertIn("平均分 0.750", steps[-1]["summary"])
+        self.assertEqual(steps[-1]["details"]["max_rerank_score"], 0.9)
 
 
 class TestRemediationRegressions(unittest.TestCase):

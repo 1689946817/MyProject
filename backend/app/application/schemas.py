@@ -179,6 +179,7 @@ class ChatSourceItem(BaseModel):
     file_path: Optional[str] = None
     content: Optional[str] = None
     score: Optional[float] = None
+    rerank_score: Optional[float] = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -195,6 +196,7 @@ class ChatResponse(BaseModel):
     execution_mode: str = "multimodal_rag"
     use_rag: bool = True
     has_uploaded_image: bool = False
+    retrieval_steps: List[dict[str, Any]] = Field(default_factory=list)
 
 
 class ChatSessionCreateResponse(BaseModel):
@@ -218,6 +220,7 @@ class ChatMessageOut(BaseModel):
     has_image: bool = False
     sources: List[ChatSourceItem] = Field(default_factory=list)
     retrieval_params: Optional[dict[str, Any]] = None
+    retrieval_steps: List[dict[str, Any]] = Field(default_factory=list)
     created_at: datetime
 
     model_config = {"from_attributes": True}

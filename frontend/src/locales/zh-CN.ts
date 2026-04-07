@@ -87,6 +87,7 @@ export default {
     sessionDeleted: '会话已删除',
     sessionRenamed: '会话已重命名',
     inputPlaceholder: '输入问题，按 Enter 发送...',
+    ragTrace: 'RAG 过程',
     chatFailed: 'RAG 问答失败，请检查后端服务是否已启动',
     enterQuestion: '请输入问题内容'
   },

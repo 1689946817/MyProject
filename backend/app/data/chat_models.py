@@ -45,6 +45,7 @@ class ChatMessage(Base):
     has_image = Column(Boolean, nullable=False, default=False)
     sources_json = Column(Text, nullable=True)
     retrieval_params_json = Column(Text, nullable=True)
+    retrieval_steps_json = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     session = relationship("ChatSession", back_populates="messages")

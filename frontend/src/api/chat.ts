@@ -10,6 +10,7 @@
 import { http } from "./http";
 import type {
   ChatMessage,
+  RetrievalStepItem,
   ChatSession,
   ChatSourceItem,
   ExecutionMode,
@@ -35,6 +36,7 @@ export interface ChatResponse {
   execution_mode: ExecutionMode;
   use_rag: boolean;
   has_uploaded_image: boolean;
+  retrieval_steps: RetrievalStepItem[];
 }
 
 /**

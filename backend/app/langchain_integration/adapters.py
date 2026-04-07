@@ -314,13 +314,35 @@ class LangChainAdapter:
                 top_k=top_k,
                 chat_history=chat_history,
             )
-            return answer, documents, self._build_default_intent(image is not None)
+            intent = self._build_default_intent(image is not None)
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=intent["execution_mode"],
+                presentation_mode=intent["presentation_mode"],
+                use_rag=bool(intent["use_rag"]),
+                documents=documents,
+                has_uploaded_image=True,
+                classifier_reason=str(intent.get("reason", "")),
+            )
+            return answer, documents, intent
 
         # 否则使用标准 RAG
         answer, documents = await self.rag_chain.ainvoke(
             {"query": query, "chat_history": chat_history or []}
         )
-        return answer, documents, self._build_default_intent(image is not None)
+        intent = self._build_default_intent(image is not None)
+        intent["retrieval_steps"] = self._build_retrieval_steps(
+            query=query,
+            top_k=top_k,
+            execution_mode=intent["execution_mode"],
+            presentation_mode=intent["presentation_mode"],
+            use_rag=bool(intent["use_rag"]),
+            documents=documents,
+            has_uploaded_image=False,
+            classifier_reason=str(intent.get("reason", "")),
+        )
+        return answer, documents, intent
 
     async def rag_chat_stream(
         self,
@@ -342,7 +364,7 @@ class LangChainAdapter:
                 chat_history=chat_history,
             )
             for ch in self._iter_answer_chunks(answer):
-                yield ch, docs
+                yield ch, docs, _intent
             return
 
         if image is not None:
@@ -352,13 +374,13 @@ class LangChainAdapter:
                 top_k=top_k,
                 chat_history=chat_history,
             ):
-                yield chunk, docs
+                yield chunk, docs, None
             return
 
         async for chunk, docs in self.rag_chain.astream(
             {"query": query, "chat_history": chat_history or []}
         ):
-            yield chunk, docs
+            yield chunk, docs, None
 
     async def _run_agentic_chat(
         self,
@@ -373,37 +395,99 @@ class LangChainAdapter:
 
         if execution_mode == "direct_llm":
             answer = await self._answer_directly(query=query, chat_history=chat_history)
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                use_rag=bool(intent["use_rag"]),
+                documents=[],
+                has_uploaded_image=image is not None,
+                classifier_reason=str(intent.get("reason", "")),
+            )
             return answer, [], intent
 
         if execution_mode == "uploaded_image_qa":
             if image is None:
                 answer = await self._answer_directly(query=query, chat_history=chat_history)
-                return answer, [], {
+                fallback_intent = {
                     **intent,
                     "reason": "uploaded_image_missing_fallback_to_direct",
                     "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
                 }
+                fallback_intent["retrieval_steps"] = self._build_retrieval_steps(
+                    query=query,
+                    top_k=top_k,
+                    execution_mode="direct_llm",
+                    presentation_mode="direct_answer",
+                    use_rag=False,
+                    documents=[],
+                    has_uploaded_image=False,
+                    classifier_reason=str(fallback_intent.get("reason", "")),
+                )
+                return answer, [], fallback_intent
             answer = await self._answer_with_uploaded_image(
                 query=query,
                 image=image,
                 chat_history=chat_history,
+            )
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                use_rag=False,
+                documents=[],
+                has_uploaded_image=True,
+                classifier_reason=str(intent.get("reason", "")),
             )
             return answer, [], intent
 
         if execution_mode == "save_uploaded_image":
             if image is None:
                 answer = await self._answer_directly(query=query, chat_history=chat_history)
-                return answer, [], {
+                fallback_intent = {
                     **intent,
                     "reason": "save_uploaded_image_missing_fallback_to_direct",
                     "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
                 }
+                fallback_intent["retrieval_steps"] = self._build_retrieval_steps(
+                    query=query,
+                    top_k=top_k,
+                    execution_mode="direct_llm",
+                    presentation_mode="direct_answer",
+                    use_rag=False,
+                    documents=[],
+                    has_uploaded_image=False,
+                    classifier_reason=str(fallback_intent.get("reason", "")),
+                )
+                return answer, [], fallback_intent
             answer, documents = await self._save_uploaded_image_to_kb(image)
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                use_rag=False,
+                documents=documents,
+                has_uploaded_image=True,
+                classifier_reason=str(intent.get("reason", "")),
+            )
             return answer, documents, intent
 
         if execution_mode == "image_similarity":
             documents = await self._retrieve_images_for_query(query=query, image=image, top_k=top_k)
             answer = self._build_image_only_answer(documents)
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                use_rag=False,
+                documents=documents,
+                has_uploaded_image=image is not None,
+                classifier_reason=str(intent.get("reason", "")),
+            )
             return answer, documents, intent
 
         if execution_mode == "image_grounded_answer":
@@ -412,6 +496,16 @@ class LangChainAdapter:
                 query=query,
                 documents=documents,
                 chat_history=chat_history,
+            )
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                use_rag=True,
+                documents=documents,
+                has_uploaded_image=image is not None,
+                classifier_reason=str(intent.get("reason", "")),
             )
             return answer, documents, intent
 
@@ -427,10 +521,20 @@ class LangChainAdapter:
                 answer, documents = await self.rag_chain.ainvoke(
                     {"query": query, "chat_history": chat_history or []}
                 )
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                use_rag=True,
+                documents=documents,
+                has_uploaded_image=image is not None,
+                classifier_reason=str(intent.get("reason", "")),
+            )
             return answer, documents, intent
 
         answer = await self._answer_directly(query=query, chat_history=chat_history)
-        return answer, [], {
+        fallback_intent = {
             **intent,
             "execution_mode": "direct_llm",
             "presentation_mode": "direct_answer",
@@ -438,6 +542,17 @@ class LangChainAdapter:
             "wants_images": False,
             "reason": "unknown_execution_mode_fallback",
         }
+        fallback_intent["retrieval_steps"] = self._build_retrieval_steps(
+            query=query,
+            top_k=top_k,
+            execution_mode="direct_llm",
+            presentation_mode="direct_answer",
+            use_rag=False,
+            documents=[],
+            has_uploaded_image=image is not None,
+            classifier_reason=str(fallback_intent.get("reason", "")),
+        )
+        return answer, [], fallback_intent
 
     def _iter_answer_chunks(self, answer: str) -> Iterator[str]:
         """将最终答案切成可回放的小块，供流式接口复用。"""
@@ -455,6 +570,92 @@ class LangChainAdapter:
             "confidence": 1.0,
             "reason": "legacy_rag_path",
         }
+
+    def _build_retrieval_steps(
+        self,
+        *,
+        query: str,
+        top_k: int,
+        execution_mode: str,
+        presentation_mode: str,
+        use_rag: bool,
+        documents: List[Dict[str, Any]],
+        has_uploaded_image: bool,
+        classifier_reason: str,
+    ) -> List[Dict[str, Any]]:
+        score_values = [
+            float(score)
+            for score in (
+                item.get("rerank_score", item.get("rrf_score", item.get("score")))
+                for item in documents
+                if isinstance(item, dict)
+            )
+            if score is not None
+        ]
+        source_types = sorted(
+            {
+                str((item.get("metadata") or {}).get("asset_type") or ("document_chunk" if item.get("doc_id") is not None else "image"))
+                for item in documents
+                if isinstance(item, dict)
+            }
+        )
+        top_ids = [
+            str(item.get("id") or (item.get("metadata") or {}).get("id") or item.get("doc_id"))
+            for item in documents[:3]
+            if isinstance(item, dict)
+        ]
+        steps: List[Dict[str, Any]] = [
+            {
+                "key": "intent",
+                "label": "意图",
+                "summary": f"{execution_mode} / {presentation_mode}",
+                "details": {
+                    "execution_mode": execution_mode,
+                    "presentation_mode": presentation_mode,
+                    "use_rag": use_rag,
+                    "has_uploaded_image": has_uploaded_image,
+                    "reason": classifier_reason,
+                },
+            },
+            {
+                "key": "query",
+                "label": "查询",
+                "summary": query[:120],
+                "details": {
+                    "query": query,
+                    "top_k": top_k,
+                },
+            },
+        ]
+        if use_rag or documents:
+            steps.append(
+                {
+                    "key": "retrieval",
+                    "label": "检索",
+                    "summary": f"召回 {len(documents)} 条结果",
+                    "details": {
+                        "count": len(documents),
+                        "top_source_ids": [item for item in top_ids if item and item != "None"],
+                        "source_types": source_types,
+                    },
+                }
+            )
+        if score_values:
+            avg_score = sum(score_values) / len(score_values)
+            steps.append(
+                {
+                    "key": "grading",
+                    "label": "评分",
+                    "summary": f"平均分 {avg_score:.3f}，最高分 {max(score_values):.3f}",
+                    "details": {
+                        "avg_rerank_score": round(avg_score, 6),
+                        "max_rerank_score": round(max(score_values), 6),
+                        "min_rerank_score": round(min(score_values), 6),
+                        "scored_count": len(score_values),
+                    },
+                }
+            )
+        return steps
 
     async def _answer_directly(
         self,
