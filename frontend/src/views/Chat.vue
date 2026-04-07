@@ -44,6 +44,20 @@
               </div>
               <h3>{{ t("chat.emptyTitle") }}</h3>
               <p>{{ t("chat.emptySubtitle") }}</p>
+              <div class="empty-actions">
+                <el-button type="primary" class="empty-action-btn" @click="router.push('/search')">
+                  <i class="i-ep-search mr-1"></i>
+                  {{ t("chat.quickSearch") }}
+                </el-button>
+                <el-button class="empty-action-btn" @click="router.push('/kb')">
+                  <i class="i-ep-picture mr-1"></i>
+                  {{ t("chat.quickKnowledgeBase") }}
+                </el-button>
+                <el-button class="empty-action-btn" @click="router.push('/docs')">
+                  <i class="i-ep-document mr-1"></i>
+                  {{ t("chat.quickDocs") }}
+                </el-button>
+              </div>
             </div>
 
             <div v-else class="messages-list">
@@ -247,6 +261,7 @@ import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import type { UploadFile } from 'element-plus'
+import { useRouter } from 'vue-router'
 import {
   getSessions,
   createSession,
@@ -262,6 +277,7 @@ import ImagePreviewModal from '@/components/ImagePreviewModal.vue'
 import type { ChatMessage, ChatSourceItem } from '@/types'
 
 const { t } = useI18n()
+const router = useRouter()
 
 type SourceItem = ChatSourceItem
 type Message = ChatMessage
@@ -794,6 +810,19 @@ onBeforeUnmount(() => {
 .empty-chat p {
   margin: 0;
   line-height: 1.6;
+}
+
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.empty-action-btn {
+  min-width: 140px;
+  border-radius: 12px;
 }
 
 .messages-list {

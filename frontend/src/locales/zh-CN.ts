@@ -4,22 +4,23 @@
 export default {
   app: {
     title: '多模态 RAG 系统',
+    subtitle: '智能知识助手',
     connectionOk: '后端连接正常',
     connectionError: '后端连接失败'
   },
   nav: {
-    knowledgeBase: '知识库管理',
-    search: '图像检索',
-    chat: 'RAG 智能问答',
-    documents: '文档知识库'
+    knowledgeBase: '图片知识库',
+    search: '知识检索',
+    chat: '智能问答',
+    documents: '文档解析'
   },
   theme: {
     dark: '深色模式',
     light: '浅色模式'
   },
   kb: {
-    title: '知识库图片上传',
-    subtitle: '统一管理图片资产、状态、描述与标签，支持浏览与运维操作。',
+    title: '图片知识库',
+    subtitle: '统一管理图片资产、状态、描述与标签，支撑检索、问答与后续运营操作。',
     uploadArea: '将图片拖到此处，或点击上传',
     uploadBtn: '开始上传并生成描述',
     uploadedImages: '已上传图片',
@@ -59,8 +60,8 @@ export default {
     reprocessFailed: '图片重新处理失败'
   },
   search: {
-    title: '图像检索',
-    subtitle: '支持文本搜图、图搜图与表格来源标记，结果可直接预览与比对。',
+    title: '知识检索',
+    subtitle: '支持文本搜图、图搜图与结果比对，帮助用户快速定位相关视觉证据。',
     textToImage: '文本 → 图像检索',
     imageToImage: '图像 → 图像检索',
     textQueryPlaceholder: '输入要检索的图像内容，如：一个在草地上玩球的小孩',
@@ -78,7 +79,7 @@ export default {
     selectImage: '请先选择一张图片作为查询'
   },
   chat: {
-    title: 'RAG 智能问答',
+    title: '智能问答',
     queryPlaceholder: '请输入你的问题，如：这几张图片中有哪些共同的元素？',
     optionalImage: '可选：上传一张图片，引导 RAG 结合图片检索回答',
     sendBtn: '发送',
@@ -100,11 +101,14 @@ export default {
     thinking: '系统正在生成回答…',
     pendingSession: '对话处理中，已为你保留现场状态',
     sourceImages: '相关来源',
-    draftSession: '处理中'
+    draftSession: '处理中',
+    quickSearch: '去知识检索',
+    quickKnowledgeBase: '去图片知识库',
+    quickDocs: '去文档解析'
   },
   docs: {
-    title: 'PDF 文档上传',
-    subtitle: '文档上传、解析、进度跟踪与结果复核整合在同一工作台中。',
+    title: '文档解析',
+    subtitle: '文档上传、解析、进度跟踪与结果复核整合在同一工作区中。',
     uploadArea: '将 PDF 拖到此处，或点击上传',
     uploadBtn: '开始上传并解析',
     uploadTip: '仅支持 .pdf 文件，解析过程中请耐心等待',

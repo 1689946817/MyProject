@@ -21,7 +21,7 @@ import DocumentKB from "@/views/DocumentKB.vue"; // 文档知识库页面
  * 定义应用的路由结构，包括路径和对应的组件。
  */
 const routes: RouteRecordRaw[] = [
-  { path: "/", redirect: "/kb" }, // 根路径重定向到知识库页面
+  { path: "/", redirect: "/chat" }, // 根路径重定向到智能问答页面
   { path: "/kb", component: KnowledgeBase }, // 知识库管理页面
   { path: "/search", component: Search }, // 搜索页面
   { path: "/chat", component: Chat }, // 聊天页面
@@ -37,4 +37,3 @@ export const router = createRouter({
   history: createWebHistory(), // 使用 HTML5 History 模式
   routes // 应用路由配置
 });
-

@@ -4,22 +4,23 @@
 export default {
   app: {
     title: 'Multimodal RAG Knowledge Base',
+    subtitle: 'Intelligent Knowledge Assistant',
     connectionOk: 'Backend Connected',
     connectionError: 'Backend Disconnected'
   },
   nav: {
-    knowledgeBase: 'Knowledge Base',
-    search: 'Image Search',
-    chat: 'RAG Chat',
-    documents: 'Document KB'
+    knowledgeBase: 'Image Library',
+    search: 'Knowledge Search',
+    chat: 'Intelligent Q&A',
+    documents: 'Document Parsing'
   },
   theme: {
     dark: 'Dark Mode',
     light: 'Light Mode'
   },
   kb: {
-    title: 'Knowledge Base Upload',
-    subtitle: 'Manage image assets, status, descriptions, and tags in one operational workspace.',
+    title: 'Image Library',
+    subtitle: 'Manage image assets, status, descriptions, and tags for retrieval, answers, and daily operations.',
     uploadArea: 'Drag images here or click to upload',
     uploadBtn: 'Upload & Generate Descriptions',
     uploadedImages: 'Uploaded Images',
@@ -59,8 +60,8 @@ export default {
     reprocessFailed: 'Failed to reprocess image'
   },
   search: {
-    title: 'Image Retrieval',
-    subtitle: 'Search by text or image, preview results quickly, and inspect table-aware visual sources.',
+    title: 'Knowledge Search',
+    subtitle: 'Search by text or image, compare results quickly, and inspect visual evidence with less friction.',
     textToImage: 'Text → Image Search',
     imageToImage: 'Image → Image Search',
     textQueryPlaceholder: 'Enter image content to search, e.g.: a child playing ball on grass',
@@ -78,7 +79,7 @@ export default {
     selectImage: 'Please select an image first'
   },
   chat: {
-    title: 'RAG Intelligent Q&A',
+    title: 'Intelligent Q&A',
     queryPlaceholder: 'Enter your question, e.g.: What common elements are in these images?',
     optionalImage: 'Optional: Upload an image to guide RAG retrieval',
     sendBtn: 'Send',
@@ -100,10 +101,13 @@ export default {
     thinking: 'Generating response…',
     pendingSession: 'This conversation is still processing and kept locally for you',
     sourceImages: 'Sources',
-    draftSession: 'Processing'
+    draftSession: 'Processing',
+    quickSearch: 'Open Search',
+    quickKnowledgeBase: 'Open Image Library',
+    quickDocs: 'Open Document Parsing'
   },
   docs: {
-    title: 'PDF Document Upload',
+    title: 'Document Parsing',
     subtitle: 'Upload, parse, track progress, and review extracted results in one unified document workspace.',
     uploadArea: 'Drag PDF here or click to upload',
     uploadBtn: 'Upload & Parse',

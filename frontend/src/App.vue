@@ -9,23 +9,23 @@
           </div>
           <div class="logo-copy">
             <span class="logo-text">{{ t('app.title') }}</span>
-            <span class="logo-subtitle">Graduation Demo</span>
+            <span class="logo-subtitle">{{ t('app.subtitle') }}</span>
           </div>
         </div>
       </div>
 
       <el-menu
         router
-        default-active="/kb"
+        :default-active="activeMenu"
         class="sidebar-menu"
         :background-color="'transparent'"
         :text-color="isDark ? '#a0a0b0' : '#606266'"
         :active-text-color="'var(--accent-primary)'"
       >
-        <el-menu-item index="/kb">
+        <el-menu-item index="/chat" class="primary-nav-item">
           <template #title>
-            <i class="i-ep-picture mr-2"></i>
-            <span>{{ t('nav.knowledgeBase') }}</span>
+            <i class="i-ep-chat-dot-round mr-2"></i>
+            <span>{{ t('nav.chat') }}</span>
           </template>
         </el-menu-item>
         <el-menu-item index="/search">
@@ -34,10 +34,10 @@
             <span>{{ t('nav.search') }}</span>
           </template>
         </el-menu-item>
-        <el-menu-item index="/chat">
+        <el-menu-item index="/kb">
           <template #title>
-            <i class="i-ep-chat-dot-round mr-2"></i>
-            <span>{{ t('nav.chat') }}</span>
+            <i class="i-ep-picture mr-2"></i>
+            <span>{{ t('nav.knowledgeBase') }}</span>
           </template>
         </el-menu-item>
         <el-menu-item index="/docs">
@@ -101,17 +101,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '@/composables/useTheme'
 import { setLocale, getLocale } from '@/locales'
 import { http } from '@/api/http'
+import { useRoute } from 'vue-router'
 
 const { t } = useI18n()
 const { isDark, toggleTheme } = useTheme()
+const route = useRoute()
 
 const backendConnected = ref(false)
 const currentLocale = ref(getLocale())
+const activeMenu = computed(() => route.path)
 
 let checkInterval: number | undefined
 
@@ -224,6 +227,10 @@ onUnmounted(() => {
   background: var(--bg-accent-soft);
   color: var(--accent-primary);
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
+}
+
+.sidebar-menu :deep(.el-menu-item.primary-nav-item) {
+  font-weight: 600;
 }
 
 .sidebar-footer {
