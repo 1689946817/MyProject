@@ -1,0 +1,19 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e9]: 多模态 RAG 知识库系统
+    - menubar [ref=e10]:
+      - menuitem "知识库管理" [ref=e11] [cursor=pointer]:
+        - generic [ref=e13]: 知识库管理
+      - menuitem "图像检索" [ref=e14] [cursor=pointer]:
+        - generic [ref=e16]: 图像检索
+      - menuitem "RAG 智能问答" [ref=e17] [cursor=pointer]:
+        - generic [ref=e19]: RAG 智能问答
+      - menuitem "文档知识库" [ref=e20] [cursor=pointer]:
+        - generic [ref=e22]: 文档知识库
+    - generic [ref=e26]: 后端连接正常
+  - generic [ref=e27]:
+    - generic [ref=e29]:
+      - button "中文" [ref=e31] [cursor=pointer]:
+        - generic [ref=e32]: 中文
+      - button "浅色模式" [ref=e33] [cursor=pointer]
+    - main [ref=e36]

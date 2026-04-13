@@ -1,0 +1,4485 @@
+{
+  "summary": {
+    "method": "baseline_ocr",
+    "domain": "crm",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.01,
+      "std": 0.1
+    },
+    "recall_at_5": {
+      "mean": 0.0232,
+      "std": 0.1185
+    },
+    "recall_at_10": {
+      "mean": 0.0648,
+      "std": 0.2009
+    },
+    "mrr": {
+      "mean": 0.032,
+      "std": 0.1224
+    },
+    "map_at_10": {
+      "mean": 0.0327,
+      "std": 0.124
+    },
+    "latency_ms": {
+      "mean": 535.3755,
+      "std": 473.6688
+    },
+    "latency_ms_median": 333.69
+  },
+  "by_question_type": {
+    "causal_reasoning": {
+      "count": 15,
+      "recall_at_1": {
+        "mean": 0.0667,
+        "std": 0.2582
+      },
+      "recall_at_5": {
+        "mean": 0.0889,
+        "std": 0.2663
+      },
+      "recall_at_10": {
+        "mean": 0.1444,
+        "std": 0.2878
+      },
+      "mrr": {
+        "mean": 0.1067,
+        "std": 0.2643
+      },
+      "map_at_10": {
+        "mean": 0.1067,
+        "std": 0.2643
+      }
+    },
+    "comparison": {
+      "count": 20,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.02,
+        "std": 0.0894
+      },
+      "recall_at_10": {
+        "mean": 0.02,
+        "std": 0.0894
+      },
+      "mrr": {
+        "mean": 0.0125,
+        "std": 0.0559
+      },
+      "map_at_10": {
+        "mean": 0.0163,
+        "std": 0.0727
+      }
+    },
+    "factual_retrieval": {
+      "count": 53,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.011,
+        "std": 0.0567
+      },
+      "recall_at_10": {
+        "mean": 0.0739,
+        "std": 0.2191
+      },
+      "mrr": {
+        "mean": 0.0254,
+        "std": 0.0809
+      },
+      "map_at_10": {
+        "mean": 0.0254,
+        "std": 0.0809
+      }
+    },
+    "summarization": {
+      "count": 12,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 0.0,
+        "std": 0.0
+      }
+    }
+  },
+  "by_answer_type": {
+    "image_only": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.02,
+        "std": 0.1414
+      },
+      "recall_at_5": {
+        "mean": 0.02,
+        "std": 0.1414
+      },
+      "recall_at_10": {
+        "mean": 0.08,
+        "std": 0.2548
+      },
+      "mrr": {
+        "mean": 0.0307,
+        "std": 0.1446
+      },
+      "map_at_10": {
+        "mean": 0.0307,
+        "std": 0.1446
+      }
+    },
+    "table_required": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.0263,
+        "std": 0.0915
+      },
+      "recall_at_10": {
+        "mean": 0.0497,
+        "std": 0.1273
+      },
+      "mrr": {
+        "mean": 0.0332,
+        "std": 0.0967
+      },
+      "map_at_10": {
+        "mean": 0.0347,
+        "std": 0.1007
+      }
+    }
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "During which hours and at which locations can used beverage containers be left at the BOAA's collection event?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2626772/2626772_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1150.7
+    },
+    {
+      "query_index": 1,
+      "query": "How effective is Automize's latest service portal application in terms of automation success with ServiceNow?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/3280862/3280862_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 1848.23
+    },
+    {
+      "query_index": 2,
+      "query": "Which types of insurance associated with life risk are organized by Futuro?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1806891/1806891_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 340.51
+    },
+    {
+      "query_index": 3,
+      "query": "In the CTM system, what are the current status and deadline for the task labeled 'check availability: semifinished goods'?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6145989/6145989_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 279.99
+    },
+    {
+      "query_index": 4,
+      "query": "According to the quick guide, what key functionalities are highlighted for the Avaya 3720 DECT Telephone?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/6186550/6186550_page_0004.png",
+        "images/crm/6186550/6186550_page_0003.png",
+        "images/crm/6186550/6186550_page_0002.png",
+        "images/crm/6186550/6186550_page_0001.png",
+        "images/crm/6186550/6186550_page_0005.png",
+        "images/crm/6186550/6186550_page_0006.png",
+        "images/crm/6186550/6186550_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 2839.43
+    },
+    {
+      "query_index": 5,
+      "query": "What prompted Citizens to seek revised pricing for First Notice of Loss and basic support calls amidst current market fluctuations?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/6838482/6838482_page_0007.png",
+        "images/crm/6838482/6838482_page_0008.png",
+        "images/crm/6838482/6838482_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 10,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.3333333333333333,
+      "reciprocal_rank": 0.1,
+      "ap_at_10": 0.1,
+      "latency_ms": 1304.19
+    },
+    {
+      "query_index": 6,
+      "query": "How do spam filters' (1-ROCA)% values distribute according to the patterns observed in the 2005 TREC evaluation?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6724100/6724100_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 534.77
+    },
+    {
+      "query_index": 7,
+      "query": "What shifts occurred in the Canadian financial resilience index from early 2020 to early 2021, and how did this affect the emotional state of financially at-risk groups?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/3525203/3525203_page_0002.png",
+        "images/crm/3525203/3525203_page_0004.png",
+        "images/crm/3525203/3525203_page_0003.png",
+        "images/crm/3525203/3525203_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 262.12
+    },
+    {
+      "query_index": 8,
+      "query": "Which issues and error explanations are specified in the CC408 user manual by Bosch Security Systems?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5963931/5963931_page_0026.png",
+        "images/crm/5963931/5963931_page_0027.png",
+        "images/crm/5963931/5963931_page_0024.png",
+        "images/crm/5963931/5963931_page_0025.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 286.54
+    },
+    {
+      "query_index": 9,
+      "query": "How does the COVID-19 Safety Marshal ensure the implementation of Aligned Leisure's protocols, specifically regarding the arrangement of worker groups to prevent overlap?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/2789285/2789285_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 6,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.16666666666666666,
+      "ap_at_10": 0.16666666666666666,
+      "latency_ms": 257.51
+    },
+    {
+      "query_index": 10,
+      "query": "On what day did Calero's analytics indicate the highest number of calls?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/1941599/1941599_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 292.11
+    },
+    {
+      "query_index": 11,
+      "query": "What are the prior requirements needed for the Animal Science and Coin Collecting badges before the sessions?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5851246/5851246_page_0019.png",
+        "images/crm/5851246/5851246_page_0018.png",
+        "images/crm/5851246/5851246_page_0021.png",
+        "images/crm/5851246/5851246_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 284.23
+    },
+    {
+      "query_index": 12,
+      "query": "In what ways do the intended audiences of the APHIS initiative contrast with those targeted by the World Bank project?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/4310385/4310385_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 610.68
+    },
+    {
+      "query_index": 13,
+      "query": "In the Dependable and Secure Computing document, what is the percentage of users who refused the 'Publish to Stream' option in the Firefox add-on?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2114132/2114132_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 279.72
+    },
+    {
+      "query_index": 14,
+      "query": "How does the highest level of concurrency vary in the BPMN process for hiring employees?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6640521/6640521_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 371.66
+    },
+    {
+      "query_index": 15,
+      "query": "How did households identified as 'Extremely Vulnerable' adjust their behaviors amidst the pandemic, and what was the impact on their financial resilience ratings in 2020?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/3525203/3525203_page_0002.png",
+        "images/crm/3525203/3525203_page_0004.png",
+        "images/crm/3525203/3525203_page_0003.png",
+        "images/crm/3525203/3525203_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 951.89
+    },
+    {
+      "query_index": 16,
+      "query": "Where can you find the segment that deals with resolving device issues?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5939295/5939295_page_0005.png",
+        "images/crm/5939295/5939295_page_0001.png",
+        "images/crm/5939295/5939295_page_0007.png",
+        "images/crm/5939295/5939295_page_0006.png",
+        "images/crm/5939295/5939295_page_0002.png",
+        "images/crm/5939295/5939295_page_0003.png",
+        "images/crm/5939295/5939295_page_0004.png",
+        "images/crm/5939295/5939295_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 791.17
+    },
+    {
+      "query_index": 17,
+      "query": "How is the process of Design Thinking structured as outlined in Müller-Roterberg's guide?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/1114867/1114867_page_0013.png",
+        "images/crm/1114867/1114867_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 338.84
+    },
+    {
+      "query_index": 18,
+      "query": "Can you detail the sequence of actions for the 'order set items' task instance initiated on February 25, 2008, with the identifier 2008-02-25_11:04:25_+01:00_md:83?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6145989/6145989_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 266.58
+    },
+    {
+      "query_index": 19,
+      "query": "How many upvotes did the Reddit post receive regarding the request for a girlfriend to limit her wide smile in pictures?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/7453427/7453427_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 507.38
+    },
+    {
+      "query_index": 20,
+      "query": "In the MaxCS 9.0.1 release, how many characters are required at minimum for a password to access the lock extension?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/3883173/3883173_page_0022.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 275.05
+    },
+    {
+      "query_index": 21,
+      "query": "In what way does LA Express Park employ data from numerous smart meters to guide its parking services?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/4310385/4310385_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 364.37
+    },
+    {
+      "query_index": 22,
+      "query": "On June 30, 2015, what directories could be retrieved using the Barracuda Cloud-to-Cloud service?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4535059/4535059_page_0006.png",
+        "images/crm/4535059/4535059_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 8,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.125,
+      "ap_at_10": 0.125,
+      "latency_ms": 300.0
+    },
+    {
+      "query_index": 23,
+      "query": "What methods are used to evaluate client requirements in advisory services for both life insurance and accident and sickness insurance?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/6932891/6932891_page_0008.png",
+        "images/crm/6932891/6932891_page_0007.png",
+        "images/crm/6932891/6932891_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 251.55
+    },
+    {
+      "query_index": 24,
+      "query": "In what ways does adopting an automation-driven modular content approach enhance supply chain efficiency and marketing strategies in healthcare?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2059956/2059956_page_0015.png",
+        "images/crm/2059956/2059956_page_0014.png",
+        "images/crm/2059956/2059956_page_0007.png",
+        "images/crm/2059956/2059956_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 265.6
+    },
+    {
+      "query_index": 25,
+      "query": "In the Hotmail study, what fraction of the users possessing profiles make up the candidate group?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4159712/4159712_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 455.65
+    },
+    {
+      "query_index": 26,
+      "query": "How did the tourism revenue growth rate in Kenya evolve between 1998 and 2011, based on data from the Kenya National Bureau of Statistics?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6551008/6551008_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 317.7
+    },
+    {
+      "query_index": 27,
+      "query": "In what way does the connection of cognitive capabilities and machine learning elements influence the functioning of reporting interfaces in the cloud architecture discussed?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/0949738/0949738_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 290.88
+    },
+    {
+      "query_index": 28,
+      "query": "What was the alteration in overall operating expenses for GreenTree Hospitality Group Ltd. from the end of March 2019 to the end of March 2020 as detailed in their financial results?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2416464/2416464_page_0011.png",
+        "images/crm/2416464/2416464_page_0012.png",
+        "images/crm/2416464/2416464_page_0003.png",
+        "images/crm/2416464/2416464_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 5,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.25,
+      "recall_at_10": 0.25,
+      "reciprocal_rank": 0.2,
+      "ap_at_10": 0.2,
+      "latency_ms": 507.49
+    },
+    {
+      "query_index": 29,
+      "query": "Which state's emblem in Australia prominently includes a black swan?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/5667618/5667618_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 331.94
+    },
+    {
+      "query_index": 30,
+      "query": "What is the difference in linguistic variety between the original and CoCo-generated test datasets based on distinct n-gram measurements?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/6302639/6302639_page_0017.png",
+        "images/crm/6302639/6302639_page_0018.png",
+        "images/crm/6302639/6302639_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 540.84
+    },
+    {
+      "query_index": 31,
+      "query": "What neural components are identified in the Change Quest™ Model as part of the transformation process?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6234094/6234094_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 283.18
+    },
+    {
+      "query_index": 32,
+      "query": "In the database example, how do the employee start dates for Marketing differ from those in Shipping?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1900612/1900612_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 280.15
+    },
+    {
+      "query_index": 33,
+      "query": "What fraction of participants expressed full satisfaction regarding adherence to the course syllabus?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2764839/2764839_page_0009.png",
+        "images/crm/2764839/2764839_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 763.04
+    },
+    {
+      "query_index": 34,
+      "query": "What is the name of the Sentosa SG50 deal featuring both the Butterfly Park & Insect Kingdom and a one-hour Gogreen Bi-Pedal Bicycle experience?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/6653568/6653568_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 324.99
+    },
+    {
+      "query_index": 35,
+      "query": "Could you provide the current state and completion percentage for the task identified by 2008-02-25_11:04:25_+01:00_md:83 within the workflow history?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6145989/6145989_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 451.82
+    },
+    {
+      "query_index": 36,
+      "query": "What are the suggested enhancements for guest experiences at the Wine Dine Macau event?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2039860/2039860_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 251.55
+    },
+    {
+      "query_index": 37,
+      "query": "What connector links a computer to a LAN of the Ethernet variety?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/5288185/5288185_page_0009.png",
+        "images/crm/5288185/5288185_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 9,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.3333333333333333,
+      "reciprocal_rank": 0.1111111111111111,
+      "ap_at_10": 0.1111111111111111,
+      "latency_ms": 290.11
+    },
+    {
+      "query_index": 38,
+      "query": "Which social networks are commonly utilized by charitable organizations for their digital strategy enhancements, based on 2019 trends?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/5832824/5832824_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 296.26
+    },
+    {
+      "query_index": 39,
+      "query": "What is the reason for the nursery's improved cleaning routine for its furnishings and playthings?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1842543/1842543_page_0008.png",
+        "images/crm/1842543/1842543_page_0006.png",
+        "images/crm/1842543/1842543_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.3333333333333333,
+      "recall_at_10": 0.3333333333333333,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 283.43
+    },
+    {
+      "query_index": 40,
+      "query": "What challenges might be encountered with deploying MobilePBX™ through group policy and how can these be addressed?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5495918/5495918_page_0008.png",
+        "images/crm/5495918/5495918_page_0002.png",
+        "images/crm/5495918/5495918_page_0003.png",
+        "images/crm/5495918/5495918_page_0001.png",
+        "images/crm/5495918/5495918_page_0004.png",
+        "images/crm/5495918/5495918_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 252.9
+    },
+    {
+      "query_index": 41,
+      "query": "Can you list the step-by-step tasks outlined in version 4 of the BPMN for recruiting a new staff member?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6640521/6640521_page_0014.png",
+        "images/crm/6640521/6640521_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1113.17
+    },
+    {
+      "query_index": 42,
+      "query": "Identify the earliest job commencement linked to department ID=20.",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1900612/1900612_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 284.19
+    },
+    {
+      "query_index": 43,
+      "query": "In Coombs' 2007b SCCT model, what effect does assigning 'crisis responsibility' have on the perception of an organization's reputation?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2979659/2979659_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1050.72
+    },
+    {
+      "query_index": 44,
+      "query": "What are the differences in latency from NYC to other areas within the DirectCLOUD infrastructure based on service metrics?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/7567891/7567891_page_0005.png",
+        "images/crm/7567891/7567891_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 251.57
+    },
+    {
+      "query_index": 45,
+      "query": "What are the variations in calculating coverage and premiums for accident and sickness insurance versus life insurance, taking into account client requirements and suggested plans?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/6932891/6932891_page_0008.png",
+        "images/crm/6932891/6932891_page_0007.png",
+        "images/crm/6932891/6932891_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1088.58
+    },
+    {
+      "query_index": 46,
+      "query": "How do the authoring-centered and automation-centered strategies for modular content differ in the healthcare sector, especially regarding their effects on the transformation of the content supply chain from manual to automated processes?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2059956/2059956_page_0015.png",
+        "images/crm/2059956/2059956_page_0014.png",
+        "images/crm/2059956/2059956_page_0007.png",
+        "images/crm/2059956/2059956_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 335.94
+    },
+    {
+      "query_index": 47,
+      "query": "How much time does it take to process visa applications in the hiring workflow described using BPMN?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6640521/6640521_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 539.8
+    },
+    {
+      "query_index": 48,
+      "query": "Which certification concerning HR practices is highlighted in the guidance created by the Local Government Association and the Improvement and Development Agency?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4898395/4898395_page_0028.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 327.22
+    },
+    {
+      "query_index": 49,
+      "query": "During a security breach in a smart home setup with a video camera, where does the infection originate according to the Mirai botnet example?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/0896333/0896333_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 393.86
+    },
+    {
+      "query_index": 50,
+      "query": "How does the Bosch codepad communicate through sounds, and what do these sounds signify?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5963931/5963931_page_0008.png",
+        "images/crm/5963931/5963931_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 335.35
+    },
+    {
+      "query_index": 51,
+      "query": "How does 'P-tracking' function within the World Bank’s Social Observatory initiative in Tamil Nadu?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/4310385/4310385_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 648.79
+    },
+    {
+      "query_index": 52,
+      "query": "Can you detail the planned activities for the Iowa UPMA State Convention on April 23, 2021, at Mercy/Winslow?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/0128400/0128400_page_0006.png",
+        "images/crm/0128400/0128400_page_0004.png",
+        "images/crm/0128400/0128400_page_0005.png",
+        "images/crm/0128400/0128400_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 420.93
+    },
+    {
+      "query_index": 53,
+      "query": "How much of the REGIONS table is covered in the context of the Query Aware Shrink tool's data reduction?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/1900612/1900612_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 656.86
+    },
+    {
+      "query_index": 54,
+      "query": "What influence did changes in SQL query coverage have on the percentage decrease in the HR database, as noted in the detailed query coverage information?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/1900612/1900612_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 331.38
+    },
+    {
+      "query_index": 55,
+      "query": "Which individuals and subjects are featured at the Iowa UPMA State Convention on the morning of April 24, 2021?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/0128400/0128400_page_0006.png",
+        "images/crm/0128400/0128400_page_0004.png",
+        "images/crm/0128400/0128400_page_0005.png",
+        "images/crm/0128400/0128400_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 838.12
+    },
+    {
+      "query_index": 56,
+      "query": "Which activities and icons are linked with the 2014 GoogleServe event's emblem?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/0777513/0777513_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 421.3
+    },
+    {
+      "query_index": 57,
+      "query": "What is the percentage of students who favor retrieving library content online in relation to other digital services offered by the college?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/3887542/3887542_page_0002.png",
+        "images/crm/3887542/3887542_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 290.66
+    },
+    {
+      "query_index": 58,
+      "query": "According to the 2017 Global NGO Technology Report, how many email subscribers do large NGOs typically have on average?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4969409/4969409_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 369.65
+    },
+    {
+      "query_index": 59,
+      "query": "How does the symbol with an outreaching hand and a butterfly reflect the mission of Bereaved Parents of the USA?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/7121645/7121645_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1665.1
+    },
+    {
+      "query_index": 60,
+      "query": "What is the name of the award given to entities noted for prioritizing workforce investment, symbolized with a wreath?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4898395/4898395_page_0028.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 307.07
+    },
+    {
+      "query_index": 61,
+      "query": "In the context of Bosch's system, what is indicated when the FAULT light blinks?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5963931/5963931_page_0008.png",
+        "images/crm/5963931/5963931_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 2256.59
+    },
+    {
+      "query_index": 62,
+      "query": "In what manner does the development of an elaborate business function model follow from the initial analysis stage?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5027626/5027626_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 504.52
+    },
+    {
+      "query_index": 63,
+      "query": "Which educational and resource initiatives are outlined by the Minister for accessibility in Manitoba for the fiscal years 2021/22 and 2022/23?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/3492507/3492507_page_0003.png",
+        "images/crm/3492507/3492507_page_0005.png",
+        "images/crm/3492507/3492507_page_0002.png",
+        "images/crm/3492507/3492507_page_0001.png",
+        "images/crm/3492507/3492507_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 277.09
+    },
+    {
+      "query_index": 64,
+      "query": "At the McDixon Apple Orchard, how does water flow from the area with Container Shrubs towards the water purification section?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4502338/4502338_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 275.58
+    },
+    {
+      "query_index": 65,
+      "query": "How many Instagram followers do large non-governmental organizations typically have based on the 2017 Global NGO Technology Report?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4969409/4969409_page_0012.png",
+        "images/crm/4969409/4969409_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 596.25
+    },
+    {
+      "query_index": 66,
+      "query": "What is the reason for disabling the METRIXUSAGE function in certain roles due to concerns about database expansion affecting system efficiency?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/7820445/7820445_page_0011.png",
+        "images/crm/7820445/7820445_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 288.24
+    },
+    {
+      "query_index": 67,
+      "query": "What are the Office 365 components that remain unbacked according to the Cloud-to-Cloud sources from Barracuda's technical overview?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4535059/4535059_page_0006.png",
+        "images/crm/4535059/4535059_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 8,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.125,
+      "ap_at_10": 0.125,
+      "latency_ms": 1064.49
+    },
+    {
+      "query_index": 68,
+      "query": "Which sessions are planned for the mid-July Wednesday in the ASAT summer schedule at Chapel Haven?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2606895/2606895_page_0003.png",
+        "images/crm/2606895/2606895_page_0001.png",
+        "images/crm/2606895/2606895_page_0002.png",
+        "images/crm/2606895/2606895_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 277.52
+    },
+    {
+      "query_index": 69,
+      "query": "What is the number of individuals allowed to participate in the Excellence Roundtable for the second pricing level of $15,000?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5644569/5644569_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 258.73
+    },
+    {
+      "query_index": 70,
+      "query": "In which specific settings within medical facilities is the 'yewdale Harrier' found to be appropriate?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2058918/2058918_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1227.39
+    },
+    {
+      "query_index": 71,
+      "query": "How are engagement levels distributed among the groups of users with profiles, queries, and candidates totaling 151 million, 32 million, and 11 million respectively?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4159712/4159712_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 259.86
+    },
+    {
+      "query_index": 72,
+      "query": "How does the fourth stage differ from the third in the Employee Experience maturity framework described by The Josh Bersin Company?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2390255/2390255_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 395.97
+    },
+    {
+      "query_index": 73,
+      "query": "What is the personnel-focused certification cited in the framework provided by the LGA and IDeA?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4898395/4898395_page_0028.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 321.71
+    },
+    {
+      "query_index": 74,
+      "query": "In what ways do the Public Speaking and Animal Science merit badges contribute to skill growth in Scouts BSA, and what preparation must be done beforehand for these activities?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5851246/5851246_page_0019.png",
+        "images/crm/5851246/5851246_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 324.59
+    },
+    {
+      "query_index": 75,
+      "query": "Which activities, including categories like Working and Leisure, are monitored by users in the Happimeter application?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6543180/6543180_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 313.51
+    },
+    {
+      "query_index": 76,
+      "query": "How does incrementally updating the classifier with both spam and ham messages affect spam error rates over ten months?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/3320904/3320904_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 264.72
+    },
+    {
+      "query_index": 77,
+      "query": "Can you list the specific times recorded for the task 'order set items' within the process shipment sequence from February to March 2008?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6145989/6145989_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 279.53
+    },
+    {
+      "query_index": 78,
+      "query": "What impact did utilizing the filtering and sorting features have on the sensitivity to pricing and rating during booking in the used scenario within Condition 2b?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/3931681/3931681_page_0009.png",
+        "images/crm/3931681/3931681_page_0008.png",
+        "images/crm/3931681/3931681_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 304.74
+    },
+    {
+      "query_index": 79,
+      "query": "Which fabrics are advised by NSW Health for safeguarding against insects like mosquitoes and ticks?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/0111800/0111800_page_0014.png",
+        "images/crm/0111800/0111800_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 276.09
+    },
+    {
+      "query_index": 80,
+      "query": "What reasons necessitate calling the installer for service related to wireless devices, and what is the method to add more user codes for handling the system?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2676341/2676341_page_0014.png",
+        "images/crm/2676341/2676341_page_0004.png",
+        "images/crm/2676341/2676341_page_0013.png",
+        "images/crm/2676341/2676341_page_0006.png",
+        "images/crm/2676341/2676341_page_0012.png",
+        "images/crm/2676341/2676341_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 348.37
+    },
+    {
+      "query_index": 81,
+      "query": "What is the efficiency of using blacklists and additional checks to decrease spam, and how do delay strategies affect the processing of legitimate and spam emails in a corporation's email infrastructure?",
+      "domain": "crm",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1746402/1746402_page_0004.png",
+        "images/crm/1746402/1746402_page_0010.png",
+        "images/crm/1746402/1746402_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 430.26
+    },
+    {
+      "query_index": 82,
+      "query": "From the start of the year until mid-year, what are the major initiatives for chapter growth, such as building the team and engaging with community partners?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1288763/1288763_page_0005.png",
+        "images/crm/1288763/1288763_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 279.08
+    },
+    {
+      "query_index": 83,
+      "query": "How do the qualitative approaches of the World Bank researchers in India differ from those used by LA Express Park in California?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/4310385/4310385_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 333.53
+    },
+    {
+      "query_index": 84,
+      "query": "How many individuals rely on online resources to locate places to stay, eat, and visit while traveling?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/7695547/7695547_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 351.55
+    },
+    {
+      "query_index": 85,
+      "query": "What trend is observed in the number of clients required for balance as Cr values change in the scenario of recurring tour cancellations?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1265156/1265156_page_0008.png",
+        "images/crm/1265156/1265156_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 412.9
+    },
+    {
+      "query_index": 86,
+      "query": "By what percentage did the total income drop for GreenTree Hospitality's hotels, both leased-and-operated and franchised-and-managed, between March 31, 2019, and March 31, 2020?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/2416464/2416464_page_0012.png",
+        "images/crm/2416464/2416464_page_0003.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2416464/2416464_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 4,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.4,
+      "recall_at_10": 0.4,
+      "reciprocal_rank": 0.25,
+      "ap_at_10": 0.325,
+      "latency_ms": 333.85
+    },
+    {
+      "query_index": 87,
+      "query": "What features define the product setup of Yewdale Vitesse that utilizes a purple theme?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2058918/2058918_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 297.22
+    },
+    {
+      "query_index": 88,
+      "query": "Can you provide the code and most recent evaluation date for Tetra Tech's safeguarding document?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/5591014/5591014_page_0002.png",
+        "images/crm/5591014/5591014_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 335.45
+    },
+    {
+      "query_index": 89,
+      "query": "How does the proportion of language-sharing user pairs change according to the ASP and affinity evaluations in Figure 7?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4159712/4159712_page_0007.png",
+        "images/crm/4159712/4159712_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 277.28
+    },
+    {
+      "query_index": 90,
+      "query": "How do the unique n-gram ratio values compare for language diversity between the Ori-test and CoCo-test datasets?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/6302639/6302639_page_0017.png",
+        "images/crm/6302639/6302639_page_0018.png",
+        "images/crm/6302639/6302639_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 1774.5
+    },
+    {
+      "query_index": 91,
+      "query": "In the visuals associated with 'Yewdale Harrier,' what is the main environment portrayed?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2058918/2058918_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 259.98
+    },
+    {
+      "query_index": 92,
+      "query": "What culinary tasks are the helpers involved in to assist the elderly group in Burin - St. Patrick’s Parish?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4367650/4367650_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 328.12
+    },
+    {
+      "query_index": 93,
+      "query": "Which guidelines must parents adhere to when parking at the school for safety and community courtesy?",
+      "domain": "crm",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/0666356/0666356_page_0006.png",
+        "images/crm/0666356/0666356_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 330.31
+    },
+    {
+      "query_index": 94,
+      "query": "In examining the K-Subsets results, what are the differences in top and bottom mean percentages of 1-ROCA for the dataset from SpamAssassin?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/6724100/6724100_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 497.96
+    },
+    {
+      "query_index": 95,
+      "query": "When can items be dropped off for the BOAA's recycling event?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/2626772/2626772_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 334.36
+    },
+    {
+      "query_index": 96,
+      "query": "What are the platforms configured for online backup in the Technical Marketing cloud-to-cloud section?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/4535059/4535059_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 2098.91
+    },
+    {
+      "query_index": 97,
+      "query": "In the context of the study published in Vol. 12, No. 6 of the International Journal of Advanced Computer Science and Applications, what variations are observed in the precision, recall, and F-score metrics when comparing the Support Vector Machines and Decision Tree algorithms across STC, Mobily, and Zain?",
+      "domain": "crm",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1431302/1431302_page_0007.png",
+        "images/crm/1431302/1431302_page_0006.png",
+        "images/crm/1431302/1431302_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 505.98
+    },
+    {
+      "query_index": 98,
+      "query": "What is the customer count for Automize's recently launched portal application?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/crm/3280862/3280862_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 1080.11
+    },
+    {
+      "query_index": 99,
+      "query": "Can you provide the job identifier and current state for the Test Workplace - Pledge Response Report created on 26th May 2021?",
+      "domain": "crm",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/crm/1653526/1653526_page_0014.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1653526/1653526_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/crm/0949738/0949738_page_0007.png",
+        "images/crm/1653526/1653526_page_0013.png",
+        "images/crm/1842543/1842543_page_0007.png",
+        "images/crm/2416464/2416464_page_0002.png",
+        "images/crm/2416464/2416464_page_0013.png",
+        "images/crm/2789285/2789285_page_0001.png",
+        "images/crm/3280862/3280862_page_0001.png",
+        "images/crm/4535059/4535059_page_0005.png",
+        "images/crm/5288185/5288185_page_0010.png",
+        "images/crm/6838482/6838482_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.3333333333333333,
+      "recall_at_10": 0.3333333333333333,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 313.7
+    }
+  ],
+  "meta": {
+    "timestamp": "20260325_122112",
+    "method": "baseline_ocr",
+    "domain": "crm",
+    "top_k": 10
+  }
+}

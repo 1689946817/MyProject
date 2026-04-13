@@ -1,0 +1,3939 @@
+{
+  "summary": {
+    "method": "baseline_ocr",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.01,
+      "std": 0.1
+    },
+    "recall_at_5": {
+      "mean": 0.05,
+      "std": 0.219
+    },
+    "recall_at_10": {
+      "mean": 0.1,
+      "std": 0.3015
+    },
+    "mrr": {
+      "mean": 0.0293,
+      "std": 0.1216
+    },
+    "map_at_10": {
+      "mean": 0.0293,
+      "std": 0.1216
+    },
+    "latency_ms": {
+      "mean": 532.7646,
+      "std": 112.1782
+    },
+    "latency_ms_median": 502.28
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "A smothered beef sandwich is sided with pickles and slaw.",
+      "relevant_ids": [
+        "1d462148-d057-4312-a895-0fc76e8e7a5a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 673.87
+    },
+    {
+      "query_index": 1,
+      "query": "Many old appliances in trash head with woman in center.",
+      "relevant_ids": [
+        "3a16d080-6b29-4b2e-87b2-13dd0312e7d5"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 454.57
+    },
+    {
+      "query_index": 2,
+      "query": "two people outside sitting on chairs with planes around them.",
+      "relevant_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 550.43
+    },
+    {
+      "query_index": 3,
+      "query": "A COUPLE OF TREES AND ONE WITH BANANAS IN IT ",
+      "relevant_ids": [
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 453.6
+    },
+    {
+      "query_index": 4,
+      "query": "Chef at counter with baked goods, baking pans and containers of toppings.",
+      "relevant_ids": [
+        "5850017e-0320-49f0-9c71-f3d645072b59"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 697.63
+    },
+    {
+      "query_index": 5,
+      "query": "A batter ready to swing at home plate.",
+      "relevant_ids": [
+        "75dccd21-0cab-4577-8616-f53095e0da48"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 392.38
+    },
+    {
+      "query_index": 6,
+      "query": "A baseball game in progress with the batter in the middle of a swing.",
+      "relevant_ids": [
+        "b597c35d-becc-44be-8593-d2aeb160cafd"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 444.46
+    },
+    {
+      "query_index": 7,
+      "query": "a white toilet in a black counter bathroom",
+      "relevant_ids": [
+        "c5fb6c8c-1e97-4a07-87a9-c69859466e9a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 573.59
+    },
+    {
+      "query_index": 8,
+      "query": "The tray has a sandwich and two bowls near a beverage. ",
+      "relevant_ids": [
+        "fe8ac9b0-124a-4831-ba78-c2cfcb12329a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 525.41
+    },
+    {
+      "query_index": 9,
+      "query": "A boy playing wii in the living room while several other children watch.",
+      "relevant_ids": [
+        "155a8fe6-512f-4b78-9380-59add44d9cee"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 498.09
+    },
+    {
+      "query_index": 10,
+      "query": "A surfer is riding the waves as a sailboat sails in the background.",
+      "relevant_ids": [
+        "451f537c-02f8-4afd-a1b6-efc91118df59"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 717.18
+    },
+    {
+      "query_index": 11,
+      "query": "A bedroom with a framed bed and a vanity.",
+      "relevant_ids": [
+        "fe3b0c4f-1d87-4998-bdff-6176a5857641"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 476.45
+    },
+    {
+      "query_index": 12,
+      "query": "a clean kitchen counter with a clean sink",
+      "relevant_ids": [
+        "49549a0d-4c1a-43c5-a0a4-19f6df656dae"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 707.82
+    },
+    {
+      "query_index": 13,
+      "query": "A man is laying down in a pavement balancing a ball on his foot while others watch.",
+      "relevant_ids": [
+        "de66de4b-02bb-4a63-b54b-5722fdfe91ea"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 534.56
+    },
+    {
+      "query_index": 14,
+      "query": "There is an old toilet sitting under a sign for this picture.",
+      "relevant_ids": [
+        "662ef9f9-d304-4a69-be1f-c7ba2c9e6b7d"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 462.53
+    },
+    {
+      "query_index": 15,
+      "query": "A painting of a man smiling behind a table with fruit",
+      "relevant_ids": [
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 483.34
+    },
+    {
+      "query_index": 16,
+      "query": "There are blurry traffic lights on the road.",
+      "relevant_ids": [
+        "02ef370b-ad30-4fe2-8f07-71b2cdf06fa4"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 601.45
+    },
+    {
+      "query_index": 17,
+      "query": "A male tennis player jumping in the air while swinging his tennis racket, on a hard surface court, with a scoreboard behind him.",
+      "relevant_ids": [
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 4,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.25,
+      "ap_at_10": 0.25,
+      "latency_ms": 525.66
+    },
+    {
+      "query_index": 18,
+      "query": "A woman in white shirt holding up a cellphone.",
+      "relevant_ids": [
+        "f44b953b-15c4-4693-b34f-a72ea08a35a7"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 579.82
+    },
+    {
+      "query_index": 19,
+      "query": "A doughnut is at the bottom of a container.  ",
+      "relevant_ids": [
+        "b297b6a4-24c2-4f11-9495-cd3e323cf3d4"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 502.09
+    },
+    {
+      "query_index": 20,
+      "query": "a quarter is surrounded by some rocks with holes",
+      "relevant_ids": [
+        "3b75fdc9-0b12-4968-b94e-2bbabab83a95"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 459.9
+    },
+    {
+      "query_index": 21,
+      "query": "two men standing in the living room and playing a video game with wii motes",
+      "relevant_ids": [
+        "37b70f94-ee13-4679-932d-d36aa8408333"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 418.26
+    },
+    {
+      "query_index": 22,
+      "query": "two giraffes eating leaves together off of a tree",
+      "relevant_ids": [
+        "e28f1ae1-39c1-4e14-b835-cbcdceedd676"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 806.14
+    },
+    {
+      "query_index": 23,
+      "query": "Horse in a large corral eating grass and trees in the back. ",
+      "relevant_ids": [
+        "a216fdf3-b273-4bb7-b86f-1d2deb769162"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 587.13
+    },
+    {
+      "query_index": 24,
+      "query": "The fruit is placed in a bowl out in the open to be eaten",
+      "relevant_ids": [
+        "46b57eff-6238-4b98-b6c6-22695348ef61"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 664.14
+    },
+    {
+      "query_index": 25,
+      "query": "A living room with a fire place and furniture.",
+      "relevant_ids": [
+        "1b77927b-efb6-4d6d-a52a-7d741efd305a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 567.85
+    },
+    {
+      "query_index": 26,
+      "query": "A dog sits near books with a shirt on.",
+      "relevant_ids": [
+        "1676138a-a9b1-445b-b759-ce799cb10a7a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 549.41
+    },
+    {
+      "query_index": 27,
+      "query": "A brown crust of pie with strawberry filing. ",
+      "relevant_ids": [
+        "8a78aca8-aec2-41bc-9746-83790ea50aaf"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 409.35
+    },
+    {
+      "query_index": 28,
+      "query": "A man with a plaid hat, tie, dress shirt and glasses on.",
+      "relevant_ids": [
+        "cc26bff5-b5ae-4ebb-8bb4-9ef9ec92ceaa"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 546.41
+    },
+    {
+      "query_index": 29,
+      "query": "A group of people staring at a woman holding a bat.",
+      "relevant_ids": [
+        "709d5ef5-6331-4dec-b72f-a25f54c93205"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 393.47
+    },
+    {
+      "query_index": 30,
+      "query": "a homemade pizza  is on a cutting board",
+      "relevant_ids": [
+        "6f04b33e-bfb7-4a0f-89db-19d68cf7fcd2"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 690.3
+    },
+    {
+      "query_index": 31,
+      "query": "An intersection with a stoplight on a roadway that has no vehicles traveling on it.",
+      "relevant_ids": [
+        "7540b7d3-47d8-4b5c-a194-34363353a240"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 5,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.2,
+      "ap_at_10": 0.2,
+      "latency_ms": 700.24
+    },
+    {
+      "query_index": 32,
+      "query": "A family looking at vases and plates in a store.",
+      "relevant_ids": [
+        "681b568f-6878-4ed0-8695-b3518dc57981"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 570.27
+    },
+    {
+      "query_index": 33,
+      "query": "A double exposure of a man sitting in a chair in a dimly lit room.",
+      "relevant_ids": [
+        "78aa1313-2470-4208-89b6-ff5f777dac3d"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 475.69
+    },
+    {
+      "query_index": 34,
+      "query": "A tile bathroom contains a tub and large sink. ",
+      "relevant_ids": [
+        "80122928-4525-491e-8d77-34f3631486aa"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 628.1
+    },
+    {
+      "query_index": 35,
+      "query": "A sign in front of a building, in front of a building.",
+      "relevant_ids": [
+        "28ffa6c1-cb76-451b-9578-3acf7a123b33"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 623.95
+    },
+    {
+      "query_index": 36,
+      "query": "The skier is coming down the slope on a very snowy day.",
+      "relevant_ids": [
+        "738e85a5-81b5-415e-901a-f424cf4aa76a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 491.09
+    },
+    {
+      "query_index": 37,
+      "query": "A train that is riding on tracks through a station.",
+      "relevant_ids": [
+        "aacefce2-2ebf-4791-857e-b0e33aed83b2"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 426.48
+    },
+    {
+      "query_index": 38,
+      "query": "A herd of Zebras on a grassy plain.",
+      "relevant_ids": [
+        "3c265f15-38f8-4a1f-a535-772466f6d6d9"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 546.83
+    },
+    {
+      "query_index": 39,
+      "query": "A young gir holding a child with a boy standing next to them",
+      "relevant_ids": [
+        "4c32869a-3528-4d06-b538-61c06a391986"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 440.33
+    },
+    {
+      "query_index": 40,
+      "query": "Giraffe and zebra grazing in a field next to plants.",
+      "relevant_ids": [
+        "4b237149-1bd3-41ab-ae11-c4e11e89a3ba"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 477.27
+    },
+    {
+      "query_index": 41,
+      "query": "A motorcycle of some sort parked somewhere during the day.",
+      "relevant_ids": [
+        "c3da6283-7374-4081-bbdf-28de692cf6f5"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 435.83
+    },
+    {
+      "query_index": 42,
+      "query": "A small room with different types of furniture and appliances that it makes it hard to tell what type of room it is.",
+      "relevant_ids": [
+        "c313f545-8612-476d-ab4f-6b607bd24580"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 478.98
+    },
+    {
+      "query_index": 43,
+      "query": "A man is grabbing the tie of another person that appears in the mirror.",
+      "relevant_ids": [
+        "33c9bfaa-19e6-415f-a76d-e8ac2fed12e8"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 472.86
+    },
+    {
+      "query_index": 44,
+      "query": "A chicken walking around on the ocean shore.",
+      "relevant_ids": [
+        "fdc38f10-9674-4586-8630-dd9606a17096"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 415.58
+    },
+    {
+      "query_index": 45,
+      "query": "Bunches of bananas are sitting on a shelf.",
+      "relevant_ids": [
+        "257002b2-1189-4ace-a86f-5d190d86311e"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 599.7
+    },
+    {
+      "query_index": 46,
+      "query": "A large bus parked in a parking lot next to a group of women.",
+      "relevant_ids": [
+        "02b1bdae-446e-4bec-a8aa-07c19729e072"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 466.07
+    },
+    {
+      "query_index": 47,
+      "query": "a park with benches and lots of trees.",
+      "relevant_ids": [
+        "b522b1e5-1781-41d2-9535-8fca5b387349"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 6,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.16666666666666666,
+      "ap_at_10": 0.16666666666666666,
+      "latency_ms": 414.28
+    },
+    {
+      "query_index": 48,
+      "query": "A motorcycle is parked on a dirt road in front of an old farm truck selling produce.",
+      "relevant_ids": [
+        "400bd574-ff8a-4fc8-b0c7-a603e30e8eb6"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 403.44
+    },
+    {
+      "query_index": 49,
+      "query": "a black shirt on a hanger blue curtains a bed and pillow",
+      "relevant_ids": [
+        "13cd5df0-3eea-483c-b0d3-89393ab62795"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 517.55
+    },
+    {
+      "query_index": 50,
+      "query": "The kid is on a skateboard and on a ramp. ",
+      "relevant_ids": [
+        "034c2a33-16a0-43b0-ba8a-5011fff82be6"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 438.89
+    },
+    {
+      "query_index": 51,
+      "query": "A baseball player swings his bat while the umpire and referee wait behind him.",
+      "relevant_ids": [
+        "43705e37-885d-4b5d-8de1-f48de3f25b67"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 502.15
+    },
+    {
+      "query_index": 52,
+      "query": "A pizza covered in cheese dripping down onto the bottom of an oven burning.",
+      "relevant_ids": [
+        "ed1e98b1-4b31-4619-914b-8b8856b9fcb6"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 500.14
+    },
+    {
+      "query_index": 53,
+      "query": "Trucks are parked outside of a market building.",
+      "relevant_ids": [
+        "386aef8b-f0d5-4357-a848-68375509bd0b"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 526.18
+    },
+    {
+      "query_index": 54,
+      "query": "a person standing near a stove in a kitchen ",
+      "relevant_ids": [
+        "5319e3ca-c7fa-4661-990c-711047d1c459"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 515.57
+    },
+    {
+      "query_index": 55,
+      "query": "a man talks in front of a group of kids ",
+      "relevant_ids": [
+        "fe895c66-160d-410f-918c-1d6ce2247f67"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 599.73
+    },
+    {
+      "query_index": 56,
+      "query": "some boats are docked on the sand at a beach",
+      "relevant_ids": [
+        "93af65af-9578-4fbd-b30c-1ce650f51a21"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 549.69
+    },
+    {
+      "query_index": 57,
+      "query": "A kitchen with a stove, sink and coffee maker.",
+      "relevant_ids": [
+        "bbcec265-9c02-478e-9093-5de1e1f6fbd6"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 387.2
+    },
+    {
+      "query_index": 58,
+      "query": "Purple and blue building which has an atm inside.",
+      "relevant_ids": [
+        "d0fbd304-75a4-458c-a9d8-e1d937cc1817"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 439.8
+    },
+    {
+      "query_index": 59,
+      "query": "A table with five red cups, a pineapple and some oranges on a plate",
+      "relevant_ids": [
+        "cc03021b-6356-4431-b9a1-fd81b7f6050b"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 437.47
+    },
+    {
+      "query_index": 60,
+      "query": "A bathroom with two sinks sitting under mirrors.",
+      "relevant_ids": [
+        "2c5a6839-e80b-4814-a7b0-0c6d6255f60a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 604.96
+    },
+    {
+      "query_index": 61,
+      "query": "Traffic in front of Walgreens on a town street.",
+      "relevant_ids": [
+        "52ced161-0d6c-4c6e-8a9e-aefe56487813"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 528.88
+    },
+    {
+      "query_index": 62,
+      "query": "Two individuals catching a wave surfing in the ocean.",
+      "relevant_ids": [
+        "224cc054-0886-4def-a7e1-7c3f3e406091"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 511.04
+    },
+    {
+      "query_index": 63,
+      "query": "A pizza sitting on top of a pizza box covered in cheese.",
+      "relevant_ids": [
+        "cfa21a22-d597-4456-9afc-86aff412a29e"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 520.86
+    },
+    {
+      "query_index": 64,
+      "query": "graffiti and stickers are plastered on the stop sign and street sign",
+      "relevant_ids": [
+        "265ee816-3371-4a21-b7e6-70bf3f2e0e31"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 646.09
+    },
+    {
+      "query_index": 65,
+      "query": "A man prepares to hit a tennis ball",
+      "relevant_ids": [
+        "4a428f2c-470e-4fab-991c-171a206f4b68"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 931.98
+    },
+    {
+      "query_index": 66,
+      "query": "There are stuffed teddy bears sitting on chairs at a table",
+      "relevant_ids": [
+        "e5d32390-d568-4876-b2d2-ea3f126bd966"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 440.74
+    },
+    {
+      "query_index": 67,
+      "query": "a man standing on a pair of skis and coming down a snow covered hill",
+      "relevant_ids": [
+        "700cde79-efc1-4c49-a28a-d09513a16308"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 415.21
+    },
+    {
+      "query_index": 68,
+      "query": "A dog looks up while laying on a blue couch.",
+      "relevant_ids": [
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 7,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.14285714285714285,
+      "ap_at_10": 0.14285714285714285,
+      "latency_ms": 455.08
+    },
+    {
+      "query_index": 69,
+      "query": "an orange kitchen with a white refrigerator stove oven and dishwasher",
+      "relevant_ids": [
+        "969f84c5-1e4c-4367-9a13-e6bc1236bb82"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 460.96
+    },
+    {
+      "query_index": 70,
+      "query": "White show horses and handlers performing during public event.",
+      "relevant_ids": [
+        "e79272a2-f74e-451f-8dea-e5a979dbf8db"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 879.46
+    },
+    {
+      "query_index": 71,
+      "query": "A raw pizza with red peppers and cheese is on the counter.",
+      "relevant_ids": [
+        "f1c73709-2dd0-40a8-b05c-7b532df42e0a"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 647.46
+    },
+    {
+      "query_index": 72,
+      "query": "A group of people standing around a herd of animals in a city.",
+      "relevant_ids": [
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 8,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.125,
+      "ap_at_10": 0.125,
+      "latency_ms": 529.61
+    },
+    {
+      "query_index": 73,
+      "query": "A white refrigerator freezer covered in magnets and pictures.",
+      "relevant_ids": [
+        "c4efd3b4-35bc-45f2-aee8-7c074b9082a2"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 590.38
+    },
+    {
+      "query_index": 74,
+      "query": "A man asleep under a blanket on a bed ",
+      "relevant_ids": [
+        "b77366a7-793f-435f-8bc1-f3851c761deb"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 9,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.1111111111111111,
+      "ap_at_10": 0.1111111111111111,
+      "latency_ms": 428.03
+    },
+    {
+      "query_index": 75,
+      "query": "Three giraffes standing in some tall grass with trees.",
+      "relevant_ids": [
+        "a613ba9f-033e-4c8d-9a97-8a87ce009d0f"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 404.13
+    },
+    {
+      "query_index": 76,
+      "query": "A view of a man's urinal inside a bathroom stall.",
+      "relevant_ids": [
+        "7f81bdd0-56b4-44cb-8de7-6949c19b7d73"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 514.59
+    },
+    {
+      "query_index": 77,
+      "query": "The two bears are wondering about the point of the camera.",
+      "relevant_ids": [
+        "ae6c8515-9c99-47ab-8882-2336f27439e9"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 575.36
+    },
+    {
+      "query_index": 78,
+      "query": "A bunch of girls sit on the grass with several things on a blanket.",
+      "relevant_ids": [
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 10,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.1,
+      "ap_at_10": 0.1,
+      "latency_ms": 494.77
+    },
+    {
+      "query_index": 79,
+      "query": "Two multicolored exotic birds perched on a wooden branch with trees and flowers behind them.",
+      "relevant_ids": [
+        "0de2295c-f335-4892-b125-719d36933b8f"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 842.13
+    },
+    {
+      "query_index": 80,
+      "query": "A woman getting ready to eat a pizza on the table.",
+      "relevant_ids": [
+        "5caddc94-b3ac-429b-8974-68f852cc0cb1"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 502.42
+    },
+    {
+      "query_index": 81,
+      "query": "A pile of oranges, apples and pears next to each other.",
+      "relevant_ids": [
+        "48326d95-c135-4b1f-8e68-5527761d8269"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 492.22
+    },
+    {
+      "query_index": 82,
+      "query": "A person walking in the ocean with a surfboard under their arm. ",
+      "relevant_ids": [
+        "15b8c896-a3ca-4b5b-95bc-04da92bb2fb2"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 608.86
+    },
+    {
+      "query_index": 83,
+      "query": "A decorative flower vase with lavender in it.",
+      "relevant_ids": [
+        "7e0af590-08e9-4a84-84bb-9d350ccad630"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 437.59
+    },
+    {
+      "query_index": 84,
+      "query": "A computer desk with several pieces of computer equipment.",
+      "relevant_ids": [
+        "1ae45b8d-1ace-40ee-a249-8cb229c138a8"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 477.93
+    },
+    {
+      "query_index": 85,
+      "query": "A woman holds a cake with candles while riding a mechanical horse in a store.",
+      "relevant_ids": [
+        "d5a47a16-945b-44a8-8b23-151850824877"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 370.83
+    },
+    {
+      "query_index": 86,
+      "query": "Krispy Kreme donuts fill up a long table.",
+      "relevant_ids": [
+        "da35f68a-f712-4523-9a24-79638c008a5c"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 465.05
+    },
+    {
+      "query_index": 87,
+      "query": "A boy playing with a kite in the park.",
+      "relevant_ids": [
+        "5ce9d945-f38b-4888-bef1-8be98e3d4f9e"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 501.92
+    },
+    {
+      "query_index": 88,
+      "query": "Two large elephants together with a baby elephant close by.",
+      "relevant_ids": [
+        "6387278d-7040-4446-ade8-f0b7eff1ae90"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 683.75
+    },
+    {
+      "query_index": 89,
+      "query": "A female plays with her dog in the living room",
+      "relevant_ids": [
+        "48260b53-0351-4bb8-8e04-2f97153e664e"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 435.52
+    },
+    {
+      "query_index": 90,
+      "query": "Several people engaged in para-sailing on a lake.",
+      "relevant_ids": [
+        "529235e9-ad80-4c1c-8db4-9f0a212e80d1"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 609.35
+    },
+    {
+      "query_index": 91,
+      "query": "A parking lot with various trucks in it next to a building.",
+      "relevant_ids": [
+        "24292438-98a8-4135-ae21-cdfd195ae15d"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 454.51
+    },
+    {
+      "query_index": 92,
+      "query": "A sheep with its mouth open in a pen.",
+      "relevant_ids": [
+        "fe486907-0022-4d44-9be0-5ba06bbe504b"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 518.36
+    },
+    {
+      "query_index": 93,
+      "query": "A hairy brown animal stands on the grass.",
+      "relevant_ids": [
+        "ec8fc588-5a58-4cd4-bc32-cee231a6f1fd"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 741.89
+    },
+    {
+      "query_index": 94,
+      "query": "A kitchen with fish tanks and many many cabinets is shown.",
+      "relevant_ids": [
+        "e67f2c40-c26d-4b4f-93c8-ac6cbc25a028"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 758.66
+    },
+    {
+      "query_index": 95,
+      "query": "Cars and a bus stopped for a train at a crossing.",
+      "relevant_ids": [
+        "311e25f9-2f9f-473f-adc5-92f385549465"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 397.83
+    },
+    {
+      "query_index": 96,
+      "query": "two teddy bears sitting at a table looking at a jar of honey",
+      "relevant_ids": [
+        "5ea7b0f2-7821-406b-8972-de1db1acf23b"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 499.76
+    },
+    {
+      "query_index": 97,
+      "query": "Two kids in pink and purple jackets standing by a fence.",
+      "relevant_ids": [
+        "c6a054b4-1ce0-480c-b983-a5a40ce5b1e2"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 549.11
+    },
+    {
+      "query_index": 98,
+      "query": "Man cutting a cake on the table in the kitchen.",
+      "relevant_ids": [
+        "093781f2-7dd9-405d-a9e6-0dc1101064e8"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 492.8
+    },
+    {
+      "query_index": 99,
+      "query": "multiple shots of a banana and a banana guard",
+      "relevant_ids": [
+        "d66b8168-f13e-4b67-9a95-283a0e037f10"
+      ],
+      "predicted_ids": [
+        "d8e66a42-c6c8-4046-a453-ce05452c6087",
+        "f26698cc-76b9-4d2b-aa92-8dfb160adc51",
+        "aefea0e4-c048-454b-addf-6e4563ab9ec0",
+        "6618a9f8-5c9a-4bed-b870-21a72abb05c6",
+        "7540b7d3-47d8-4b5c-a194-34363353a240",
+        "b522b1e5-1781-41d2-9535-8fca5b387349",
+        "5908b2eb-693f-4b60-92ef-7bb99771e39a",
+        "546e02c9-ac51-4fd5-93ae-a4458b8abcee",
+        "b77366a7-793f-435f-8bc1-f3851c761deb",
+        "b1d3a150-0c0c-4c6b-bf9b-3a8ef6701f95"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 427.73
+    }
+  ],
+  "meta": {
+    "timestamp": "20260321_132245",
+    "method": "baseline_ocr",
+    "top_k": 10
+  }
+}

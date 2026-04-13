@@ -12,7 +12,8 @@ export default {
     knowledgeBase: '图片知识库',
     search: '知识检索',
     chat: '智能问答',
-    documents: '文档解析'
+    documents: '文档解析',
+    settings: '系统配置'
   },
   theme: {
     dark: '深色模式',
@@ -171,6 +172,22 @@ export default {
       crop_render_failed: '表格裁图失败，回退整页渲染',
       fragmented_or_filtered_images: '局部碎片图过多，改为整页保留'
     }
+  },
+  settings: {
+    title: '系统配置',
+    subtitle: '集中查看和编辑当前 .env 配置项，保存后需手动重启后端才能生效。',
+    save: '保存配置',
+    reset: '重置修改',
+    show: '显示',
+    hide: '隐藏',
+    restartHint: '保存后需要手动重启后端服务，新的配置才会生效。',
+    requiresRestart: '本页配置保存后均需重启',
+    restartTag: '需重启',
+    sensitive: '敏感项',
+    loadFailed: '加载系统配置失败',
+    saveSuccess: '系统配置已保存',
+    saveFailed: '保存系统配置失败',
+    leaveConfirm: '你有未保存的配置修改，确认离开当前页面吗？'
   },
   common: {
     loading: '加载中...',

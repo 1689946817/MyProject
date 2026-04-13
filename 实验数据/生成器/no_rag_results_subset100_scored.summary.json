@@ -1,0 +1,75 @@
+{
+  "total_records": 100,
+  "answer_correctness": {
+    "evaluated": 100,
+    "avg_score": 0.24
+  },
+  "answer_relevancy": {
+    "evaluated": 100,
+    "pass_rate": 0.99
+  },
+  "image_context_relevancy": {
+    "evaluated": 0,
+    "pass_rate": null
+  },
+  "image_faithfulness": {
+    "evaluated": 0,
+    "pass_rate": null
+  },
+  "answer_correctness_by_domain": {
+    "commerce_manufacturing": {
+      "count": 8,
+      "avg_score": 0.25
+    },
+    "construction": {
+      "count": 10,
+      "avg_score": 0.1
+    },
+    "crm": {
+      "count": 16,
+      "avg_score": 0.25
+    },
+    "education": {
+      "count": 9,
+      "avg_score": 0.3333
+    },
+    "energy": {
+      "count": 20,
+      "avg_score": 0.1
+    },
+    "finance": {
+      "count": 15,
+      "avg_score": 0.2
+    },
+    "healthcare": {
+      "count": 12,
+      "avg_score": 0.25
+    },
+    "legal": {
+      "count": 10,
+      "avg_score": 0.6
+    }
+  },
+  "answer_correctness_by_question_type": {
+    "causal_reasoning": {
+      "count": 12,
+      "avg_score": 0.5
+    },
+    "comparison": {
+      "count": 28,
+      "avg_score": 0.1786
+    },
+    "factual_retrieval": {
+      "count": 47,
+      "avg_score": 0.2128
+    },
+    "summarization": {
+      "count": 12,
+      "avg_score": 0.25
+    },
+    "temporal_comparison": {
+      "count": 1,
+      "avg_score": 0.0
+    }
+  }
+}

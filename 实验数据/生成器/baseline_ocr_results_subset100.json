@@ -1,0 +1,1702 @@
+[
+  {
+    "query_id": "002642638fa3fa35",
+    "query": "Identify the reference details for the sewer consultation related to Greenside Recreation Fields submitted late December 2016.",
+    "domain": "construction",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "The reference details for the sewer consultation related to Greenside Recreation Fields submitted in late December 2016 are: Our Reference 4200015497, Date 29th December 2016.",
+    "generated_answer": "Based on the provided knowledge base fragments, specifically **Fragment 1** (which identifies the project location as \"Greenside Euxton\" involving public sewers) and **Fragment 2** (which contains the official consultation response to Euxton Parish Council in late December 2016), the reference details for the sewer consultation are as follows:\n\n*   **Our Reference:** 4200015497\n*   **Your Reference:** 9 Ambleside Ave\n*   **Date of Letter:** 29th December 2016\n*   **Consultation Submission Date:** 23rd December 2016\n*   **Subject:** Build over consultation regarding a 225mm diameter foul/water public sewer.\n*   **Recipient:** Euxton Parish Council (Debra Platt)\n*   **Sender:** United Utilities Water Ltd Developer Services & Planning\n\nThese details correspond to the sewer consultation related to the Greenside Euxton project submitted in late December 2016.",
+    "retrieved_ids": [
+      "images/construction/5244261/5244261_page_0010.png",
+      "images/construction/5244261/5244261_page_0011.png",
+      "images/construction/1630263/1630263_page_0003.png",
+      "images/construction/6837658/6837658_page_0005.png",
+      "images/construction/6837658/6837658_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "002da95a48d413e6",
+    "query": "How should the timing of COVID-19 vaccination be managed for patients undergoing autologous HSCT, both prior to and following the procedure?",
+    "domain": "healthcare",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Pre-HSCT: > 2 weeks prior to starting conditioning chemotherapy. Post-HSCT: > 3 months post-HSCT.",
+    "generated_answer": "基于提供的知识库内容（主要是片段 1 和片段 2），对于接受自体造血干细胞移植（Autologous HSCT）的患者，COVID-19 疫苗接种的时间管理建议如下：\n\n*   **移植前（Pre-HSCT）：** 应在开始 Conditioning 化疗前至少 **2 周**（≥2 weeks prior to starting conditioning chemotherapy）进行接种。\n*   **移植后（Post-HSCT）：** 应在移植后 **超过 3 个月**（>3 months post-HSCT）进行接种。\n\n此外，片段 2 提到，常规的移植后疫苗接种（routine post-HSCT vaccinations）应安排在完成 COVID-19 疫苗剂量后至少 **14 天** 再进行，以确保疫苗接种之间的间隔管理。\n\n*注：以上信息源自知识库中关于 IWK Health Centre 的相关指导片段。*",
+    "retrieved_ids": [
+      "images/healthcare/7083619/7083619_page_0005.png",
+      "images/healthcare/7083619/7083619_page_0006.png",
+      "images/healthcare/3885778/3885778_page_0006.png",
+      "images/legal/1880877/1880877_page_0008.png",
+      "images/crm/2789285/2789285_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "008f5069dcebc2a4",
+    "query": "How does average spine density change through developmental stages for ace-1(p1000);ace-2(g72) versus unc-17(e113) in studies involving C. elegans neural circuits?",
+    "domain": "education",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The average spine density for ace-1(p1000);ace-2(g72) increases from L3 to eL4 and remains high at L4 and YA, whereas for unc-17(e113), it decreases from L3 to eL4 and stays low. This is supported by the imaging data showing higher spine density in ace-1(p1000);ace-2(g72) compared to unc-17(e113) during these developmental stages.",
+    "generated_answer": "Based on the provided knowledge base content, specifically **Snippet 1**, the following information is available regarding the average spine density changes for `ace-1(p1000);ace-2(g72)` versus `unc-17(e113)` across developmental stages:\n\n*   **Developmental Stages:** The study covers stages labeled as **L3, eL4, L4, and YA**.\n*   **Genotypes:** The specific mutants mentioned are **`ace-1(p1000);ace-2(g72)`** and **`unc-17(e113)`** (alongside Wildtype/WT).\n*   **Density Findings:** In the section labeled **\"E\"**, the text indicates **\"n.s.\" (not significant)** associated with **\"Density\"** and **\"Developmental Stage\"**.\n*   **Spine Imaging:** Section **\"G\"** mentions **\"Spine\"** imaging in the context of these experiments.\n\n**Conclusion:**\nAccording to the provided text fragments, the comparison of density across the listed developmental stages for these genotypes is marked as **\"n.s.\" (not significant)**. This suggests that there were no statistically significant changes in average density observed across these stages for the specified mutants in this study. However, the provided snippets do not contain specific numerical data or a detailed descriptive trend (e.g., specific increases or decreases) beyond this statistical notation.\n\n*(Note: Snippets 2, 3, 4, and 5 are unrelated to this topic, covering acupuncture, energy letters, gene regulation, and construction standards respectively.)*",
+    "retrieved_ids": [
+      "images/education/0615714/0615714_page_0013.png",
+      "images/healthcare/7146650/7146650_page_0007.png",
+      "images/energy/6374280/6374280_page_0005.png",
+      "images/healthcare/3528976/3528976_page_0007.png",
+      "images/construction/1748668/1748668_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "017f4f6f52827ae7",
+    "query": "In what way did A.B.'s memory for public occurrences change over the years relative to control participants, focusing on the period leading up to his amnesia?",
+    "domain": "healthcare",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "A.B.'s ability to recall public events improved significantly for earlier years compared to controls. While starting from a lower percentage, A.B. eventually surpassed the control group in recalling events from 25 years before amnesia. This suggests a notable enhancement in memory for older public occurrences relative to controls.",
+    "generated_answer": "基于提供的知识库片段，特别是**片段 1**，关于 A.B. 在遗忘症发作前几年相对于控制参与者的公共事件记忆变化，可以总结如下：\n\n1.  **评估内容**：A.B. 对公共事件（public occurrences）的记忆是通过**新闻事件回忆测试**（test of news events）来评估的，事件时间跨度为 1952 年至 2005 年。\n2.  **对比对象**：A.B. 的表现与**控制组参与者**（Controls, CON, N=13）进行了对比。\n3.  **时间间隔**：评估涵盖了 A.B. 顺行性遗忘期间（Anterograde Amnesia, AA, 1977 至 2005 年）以及遗忘症发作前的**每 5 年间隔**（5-y intervals preceding the onset of amnesia）。\n4.  **衡量指标**：通过**正确率百分比**（Percent Correct）和叙述细节（Details per narrative）来衡量回忆表现。\n\n提供的文本主要描述了图 2（Fig. 2）的实验设置和测量方法，展示了如何按年份间隔对比 A.B. 与控制组的 retrograde memory（逆行性记忆）表现，但文本片段本身未在文字描述中明确列出具体的得分趋势结果（如具体是上升、下降还是持平），仅说明了数据的构成和对比方式。",
+    "retrieved_ids": [
+      "images/healthcare/3630825/3630825_page_0003.png",
+      "images/healthcare/0499424/0499424_page_0005.png",
+      "images/education/4426997/4426997_page_0005.png",
+      "images/education/3275963/3275963_page_0024.png",
+      "images/education/6488717/6488717_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "01d892abd7d009ed",
+    "query": "Can you list the step-by-step tasks outlined in version 4 of the BPMN for recruiting a new staff member?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "Fill in forms (2 days), Medical check-up (3 days), Visa application (2 weeks), Validate (1 day), Update personnel DB (1 day), Validate (partial) (1 day), Anticipate wages (3 days), Prepare welcome kit (2 days), Archive all documents (1 day), Ask additional documents (3 days).",
+    "generated_answer": "Based on the provided knowledge base content, specifically **[Fragment 3]**, the step-by-step tasks outlined in **Fig. 9. BPMN process for employee hiring (V4)** include the following activities (note that the original text contains durations and some formatting noise):\n\n1.  **Fill in forms**\n2.  **Medical check-up**\n3.  **Reject Visa application**\n4.  **Anticipate**\n5.  **Validate wages**\n6.  **Update personnelDB**\n7.  **Prepare welcome kit (partial)**\n8.  **Validate** (context suggests document validation)\n9.  **Archive documents**\n10. **Ask add documents**\n\nThese tasks are associated with the computing of the parallelism degree of timed BPMN processes as described in the fragment.",
+    "retrieved_ids": [
+      "images/finance/4009370/4009370_page_0006.png",
+      "images/crm/5027626/5027626_page_0016.png",
+      "images/crm/6640521/6640521_page_0014.png",
+      "images/crm/6145989/6145989_page_0011.png",
+      "images/crm/1114867/1114867_page_0013.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "021c1ee13677b6d0",
+    "query": "According to the quick guide, what key functionalities are highlighted for the Avaya 3720 DECT Telephone?",
+    "domain": "crm",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "The main features of the Avaya 3720 DECT Telephone include a local phonebook with 250 contacts, central phonebook access, company phonebook, loudspeaking function, voicemail access, and centralized management. Additional features include a headset connector, microphone on/off function during calls, and a vibrator function. Note that central phonebook access and voicemail access are system dependent.",
+    "generated_answer": "Based on the provided Quick Reference Guide content (specifically Fragment 2, 3, and 4), the key functionalities highlighted for the Avaya 3720 DECT Telephone include:\n\n**Core Functions (marked as available 'X' in the guide):**\n*   **Local phonebook:** Supports up to 250 contacts.\n*   **Company phonebook:** Available (must be imported via PDM/AIWS).\n*   **Vibrator:** Included.\n*   **Headset connector:** Available.\n*   **Microphone on/off during call:** Supported.\n*   **Loudspeaking function:** Supported.\n*   **Voice mail access:** Available (system dependent).\n\n**System Dependent Functions (marked as '*X'):**\n*   Central phonebook.\n*   Centralized Management.\n\n**Additional Operational Features mentioned in the guide:**\n*   **Automatic Keypad Lock:** Can be turned on/off via Settings > Locks (Fragment 3).\n*   **Voice Mail Check:** Users can check for messages by performing a long press on digit key 1 (Fragment 4).\n*   **Charger Usage:** The telephone is fully operational while in the desktop charger, though it does not vibrate while charging (Fragment 4).\n*   **Display & Keys:** Includes navigation keys, soft keys, on/off hooks, and display icons for signal, battery, and call status (Fragment 5).",
+    "retrieved_ids": [
+      "images/crm/6186550/6186550_page_0001.png",
+      "images/crm/6186550/6186550_page_0003.png",
+      "images/crm/6186550/6186550_page_0007.png",
+      "images/crm/6186550/6186550_page_0005.png",
+      "images/crm/6186550/6186550_page_0002.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "026ef367ac301015",
+    "query": "In business risk evaluations, what weaknesses are connected to the absence of fire detection mechanisms?",
+    "domain": "legal",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The weaknesses connected to the absence of fire detection mechanisms include 'no smoke detection' and 'no fire detection system'. These vulnerabilities highlight a lack of proper fire protection measures.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**关于“在业务风险评估中，火灾检测机制缺失与哪些弱点相关”的问题。\n\n提供的五个片段内容主要涵盖以下领域，均未提及物理安全或火灾检测机制：\n1.  **数据安全与评估模式**（片段 1）：涉及数据安全性评估、弱点标记及后端测量关联。\n2.  **业务规则与代码检查**（片段 2）：涉及 IFS 检查、业务规则触发及 XML 脚本审查。\n3.  **银行与金融风险**（片段 3、片段 4）：涉及波罗的海国际银行的对手方风险、交易外风险、 bail-in 风险及法律执行实践。\n4.  **社交媒体风险评估**（片段 5）：涉及候选人背景调查、社交媒体评分及风险等级模板。\n\n由于检索到的内容中不存在关于“火灾检测机制（fire detection mechanisms）”或其缺失所导致弱点的相关描述，因此无法基于上述材料提供答案。",
+    "retrieved_ids": [
+      "images/legal/7691267/7691267_page_0012.png",
+      "images/crm/7820445/7820445_page_0011.png",
+      "images/finance/1125177/1125177_page_0003.png",
+      "images/legal/1125177/1125177_page_0005.png",
+      "images/legal/2474602/2474602_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0276dc7f3e6e70ee",
+    "query": "How do the roles of residents in running and managing solar energy systems vary across the segmented, shared, and both types of direct sale models in apartment complexes?",
+    "domain": "energy",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "In segmented self-generation, tenants can actively participate in operations and management decisions. In shared self-generation, tenants can participate, but only in a more abstract manner. In both types of direct sale models (by landlord/contractor or by an electricity supplier), tenants can only passively participate by adjusting their consumption, provided that information and an appropriate tariff are available.",
+    "generated_answer": "Based on the provided knowledge base fragments, the roles of residents (tenants) in running and managing solar energy systems vary across the models as follows:\n\n**1. Segmented Self-Generation Model**\n*   **Role:** Tenants become **operators** of their specific segment of the solar power plant.\n*   **Responsibility:** Even when living in a multi-storey dwelling, tenants take over the role of a homeowner living in a detached house. They are responsible for a **stand-alone segment** of the PV power plant (e.g., in a 20kW installation split into 20 segments of 1kW, each tenant runs one).\n*   **Management:** Tenants **technically and economically run** their single power plant segment.\n*   **Ownership:** The owner of the power can be the **Landlord or the Tenants**.\n\n**2. Shared Self-Generation and Direct Sale Models**\n*   **Role & Management:** The provided text **does not explicitly detail** the specific running and management roles for residents in these models. It primarily focuses on ownership structures which imply where management control lies.\n*   **Ownership Structure (from Overview Table):**\n    *   **Shared self-generation:** The owner is the **Landlord or a third party**.\n    *   **Direct sale (by the landlord or electricity supplier):** The owner is the **Landlord**.\n    *   **Direct sale (by a contractor):** The owner is the **Contractor**.\n\n**Limitations of Provided Content:**\n*   The retrieved fragments indicate that subchapters 2.1 to 2.4 explain the functioning of the four models in detail, but only partial information regarding the \"Segmented self-generation\" model (2.1) and a summary table of ownership are available.\n*   Fragments 4 and 5 discuss electricity market modeling and solar radiation physics respectively, and do not contain information regarding tenant roles.",
+    "retrieved_ids": [
+      "images/energy/1282033/1282033_page_0008.png",
+      "images/energy/1282033/1282033_page_0006.png",
+      "images/energy/1282033/1282033_page_0007.png",
+      "images/energy/5731992/5731992_page_0001.png",
+      "images/energy/4416777/4416777_page_0018.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "02a57680ed3b9e8f",
+    "query": "What are the differences in sensor pressure values between the configurations involving Pipe CD and Pipe DE?",
+    "domain": "construction",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "In Setup 2 with Pipe CD, pressures range from -12 to -2 Pa. In Setup 3 with Pipe DE, pressures range from -56 to -19 Pa, showing an overall higher negative pressure. The key difference is that Pipe DE results in significantly lower pressures compared to Pipe CD, indicating a stronger negative pressure effect.",
+    "generated_answer": "基于提供的知识库内容，无法回答该问题。\n\n原因如下：\n1.  **缺少 Pipe CD 的相关信息**：在 [片段 1] 中，虽然提到了传感器压力（Pressure in sensors）、线条（Lines A B C D E）以及管道（Pipes AB BC DE FAN），但列出的管道配置中仅包含 **AB、BC、DE** 和 **FAN**，并没有提及 **Pipe CD**。\n2.  **数据不足**：提供的文本片段中没有包含关于 Pipe CD 的具体压力数值，因此无法将其与 Pipe DE 的压力值进行比较。\n\n综上所述，根据现有检索到的内容，无法确定涉及 Pipe CD 和 Pipe DE 配置之间的传感器压力值差异。",
+    "retrieved_ids": [
+      "images/construction/6565973/6565973_page_0005.png",
+      "images/construction/1748668/1748668_page_0004.png",
+      "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+      "images/commerce_manufacturing/4498982/4498982_page_0008.png",
+      "images/commerce_manufacturing/7510601/7510601_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "034248a689ca5d04",
+    "query": "How much time does it take to process visa applications in the hiring workflow described using BPMN?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The visa application process takes 2 weeks as shown in the BPMN diagram.",
+    "generated_answer": "Based on the provided knowledge base content, specifically **Fragment 1**, the BPMN process for employee hiring (V4) indicates that the **Visa application** takes **2 weeks**.\n\nThe relevant text in Fragment 1 states: \"...1 day 2 weeks Reject Visa application 3 days... Fig. 9. BPMN process for employee hiring (V4)\".",
+    "retrieved_ids": [
+      "images/crm/6640521/6640521_page_0014.png",
+      "images/crm/6640521/6640521_page_0015.png",
+      "images/finance/4009370/4009370_page_0006.png",
+      "images/crm/6145989/6145989_page_0011.png",
+      "images/legal/6716847/6716847_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "03ae54482173a120",
+    "query": "For what reason is the Ombudsperson initiative by SOS Children’s Villages being established worldwide to aid individuals affected by abuse?",
+    "domain": "legal",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "The Ombudsperson system is being implemented to represent the rights of children, young people, and others who have experienced abuse, providing support and resolving concerns. It is part of a safeguarding initiative to aid individuals affected by abuse within SOS Children’s Villages programs. The system will be clearly communicated across the 137 countries and territories where they work to ensure access to support and justice.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**关于\"SOS Children's Villages 建立监察员（Ombudsperson）倡议”的具体原因。\n\n原因如下：\n1.  **内容缺失**：提供的五个片段中，没有任何一处明确提及\"Ombudsperson initiative\"（监察员倡议）这一具体举措，也没有说明建立该倡议的原因。\n2.  **相关信息局限**：片段 1 虽然提到了 SOS Children's Villages 针对遭受虐待的儿童、年轻人及其他人采取了优先行动（如提供直接资金支持、确保受影响者得到支持以走向愈合、实施严格的最小标准等），并提及了\"ICSR Report Recommendations Addressed\"，但文中并未将这些行动具体描述为“监察员倡议”，也未阐述建立该特定倡议的理由。\n3.  **其他片段无关**：片段 2 和 3 涉及 TetraTech 的 safeguarding 政策，片段 4 介绍 Amnesty International，片段 5 涉及 Timor-Leste 的案例，均与 SOS Children's Villages 的监察员倡议无关。\n\n因此，根据现有检索内容，无法提供该倡议建立的具体原因。",
+    "retrieved_ids": [
+      "images/legal/2523414/2523414_page_0007.png",
+      "images/crm/5591014/5591014_page_0001.png",
+      "images/crm/5591014/5591014_page_0002.png",
+      "images/legal/3941562/3941562_page_0002.png",
+      "images/legal/3276234/3276234_page_0001.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "03b46e04444be609",
+    "query": "On June 30, 2015, what directories could be retrieved using the Barracuda Cloud-to-Cloud service?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "On June 30, 2015, the directories that could be retrieved using the Barracuda Cloud-to-Cloud service were Presentations, Case Studies, Sales Guides, White Papers, Datasheets, Videos, and Shared with Everyone.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**关于 2015 年 6 月 30 日具体可以检索哪些目录的问题。\n\n原因如下：\n1.  **缺乏特定日期信息**：所提供的五个片段中，没有任何内容提及\"2015 年 6 月 30 日”这一特定日期。片段 2 显示的备份活动日期为 7 月 4 日至 7 月 13 日（未标明年份），片段 5 涉及的日期为 2020 年 7 月 27 日，均与问题中的日期不符。\n2.  **通用功能描述**：片段 1 介绍了 Barracuda Cloud 服务的通用功能，指出所有备份到 Barracuda Cloud 的 Office 365 数据均可访问，用户可以通过内置日历选择特定日期进行时间点恢复（point-in-time recovery）。可检索的数据类型包括**邮箱、文件夹、文件、站点、库和电子邮件消息**（mailboxes, folders, files, sites, libraries, and email messages）。\n3.  **结论**：虽然片段 1 说明了该服务通常支持恢复“文件夹”（directories/folders）等数据，但基于现有内容，无法确认在 2015 年 6 月 30 日是否有数据备份可供恢复，也无法确认当时服务的具体状态。\n\n因此，基于现有检索内容，无法确定该特定日期可检索的具体目录。",
+    "retrieved_ids": [
+      "images/crm/4535059/4535059_page_0005.png",
+      "images/crm/4535059/4535059_page_0006.png",
+      "images/crm/7567891/7567891_page_0005.png",
+      "images/legal/2561941/2561941_page_0007.png",
+      "images/finance/2025833/2025833_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "03d58d30cb2a284c",
+    "query": "How do the success rates change over quartiles during a paired memory task controlled by specific software?",
+    "domain": "education",
+    "question_type": "summarization",
+    "answer_type": "image_only",
+    "reference_answer": "The percentage of correct responses gradually increases from the 1st to the 4th quartile, indicating a slight improvement in performance during the paired memory task controlled by the software.",
+    "generated_answer": "基于提供的知识库内容，特别是**片段 1**，关于配对记忆任务中成功率随四分位数（quartiles）的变化情况如下：\n\n1.  **成功率变化趋势**：在整个会话过程中（Across sessions），每个连续四分位数（each successive quartile）的试验总体正确率分别为 **50%、54%、55% 和 56%**。\n2.  **初始表现**：任务初期的表现处于随机水平（initially at chance level），随后略有上升。\n3.  **关于控制软件**：提供的知识库片段中**并未明确提及**控制该配对记忆任务的“特定软件”名称，仅记录了任务的表现数据（涉及猴子学习新配对的过程）。\n\n综上所述，成功率随四分位数呈现轻微上升趋势（从 50% 增至 56%），但提供的文本未包含关于控制软件的具体信息。",
+    "retrieved_ids": [
+      "images/education/1980675/1980675_page_0003.png",
+      "images/healthcare/3630825/3630825_page_0003.png",
+      "images/education/3641703/3641703_page_0009.png",
+      "images/education/4426997/4426997_page_0005.png",
+      "images/healthcare/0499424/0499424_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "03e92dc83e8da107",
+    "query": "How many contracts must be controlled in Corporate Tax Futures to meet the accountability level of more than 50,000 contracts?",
+    "domain": "finance",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Ownership or control at any time of more than 50,000 contracts net long or short in all Corporate Tax Futures Contracts combined is required to meet the accountability level.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**该问题。\n\n原因如下：\n1.  **相关内容缺失**：虽然片段 1 和片段 2 提到了\"Corporate Tax Futures Contract\"（公司税期货合约），但其内容仅涉及最小价格变动幅度（Minimum Price Increment，0.10 指数点，价值$25）、交易暂停机制（Trading Halts）以及风险披露（Risk Disclosure）。文中并未提及任何关于\"accountability level\"（问责级别）或需要控制\"50,000 份合约”的具体规定或阈值。\n2.  **其他片段无关**：\n    *   片段 3 涉及合同管理仪表板（Contracts theme dashboards）和 dossier 类型，与期货交易规则无关。\n    *   片段 4 涉及跨国公司有效税率的统计分布分析，与期货合约数量无关。\n    *   片段 5 涉及具体的外包服务合同修正案（BPO Contract Amendment），与 Corporate Tax Futures 无关。\n\n因此，基于现有检索到的文字内容，没有信息表明需要控制多少合约才能满足超过 50,000 份合约的问责级别。建议查阅相关的官方交易规则手册或监管文件以获取准确信息。",
+    "retrieved_ids": [
+      "images/finance/6834566/6834566_page_0016.png",
+      "images/finance/6834566/6834566_page_0017.png",
+      "images/legal/6716847/6716847_page_0006.png",
+      "images/finance/3290162/3290162_page_0008.png",
+      "images/finance/6838482/6838482_page_0007.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "03ecf26eef1592cf",
+    "query": "Among the WM storage models, which one exhibits the smallest RMSEA?",
+    "domain": "healthcare",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "Measurement Model 5 exhibits the smallest RMSEA of .07 among the WM storage models.",
+    "generated_answer": "根据提供的知识库内容（特别是片段 1 中的 Table 3），在 WM storage 模型中，**Measurement Model 5** 展现出最小的 RMSEA 值。\n\n具体数据对比如下：\n*   Measurement Model 1: RMSEA = .12\n*   Measurement Model 2: RMSEA = .09\n*   Measurement Model 3: RMSEA = .09\n*   Measurement Model 4: RMSEA = .11\n*   **Measurement Model 5: RMSEA = .07**\n\n相比之下，Measurement Model 5 的 RMSEA 值（.07）是所有 WM storage 测量模型中最小的。",
+    "retrieved_ids": [
+      "images/healthcare/2456459/2456459_page_0013.png",
+      "images/education/2456459/2456459_page_0011.png",
+      "images/education/0772076/0772076_page_0008.png",
+      "images/education/7860274/7860274_page_0008.png",
+      "images/education/0772076/0772076_page_0013.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "040362a94d7e2d7e",
+    "query": "Identify the segments outlined in the Town of Peace River's Pats Creek Storm Water Mediation Project documentation.",
+    "domain": "construction",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "1.0 Schedule 'A' – Services (Terms of Reference), 2.0 Schedule 'B' – Description of the Project, 3.0 Schedule 'C' - Fees, 4.0 Schedule 'D' - Indemnification, 5.0 Schedule 'E' - Site Photos, Drawings and Sketches, 6.0 Schedule 'F' – Supplementary Data",
+    "generated_answer": "Based on the provided knowledge base content, specifically the Table of Contents found in **[片段 3]**, the segments (referred to as Schedules) outlined in the Town of Peace River's Pats Creek Storm Water Mediation Project documentation are:\n\n*   **1.0 SCHEDULE \"A\" - SERVICES (TERMS OF REFERENCE)**\n*   **2.0 SCHEDULE \"B\" - DESCRIPTION OF THE PROJECT**\n*   **3.0 SCHEDULE \"C\" - FEES**\n*   **4.0 SCHEDULE \"D\" - IDEMNIFICATION**\n*   **5.0 SCHEDULE \"E\" - SITE PHOTOS, DRAWINGS AND SKETCHES**\n*   **6.0 SCHEDULE \"F\" - SUPPLEMENTARY DATA**\n\nAdditionally, **[片段 2]** provides further detail on **Schedule \"A\"**, noting that Engineering Services include Pre-Design (inspection, review, desktop survey) and Schematic Design (onsite survey, hydrodynamic testing, geotechnical testing, etc.).",
+    "retrieved_ids": [
+      "images/construction/1630263/1630263_page_0001.png",
+      "images/construction/1630263/1630263_page_0003.png",
+      "images/construction/1630263/1630263_page_0002.png",
+      "images/construction/1676343/1676343_page_0012.png",
+      "images/construction/1630263/1630263_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "04cbfb372888b37d",
+    "query": "In the case of TTC Osteotomy -001, what are the highest and lowest von-Mises stress values recorded for talus cartilage?",
+    "domain": "healthcare",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The maximum equivalent stress value for talus cartilage in TTC Osteotomy -001 is 0.97255 MPa, and the minimum is 0.00023848 MPa.",
+    "generated_answer": "Based on the provided knowledge base content, it is **not possible** to answer the question regarding the specific highest and lowest von-Mises stress values for talus cartilage in the case of TTC Osteotomy-001.\n\nHere is the analysis based on the retrieved snippets:\n\n1.  **Relevant Case Mentioned:** [Fragment 1] does mention \"TTC Osteotomy-001\" (labeled as `C:FEA-003:TTC Osteotomy-001`) and refers to \"Equivalent (von-Mises) Stress\".\n2.  **Missing Numerical Data:** While the text indicates that von-Mises stress was analyzed (e.g., \"Eq. Stress (Tibia Cartilage)\"), **no specific numerical values** (such as MPa or Pa) for the highest or lowest stress are provided in any of the fragments.\n3.  **Anatomical Discrepancy:** [Fragment 1] specifically refers to \"**Tibia** Cartilage\" (\"Eq. Stress (Tibia Cartilage)\"), whereas your question asks about \"**talus** cartilage\". The provided text does not contain data regarding the talus.\n\nTherefore, the specific stress values cannot be retrieved from the given content.",
+    "retrieved_ids": [
+      "images/healthcare/5825109/5825109_page_0006.png",
+      "images/construction/1748668/1748668_page_0004.png",
+      "images/construction/5193048/5193048_page_0012.png",
+      "images/healthcare/1939944/1939944_page_0005.png",
+      "images/construction/7074222/7074222_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "04dcc62b9c393b99",
+    "query": "Can you provide the code and most recent evaluation date for Tetra Tech's safeguarding document?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Document ID: UK_OPS_010, Date of last review: 05/2021",
+    "generated_answer": "Based on the provided knowledge base content, I cannot provide the specific document code or a confirmed evaluation date for the **Tetra Tech Safeguarding policy**. Here are the details available in the text:\n\n*   **Document Code:** Not mentioned in any of the provided snippets.\n*   **Evaluation Date:** The snippet explicitly discussing the **Safeguarding policy** (Snippet 1) does not contain a review or evaluation date.\n    *   *Note:* Snippet 3 mentions a \"Date of last review\" as **July 2021**, but the contents listed (e.g., \"data protection principles,\" \"Privacy by design\") indicate this belongs to a **Data Protection policy** rather than the Safeguarding policy.\n\nWhile the specific code and date are not available, Snippet 1 does provide contact methods for reporting safeguarding concerns (e.g., contacting a UK Safeguarding Officer or emailing CUEreporting@tetratech.com).",
+    "retrieved_ids": [
+      "images/crm/5591014/5591014_page_0001.png",
+      "images/crm/5591014/5591014_page_0002.png",
+      "images/legal/3657965/3657965_page_0002.png",
+      "images/legal/0632613/0632613_page_0001.png",
+      "images/energy/2711884/2711884_page_0002.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0521fc6407ed26cd",
+    "query": "Which fabrics are advised by NSW Health for safeguarding against insects like mosquitoes and ticks?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Wool or fleece fabrics are advised by NSW Health for safeguarding against insects like mosquitoes and ticks.",
+    "generated_answer": "Based on the provided knowledge base content, there is **no information available** to answer which fabrics are advised by NSW Health for safeguarding against insects like mosquitoes and ticks.\n\nHere is the relevant analysis from the snippets:\n*   **Snippet 1** mentions \"NSW Health,\" but only in the context of recommending people wear a **face mask** when unable to physically distance.\n*   **Snippet 1** lists clothing items such as \"Long-sleeve shirts with collars\" for **sun protection** (\"see Sun Safe Policy\") and mentions \"Wool or fleece jumper,\" but does not link these to insect protection advice from NSW Health.\n*   **Snippet 1** ends with the word \"Insect,\" but the text is cut off and does not provide any specific advice or fabric recommendations regarding insects.\n\nTherefore, the provided text does not contain the answer to your question.",
+    "retrieved_ids": [
+      "images/crm/0111800/0111800_page_0014.png",
+      "images/crm/0111800/0111800_page_0015.png",
+      "images/crm/2789285/2789285_page_0005.png",
+      "images/legal/1880877/1880877_page_0007.png",
+      "images/construction/4383350/4383350_page_0003.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "058e85a0e3b857f9",
+    "query": "What are the differences in total non-current assets between 30 June 2018 and 31 December 2017 for Pak Suzuki Motor Company Limited?",
+    "domain": "commerce_manufacturing",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "The total non-current assets on 30 June 2018 were 14,826,578 (in '000 Rupees), compared to 9,904,380 (in '000 Rupees) on 31 December 2017.",
+    "generated_answer": "基于提供的知识库片段，特别是片段 1（Condensed Interim Balance Sheet）和片段 3（确认公司为 Pak Suzuki Motor Company Limited），Pak Suzuki Motor Company Limited 在 2018 年 6 月 30 日和 2017 年 12 月 31 日的非流动资产总额差异如下：\n\n*   **2018 年 6 月 30 日非流动资产总额**：14,826,578 (千卢比)\n*   **2017 年 12 月 31 日非流动资产总额**：9,904,380 (千卢比)\n\n**差异计算**：\n14,826,578 - 9,904,380 = **4,922,198 (千卢比)**\n\n因此，2018 年 6 月 30 日的非流动资产总额比 2017 年 12 月 31 日增加了 4,922,198 千卢比。",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/0458505/0458505_page_0008.png",
+      "images/finance/0458505/0458505_page_0018.png",
+      "images/commerce_manufacturing/0458505/0458505_page_0007.png",
+      "images/finance/6797004/6797004_page_0008.png",
+      "images/finance/0458505/0458505_page_0017.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "05b106f1aa0842cc",
+    "query": "According to the 2003 Executive Opinion Survey, how did different nations rank in terms of limiting foreign ownership?",
+    "domain": "finance",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "According to the 2003 Executive Opinion Survey, the ranking of nations in terms of limiting foreign ownership is as follows: Chile (10), Hungary (12), Nigeria (21), Israel (23), Mexico (26), Estonia (29), South Africa (30), Czech Republic (35), Argentina (38), India (41), Brazil (42), Poland (51), Turkey (66), Korea (68), Venezuela (76), Colombia (79), China (81), Indonesia (95), and Russian Federation (99).",
+    "generated_answer": "基于提供的知识库内容，文中**并没有明确提及**\"2003 Executive Opinion Survey\"（2003 年执行意见调查）这一具体来源名称。\n\n不过，**[片段 1]** 中提供了关于\"Foreign ownership restrictions\"（外资所有权限制）的国家排名数据，标题为\"Figure 10: Foreign ownership restrictions\"，归属于\"2.2: Varieties of Economic Experience in the Developing World\"部分。根据该片段左侧列（对应 Figure 10）的内容，各国在外资所有权限制方面的排名如下：\n\n*   **Chile (智利):** 10\n*   **Hungary (匈牙利):** 12\n*   **Nigeria (尼日利亚):** 21\n*   **Israel (以色列):** 23\n*   **Mexico (墨西哥):** 26\n*   **Estonia (爱沙尼亚):** 29\n*   **South Africa (南非):** 30\n*   **Czech Republic (捷克共和国):** 35\n*   **Argentina (阿根廷):** 38\n*   **India (印度):** 41\n*   **Brazil (巴西):** 42\n*   **Poland (波兰):** 51\n\n请注意，提供的文本片段中未确认这些数据是否直接源自\"2003 Executive Opinion Survey\"，仅显示为 Figure 10 的排名数据。右侧列数据对应的是\"Figure 11: Quality of the educational system\"（教育系统质量），与外资所有权限制无关。",
+    "retrieved_ids": [
+      "images/finance/1372325/1372325_page_0013.png",
+      "images/legal/7606904/7606904_page_0003.png",
+      "images/crm/4969409/4969409_page_0007.png",
+      "images/finance/3331210/3331210_page_0022.png",
+      "images/crm/4969409/4969409_page_0013.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "05bc994c9c9474c5",
+    "query": "How can premature redemption of a financial instrument lead to losses for a client?",
+    "domain": "finance",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "Premature redemption of a financial instrument can lead to losses for a client because the issuer may perform its obligation before the originally scheduled maturity date, or request early performance from the client. This can result in the client receiving lower returns than expected, or incurring costs associated with reinvesting at potentially less favorable terms.",
+    "generated_answer": "基于提供的知识库内容，无法回答该问题。\n\n提供的文本片段中并没有包含关于“金融工具提前赎回”（premature redemption）及其如何导致客户损失的具体信息。检索到的内容主要涉及以下风险类型，但均未提及提前赎回：\n\n1.  **利率风险 (Interest rate risk)**：市场利率不利波动导致金融工具价值受影响。\n2.  **交易对手或违约风险 (Counterparty or default)**：交易对手方可能导致的损失。\n3.  **交易时段外风险 (Risk associated with trading outside the trading session period)**：订单在非交易时段放置可能导致丢失、未执行或价格不当。\n4.  **自救风险 (Bail in risk)**：与信贷机构和投资经纪公司恢复及解决制度相关的无担保金融仪器投资风险。\n5.  **交易对手破产风险 (Counterparty insolvency)**：因交易对手破产导致金融工具无法访问或权利无法行使。\n\n因此，根据现有知识库片段，无法说明提前赎回如何导致客户损失。",
+    "retrieved_ids": [
+      "images/finance/1125177/1125177_page_0002.png",
+      "images/finance/1125177/1125177_page_0003.png",
+      "images/legal/1125177/1125177_page_0005.png",
+      "images/legal/1125177/1125177_page_0004.png",
+      "images/crm/6932891/6932891_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "05e98a1c6b95bcef",
+    "query": "How many nations are recipients of IntechOpen's distributed publications?",
+    "domain": "construction",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "12.2% of countries are recipients of IntechOpen's distributed publications.",
+    "generated_answer": "Based on the provided knowledge base snippets (Snippet 1 and Snippet 2), IntechOpen's publications are delivered to **154** countries.\n\nThe text explicitly states: \"Countries delivered to 154\".",
+    "retrieved_ids": [
+      "images/construction/6920660/6920660_page_0001.png",
+      "images/healthcare/5917231/5917231_page_0001.png",
+      "images/healthcare/6901702/6901702_page_0011.png",
+      "images/healthcare/6976935/6976935_page_0009.png",
+      "images/commerce_manufacturing/0144801/0144801_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "064935b070b58c7c",
+    "query": "What causes unsecured bond investors to face drawbacks versus depositors under the EU directive related to financial institution recovery?",
+    "domain": "legal",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "Holders of unsecured bonds are disadvantaged compared to depositors and secured bondholders under the EU Directive 2014/59/EU. In financial difficulties, shareholders and creditors, including bondholders, may be the first to cover losses. The position of unsecured bondholders may worsen due to depositor preference, and the EU supervisory authority can exercise rights to reduce issuer liability, convert debt into equity, change maturity dates, suspend disbursements, or transfer assets, affecting the issuer's obligations to investors.",
+    "generated_answer": "基于提供的知识库内容，特别是**片段 1**，可以得出以下信息：\n\n无担保金融工具（unsecured financial instruments）投资者面临的主要风险是**“救助风险”（Bail in risk）**。这种风险是与**欧盟提供的信贷机构和投资经纪公司回收和决议制度（credit institution and investment broker company recovery and resolution regime provided by Eu）** 相关联的。\n\n需要注意的是，提供的文本片段中**并未明确提及“存款人”（depositors）**，也没有详细解释无担保债券投资者与存款人相比的具体劣势或对比细节，仅指出了该欧盟制度是导致无担保工具投资风险的原因。",
+    "retrieved_ids": [
+      "images/legal/1125177/1125177_page_0005.png",
+      "images/finance/4282204/4282204_page_0001.png",
+      "images/legal/1125177/1125177_page_0004.png",
+      "images/finance/1125177/1125177_page_0003.png",
+      "images/finance/1125177/1125177_page_0002.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0673a68013ac2a0b",
+    "query": "For applicants seeking funding through the REF Brownfield initiative who are incorporating energy storage, what are the detailed stipulations for the signed agreement covering the storage aspect?",
+    "domain": "energy",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "The executed turnkey contract must include any and all additional terms and conditions related to the energy storage component of the project. It must specify the energy storage component size (kW and kWh) and the expected REF energy adder award amount ($). Applications submitted without an executed turnkey contract will not be accepted.",
+    "generated_answer": "基于提供的知识库内容，**无法提供**关于 REF Brownfield 倡议中储能部分签署协议（signed agreement）的详细规定。\n\n现有片段中仅 [片段 1] 涉及该主题，但主要描述的是**申请要求**而非签署协议的具体条款，且内容不完整。具体信息如下：\n\n1.  **申请附录要求**：对于包含储能组件的项目，申请人需要完成特定于 REF Brownfield 计划的“储能附加申请附录”（Energy Storage Adder Application Addendum）中的所有字段。\n2.  **信息缺失**：提供的文本在\"The ex\"处截断，未提及关于最终签署协议的具体详细规定（detailed stipulations for the signed agreement）。\n3.  **其他片段**：片段 2、3、4、5 分别涉及基金安排数据、发电技术容量预测、风电场非技术摘要及融资需求数据，与 REF Brownfield 储能协议规定无关。\n\n建议您查阅完整的 REF Brownfield 计划指南或相关法律文件以获取关于签署协议的详细条款。",
+    "retrieved_ids": [
+      "images/energy/5536060/5536060_page_0006.png",
+      "images/finance/3331210/3331210_page_0021.png",
+      "images/energy/4425296/4425296_page_0007.png",
+      "images/energy/2711884/2711884_page_0002.png",
+      "images/finance/3331210/3331210_page_0022.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "06d599ecd44778f2",
+    "query": "Identify the entry among the geospatial datasets that offers height measurements in a collection of spatial points, specifying its file format and the organization responsible for supplying it.",
+    "domain": "energy",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "The entry among the geospatial datasets that offers height measurements in a collection of spatial points is 'Lidar Elevation.' Its file format is 'Lidar point cloud,' and it is supplied by Minnesota IT Services Geospatial Information Office (MN GEO).",
+    "generated_answer": "基于提供的知识库片段，符合“提供空间点集合中的高度测量”（height measurements in a collection of spatial points）的地理空间数据集是 **LiDAR**。具体信息如下：\n\n*   **数据集名称**: LiDAR\n*   **文件格式**: 文中描述为 **\"point cloud file\"（点云文件）**。\n    *   *依据*: 片段 1 中提到 \"LiDAR is a point cloud file of this... elevations measured using light waves.\"（LiDAR 是此内容的点云文件……使用光波测量的高程）。\n*   **负责供应的组织**: 提供的文本片段中 **未明确说明** 负责供应 LiDAR 数据的具体组织。\n    *   *说明*: 片段 1 中提到了 \"county parcel layer\"（县地块图层）和 \"parcel information from the county\"（来自县的地块信息），但这指的是与建筑层进行空间连接的地块属性信息，文中并未明确指出 LiDAR 数据本身是由该县或其他特定组织提供的。片段 2 和片段 5 提到的 \"ISPRS\" 和 \"International Archives...\" 均为学术期刊或会议出版物名称，而非数据供应组织。\n\n综上所述，根据现有内容，该数据集为 **LiDAR**，格式为 **点云文件（point cloud file）**，但文中 **未提及具体的数据供应组织**。",
+    "retrieved_ids": [
+      "images/energy/6007268/6007268_page_0004.png",
+      "images/construction/1858503/1858503_page_0018.png",
+      "images/construction/2692012/2692012_page_0003.png",
+      "images/healthcare/4184795/4184795_page_0009.png",
+      "images/construction/4913473/4913473_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "06ed835a90a06065",
+    "query": "Can you provide the main points of the changes to the BPO call center service contracts that were covered during the June 2020 committee and board meetings?",
+    "domain": "finance",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "The contract amendments cover pricing adjustments for Business Process Outsourcing (BPO) for inbound and outbound call center services, involving vendors Faneuil, INC, MacNeill Group, INC, and Y&Y Holdings, LLC (“Agility Marketing”). These adjustments are budgeted, not increasing the original approved amount of $47,850,803, with additional costs ranging from $451,172.88 to $1,122,002.16 over the next eighteen months if on-demand services are initiated. The adjustments pertain to First Notice of Loss (FNOL)/Claim Inquiry and Tier I call types, which represent about 63% of outsourced calls. The existing contracts, approved on December 13, 2017, divide the award into five call types, with MacNeill Group, INC as the primary vendor for Tier I and Y&Y Holdings, LLC as primary for FNOL/Claim Inquiry.",
+    "generated_answer": "Based on the provided knowledge base snippets, here are the main points regarding the changes to the BPO call center service contracts covered during the June 2020 meetings:\n\n1.  **Meeting Details**: The contract changes were discussed during the **Actuarial and Underwriting Committee Meeting on June 18, 2020**, and the **Board of Governors Meeting on June 24, 2020**.\n2.  **Contract Subject**: The contracts involve **Business Process Outsourcing (BPO) - Inbound and Outbound Call Center Services**.\n3.  **Nature of Changes**: The primary changes consisted of **Pricing Adjustments** implemented through contract amendments.\n4.  **Specific Amendments and Vendors**:\n    *   **Contract Amendment #1**: Covered pricing adjustments for:\n        *   **Faneuil, INC** (Contract Number: 18-17-0013-03)\n        *   **MacNeill Group, INC** (Contract Number: 18-17-0013-08)\n    *   **Contract Amendment #2**: Covered pricing adjustments for:\n        *   **Y&Y Holdings, LLC (\"Agility Marketing\")** (Contract Number: 18-17-0013-01)\n5.  **Vendor Status Context**: At the time of the meetings, **Y&Y Holdings, LLC** and **MacNeill Group, INC** were active vendors providing essential support functions. **Faneuil, INC** was noted as not currently providing support.\n6.  **Procurement Background**: The contracts were originally procured pursuant to Invitation to Negotiate (ITN) No. 17-0013, which allowed for contingent vendors based on volume or performance needs.",
+    "retrieved_ids": [
+      "images/crm/6838482/6838482_page_0007.png",
+      "images/finance/6838482/6838482_page_0007.png",
+      "images/crm/6838482/6838482_page_0008.png",
+      "images/finance/6838482/6838482_page_0008.png",
+      "images/crm/6838482/6838482_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "06fe22677d00d569",
+    "query": "What are the variations between the median and mean outcomes following a technological disturbance as depicted in the fifth figure?",
+    "domain": "finance",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The responses peak around 2 and then gradually decline, with the dashed line indicating a slightly higher peak. The mean response (dashed line) shows a greater initial increase compared to the median response (solid line), indicating a larger immediate impact from the technological disturbance.",
+    "generated_answer": "Based on the provided knowledge base content, specifically **Snippet 1**, the text describes the depiction of variations in **Figure 5** as follows:\n\n*   **Variables Compared**: The figure graphs the **median QTE** (Quantile Treatment Effect) and the **mean response** associated with a **TFP (Total Factor Productivity) shock**.\n*   **Visual Representation**:\n    *   The **median QTE** is represented by a **continuous line**.\n    *   The **mean response** is represented by a **dashed line**.\n*   **Panel Breakdown**:\n    *   The **left-hand panel** graphs the responses to a **TFP consumption shock**.\n    *   The **right-hand panel** considers a **TFP series for equipment investment**.\n\nPlease note that the provided text describes the **structure and legend** of the figure but does not explicitly detail the specific quantitative variations or comparative trends (e.g., whether the median is higher or lower than the mean) observed in the data.",
+    "retrieved_ids": [
+      "images/finance/6038205/6038205_page_0024.png",
+      "images/finance/6038205/6038205_page_0022.png",
+      "images/energy/1597086/1597086_page_0003.png",
+      "images/finance/6038205/6038205_page_0020.png",
+      "images/construction/6565973/6565973_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "07206ff3eee666e8",
+    "query": "How does the Sterling New Life plan financially benefit seniors as opposed to conventional retirement communities?",
+    "domain": "legal",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The Sterling New Life scheme offers financial benefits for seniors compared to conventional retirement communities by providing a 35% lower upfront outlay, no ongoing management fees, and no refurbishment costs. Additionally, there are no weekly fees, no council or water rates, no stamp duty, and no exit fees, which can alleviate financial worries for those approaching retirement.",
+    "generated_answer": "Based on the provided knowledge base content, there is **no information available** regarding a \"Sterling New Life plan\" or how it financially benefits seniors compared to conventional retirement communities.\n\nThe provided snippets contain the following relevant observations regarding \"Sterling,\" but they do not support the premise of financial benefits:\n\n*   **Snippet 1** mentions \"Sterling\" in a negative context, stating that \"Sterling collapsed\" in May 2019, administrators were appointed, and there were \"Elderly Sterling First victims.\" This suggests financial loss or harm rather than benefit.\n*   **Snippets 2, 3, 4, and 5** discuss community development goals, housing affordability, senior clubs (e.g., 50+ Club), and tourism promotions (Sentosa SG50), but none mention a \"Sterling New Life plan.\"\n\nTherefore, I cannot answer your question about the financial benefits of this specific plan based on the given text.",
+    "retrieved_ids": [
+      "images/legal/0502795/0502795_page_0002.png",
+      "images/construction/5066651/5066651_page_0009.png",
+      "images/construction/5066651/5066651_page_0013.png",
+      "images/crm/4367650/4367650_page_0015.png",
+      "images/crm/6653568/6653568_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "074ac93e55552b7b",
+    "query": "What is the cycle time in seconds for the stamping process in the transformation factory described in the study?",
+    "domain": "commerce_manufacturing",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "1.33 (80gpm)",
+    "generated_answer": "基于提供的知识库片段，**无法回答**您的问题。\n\n检索到的所有内容中均未包含关于\"transformation factory\"（转型工厂）中\"stamping process\"（冲压工艺）的周期时间（cycle time）的具体数值或相关描述。\n\n提供的片段主要涉及以下内容：\n*   **片段 1**：行动研究方法（Action Research）及 Thiollent 的概念。\n*   **片段 2**：运输成本参数、库存组成及组装时间（Mean assembly time）。\n*   **片段 3**：详细的系统报告表（涉及 Making、Packing、Agglomerator 等工序）。\n*   **片段 4**：Simul8 仿真模型、业务管理及成本/价值分析。\n*   **片段 5**：BPMN 流程及员工招聘过程的时间计算。\n\n以上信息均与问题中询问的冲压工艺周期时间无关。",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/0999705/0999705_page_0008.png",
+      "images/commerce_manufacturing/5981833/5981833_page_0006.png",
+      "images/commerce_manufacturing/6816999/6816999_page_0004.png",
+      "images/commerce_manufacturing/4061604/4061604_page_0007.png",
+      "images/crm/6640521/6640521_page_0014.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "08782261ae50dc68",
+    "query": "What are the differences in the percentage allocation of operating expenses such as electricity, wages, asset write-off, and miscellaneous costs between the hydroponic cultivation approach using traditional lighting and the intended OZEPf configuration?",
+    "domain": "energy",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "In the artificial light type hydroponic cultivation, the percentage allocation of operating expenses is: electricity 27%, labor costs 19%, depreciation cost 27%, and other expenses 27%. In the intended OZEPf configuration, the allocation is: electricity 0%, labor costs 35%, depreciation cost 35%, and other expenses 30%. The main differences are that OZEPf eliminates electricity costs, and the shares of labor, depreciation, and miscellaneous costs increase compared to the traditional approach.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**关于水培种植方法（使用传统照明）与预期的 OZEPf 配置之间运营费用（如电力、工资、资产注销和杂项成本）百分比分配差异的具体问题。\n\n原因如下：\n\n1.  **片段 1** 虽然提到了 OZEPf 系统相比其他系统有许多优点（如利用地下水稳定温度、扩大栽培期、稳定质量等），并提及\"Fig. 9 shows the cost of a perfect artificial light type plant factory and...\"（图 9 展示了完美人工光型植物工厂的成本……），但文本在此处截断，**并未提供具体的运营费用百分比分配数据**，也没有列出电力、工资、资产折旧等具体项目的对比数值。\n2.  **片段 2 至片段 5** 分别涉及建筑热负荷因子、网络配置优化公式、光度数据、租户太阳能发电分段模型以及基于模糊逻辑的放电值估算，**均不包含**有关 OZEPf 或水培种植运营费用分配的相关信息。\n\n因此，所提供的检索内容中缺乏回答该问题所需的具体数据。",
+    "retrieved_ids": [
+      "images/energy/1849255/1849255_page_0006.png",
+      "images/energy/2342156/2342156_page_0005.png",
+      "images/construction/4795922/4795922_page_0023.png",
+      "images/energy/1282033/1282033_page_0008.png",
+      "images/energy/5256917/5256917_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "08bd1b82ae8791f6",
+    "query": "How do the estimates for Pareto's Alpha change from 95 to 70 across various implicate scenarios?",
+    "domain": "finance",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The trend shows a general decline in Pareto's Alpha estimates across all implicate scenarios from 95 to 70, as depicted in the figure, with variations among different implicates. Implicate #1, for example, shows a significant drop initially, stabilizing around a lower value after 80. All implicates generally move towards lower estimates as the implicate number decreases.",
+    "generated_answer": "Based on the provided knowledge base content (specifically **Snippet 1**), the information regarding the estimates for Pareto's Alpha is as follows:\n\n*   **Source:** The data is presented in **Figure 4**, titled \"Estimates for Pareto's α and Corresponding Cramer von Mises Test Statistics Across All Implicates\" from the *Review of Income and Wealth 2015*.\n*   **Scenarios:** The estimates cover five scenarios labeled **Implicate #1** through **Implicate #5**.\n*   **Range:** The figure displays values across a range from **95 to 70** (likely representing percentiles or thresholds).\n*   **Alpha Values:** The associated scale for Pareto's Alpha includes values such as **1.8, 1.6, 1.4, and 1.2**.\n*   **Interpretation:** The text fragment mentions \"tive estimates (i.e., wealth is distributed more evenly),\" suggesting a relationship between the estimates and wealth distribution equality, though the specific directional trend (increase or decrease) from 95 to 70 is not explicitly detailed in the text excerpt provided, only the axis labels and figure structure are described.\n\nIn summary, the provided text confirms that estimates for Pareto's Alpha are generated across five implicate scenarios for the 95 to 70 range, but does not explicitly state the numerical trend of change in the text fragment.",
+    "retrieved_ids": [
+      "images/finance/5396106/5396106_page_0012.png",
+      "images/finance/5396106/5396106_page_0009.png",
+      "images/education/2765782/2765782_page_0010.png",
+      "images/education/6488717/6488717_page_0012.png",
+      "images/education/2765782/2765782_page_0011.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "08dd0b96aeb013e3",
+    "query": "How did households identified as 'Extremely Vulnerable' adjust their behaviors amidst the pandemic, and what was the impact on their financial resilience ratings in 2020?",
+    "domain": "crm",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "'Extremely Vulnerable' households reduced non-essential expenses by 80.7%, drew down savings by 66.2%, and increased borrowing by 43.6% as of October 2020. Despite these adjustments, emotional well-being worsened, indicated by financial stress. The financial resilience index score improved slightly to 55.69 by February 2021, but households remained under significant financial stress, affecting their overall well-being.",
+    "generated_answer": "Based on the provided knowledge base fragments, here is the answer to your question:\n\n**Behavioral Adjustments**\nAccording to **Fragment 1**, households identified as 'Extremely Vulnerable' took specific steps to adjust to their situation as of October 2020:\n*   **80.7%** significantly reduced non-essential expenses.\n*   **66.2%** drew down their savings.\n*   **43.6%** increased their borrowing to meet everyday expenses.\n\n**Impact on Financial Resilience Ratings**\nThe provided text **does not specify exact financial resilience rating numbers** for 2020. However, **Fragment 1** states that \"The Index tells the clear story that more financially vulnerable households are being more negatively impacted by the pandemic,\" though the sentence cuts off before detailing the specific financial consequences (ending at \"causing financial ha\"). Therefore, while the text confirms a negative impact, it does not provide specific rating scores for this segment in 2020.",
+    "retrieved_ids": [
+      "images/crm/3525203/3525203_page_0005.png",
+      "images/crm/3525203/3525203_page_0002.png",
+      "images/crm/3525203/3525203_page_0004.png",
+      "images/crm/3525203/3525203_page_0003.png",
+      "images/finance/3235516/3235516_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "08f043faa6cec570",
+    "query": "What trends are observed in global primary energy use between 1990 and 2060 when considering major scenario projections developed by various international organizations and companies?",
+    "domain": "energy",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "Projections for total primary energy demand generally show a consistent increase from 1990 to 2060 across all major scenario outlooks developed by various international organizations and companies. However, the magnitude of this increase varies considerably depending on the scenario. For example, scenarios such as Shell (2013) Oceans and IEA (2015) CPS forecast the highest growth in energy demand by 2060, while scenarios like IEA (2015) 450 project a more moderate increase, reflecting stronger climate action. The projections begin to diverge more significantly after 2020, indicating that future energy demand is highly sensitive to differing assumptions about international politics, economic integration, and climate policy ambition. Despite these divergences, none of the scenarios show a decline in total primary energy demand through 2060.",
+    "generated_answer": "基于提供的知识库内容，关于 1990 年至 2060 年间全球主要能源使用趋势的观察如下：\n\n1.  **情景预测框架**：根据 [片段 1]，多个国际组织和公司开发了涵盖 1990 年至 2060 年时间段的战略能源路线图情景。涉及的机构包括国际能源署（IEA, 2015）、壳牌（Shell, 2013）和世界能源理事会（World Energy Council, 2013）。具体的情景名称包括 IEA 的 NPS、CPS、450 情景，壳牌的 Mountains、Oceans 情景，以及世界能源理事会的 Jazz 情景。\n\n2.  ** sector-specific 趋势（相对于 1990 年）**：虽然提供的文本片段没有明确叙述全球一次能源使用的总体增减趋势，但 [片段 4] 中的表格数据显示，在特定情景下，某些部门的能源使用量预计将低于 1990 年的水平。例如：\n    *   **电力（Electricity）**：在不同情景下，预计比 1990 年低 5.5% 至 57.4%。\n    *   **天然气（Natural Gas）**：在某些情景下保持不变（-18.5% 可能指相对于某基准，但表中显示数值不变或降低），在 Scenario 3 和 4 中显示比 1990 年低 26.8%。\n    *   **交通（Transportation）**：显示比 1990 年低 19%。\n\n综上所述，知识库内容确认了主要组织针对 1990-2060 年制定了多种能源情景，且部分情景数据显示电力、天然气和交通部门的用量在某些路径下会呈现低于 1990 年水平的趋势，但文本未直接提供全球一次能源使用总量的具体增减描述。",
+    "retrieved_ids": [
+      "images/energy/1711172/1711172_page_0004.png",
+      "images/energy/4425296/4425296_page_0007.png",
+      "images/energy/0423894/0423894_page_0003.png",
+      "images/energy/0901042/0901042_page_0011.png",
+      "images/energy/5799028/5799028_page_0003.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0907f4f3c5699fa8",
+    "query": "How are the product types distributed across different tours and locations based on compartment sizes?",
+    "domain": "commerce_manufacturing",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "Product Type 1 is mainly associated with Tour 1, Product Type 2 with Tour 2, and Product Type 3 is used during Tour 1.",
+    "generated_answer": "Based on the provided knowledge base fragments, the distribution of product types across different tours and locations based on compartment sizes is addressed through the following mechanisms:\n\n1.  **Genetic Algorithm Representation:** In the proposed genetic algorithm for the MCVRP-CFCS, the allocation of supplies to vehicles and the respective compartment sizes for different product types are **derivable from a chromosome**. Each gene in this representation represents a positive supply of a specific product type at a specific customer location (Fragment 4).\n2.  **Capacity and Compartment Constraints:** The distribution is subject to mathematical constraints ensuring that:\n    *   The **maximum number of compartments per vehicle** is not exceeded.\n    *   The **vehicle capacities** are not exceeded (Fragment 1, Constraints 8 and 9).\n3.  **Mathematical Model:** The underlying model includes variables linking locations, vehicles, and product types (e.g., $U_{ipk}$), ensuring that supply requirements are met while adhering to the vehicle and tour constraints (Fragment 3).\n\nIn summary, the distribution is determined by the genetic algorithm's chromosome structure, which encodes supply allocations and compartment sizes, while strictly adhering to vehicle capacity and compartment limits defined in the mathematical model.",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/0314440/0314440_page_0007.png",
+      "images/commerce_manufacturing/0314440/0314440_page_0005.png",
+      "images/commerce_manufacturing/0314440/0314440_page_0006.png",
+      "images/commerce_manufacturing/0314440/0314440_page_0010.png",
+      "images/commerce_manufacturing/5981833/5981833_page_0007.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "09524736a06f9103",
+    "query": "How are expenses distributed among key areas such as equipment, chemical usage, labor, and management in algae-based biofuel manufacturing using either alkali or enzyme-driven approaches?",
+    "domain": "energy",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The expenses in algae-based biofuel manufacturing are distributed among key areas as follows: For the alkali-driven process, the production cost distribution is 28% for equipment, 15% for chemicals, 10% for salaries, 15% for administration, and 32% for utilities. For the enzyme-driven (enzymatic) process, the distribution is 35% for equipment, 10% for chemicals, 11% for salaries, 16% for administration, and 28% for utilities.",
+    "generated_answer": "Based on the provided knowledge base snippets, it is **not possible** to provide a specific distribution of expenses among equipment, chemical usage, labor, and management for algae-based biofuel manufacturing. The retrieved text does not contain a breakdown of costs into these specific categories, nor does it explicitly mention \"algae\" in the context of the cost data.\n\nHowever, the following relevant information regarding costs and processes is available from the snippets:\n\n1.  **Cost Comparison (Alkali vs. Enzymatic):**\n    *   The enzymatic path is described as \"almost as expensive as the alkali one\" (Snippet 1).\n    *   The cost of the enzyme makes biodiesel production more expensive, but the enzymatic approach is more environmentally friendly due to lower energy and water consumption (Snippet 1).\n2.  **Production Cost Distribution:**\n    *   Snippet 2 references \"Figure 13.-Production cost distribution\" and lists percentages (e.g., 28%, 32%, 28%, 35%, etc.) for Alkali and Enzymatic methods. However, the text does not specify which expense categories (such as equipment, labor, or chemicals) these percentages represent, and parts of the text appear garbled (Snippet 2).\n3.  **Cost Reduction:**\n    *   Process integration is noted to reduce the production cost of biofuels (Snippet 2).\n4.  **Feedstock Context:**\n    *   The text mentions \"biodiesel,\" \"biofuels,\" and \"Lignocellulosic waste\" (Snippet 5), but does not confirm that the cost data applies specifically to **algae-based** manufacturing.\n\nTherefore, the detailed expense breakdown requested (equipment, chemical usage, labor, management) cannot be answered from the given content.",
+    "retrieved_ids": [
+      "images/energy/0988834/0988834_page_0024.png",
+      "images/energy/0988834/0988834_page_0025.png",
+      "images/energy/2257807/2257807_page_0010.png",
+      "images/energy/2257807/2257807_page_0011.png",
+      "images/energy/0273247/0273247_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "096f7c380141f744",
+    "query": "Within the stage focused on direct field evaluations in the chemical analysis protocol, what are the subsections included?",
+    "domain": "energy",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "Within the stage focused on direct field evaluations in the chemical analysis protocol, the subsections included are: Water Chemistry, Quick Microbiological Testing, and Standard Microbiological Growth Tests.",
+    "generated_answer": "基于提供的知识库内容（主要是片段 1 的目录结构），文档中并没有 explicitly（明确）标题为\"direct field evaluations\"（直接现场评估）的阶段。\n\n然而，在与化学分析协议（Chemical Analysis Protocol）相关的文档目录中，**第 4 节 \"Proposed Fluid Collection Sequence\"（建议的流体收集顺序）** 包含了与现场（Field）操作最相关的 subsections（子部分）。根据片段 1，该部分包含以下子部分：\n\n*   **4.1 Fresh Drilling Fluid Collection**（新鲜钻井液收集）\n*   **4.2 Tubing/Annular Fluid Collection**（油管/环空流体收集）\n*   **4.3 Field Variances**（现场差异）\n\n此外，第 2 节明确标记为 \"Phase 3 - Chemical Analysis Protocol\"，其下列出的子部分仅为 2.1 Objective and Rational 和 2.2 Background，未提及现场评估。因此，最符合“现场评估”相关内容的 subsections 位于第 4 节。",
+    "retrieved_ids": [
+      "images/energy/0350904/0350904_page_0003.png",
+      "images/energy/0350904/0350904_page_0004.png",
+      "images/energy/2711884/2711884_page_0002.png",
+      "images/healthcare/4833167/4833167_page_0004.png",
+      "images/energy/2257807/2257807_page_0010.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "09e5d81ee526178e",
+    "query": "What inquiry is made to the electorate concerning the possible merger of the Mesa Water District with the Costa Mesa Sanitary District in the advisory ballot?",
+    "domain": "legal",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Shall the Mesa Water District and the Costa Mesa Sanitary District pursue consolidation if, as identified in the Optimal Governance Structure Study prepared by Arcadis U.S. Inc., consolidation could result in a one-time savings of up to $15.6 million (which equates to $650 per ratepayer), annual savings of as much as $2.7 million, and wastewater rate reductions of up to 28%?",
+    "generated_answer": "Based on the provided text, specifically **Fragment 2**, the inquiry made to the electorate in the advisory ballot is:\n\n\"**Shall the Mesa Water District and the Costa Mesa Sanitary District pursue consolidation if, as identified in the Optimal Governance Structure Study prepared by Arcadis U.S. Inc., consolidation could result in a one-time savings of up to $15.6 million (which equates to $650 per ratepayer), annual savings of as much as $2.7 mi[llion]...**\"\n\nThe measure seeks public input on whether the two districts should pursue consolidation based on the potential financial savings identified in the study (noting that the text provided cuts off at \"$2.7 mi\"). Fragment 1 confirms this was an advisory measure submitted to voters for the November 8, 2016 Consolidated Regular Election.",
+    "retrieved_ids": [
+      "images/legal/6749931/6749931_page_0006.png",
+      "images/legal/6749931/6749931_page_0007.png",
+      "images/construction/3050869/3050869_page_0012.png",
+      "images/legal/3900806/3900806_page_0006.png",
+      "images/construction/2600534/2600534_page_0001.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0a464c0232c79e10",
+    "query": "What is the difference in linguistic variety between the original and CoCo-generated test datasets based on distinct n-gram measurements?",
+    "domain": "crm",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "The distinct n-gram ratios for Ori-test are Distinct-1: 0.009, Distinct-2: 0.051, Distinct-3: 0.105, Distinct-4: 0.151. For CoCo-test, they are Distinct-1: 0.009, Distinct-2: 0.053, Distinct-3: 0.113, Distinct-4: 0.166. CoCo-test demonstrates higher linguistic diversity than Ori-test, as indicated by higher distinct n-gram scores and a higher entropy (0.65 compared to 0.57).",
+    "generated_answer": "基于提供的知识库内容，**无法直接回答**关于基于“不同 n-gram 测量”（distinct n-gram measurements）的具体差异，因为提供的片段中**未明确提及 n-gram 测量**。\n\n不过，片段 1 中提供了关于**多样性评估（DIVERSITY EVALUATION）** 的相关信息，这可能与您询问的语言多样性有关，具体细节如下：\n\n1.  **评估对象**：原始测试集（Ori-test）和 CoCo 生成的测试集（CoCo-test）。\n2.  **评估指标**：片段中主要提及的是槽位共现分布（co-occurrence distribution）及其**熵（entropy）**，而非 n-gram。\n3.  **对比结果**：\n    *   根据片段 1 中的 Table 6 数据，**CoCo-test 的熵值（0.65）高于 Ori-test 的熵值（0.57）**。\n    *   文中文字描述指出：\"The distribution entropy of CoCo-test is higher than its c...\"（CoCo-test 的分布熵高于其...）。\n\n其他片段（片段 2 至片段 5）主要涉及生成示例、模型联合目标准确率、步态数据集实验以及用户分布图，均未包含关于原始与 CoCo 生成数据集之间语言多样性或 n-gram 测量的对比信息。\n\n**结论**：基于现有内容，只能确认 CoCo 生成集在**槽位共现分布熵**上表现出比原始测试集更高的多样性，但无法提供基于**distinct n-gram measurements**的具体差异数据。",
+    "retrieved_ids": [
+      "images/crm/6302639/6302639_page_0017.png",
+      "images/crm/6302639/6302639_page_0018.png",
+      "images/crm/6302639/6302639_page_0016.png",
+      "images/healthcare/6311163/6311163_page_0007.png",
+      "images/crm/4159712/4159712_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0ac0b089ae62c9ed",
+    "query": "In the May 2021 financial model by the KIUC Board, what are the proportions of equity and liabilities?",
+    "domain": "finance",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The equity percentage is 33.0% and the liabilities percentage is 67.0%.",
+    "generated_answer": "Based on the provided knowledge base snippets, there is **no information available** regarding a \"May 2021 financial model by the KIUC Board\" or specific proportions of equity and liabilities for such a model.\n\nHere is the analysis of the provided text:\n*   **Snippet 1** mentions an \"**April 2021 Financial Scorecard**\" (not May 2021) and includes data on \"Equity Ratio\" (showing values like 33.0% and 67.0% associated with specific classes like Residential and Large Comm) and a label for \"Liabilities asa %ofAssets\". However, it does not explicitly name the \"KIUC Board,\" nor does it provide clear overall proportions for equity and liabilities for May 2021.\n*   **Snippets 2, 3, 4, and 5** relate to different organizations (BEUC, EQTEC plc, Finders Resources Limited) and different time periods (2012, 2016, 2018), and are irrelevant to the question.\n\nTherefore, the specific proportions of equity and liabilities for the KIUC Board's May 2021 financial model cannot be determined from the given content.",
+    "retrieved_ids": [
+      "images/finance/7914979/7914979_page_0006.png",
+      "images/energy/1282033/1282033_page_0007.png",
+      "images/energy/4343531/4343531_page_0014.png",
+      "images/finance/6797004/6797004_page_0008.png",
+      "images/commerce_manufacturing/0458505/0458505_page_0008.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0b0f12ee16cdd43c",
+    "query": "How was the open pelvic ring fracture managed following the high-speed injury?",
+    "domain": "healthcare",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "The open pelvic ring fracture caused by high-velocity trauma was managed with external fixation, which was removed after 7.5 weeks.",
+    "generated_answer": "根据提供的知识库内容（片段 1），高速创伤（High-velocity trauma）导致的开放性骨盆环骨折（open pelvic ring fracture）是通过**外固定（External fixation）**进行管理的。文中记录显示，该外固定装置在 7.5 周后被移除（removed after 7.5 weeks）。",
+    "retrieved_ids": [
+      "images/healthcare/4671258/4671258_page_0002.png",
+      "images/construction/5193048/5193048_page_0012.png",
+      "images/education/2442094/2442094_page_0004.png",
+      "images/healthcare/0779019/0779019_page_0005.png",
+      "images/healthcare/5825109/5825109_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0b507a3167d99a7c",
+    "query": "How did the value of Algerian hydrocarbon shipments to Europe evolve from 2017 through 2020 as reported by Eurostat, and what was the scale of the drop following the highest point?",
+    "domain": "energy",
+    "question_type": "summarization",
+    "answer_type": "image_only",
+    "reference_answer": "Algerian hydrocarbon (oil and gas) shipments to Europe, as reported by Eurostat, increased slightly from about €16,000 million in 2017 to a peak of around €17,800 million in 2018. After 2018, the value declined each year, dropping to roughly €15,500 million in 2019 and then falling sharply to just above €10,000 million in 2020. The scale of the drop from the highest point in 2018 to 2020 was about €7,800 million.",
+    "generated_answer": "Based on the provided knowledge base content, specifically **Snippet 1**, there is a reference to **\"Figure 6. Algeria: Exports of Oil and Gas to the EU\"** covering the years **2017 to 2020**, with the source cited as **Eurostat**.\n\nHowever, the provided text only contains the **title, axis labels (0 to 20000 Million), and years** of the chart. It **does not include the specific numerical values** for the exports in each year, nor does it describe the trend or magnitude of changes between these years.\n\nTherefore, based strictly on the provided content, it is **not possible to answer** how the value evolved or what the scale of the drop was following the highest point, as the actual data points are missing from the text snippets. Snippet 5 mentions European gas prices climbing, but this refers to market prices (TTF and NBP contracts) rather than the value of Algerian shipments.",
+    "retrieved_ids": [
+      "images/energy/3362281/3362281_page_0017.png",
+      "images/commerce_manufacturing/7215936/7215936_page_0005.png",
+      "images/energy/4871187/4871187_page_0012.png",
+      "images/finance/1615160/1615160_page_0010.png",
+      "images/energy/5066075/5066075_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0ba854eeca044fa0",
+    "query": "How do the estimated values of propagation rate and starting load reduction compare across the three examined system loading conditions in the IEEE 300 bus cascading failure simulations?",
+    "domain": "energy",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "The average propagation rate (λ) increases as the system loading increases: it is 0.09 at load level 1.0, 0.21 at 1.05, and 0.42 at 1.1. The average starting load reduction (θ) decreases with increasing load: it is 3.72 GW at 1.0, 3.57 GW at 1.05, and 3.29 GW at 1.1. These estimated values are based on simulations of 20,000 cascades for each load level in the IEEE 300 bus system.",
+    "generated_answer": "基于提供的知识库片段，**无法回答**您的问题。\n\n提供的检索内容中**没有包含**关于\"IEEE 300 总线级联故障模拟”（IEEE 300 bus cascading failure simulations）、“传播速率”（propagation rate）或“起始负载减少”（starting load reduction）在“三种系统负载条件”（three examined system loading conditions）下进行比较的具体信息。\n\n具体分析如下：\n*   **片段 1**：虽然提到了负载削减（load shed）、平均案例负载（23,800 MW）和线路数量（409 lines），但并未明确提及 IEEE 300 总线系统，也没有关于传播速率或三种负载条件下起始负载减少的比较数据。\n*   **片段 2**：涉及韩国核学会的模拟单元、反应堆压力容器和辅助给水系统，与电网级联故障无关。\n*   **片段 3**：涉及分布式发电对电缆热老化的影响，与级联故障模拟无关。\n*   **片段 4**：涉及机械连接的建模测试和载荷 - 位移曲线，与电力系统仿真无关。\n*   **片段 5**：涉及虚拟电厂（VPP）市场系统和调度，未提及级联故障的具体仿真参数。\n\n因此，基于现有知识库内容，无法提供关于传播速率和起始负载减少在不同系统负载条件下比较的答案。",
+    "retrieved_ids": [
+      "images/energy/1597086/1597086_page_0003.png",
+      "images/energy/4697637/4697637_page_0002.png",
+      "images/energy/0982617/0982617_page_0004.png",
+      "images/construction/5193048/5193048_page_0015.png",
+      "images/energy/2183227/2183227_page_0014.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0bc0bdd3572ec798",
+    "query": "In what ways do the flexibility and fire resistance of RC, SRC, S, and CFT structural types differ?",
+    "domain": "construction",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "RC structure is rated as good for flexibility and excellent for fire resistance. SRC structure is good for both flexibility and fire resistance. S structure is fair for both flexibility and fire resistance, while CFT structure is excellent for both flexibility and fire resistance.",
+    "generated_answer": "基于提供的知识库片段，**无法回答**关于 RC（钢筋混凝土）、SRC（型钢混凝土）、S（钢结构）和 CFT（钢管混凝土）结构类型在柔韧性（flexibility）和耐火性（fire resistance）方面差异的问题。\n\n提供的检索内容中不包含这四种结构类型在上述性能方面的对比信息，具体原因如下：\n\n1.  **片段 1**：提到了复合材料段（如水泥包裹钢段或水泥填充钢圆柱区域，对应 SRC 或 CFT 概念），但仅讨论了施工顺序和承载Dead masses 的优势，未提及柔韧性或耐火性对比。\n2.  **片段 2**：主要讨论铸造圆柱与钻孔芯样的抗压强度测试结果对比，与结构类型的柔韧性或耐火性无关。\n3.  **片段 3**：涉及航空图像数据中的建筑检测误差（假阳性和假阴性），属于遥感或图像识别领域，与结构性能无关。\n4.  **片段 4**：描述了轻型钢/木承重屋顶元素的结构组成和绝缘层，未涉及 RC、SRC、S、CFT 的对比。\n5.  **片段 5**：提到了模拟测试中的相对位移及参考文献（其中引用了防火设计规范），但并未提供具体的性能对比数据或结论。\n\n因此，现有的知识库内容不足以支持对该问题的回答。",
+    "retrieved_ids": [
+      "images/construction/0992970/0992970_page_0002.png",
+      "images/construction/4201027/4201027_page_0013.png",
+      "images/construction/4280740/4280740_page_0011.png",
+      "images/construction/2771539/2771539_page_0004.png",
+      "images/construction/5193048/5193048_page_0016.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0beabb73a47bd474",
+    "query": "Which items did Léopold-Lévy employ while painting landscapes outside in the Provence region?",
+    "domain": "education",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "Léopold-Lévy used a canvas, a painting apron, and a portable easel during his outdoor painting sessions in the Provence region.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**该问题。\n\n提供的五个文本片段中均未包含关于艺术家 Léopold-Lévy、普罗旺斯（Provence）地区或他户外绘画时所使用物品的任何信息。这些片段的主要内容如下：\n\n*   **片段 1**：涉及土耳其在线设计、艺术与通信期刊（TOJDAC）及一些土耳其艺术家（如 Nurullah Berk 等）的工作室安排。\n*   **片段 2**：涉及计算机视觉模型的错误案例分析和参考文献。\n*   **片段 3**：涉及地理信息科学（ISPRS）、RedRelief 图像地图（RRIM）及考古地形可视化。\n*   **片段 4**：涉及 VAA 公司的销售数据和产品组合（瓷器、玻璃等）。\n*   **片段 5**：涉及木材产品（LVL, PSL）的制造流程和应用图列表。\n\n因此，根据现有检索内容，无法得知 Léopold-Lévy 在普罗旺斯户外绘画时使用了哪些物品。",
+    "retrieved_ids": [
+      "images/education/4898783/4898783_page_0004.png",
+      "images/construction/5601112/5601112_page_0007.png",
+      "images/construction/1858503/1858503_page_0018.png",
+      "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+      "images/construction/4005140/4005140_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0c3801dcf7180b52",
+    "query": "Where can you find the segment that deals with resolving device issues?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "The segment that deals with resolving device issues can be found on page 19.",
+    "generated_answer": "Based on the provided knowledge base content, the segment that deals with resolving device issues is located in **[片段 4]**.\n\nThis fragment explicitly lists \"System Troubles\" along with indicators (such as \"Keypad Beeps or Zone light\") and specific \"Action\" steps to resolve them. Examples include replacing low batteries in wireless transmitters or calling the installing company for service when a problem is detected with a wireless receiver.",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/4972724/4972724_page_0004.png",
+      "images/commerce_manufacturing/2127372/2127372_page_0006.png",
+      "images/crm/7820445/7820445_page_0010.png",
+      "images/crm/2676341/2676341_page_0012.png",
+      "images/commerce_manufacturing/5086662/5086662_page_0011.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0c41b21acfeabd4b",
+    "query": "During the National Night Out event related to Vision Derby's future plans, how were community members engaging with one another?",
+    "domain": "construction",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "Community members are interacting informally, suggesting a casual and engaging atmosphere. They are seen discussing plans and sharing ideas at booths and presentations during the event, fostering a collaborative environment in line with Vision Derby's goals.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**这个问题。\n\n原因如下：\n1.  **片段 1** 虽然提到了\"Vision Derby 2040\"及其关于人口增长和土地使用的规划方向，但文中并未提及任何名为\"National Night Out\"的活动，也没有描述社区成员在此类活动中的互动方式。\n2.  **其他片段**（片段 2 至片段 5）涉及的是通用的社区活动建议、其他组织的日历事件、石灰石县委员会会议记录以及蓝宝石风电场委员会会议，均与\"Vision Derby\"或\"National Night Out\"活动无关。\n\n因此，根据当前检索到的内容，没有关于该活动及其社区互动情况的信息。",
+    "retrieved_ids": [
+      "images/construction/2107998/2107998_page_0002.png",
+      "images/crm/1288763/1288763_page_0005.png",
+      "images/crm/7121645/7121645_page_0012.png",
+      "images/construction/7299441/7299441_page_0011.png",
+      "images/energy/4850210/4850210_page_0001.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0c564e37b21baa1f",
+    "query": "How do active management strategies, including asset allocation and security selection, affect the performance and risk of pension plans relative to their policy benchmarks?",
+    "domain": "finance",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "Active management had a negligible impact on returns, with active asset allocation contributing a net underperformance of 0.26% and security selection contributing a gain of 0.26%. The overall effect was an average underperformance of 0.08% per year compared to the policy benchmark. Despite these small changes, active management increased risk slightly, with security selection contributing to actual plan risk. Active asset allocation had a negligible impact on risk relative to the benchmark policy. The dominant factor in determining long-term return per unit of risk was the investment policy.",
+    "generated_answer": "Based on the provided knowledge base content, specifically the analysis of 82 Large Pension Plans from 1977-1987, the impact of active management strategies on performance and risk relative to policy benchmarks is as follows:\n\n*   **Overall Performance Impact:** The contribution of active management is **not statistically different from zero**, indicating that any observed effects are most likely attributable to chance rather than skill.\n*   **Asset Allocation:** Active asset allocation contributed a **net underperformance of 26 basis points**.\n*   **Security Selection:** Security selection contributed a **gain of 26 basis points**.\n*   **Statistical Significance:** Neither the underperformance from asset allocation nor the gain from security selection is statistically significant.\n*   **Risk:** The mean annualized returns by activity showed a **standard deviation of 1.7 per cent**.\n*   **Attribution Framework:** The process involves attributing actual portfolio return to investment management activities, specifically investment policy, active asset allocation, and security selection.\n\nIn summary, for the studied pension plans, active management strategies (both asset allocation and security selection) did not produce statistically significant performance differences relative to their policy benchmarks, with gains from security selection effectively offsetting the underperformance from active asset allocation.",
+    "retrieved_ids": [
+      "images/finance/3415032/3415032_page_0005.png",
+      "images/finance/3415032/3415032_page_0002.png",
+      "images/finance/3415032/3415032_page_0004.png",
+      "images/finance/1659677/1659677_page_0003.png",
+      "images/finance/4195303/4195303_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0c97b60038f97abb",
+    "query": "What is the GDP effect on various regions when considering the Asia-wide Free Trade Area according to the 2004 APEC Economic Outlook?",
+    "domain": "finance",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "Under the Asia-wide FTA scenario, North Asia has a GDP impact of 0.60%, ASEAN 2.12%, Rest of Asia 0.19%, USA -0.03%, Europe -0.02%, ROW -0.05%, and World 0.15%.",
+    "generated_answer": "Based on the provided knowledge base content (specifically **Fragment 1, Table 6**), here is the information regarding the economic impact of an **Asia-wide Free Trade Area (FTA)**:\n\nAlthough the provided text does not explicitly confirm the report title as the \"2004 APEC Economic Outlook,\" **Table 6** details the \"Impact of 6 FTA Scenarios\" on **Real Income (Equivalent Variation)** across various regions. Under the **Asia-wide FTA** scenario (Column 4), the effects are as follows (in **US$ Mn 2001 prices**):\n\n*   **North Asia:** 35,713\n*   **ASEAN:** 10,907\n*   **Rest of Asia:** -1,560\n*   **USA:** -3,263\n*   **Europe:** -1,413\n*   **ROW (Rest of World):** -2,291\n\n**Note:** The table specifies the metric as **Real Income (Equivalent Variation)** rather than direct GDP growth, measured in millions of US dollars at 2001 prices. Positive values indicate a gain, while negative values indicate a loss in real income under this scenario.",
+    "retrieved_ids": [
+      "images/finance/0873425/0873425_page_0011.png",
+      "images/finance/2601755/2601755_page_0018.png",
+      "images/finance/5430240/5430240_page_0011.png",
+      "images/finance/6038205/6038205_page_0022.png",
+      "images/finance/3769357/3769357_page_0016.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0ca15be82943ca97",
+    "query": "What are the recognition and error rates for each grouping of body parts like wrist, upper arm, pelvis, thigh, and ankle in the research?",
+    "domain": "healthcare",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "The identification rates (RR) and error rates (EER) for various combinations of body locations are as follows: For individual locations, the wrist has RR of 56.4% and EER of 13.0%, the upper arm has RR of 63.9% and EER of 9.9%, the pelvis has RR of 73.4% and EER of 8.9%, the thigh has RR of 68.3% and EER of 8.6%, and the ankle has RR of 68.8% and EER of 9.5%. For combinations, the highest RR of 95.8% and the lowest EER of 2.2% are achieved when using all five body locations (wrist, upper arm, pelvis, thigh, and ankle).",
+    "generated_answer": "根据提供的知识库内容（主要是片段 1 中的 Table III 以及片段 2 的身体部位确认），各身体部位及其组合的识别率（Recognition Rate, RR）和等错误率（Equal Error Rate, EER）如下：\n\n**单个身体部位：**\n*   **手腕 (Wr):** 识别率 56.4%，错误率 13.0%\n*   **上臂 (Up):** 识别率 63.9%，错误率 9.9%\n*   **骨盆 (Pv):** 识别率 73.4%，错误率 8.9%\n*   **大腿 (Th):** 识别率 68.3%，错误率 8.6%\n*   **脚踝 (Ak):** 识别率 68.8%，错误率 9.5%\n\n**身体部位组合：**\n*   **手腕，上臂，骨盆 (Wr, Up, Pv):** 识别率 86.0%，错误率 5.2%\n*   **手腕，上臂，大腿 (Wr, Up, Th):** 识别率 87.1%，错误率 4.4%\n*   **手腕，上臂，脚踝 (Wr, Up, Ak):** 识别率 87.2%，错误率 4.2%\n*   **手腕，骨盆，大腿 (Wr, Pv, Th):** 识别率 90.2%，错误率 3.5%\n\n*注：身体部位缩写基于片段 1 表格及片段 2 中提到的 \"Right wrist\", \"Left upper arm\", \"Right side of pelvis\" 等信息对应。*",
+    "retrieved_ids": [
+      "images/healthcare/6311163/6311163_page_0008.png",
+      "images/healthcare/6311163/6311163_page_0007.png",
+      "images/education/2442094/2442094_page_0004.png",
+      "images/healthcare/7146650/7146650_page_0007.png",
+      "images/healthcare/7146650/7146650_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0cbc2ef1a441cded",
+    "query": "In the analysis provided, what benefit is anticipated when SHM is not utilized after three decades?",
+    "domain": "construction",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The expected benefit when SHM is not utilized after three decades is 8, as shown in the provided analysis and figures.",
+    "generated_answer": "Based on the provided knowledge base fragments, there is **no information available** regarding the specific benefit anticipated when SHM (Structural Health Monitoring) is not utilized after **three decades**.\n\nWhile **Fragment 1** discusses SHM strategies, actions (such as \"Doing Nothing\"), and general benefit/cost outcomes (e.g., $B$ for Safe state, $B-C_F$ for Failure state), it does not mention a specific timeframe of \"three decades\" or associate any specific benefit value with that duration. The other fragments (2-5) discuss unrelated topics such as photogrammetry, mass customization, mortgage refinancing, and database testing.\n\nTherefore, the question cannot be answered based on the provided content.",
+    "retrieved_ids": [
+      "images/construction/4455456/4455456_page_0009.png",
+      "images/construction/4913473/4913473_page_0005.png",
+      "images/commerce_manufacturing/5981833/5981833_page_0007.png",
+      "images/finance/4274052/4274052_page_0005.png",
+      "images/crm/1900612/1900612_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0ce68646823626b0",
+    "query": "How did Clarus Corporation's adjusted EBITDA for the quarter ending March 31, 2019 compare to March 31, 2020?",
+    "domain": "commerce_manufacturing",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "March 31, 2020: $3,644; March 31, 2019: $7,253",
+    "generated_answer": "Based on the provided knowledge base content (specifically **Snippet 1**), here is the comparison for Clarus Corporation's Adjusted EBITDA:\n\n*   **For the quarter ended March 31, 2019:** The Adjusted EBITDA was **$7,253**.\n*   **For the quarter ended March 31, 2020:** The Adjusted EBITDA was **$3,644**.\n\n**Comparison:** Clarus Corporation's Adjusted EBITDA decreased from $7,253 in the first quarter of 2019 to $3,644 in the first quarter of 2020.",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/4426481/4426481_page_0010.png",
+      "images/commerce_manufacturing/4426481/4426481_page_0009.png",
+      "images/crm/2416464/2416464_page_0013.png",
+      "images/crm/2416464/2416464_page_0011.png",
+      "images/commerce_manufacturing/6783432/6783432_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0cecff9a99d102f4",
+    "query": "What impact does the expression of Egr3 have on the concentrations of Cyc D* and Cyc E* with rising ks_egr3 values?",
+    "domain": "healthcare",
+    "question_type": "causal_reasoning",
+    "answer_type": "image_only",
+    "reference_answer": "The concentration levels of Cyc D* and Cyc E* decrease as ks_egr3 increases. This is evident from the graphs in the image, where both Cyc D* and Cyc E* show a decline in concentration with rising ks_egr3 values.",
+    "generated_answer": "基于提供的知识库内容，特别是**片段 1**，可以得出以下信息：\n\n1.  **变量关系**：片段 1 中的图表（Fig. 3）展示了 **Ks_egr3** 值（单位：molecules(per cell)/min）与 **CycD*** 和 **CycE*** 的分子浓度（单位：molecules(per cell)）之间的关系。横坐标为 Ks_egr3，纵坐标涉及 CycD* 和 CycE* 的浓度。\n2.  **具体影响趋势**：提供的文本片段仅包含了图表的坐标轴标签、图注片段（如\"Fig. 3 S\"）以及部分实验数据（如 G0 期细胞比例），**并没有明确的文字描述说明随着 Ks_egr3 值的上升，CycD* 和 CycE* 的浓度具体是增加、减少还是保持不变**。\n3.  **相关背景**：片段 1 的后半部分提到 Egr3 表达载体与对照组（Vector）相比，会影响 G0 期细胞的比例（Ratio of cells in G0），这暗示 Egr3 的表达与细胞周期调控有关，但未直接量化 Ks_egr3 参数变化对 Cyclin 浓度的具体影响方向。\n\n**结论**：基于现有检索内容，虽然确认了研究分析了 Ks_egr3 值对 CycD* 和 CycE* 浓度的影响（见图 3），但**文本中缺乏描述具体影响趋势（上升或下降）的文字信息**，因此无法直接回答具体的影响方向。",
+    "retrieved_ids": [
+      "images/healthcare/1893899/1893899_page_0004.png",
+      "images/healthcare/3528976/3528976_page_0007.png",
+      "images/healthcare/5643521/5643521_page_0009.png",
+      "images/energy/0376414/0376414_page_0008.png",
+      "images/energy/0376414/0376414_page_0007.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0cf466d1184ad4f4",
+    "query": "How does European Directive 2014/59/EU describe the dangers linked to investing in unsecured credit institution instruments?",
+    "domain": "legal",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Risk in investing the unsecured financial instruments issued by credit institutions and investment broker companies in connection with the credit institution and investment broker company recovery and resolution regime provided by European Union Directive 2014/59/EU. Upon a credit institution or investment broker company facing financial difficulty, its shareholders and creditors, including bondholders, may be the first to participate in covering its losses. In the event of the resolution of the issuer, the position of the Client will depend on its position in the creditors' hierarchy, which may change due to the preference of depositors. Holders of unsecured bonds will be put at a disadvantage compared to depositors and holders of secured bonds. Should the competent supervisory authority of the European Union decide to exercise the write-off or conversion rights, the issuer's liability to the holder of financial instruments may be reduced to zero, debt securities may be converted into shares or other equity instruments, debt security maturity, interest payment dates may be changed, disbursements may be suspended, and assets may be transferred to another bank or business may be sold, affecting the issuer's ability to meet its obligations to investors.",
+    "generated_answer": "Based on the provided knowledge base content, specifically **Fragment 1**, the danger linked to investing in unsecured financial instruments issued by credit institutions in the context of the European regime is described as **\"Bail in risk\"**.\n\nThe text defines this risk as:\n> \"Risk in investing the unsecured financial instruments issued by credit institutions and investment broker companies in connection with the credit institution and investment broker company recovery and resolution regime provided by Eu\".\n\n**Note:** While the text refers to the \"recovery and resolution regime provided by Eu\" (which corresponds to the subject of your question), the provided snippets do not explicitly mention the specific directive number \"2014/59/EU\".",
+    "retrieved_ids": [
+      "images/legal/1125177/1125177_page_0005.png",
+      "images/finance/4282204/4282204_page_0001.png",
+      "images/legal/1125177/1125177_page_0004.png",
+      "images/finance/1125177/1125177_page_0003.png",
+      "images/crm/5939295/5939295_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0d19f90448a70d23",
+    "query": "To what extent did attendees perceive the diversity training as receptive to others' opinions, rated on a 1 to 5 scale?",
+    "domain": "education",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "Participants perceived the diversity training as open to listening to others with a rating of 4 on a scale from 1 to 5.",
+    "generated_answer": "基于提供的知识库内容，**无法回答该问题**。\n\n所提供的五个文本片段中均未包含关于参与者对多样性培训在“接受他人意见”（receptive to others' opinions）方面的感知程度评分，也没有提及 1 到 5 分（1 to 5 scale）的评级数据。\n\n现有片段内容主要涉及：\n1.  练习的主要目标/目的（如提高意识、影响态度等百分比数据）。\n2.  参与者对“强制控制”（coercive control）术语的了解情况。\n3.  多样性包容性连续体（Diversity Inclusivity Continuum）模型。\n4.  自然语言处理领域的多样性评估数据（熵、共现分布等）。\n5.  学生对教师咨询时间的满意度（百分比数据）。\n\n因此，无法从中提取您所询问的具体评分结果。",
+    "retrieved_ids": [
+      "images/education/6978229/6978229_page_0012.png",
+      "images/legal/6549868/6549868_page_0002.png",
+      "images/education/6636406/6636406_page_0008.png",
+      "images/crm/6302639/6302639_page_0017.png",
+      "images/crm/2764839/2764839_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0d613ab7c0602d41",
+    "query": "By the end of April 2021, how did the components of the BDC loan under the Highly Affected Sectors Credit Availability Program adjust?",
+    "domain": "finance",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "The principal amount of the BDC loan under the Highly Affected Sectors Credit Availability Program remained at $250,000 with interest of $1,699, and payments made totaling $850, leaving a balance of $250,849. The loan is presented with a short-term portion of $5,479 and a long-term portion of $245,370 as of April 30, 2021.",
+    "generated_answer": "Based on the provided knowledge base content (specifically Fragment 2), the adjustments to the Business Development Bank of Canada (BDC) loan under the Highly Affected Sectors Credit Availability Program by the end of April 2021 are as follows:\n\nDuring the six-month period ended April 30, 2021:\n*   **Additions:** $250,000\n*   **Interest:** $1,699\n*   **Payments made:** $(850)\n*   **Closing Balance (April 30, 2021):** $250,849\n\nThis closing balance was classified into the following components:\n*   **Short-term:** $5,479\n*   **Long-Term:** $245,370",
+    "retrieved_ids": [
+      "images/finance/7051201/7051201_page_0016.png",
+      "images/finance/7051201/7051201_page_0017.png",
+      "images/finance/3331210/3331210_page_0007.png",
+      "images/finance/1695414/1695414_page_0002.png",
+      "images/crm/2416464/2416464_page_0002.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0dc4ab09ba4f7a0b",
+    "query": "From which group did the highest quantity of visual content originate, focusing on academic sources?",
+    "domain": "education",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Scientific Publications contributed the most visualizations from academic sources with 2,178 (348).",
+    "generated_answer": "基于提供的知识库内容，特别是**片段 1**，在关于可视化来源的分类（Fig. 2. Breakdown of visualization categories by visualization sources）中，列出的学术来源群体是 **\"Total Scientific Publications\"（总科学出版物）**。\n\n虽然片段中给出的具体百分比（如 Bars 25.4%, Table 17.4% 等）是针对“可视化类型”（Visualization Type）的分布，但在可视化来源（Visualization Sources）的类别列表中，\"Total Scientific Publications\"是唯一明确对应的学术来源群体（其他列为 Infographics, News Media, Government and World Organization）。因此， focusing on academic sources（关注学术来源），该群体为 **Total Scientific Publications**。\n\n**答案：** Total Scientific Publications（总科学出版物）",
+    "retrieved_ids": [
+      "images/education/7760727/7760727_page_0004.png",
+      "images/education/7760727/7760727_page_0003.png",
+      "images/healthcare/5917231/5917231_page_0001.png",
+      "images/construction/6920660/6920660_page_0001.png",
+      "images/crm/3887542/3887542_page_0002.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0e4bdb8388183057",
+    "query": "What was the alteration in overall operating expenses for GreenTree Hospitality Group Ltd. from the end of March 2019 to the end of March 2020 as detailed in their financial results?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Total operating costs and expenses increased from RMB130,451,056 in 2019 to RMB137,507,315 in 2020. Hotel operating costs increased from RMB79,999,844 to RMB89,763,273. General and administrative expenses rose from RMB25,732,486 to RMB28,745,571. Selling and marketing expenses decreased from RMB24,676,102 to RMB17,841,322. Other operating expenses increased from RMB42,624 to RMB1,157,149.",
+    "generated_answer": "Based on the provided knowledge base snippets, specifically **Snippet 1** (GreenTree Hospitality Group Ltd. Unaudited Condensed Consolidated Statements of Comprehensive Income), the text lists specific components under \"Operating costs and expenses\" but does not explicitly provide a final total sum for \"overall operating expenses\" as the excerpt appears truncated.\n\nHowever, based on the visible operating cost items detailed in the financial results for the quarters ended March 31, 2019, and March 31, 2020, the alterations are as follows (in RMB):\n\n1.  **Hotel operating costs:**\n    *   March 31, 2019: 79,999,844\n    *   March 31, 2020: 89,763,273\n    *   **Change:** Increased by **9,763,429 RMB**\n\n2.  **Selling and marketing expenses:**\n    *   March 31, 2019: 24,676,102\n    *   March 31, 2020: 17,841,322\n    *   **Change:** Decreased by **6,834,780 RMB**\n\n**Summary of Visible Operating Expenses:**\n*   **Total Visible Operating Expenses (2019):** 104,675,946 RMB (79,999,844 + 24,676,102)\n*   **Total Visible Operating Expenses (2020):** 107,604,595 RMB (89,763,273 + 17,841,322)\n*   **Net Alteration in Visible Items:** An increase of **2,928,649 RMB**.\n\nPlease note that since the provided text snippet cuts off after \"Selling and marketing expenses,\" other potential operating expenses (such as General and Administrative expenses) are not included in this calculation, and thus a definitive \"overall\" total cannot be confirmed from the provided content alone.",
+    "retrieved_ids": [
+      "images/crm/2416464/2416464_page_0011.png",
+      "images/crm/2416464/2416464_page_0013.png",
+      "images/crm/2416464/2416464_page_0002.png",
+      "images/crm/2416464/2416464_page_0003.png",
+      "images/commerce_manufacturing/4426481/4426481_page_0010.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0ec991219b26b4ca",
+    "query": "How does gender affect behavioral learning based on the statistical analysis results?",
+    "domain": "education",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "Gender (Female) has a significant impact on behavioral learning, with a coefficient of 3.695 and a beta value of .190**. This indicates that females perceive higher behavioral learning compared to males.",
+    "generated_answer": "Based on the provided knowledge base content, specifically **Fragment 1** (\"Summary of Linear Regression Analysis for Variables Predicting Behavioral Learning\"), the effect of gender on behavioral learning is as follows:\n\n*   **Positive Prediction**: The variable **\"Gender (Female)\"** shows a positive relationship with behavioral learning. The unstandardized coefficient (**B**) is **3.695**, and the standardized coefficient (**β**) is **.190**.\n*   **Statistical Significance**: The result is marked with **\"**\"**, which indicates statistical significance. According to the table notes (\"**p<001\" or potentially p<.01 depending on standard convention interpretation of the text\"), this effect is significant at least at the **p < .01** level.\n*   **Conclusion**: Gender significantly affects behavioral learning, with female students demonstrating higher behavioral learning scores compared to the reference group (implied male) in the study (n=234).\n\n**Summary**: Gender (specifically being female) is a statistically significant positive predictor of behavioral learning.",
+    "retrieved_ids": [
+      "images/education/1871769/1871769_page_0007.png",
+      "images/education/1871769/1871769_page_0006.png",
+      "images/education/2765782/2765782_page_0010.png",
+      "images/education/1980675/1980675_page_0003.png",
+      "images/education/6978229/6978229_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0ef49d5067181da8",
+    "query": "How many Instagram followers do large non-governmental organizations typically have based on the 2017 Global NGO Technology Report?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "19,365",
+    "generated_answer": "Based on the provided knowledge base content, there is **no information available** regarding the specific number of Instagram followers for large non-governmental organizations.\n\nAlthough **Fragment 1** contains an \"INSTAGRAM AT-A-GLANCE\" section, it only provides statistics on how often NGOs share to their Instagram profile (e.g., \"50% LESS THAN ONE SHARE WEEKLY\") and cuts off before displaying follower statistics. The follower counts listed in Fragment 1 (10,107 for Large NGOs) explicitly refer to **LinkedIn** (\"AVERAGE NUMBER OF LINKEDIN FOLLOWERS\").\n\nThe provided text does include follower/subscriber counts for other platforms from the **2017 Global NGO Technology Report** (mentioned in Fragment 2):\n*   **LinkedIn:** Large NGOs average **10,107** followers (Fragment 1).\n*   **Twitter:** Large NGOs average **39,496** followers (Fragment 2).\n*   **Email:** Large NGOs average **63,048** subscribers (Fragment 3).\n\nHowever, the specific data for Instagram followers is not present in the retrieved snippets.",
+    "retrieved_ids": [
+      "images/crm/4969409/4969409_page_0013.png",
+      "images/crm/4969409/4969409_page_0012.png",
+      "images/crm/4969409/4969409_page_0007.png",
+      "images/legal/7606904/7606904_page_0003.png",
+      "images/crm/5832824/5832824_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0efebf176c3906a4",
+    "query": "Can you identify the criteria from the code chapters that do not apply because of the site's characteristics and proposal details?",
+    "domain": "construction",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "The criteria that do not apply due to the site's characteristics and proposal details are: C 33.631 - Flood Hazard Area (site is not within flood hazard area), D 33.632 - Potential Landslide Hazard Area (site is not within potential landslide area), E 33.633 - Phased Land Division or Staged Final Plat (not proposed), F 33.634 - Recreation Area (density less than 40 units), H 33.636 - Tracts and Easements (none proposed or required), J 33.640 - Streams, Springs, and Seeps (none evident outside environmental zones), L 33.654.110.B.2 - Dead end streets (none proposed), 33.654.110.B.3 - Pedestrian connections in the I zones (site not in an I zone), 33.654.110.B.4 - Alleys in all zones (none proposed or required), 33.654.120.C.3.c - Turnarounds (none proposed or required), 33.654.120.D - Common Greens (none proposed or required), 33.654.120.E - Pedestrian Connections (none proposed or required), 33.654.120.F - Alleys (none proposed or required), 33.654.120.G - Shared Courts (none proposed or required), 33.654.130.B - Existing public dead-end streets and pedestrian connections (none exist to extend), 33.654.130.C - Future extension of dead-end streets and pedestrian connections (none proposed or required), 33.654.130.D - Partial rights-of-way (none proposed or required).",
+    "generated_answer": "基于提供的知识库内容，特别是 **[片段 4] (Decision Notice for LU 14-163147 LDP Page 4)**，可以识别出以下因场地特征（site's characteristics）和提案细节（proposal details）而不适用（或不需要扩展/提出）的代码章节标准：\n\n1.  **33.654.130.B - Existing (现有街道)**\n    *   **不适用原因：** 场地不存在必须延伸到该 site 上的现有公共死胡同街道或行人公共死胡同连接（\"No public dead-end streets or pedestrian public dead-end streets connections exist that must be extended onto the site\"）。\n\n2.  **33.654.130.C - Future (未来街道)**\n    *   **不适用原因：** 提案中没有提出或不需要未来的死胡同街道或行人连接延伸（\"No dead-end street or pedestrian connections are proposed or required\"）。\n\n3.  **33.654.130.D - Partial (部分街道)**\n    *   **不适用原因：** 提案中没有提出或不需要部分公共街道（\"No partial public streets are proposed or required\"）。\n\n综上所述，由于场地没有现有的死胡同需要延伸，且提案未涉及未来的死胡同或部分公共街道，上述关于死胡同街道和行人连接的代码标准不适用于该提案。",
+    "retrieved_ids": [
+      "images/crm/2059956/2059956_page_0008.png",
+      "images/commerce_manufacturing/1829600/1829600_page_0001.png",
+      "images/construction/6018212/6018212_page_0003.png",
+      "images/construction/5349734/5349734_page_0004.png",
+      "images/commerce_manufacturing/0820977/0820977_page_0011.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0f20f82456144206",
+    "query": "In the transfer task for WeiboNER, how does the performance of La-DTL in terms of F1-score stand against other approaches?",
+    "domain": "healthcare",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "La-DTL achieved an F1-score of 57.74, outperforming all other methods listed for the WeiboNER transfer task.",
+    "generated_answer": "基于提供的知识库片段，**无法直接得出 La-DTL 在 WeiboNER 转移任务上的具体 F1-score 表现及其与其他方法的对比**，因为检索到的内容中没有明确列出 La-DTL 方法在 WeiboNER 数据集上的实验结果。\n\n根据**片段 1**的内容，可以提取到以下相关信息：\n1.  **WeiboNER 数据集**：片段中列出的对应方法是 **Joint-training (Yang et al., 2017)**，其 F1-score 为 **43.24%**。\n2.  **La-DTL 方法**：片段中列出的对应数据集是 **CoNLL 2003**，其 F1-score 为 **45.71%**。\n3.  **其他数据**：片段还提到了 TwitterNER 的转移任务结果（Table 5），但未涉及 WeiboNER 与 La-DTL 的直接结合。\n\n因此，仅凭现有内容，无法比较 La-DTL 与其他方法在 WeiboNER 任务上的性能差异，只能得知 La-DTL 在 CoNLL 2003 数据集上的表现（45.71%）高于片段中记录的 WeiboNER 上 Joint-training 方法的表现（43.24%），但这是由于数据集不同，不能直接作为同一任务下的性能对比。",
+    "retrieved_ids": [
+      "images/healthcare/0038629/0038629_page_0009.png",
+      "images/crm/6302639/6302639_page_0016.png",
+      "images/crm/1431302/1431302_page_0006.png",
+      "images/crm/6302639/6302639_page_0017.png",
+      "images/crm/1431302/1431302_page_0007.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0f2a0c93893a41eb",
+    "query": "In the World Political Economy blog, which economic concern is tied to the concept of 'Regulatory Expansion' as it pertains to global political and economic discussions?",
+    "domain": "finance",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "Regulatory Expansion is an economic concern tied to the concept of increased government regulations and their impact on global political and economic discussions, as highlighted in the World Political Economy blog.",
+    "generated_answer": "基于提供的知识库内容，**无法回答您的问题**。\n\n原因如下：\n1.  提供的五个文本片段中均未提及名为\"**World Political Economy blog**\"的博客。\n2.  提供的片段中没有出现\"**Regulatory Expansion**\"（监管扩张）这一概念，也没有描述该概念与全球政治经济讨论中特定经济关切的联系。\n\n现有片段主要涉及以下内容：\n*   **片段 1**：提到了\"Global Economic Intersection\"博客及其对供需、劳动经济学和财政政策的关注。\n*   **片段 2**：讨论了企业增长密度在收缩与扩张期间的分布特征。\n*   **片段 3**：涉及资产管理、全球商品周期及经济增长数据。\n*   **片段 4**：列出了发展中国家在经济体验方面的排名（如外国所有权限制、教育质量）。\n*   **片段 5**：讨论了自然资源倡议中的全球参与反弹及对公民社会组织（CSO）活动的法律限制。\n\n由于缺乏关键信息，无法基于现有检索内容确定与该概念 tied 的经济关切。",
+    "retrieved_ids": [
+      "images/finance/5510314/5510314_page_0015.png",
+      "images/finance/6038205/6038205_page_0020.png",
+      "images/finance/3353890/3353890_page_0002.png",
+      "images/finance/1372325/1372325_page_0013.png",
+      "images/legal/7606904/7606904_page_0003.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0f7d2c7df197a620",
+    "query": "How did the initial weight percentages alter for mice given isotype control compared to those treated with aHVEM after starting the treatment over 15 days?",
+    "domain": "healthcare",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The initial weight percentages decreased similarly in both isotype control and aHVEM treated mice post-treatment initiation over a 15-day period.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**该问题。\n\n提供的检索片段中并未包含关于\"aHVEM\"、“同型对照（isotype control）”或小鼠在治疗 15 天后初始体重百分比变化的相关信息。各片段的主要内容如下：\n\n*   **片段 1 & 2**：涉及耳针减肥（Auricular Acupuncture）对腰围、BMI 和体脂影响的随机对照试验，未提及 aHVEM 或小鼠实验。\n*   **片段 3**：涉及外泌体 miR-25-3p 在 TMZ 耐药性中的作用，主要是细胞实验（A172, U87 细胞系），未提及小鼠体重变化或 aHVEM 治疗。\n*   **片段 4**：涉及肾脏组织中 Nrf2 表达的免疫组化分析（Sham, Normo, Hypo 组），未提及相关体重数据。\n*   **片段 5**：涉及小鼠隐窝培养（Mouse crypt culture）与辐射防护实验，主要关注 enteroid 生长，未提及 aHVEM 或 15 天的体重百分比变化。\n\n因此，根据现有知识库内容，无法提供关于 mice given isotype control compared to those treated with aHVEM 的体重变化数据。",
+    "retrieved_ids": [
+      "images/healthcare/7146650/7146650_page_0007.png",
+      "images/healthcare/7146650/7146650_page_0006.png",
+      "images/healthcare/5350598/5350598_page_0006.png",
+      "images/healthcare/1680163/1680163_page_0007.png",
+      "images/healthcare/2676480/2676480_page_0018.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "0fa7fabd198e2319",
+    "query": "How are ages distributed among those who faced issues after circumcision?",
+    "domain": "healthcare",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "61.29% of patients were aged 6-10 years.",
+    "generated_answer": "基于提供的知识库片段，**无法回答**关于“包皮环切术后出现问题的人群的年龄分布”的问题。\n\n提供的五个片段中均未包含有关包皮环切术（circumcision）并发症或其患者年龄分布的相关数据。具体内容分析如下：\n\n*   **片段 1**：涉及天主教教会中神职人员虐待行为的持续时间统计，与包皮环切术无关。\n*   **片段 2**：涉及健康保险覆盖范围（如 CHIP 计划）及年轻成年人的健康问题，未提及包皮环切术。\n*   **片段 3**：涉及青春期前和青春期男孩的生殖器检查方法（如体位、阴茎检查），虽然提到了生殖器检查，但并未提及包皮环切术后的并发症数据或年龄分布。\n*   **片段 4**：涉及未确诊疾病网络（UDN）的患者特征（如发病年龄、疾病持续时间），与包皮环切术无关。\n*   **片段 5**：涉及神经病学、精神病学和神经外科杂志的研究样本特征（性别、年龄范围），但未提及包皮环切术相关问题。\n\n因此，现有知识库内容不足以支持回答该问题。",
+    "retrieved_ids": [
+      "images/legal/6204462/6204462_page_0016.png",
+      "images/legal/7454342/7454342_page_0001.png",
+      "images/healthcare/0779019/0779019_page_0004.png",
+      "images/healthcare/3166023/3166023_page_0005.png",
+      "images/healthcare/7079757/7079757_page_0003.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "100dcd0765002cd9",
+    "query": "According to Baltic International Bank's financial instruments details, what potential losses arise from conducting trades beyond standard session times?",
+    "domain": "legal",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "The risk that the Client may incur losses if the order is placed after the end of the trading session, is lost, not executed, or executed late or at an inadequate price.",
+    "generated_answer": "Based on the provided knowledge base content (specifically **Fragment 1**), according to Baltic International Bank, the potential losses or risks arising from conducting trades outside the trading session period (if the order is placed after the end of the trading session) include the following scenarios:\n\n1.  The order is **lost**.\n2.  The order is **not executed**.\n3.  The order is **executed late**.\n4.  The order is **executed at an inadequate price**.\n\nThe text states that the client may incur losses if any of these events occur when trading outside the standard trading session.",
+    "retrieved_ids": [
+      "images/legal/1125177/1125177_page_0005.png",
+      "images/finance/1125177/1125177_page_0002.png",
+      "images/finance/1125177/1125177_page_0003.png",
+      "images/legal/1125177/1125177_page_0004.png",
+      "images/finance/4282204/4282204_page_0001.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "10f940659de52a2b",
+    "query": "How thick is the a-MoSx film produced by the cyclic voltammetry-based deposition onto the Ti/p-InP structure according to the reported experimental procedure?",
+    "domain": "energy",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The thickness of the a-MoSx film produced by the cyclic voltammetry-based deposition onto the Ti/p-InP structure, according to the reported experimental procedure, is 132 nm as shown and labeled in the cross-sectional SEM image.",
+    "generated_answer": "根据提供的知识库内容，特别是**片段 1**，在 Ti/p-InP 结构上通过循环伏安法（cyclic voltammetry）相关的光电沉积产生的 a-MoSx 薄膜厚度为 **132 nm**。\n\n依据如下：\n*   **片段 1** 中提到了 \"Cyclic voltammetry scans for photoelectrodeposition of MoS on Ti-coated p-InP electrodes\"（Ti 涂层 p-InP 电极上 MoS 光电沉积的循环伏安扫描）。\n*   在该片段的图片说明或标注中出现了 \"**MoS, 132nm Ti/p-InP**\" 的字样，这通常表示 MoS 层的厚度为 132 纳米。\n*   文中随后还提到了 \"important for determining the thickness of a-MoSx on InP\"（对于确定 InP 上 a-MoSx 的厚度很重要），将 MoS 与 a-MoSx 关联起来。\n\n因此，根据检索到的内容，该薄膜厚度为 132 nm。",
+    "retrieved_ids": [
+      "images/energy/6091053/6091053_page_0003.png",
+      "images/energy/3903260/3903260_page_0005.png",
+      "images/energy/0452773/0452773_page_0009.png",
+      "images/energy/2528547/2528547_page_0004.png",
+      "images/energy/2373870/2373870_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "118fe004f8da15dc",
+    "query": "In what ways does adopting an automation-driven modular content approach enhance supply chain efficiency and marketing strategies in healthcare?",
+    "domain": "crm",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "The shift towards automation-focused modular content enhances supply chain efficiency by fully automating content factory services, reducing manual errors, and streamlining operations. It shifts focus to content stewardship and dissolves the global to local content waterfall. Marketing strategies benefit from deep insights through connected technology and data services, enabling actionable recommendations for omnichannel deployment. This approach allows for granular content elements as structured data, consistent across channels, and enables optimization of the marketing mix and sales force deployment, delivering personalized content at scale.",
+    "generated_answer": "Based on the provided knowledge base fragments, adopting an automation-driven modular content approach enhances supply chain efficiency and marketing strategies in healthcare in the following ways:\n\n*   **Enables Content Stewardship at Scale:** Managing the process, volumes, and variety of content is described as \"only possible if the modular approach to content is automation focused.\" This allows for the systematic addition of ideas to the modular content ecosystem [Fragment 1].\n*   **Overcomes Linear Scaling Limitations:** Traditional industry approaches focused on human authoring result in \"linear gains\" that ultimately require \"more people\" to substantially scale the 5Vs (volume, variety, velocity, veracity). An automation-driven approach aims to solve this efficiency bottleneck [Fragment 2].\n*   **Governs Content Assembly and Lifecycle:** It facilitates the classification and lineage of all new and modified components. It establishes business rules that govern how components can be assembled and manages retiring assets [Fragment 1].\n*   **Mitigates Customer Risk:** By systematically managing ideas, it helps prevent \"destructive messages that may circulate around customers\" [Fragment 1].\n*   **Addresses Supply Chain Fragmentation:** It operates within the context of addressing major industry challenges, such as the highly fragmented content supply chain and technology limitations that currently hinder content personalization in healthcare [Fragment 4].\n*   **Improves Adaptability:** It contrasts with \"Authoring focused modules,\" which are noted as being \"Not adaptable to all asset types as channel specific.\" An automation-driven approach seeks to overcome these adaptability limitations [Fragment 3].\n\n*Note: Fragment 5 discusses an IT company case study (Automize) and is not directly related to the healthcare modular content context described in the other fragments.*",
+    "retrieved_ids": [
+      "images/crm/2059956/2059956_page_0014.png",
+      "images/crm/2059956/2059956_page_0007.png",
+      "images/crm/2059956/2059956_page_0008.png",
+      "images/crm/2059956/2059956_page_0015.png",
+      "images/crm/3280862/3280862_page_0001.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "12cbc55524087435",
+    "query": "When the methane input is held constant at 9 NL min⁻¹ during the gas-solid equilibrium tests, what impact does varying the ratio of oxidant to reformer stream have on process conditions?",
+    "domain": "energy",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "The methane feed rate is consistently 9 NL min⁻¹ for all operational points, while the oxygen-to-reformer (O/R) ratio is varied between 1.2 and 1.6. As the O/R ratio increases, the amount of H₂O in the feed decreases (from 8.8 to 4.3 g min⁻¹), and the CO₂ content in the feed increases (from 0 to 9 NL min⁻¹). These changes in oxidant to reformer ratio affect the process conditions by altering the relative amounts of H₂O and CO₂ in the feed, which in turn impact the gas–solid equilibrium, product gas purity, and system behavior.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**该问题。\n\n原因如下：\n1.  **缺乏关键实验参数**：提供的片段中没有提及“甲烷输入量保持在 9 NL min⁻¹\"（methane input is held constant at 9 NL min⁻¹）这一具体实验条件。\n2.  **缺乏因果关系描述**：片段中没有关于“改变氧化剂与重整器流比率”（varying the ratio of oxidant to reformer stream）对“工艺条件”（process conditions）产生何种影响的具体描述或数据。\n3.  **内容相关性不足**：\n    *   **片段 1** 虽然提到了“重整器部分”（reformer section）、“化学循环部分”（chemical looping section）、Fe3O4 以及温度设置（重整器 880°C，化学循环 800°C），但并未涉及问题中询问的甲烷流速或氧化剂比率变化的影响。\n    *   **片段 2** 涉及电化学性能（FE%, selectivity%）。\n    *   **片段 3** 涉及太阳能屋顶的气流质量流量。\n    *   **片段 4** 涉及核学会的模拟单元和给水系统。\n    *   **片段 5** 涉及风洞或扩散器中的钢丝设置。\n\n综上所述，所提供的检索内容不包含回答问题所需的具体实验数据和结论。",
+    "retrieved_ids": [
+      "images/energy/5387778/5387778_page_0005.png",
+      "images/energy/2373870/2373870_page_0006.png",
+      "images/energy/1215923/1215923_page_0004.png",
+      "images/energy/4697637/4697637_page_0002.png",
+      "images/energy/7603803/7603803_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "12d2e331807ede3a",
+    "query": "How does the Packet Error Rate (PER) change for BLE events with varying connection intervals in the test setup?",
+    "domain": "commerce_manufacturing",
+    "question_type": "causal_reasoning",
+    "answer_type": "image_only",
+    "reference_answer": "The PER decreases as the BLE connection interval increases, starting high and then stabilizing around 0.5%.",
+    "generated_answer": "根据提供的知识库内容，特别是**片段 1**，虽然文中展示了一个关于 **BLE Events** 的 **Packet Error Rate (PER)** 与 **BLE Connection Interval** 关系的图表坐标轴信息（Y 轴为 PER %，范围 0-4.5；X 轴为 BLE Connection Interval ms，范围 400-4000），但提供的文本内容**并没有明确描述** PER 随连接间隔变化的具体趋势（例如是增加、减少还是保持稳定）。\n\n文本仅提到了以下相关背景信息：\n1.  在多协议系统运行时，重试（retries）可能解决潜在的数据包丢失（packet losses）问题。\n2.  延迟增加对于所有数据包丢失原因都是相同的，并非 TI DMM 特有。\n3.  端到端延迟的潜在增加在某些情况下是最小的。\n\n因此，基于现有片段，无法确切回答 PER 随连接间隔变化的具体规律，仅能确认该测试 setup 涉及这两个变量的测量。",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/5854086/5854086_page_0005.png",
+      "images/construction/2771539/2771539_page_0013.png",
+      "images/crm/5963931/5963931_page_0026.png",
+      "images/commerce_manufacturing/7510601/7510601_page_0012.png",
+      "images/crm/2676341/2676341_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1316b51164e14285",
+    "query": "At the McDixon Apple Orchard, how does water flow from the area with Container Shrubs towards the water purification section?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The general direction of water flow at the McDixon Apple Orchard is from Block C, Container Shrubs, towards the Canning Barn and then to the Wetlands which is used for water purification.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**关于 McDixon Apple Orchard 中水从 Container Shrubs 区域流向水净化部分的具体方式。\n\n原因如下：\n\n1.  **片段 1** 主要描述的是\"The Camellias and More Nursery\"的设施信息（包括 90 英亩的容器生产区、温室、回收水系统等）。虽然片段末尾提到了\"Site Map McDixon Apple Orchard\"，但文本中并未提供该果园内具体的水流路径细节，也没有提到从\"Container Shrubs\"到“水净化部分”的流程。\n2.  **片段 2** 涉及工程分级图（Grading Plan）和等高线信息，但文字内容混乱且未提及具体的水流净化路径。\n3.  **片段 3、4、5** 分别涉及能源合作伙伴的图表目录、土地使用决定通知以及 Portland 的景观计划批准，均与 McDixon Apple Orchard 的水流系统无关。\n\n因此，现有检索到的资料中不包含该问题的答案。",
+    "retrieved_ids": [
+      "images/crm/4502338/4502338_page_0010.png",
+      "images/construction/1615421/1615421_page_0020.png",
+      "images/energy/0350904/0350904_page_0004.png",
+      "images/construction/3050869/3050869_page_0012.png",
+      "images/construction/4900780/4900780_page_0008.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1350e2900e360428",
+    "query": "Considering BIC and BLRT metrics along with simplicity, which class model is best suited for evaluating obesity risk related to home and school?",
+    "domain": "education",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "The three-class model is optimal based on BIC, BLRT values, and parsimony, despite a higher entropy in the four-class model. The BIC and BLRT metrics suggest that the three-class model provides a significantly better fit than the two-class model, and the four-class model does not offer a significant improvement over the three-class model.",
+    "generated_answer": "基于提供的知识库内容，关于评估与家庭和学校相关的肥胖风险的最佳类别模型，分析如下：\n\n1.  **主题相关性**：**片段 1** 和 **片段 2** 引用了 Berlin, Williams, & Parra (2013) 在《Journal of Pediatric Psychology》上的研究。其中涉及的变量包括\"TVinRoom\"（房间里有电视，家庭因素）、\"Can buy Sweets at School\"（学校可买甜食）、\"Participate in Sports at school\"（学校参与运动）等，这与问题中提到的“肥胖风险 related to home and school\"主题直接相关。\n2.  **模型结构暗示**：在这些片段的数据展示中，除了整体样本（N=952）外，还详细列出了分为两组的具体参数和 z-scores（标记为\"1/1, n=258.9\"和\"2/2, n=693.1\"）。这种将样本划分为两个不同大小群体的展示方式，暗示了该研究最终呈现或采用的是一个 **2 类模型 (2-Class Model)**。\n3.  **指标限制**：提供的片段中**并未直接列出**该肥胖风险研究具体的 BIC 和 BLRT 数值来进行模型优劣的比较。**片段 3** 虽然展示了 BIC 指标（其中 2 类模型的 BIC 为 4,982.93，低于 1 类和 3 类），但其标题为\"Latent Class Example\"，属于潜在变量混合模型建模的通用示例，并非该肥胖研究的具体数据。**片段 4** 提供了 BIC 和 LMR 值，但针对的是“冷酷、攻击性、不服从”等心理指标，与肥胖风险无关。\n\n**结论：**\n虽然提供的文本缺少该特定肥胖研究直接的 BIC 和 BLRT 对比数据，但基于片段 1 和 2 中呈现的详细结果结构（明确分为两个类别），以及片段 3 中通用示例显示 2 类模型往往具有更低 BIC（更优拟合）的原则，基于现有内容推断，**2 类模型 (2-Class Model)** 是文中展示用于评估该风险的主要模型。",
+    "retrieved_ids": [
+      "images/education/7860274/7860274_page_0009.png",
+      "images/healthcare/7860274/7860274_page_0009.png",
+      "images/education/7860274/7860274_page_0008.png",
+      "images/education/0772076/0772076_page_0008.png",
+      "images/healthcare/3166023/3166023_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "14543604553fc8fe",
+    "query": "Over the years 2006 to 2031, what was the impact of mechanisms aimed at emissions reduction on the balance of power output between advanced and conventional natural gas combined cycle technologies?",
+    "domain": "energy",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The proportion of electricity generated by ANGCC (advanced natural gas combined cycle) increases significantly compared to NGCC (conventional natural gas combined cycle) under the CDM scenario from 2016 onward. By 2031, ANGCC accounts for a much larger share of total generation, while NGCC's share grows more moderately. This shift is due to mechanisms aimed at emissions reduction, which promote ANGCC over NGCC because of improved thermal efficiency and lower emissions, as seen in the reduced CO2, SOx, and NOx emissions in the CDM scenario compared to the BAU scenario.",
+    "generated_answer": "基于提供的知识库片段，**无法回答**该问题。\n\n提供的检索内容中不包含关于 2006 年至 2031 年间减排机制对先进与常规天然气联合循环技术（natural gas combined cycle technologies）电力输出平衡影响的具体信息。具体原因如下：\n\n1.  **时间范围不匹配**：片段 1 虽提及 2031 年，但主要讨论煤炭、水电、核能和风能；片段 2 的图表时间范围为 2015 至 2050 年；其他片段未涉及 2006-2031 年的具体技术分析。\n2.  **技术分类缺失**：没有任何片段区分“先进”与“常规”天然气联合循环技术，也未提及减排机制如何影响这两者之间的比例或平衡。\n3.  **内容主题差异**：现有内容主要涉及能源价格对容量组合的影响（片段 3）、政策对能源供应量的减少（片段 4）以及不同情景下的部门能源数据（片段 5），与问题核心不符。\n\n因此，基于现有检索到的文字内容，无法得出关于该特定时间段和技术平衡影响的结论。",
+    "retrieved_ids": [
+      "images/energy/3626869/3626869_page_0009.png",
+      "images/energy/4425296/4425296_page_0007.png",
+      "images/energy/0423894/0423894_page_0004.png",
+      "images/energy/5049171/5049171_page_0002.png",
+      "images/energy/0901042/0901042_page_0011.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "14633c2a6b9748fb",
+    "query": "How did the erosion and accretion trends differ in the northern and southern parts of the Gialos shoreline from 1945 to 1972 compared to 1972 to 2000?",
+    "domain": "construction",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "During 1945-1972, the Gialos shoreline experienced significant erosion in the northern sections and accretion in the southern sections. From 1972-2000, this trend reversed with increased accretion in the northern sections and a more even distribution of erosion along the shoreline.",
+    "generated_answer": "Based on the provided knowledge base fragments, it is **not possible to explicitly answer** how the erosion and accretion trends differed in the northern and southern parts of the Gialos shoreline between the periods 1945-1972 and 1972-2000.\n\n**Reasoning:**\n*   **Snippet 1** and **Snippet 2** confirm that the document covers the **Gialos shoreline**, the specific time periods (**1945-1972**, **1972-2000**, etc.), and metrics for **Erosion and Accretion** (including EPR rates and distance in meters). They also contain labels indicating **North (N)** and **South (S)** directions.\n*   However, the provided text consists primarily of **figure captions, axis labels, legends, and OCR fragments** (e.g., \"Erosion/Accretion across Gialos shoreline (m)\", \"EPR (m/yr)\").\n*   There is **no descriptive text or data analysis** within the snippets that explains the specific trends, comparisons, or magnitudes of erosion/accretion for the northern versus southern parts during those periods.\n\nTherefore, while the documents indicate that such a study exists, the specific comparative results required to answer your question are not contained in the retrieved content.",
+    "retrieved_ids": [
+      "images/construction/3147496/3147496_page_0017.png",
+      "images/construction/3147496/3147496_page_0015.png",
+      "images/construction/4913473/4913473_page_0005.png",
+      "images/construction/2692012/2692012_page_0004.png",
+      "images/construction/7074222/7074222_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "147707623d504bf1",
+    "query": "Can you provide the specific values of overall heat transfer and correction factors applied to the heat exchangers, namely the heater processing flue gas to CO2, the recuperator exchanging CO2 with itself, and the cooler transferring heat from CO2 to water, as determined in the sCO2 cycle cost assessment by Matteo Marchionni and colleagues in 2017?",
+    "domain": "energy",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Heater (flue gas-CO2): Global heat transfer coefficient = 100 W/m²K, Corrective coefficient = 7.0; Recuperator (CO2-CO2): Global heat transfer coefficient = 1700 W/m²K, Corrective coefficient = 1.8; Cooler (CO2-water): Global heat transfer coefficient = 2900 W/m²K, Corrective coefficient = 8.0. These values are specified in Table 1 of the referenced work. The correlations for cost using these coefficients are given as c_HX = k × 130 × (A / 0.093)^0.78, where k is the corrective coefficient and A is the heat transfer surface in m².",
+    "generated_answer": "基于提供的知识库内容，**无法提供**您所询问的关于加热器、回热器和冷却器的具体总传热系数（overall heat transfer）和修正因子（correction factors）的数值。\n\n虽然知识库中的片段 1、片段 2 和片段 3 确实引用了 Matteo Marchionni 等人 2017 年发表在《Energy Procedia》（Volume 123, pp 305-312）上的文章，但这些片段主要包含以下信息，并未涉及具体的传热系数数值：\n\n1.  **分析方法**：提到了稳态分析的控制方程为质量和能量平衡，使用 CycleTempo 软件求解质量流量、压力、焓和温度值，并进行火用分析（exergy analysis）[片段 1]。\n2.  **参数设定**：提到了等熵效率（isentropic efficiency）、入口温度和压力的设定依据（如材料强度、耐腐蚀性、避免流体临界转变期间的动态不稳定性），以及提到了“夹点温度”（pinch point temperatures），但并未给出具体数值 [片段 2]。\n3.  **循环配置**：介绍了 investigated 的四种 Joule-Brayton 循环配置（包括简单回热 SR 和再压缩 RC 等）[片段 3]。\n\n片段 4 和片段 5 分别来自 2013 年和 2021 年的其他文献，与该问题无关。\n\n因此，根据当前检索到的内容，无法回答关于具体热交换器传热数值的问题。",
+    "retrieved_ids": [
+      "images/energy/1720670/1720670_page_0004.png",
+      "images/energy/1720670/1720670_page_0005.png",
+      "images/energy/1720670/1720670_page_0003.png",
+      "images/energy/2342156/2342156_page_0005.png",
+      "images/energy/4512120/4512120_page_0008.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "14b48fca656c0c71",
+    "query": "For the 5500XL, which problems could lead to the unit failing to achieve sufficient heat to engage the circulation fan, as described under trouble code three?",
+    "domain": "energy",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Issues that could cause the 5500XL to fail to achieve sufficient heat to engage the circulation fan under trouble code three (Err3) include: flame or fuel quality causing the fire to burn too slowly or go out, auger output failure or jam, hopper being empty, and the thermistor not connected to the control board or being bad.",
+    "generated_answer": "Based on the provided knowledge base content, here is the answer regarding the 5500XL and Trouble Code Three:\n\nAccording to **Fragment 1**, the **5500XL** model uses the **4 Digit Board**.\n\nAccording to **Fragment 2** (Error Codes and Display Indicators), **Error Code 3 (Err3)** indicates that **\"The stove was unable to reach... temperature\"**.\n\nBased on the text available in Fragment 2 for Err3, the problem that could lead to this issue is:\n*   **Flame or Fuel Quality** (The text states: \"Flame or Fuel Quality caused temperature to turn...\")\n\n*Note: The provided text for Err3 appears to be truncated, but \"Flame or Fuel Quality\" is the specific cause listed in the available content associated with the unit failing to reach temperature.*",
+    "retrieved_ids": [
+      "images/energy/0312521/0312521_page_0022.png",
+      "images/energy/0312521/0312521_page_0024.png",
+      "images/commerce_manufacturing/7510601/7510601_page_0013.png",
+      "images/energy/0312521/0312521_page_0023.png",
+      "images/crm/2676341/2676341_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "14b590bfe265e761",
+    "query": "How does the proportion of language-sharing user pairs change according to the ASP and affinity evaluations in Figure 7?",
+    "domain": "crm",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The fraction of pairs of users speaking the same language decreases with both ASP and affinity measures, as shown in Figure 7. The decrease is more pronounced with the ASP measure, indicating stronger language separation as ASP increases compared to affinity.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**该问题。\n\n原因如下：\n1.  提供的文本片段中**没有包含\"Figure 7\"的相关信息**。\n2.  片段中仅提到了 Figure 1、Figure 2、Figure 3、Figure 4（两个不同的来源）和 Figure 5，以及 Table 1 和 Table 6。\n3.  虽然片段 2 的 Table 1 中提到了\"Language similarity\"（语言相似性）与 ASP distance 等指标的相关性系数，但这属于表格数据，且并未提及 Figure 7 中关于用户对比例变化的具体描述。\n\n因此，根据现有检索内容，无法得知语言共享用户对的比例在 Figure 7 中如何根据 ASP 和 affinity 评估而变化。",
+    "retrieved_ids": [
+      "images/crm/4159712/4159712_page_0006.png",
+      "images/crm/4159712/4159712_page_0007.png",
+      "images/crm/4159712/4159712_page_0005.png",
+      "images/crm/6302639/6302639_page_0017.png",
+      "images/education/6488717/6488717_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "153c9462ff5b3d69",
+    "query": "What were the significant shifts and turning points in the monthly average petroleum cost (in USD) between the spring of 2008 and the end of winter 2012 as tracked by the Department of Commerce?",
+    "domain": "energy",
+    "question_type": "summarization",
+    "answer_type": "image_only",
+    "reference_answer": "The average monthly petroleum cost per barrel rose sharply from about $95 in April 2008 to a peak of approximately $125 in July 2008. It then fell dramatically, reaching a low of around $40 by December 2008–February 2009. After this low point, prices rose steadily throughout 2009, leveling off between $70 and $85 from late 2009 through most of 2010. In early 2011, prices increased again, peaking above $105 in April 2011, then experienced minor fluctuations but remained relatively stable between $95 and $110 through the end of winter 2012.",
+    "generated_answer": "基于提供的知识库片段，无法提供 2008 年春季至 2012 年冬季之间每月平均石油成本（USD）的具体数值变化或确切的转折点数据。提供的文本片段主要包含图表的标题、坐标轴标签及部分说明文字，缺乏具体的月度数据读数。\n\n不过，根据**片段 2**和**片段 3**（来源：美国商务部 Department of Commerce，主题：2008-2012 年美国原油进口价格 U.S. Import Price of Crude Oil），可以总结出以下定性趋势：\n\n1.  **2008 年和 2009 年初的价格下跌**：数据显示，经济衰退（economic recession）是导致 2008 年和 2009 年前三个月油价下跌的主要因素（\"pushing down oil prices in the first three months\"）。\n2.  **随后的价格上升**：随着经济复苏增长（\"As economic growth picked up\"），石油需求增加，倾向于推高油价压力，导致油价上升（\"which rose\"）。\n\n由于文本内容不完整（例如句子在 \"which rose th...\" 处截断）且无法读取图表中的具体数值，无法详细列出该时间段内具体的月度平均成本 shifts 和 turning points。",
+    "retrieved_ids": [
+      "images/finance/1615160/1615160_page_0010.png",
+      "images/finance/1968605/1968605_page_0009.png",
+      "images/energy/1968605/1968605_page_0009.png",
+      "images/energy/5798277/5798277_page_0013.png",
+      "images/energy/4871187/4871187_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "15ef675384a7ecee",
+    "query": "What are the variations in GDP impact for the PRC due to Covid-19 under several potential cases as discussed in the 2020 publication of the International Journal of Advanced Science and Technology?",
+    "domain": "finance",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "In the PRC, the GDP losses due to Covid-19 are -0.323% ($43,890 million) in the Best Case, -0.757% ($103,056 million) in the Moderate Case, and -1.740% ($236,793 million) in the Worse Case.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**关于中国（PRC）因 Covid-19 导致的 GDP 影响在不同潜在案例下的变化这一具体问题。\n\n原因如下：\n1.  **缺乏相关数据**：虽然片段 1 和片段 2 确实来自《International Journal of Advanced Science and Technology》2020 年的出版物（Vol. 29, No.9s, pp. 2547-2555），但提供的文本中并未包含关于中国（PRC）GDP 影响的具体数值或潜在案例讨论。\n2.  **主题不符**：片段 2 的标题明确为\"VIRAL IMPACTS ON INDIAN ECONOMY-AN INSIGHT\"（病毒对印度经济的影响——洞察），主要讨论的是病毒对**印度**经济的影响，以及国际货币基金组织（IMF）对全球经济衰退的一般性评论，而非中国。\n3.  **内容局限**：片段 1 主要涉及工作流程中断、社会距离（Social Distancing）和自我隔离（Self-quarantine）等措施，未涉及宏观经济指标的具体变化。\n\n因此，根据当前检索到的文字内容，无法提供您所询问的特定数据。",
+    "retrieved_ids": [
+      "images/finance/6807878/6807878_page_0003.png",
+      "images/finance/6807878/6807878_page_0005.png",
+      "images/healthcare/6976935/6976935_page_0009.png",
+      "images/commerce_manufacturing/0144801/0144801_page_0012.png",
+      "images/education/7060952/7060952_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "167359294d211693",
+    "query": "In the context of WAM Active's financials, how does the NTA before tax differ between June 2021 and the previous month, May 2021?",
+    "domain": "finance",
+    "question_type": "comparison",
+    "answer_type": "table_required",
+    "reference_answer": "The NTA before tax in June 2021 was 101.84c, compared to 101.65c in May 2021, showing an increase of 0.19c.",
+    "generated_answer": "基于提供的知识库片段，**无法回答**关于 WAM Active 在 2021 年 6 月与 5 月之间税前 NTA（Net Tangible Assets，净 tangible 资产）差异的问题。\n\n原因如下：\n\n1.  **片段 1** 虽然提到了 **WAM Active (ASX: WAA)** 及其投资组合的表现（指出投资组合在该月有所增加，并列出了 Seven West Media 和 Domino's Pizza 等贡献者），但文中**并未提供具体的“税前 NTA\"数值**，也没有明确指明该月份是 2021 年 5 月还是 6 月。\n2.  **片段 2** 涉及的是 **WAM Research (ASX: WAX)** 的数据，与 WAM Active 无关。\n3.  **片段 3** 是关于净利润调整的财务报表，日期为 2020 年和 2019 年 3 月 31 日，与 2021 年的数据无关。\n4.  **片段 4** 显示的是天然气策略和期货价格（日期为 2021 年 7 月），与 WAM Active 的财务数据无关。\n5.  **片段 5** 是 2021 年 4 月的财务记分牌（Financial Scorecard），主要涉及 MWh 销售量和权益比率等数据。虽然图表轴标签中出现了\"May-21\"和\"Jun-21\"的字样，但这部分内容与 WAM Active 的 NTA 数据无关。\n\n因此，提供的材料中缺少比较 2021 年 5 月和 6 月 WAM Active 税前 NTA 所需的具体财务数据。",
+    "retrieved_ids": [
+      "images/finance/6002966/6002966_page_0010.png",
+      "images/finance/6002966/6002966_page_0009.png",
+      "images/commerce_manufacturing/4426481/4426481_page_0009.png",
+      "images/energy/5066075/5066075_page_0005.png",
+      "images/finance/7914979/7914979_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "170f9d555ca134f6",
+    "query": "How does the total capacity for onshore wind installations evolve between 2020 and 2050 in the study conducted by Michael Child and colleagues published in Energy Procedia 135 (2017)?",
+    "domain": "energy",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The installed capacity for wind onshore technology increases steadily from 2020 to 2050, rising from approximately 25 GW in 2020 to about 65 GW in 2050, according to the study by Michael Child and colleagues published in Energy Procedia 135 (2017), as shown in Figure 3.",
+    "generated_answer": "基于提供的知识库内容，**无法具体回答**该问题。\n\n原因如下：\n\n1.  **相关片段信息有限**：只有 **[片段 1]** 提到了 Michael Child 等人在 *Energy Procedia 135 (2017)* 发表的研究。\n2.  **缺乏具体数据**：虽然 [片段 1] 中包含了图表标题\"Fig. 3. Cumulative installed capacity for all generation technologies from 2015 to 2050\"（图 3:2015 年至 2050 年所有发电技术的累计装机容量），并列出了\"Wind onshore\"（陆上风电）作为其中一种技术，同时也显示了年份（2020, 2030, 2040, 2050）和容量单位 [GW]。\n3.  **无法推断趋势**：该片段仅提供了图表的图例标签、坐标轴刻度（如 50, 100, 150 等）以及部分其他技术的数据标签，但**并没有提供陆上风电（Wind onshore）在 2020 年至 2050 年间的具体装机容量数值或变化趋势的文字描述**。\n\n因此，基于现有的检索内容，无法说明该研究中陆上风电装机容量是如何演变的。",
+    "retrieved_ids": [
+      "images/energy/4425296/4425296_page_0007.png",
+      "images/energy/0423894/0423894_page_0003.png",
+      "images/energy/3626869/3626869_page_0009.png",
+      "images/energy/1711172/1711172_page_0004.png",
+      "images/energy/2711884/2711884_page_0001.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1730c3972bdf1e09",
+    "query": "Which high, medium, and lower voltage dataset categories are managed by the intelligent remote control unit within the advanced substation framework?",
+    "domain": "energy",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "500kV, 220kV, and 110kV dataset categories are managed by the intelligent remote control unit within the advanced substation framework.",
+    "generated_answer": "基于提供的知识库片段，特别是 **[片段 1]**，关于智能变电站框架内智能远程控制单元（文中称为 \"IEC61850 Smart Telecontrol Device\"）管理的数据集电压类别，内容如下：\n\n文中明确提到了 **500kV、220kV 和 110kV** 的数据集（dataset）。\n\n具体依据如下：\n*   **智能远程控制单元**：片段中提及了 \"IEC61850 Smart Telecontrol Device\"（IEC61850 智能远动装置）。\n*   **高级变电站框架**：片段中提及了 \"Smart substation\"（智能变电站）。\n*   **电压数据集类别**：片段中列出了 \"500kV 220kV 110kV dataset dataset dataset\"，表明该新方案（New approach to exchange real-time data）涉及这三个电压等级的数据集交换。\n\n虽然提供的文本片段没有明确将这三个电压等级分别标记为“高、中、低”压类别，但文中指出的由智能远动装置管理的电压数据集具体为 **500kV、220kV 和 110kV**。",
+    "retrieved_ids": [
+      "images/energy/0648106/0648106_page_0004.png",
+      "images/commerce_manufacturing/3341761/3341761_page_0007.png",
+      "images/commerce_manufacturing/3341761/3341761_page_0008.png",
+      "images/energy/2183227/2183227_page_0014.png",
+      "images/commerce_manufacturing/5086662/5086662_page_0007.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "17380940986eab7b",
+    "query": "For the NFA group modeled with a Mixture Exponential distribution, how does the chance of arrest in the upcoming year, given it hasn't happened yet, change over the first eight years?",
+    "domain": "legal",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The estimated probability of arrest within the next year for the NFA group, given it hasn't happened yet, decreases from about 0.30 at year 0 to near 0.00 by year 8. This indicates a declining risk of arrest as more time passes without an arrest occurring.",
+    "generated_answer": "Based on the provided knowledge base snippets, it is **not possible to fully answer** how the chance of arrest changes over the first eight years for the NFA group modeled with a Mixture Exponential distribution.\n\nThe relevant information is found in **Snippet 1**, but it is incomplete and lacks the specific trend details required:\n\n1.  **Model Mention:** Snippet 1 mentions an \"NFA group\" and a \"mixture model\" with parameters **p = 0.72** and **Q2 = 0.87**.\n2.  **Risk Description:** It states that \"72% of the NFA group constitute no difference in risk the...\" but the sentence cuts off, leaving the specific nature of the risk undefined.\n3.  **Timeframe:** The snippet mentions a comparison occurring \"after 6 years\" and a model fit based on data between \"0.75 years and 3.25 years.\" It does not provide data or a description of the trend covering the full **first eight years**.\n4.  **Distribution Type:** The text refers to a \"mixture model\" but does not explicitly confirm it is a \"Mixture Exponential distribution.\"\n\nTherefore, the provided content does not contain sufficient information to describe the change in the conditional chance of arrest over the specified eight-year period.",
+    "retrieved_ids": [
+      "images/legal/7118673/7118673_page_0005.png",
+      "images/education/0772076/0772076_page_0008.png",
+      "images/energy/1597086/1597086_page_0003.png",
+      "images/education/1761393/1761393_page_0010.png",
+      "images/legal/7894475/7894475_page_0007.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1740a795d088107f",
+    "query": "For Measurement Model 5, which considers separate AC, capacity, and SM factors, what are the NNFI and CFI results related to WM storage?",
+    "domain": "healthcare",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "The NNFI value is .95 and the CFI value is .96 for Measurement Model 5.",
+    "generated_answer": "Based on the provided knowledge base content (specifically **Snippet 1**, Table 3 \"Fit indices for all models\"), the results for **Measurement Model 5** are:\n\n*   **NNFI:** .95\n*   **CFI:** .96\n\nThese values are listed in the row for \"Measurement Model 5\" under the respective columns in the table associated with WM storage.",
+    "retrieved_ids": [
+      "images/healthcare/2456459/2456459_page_0013.png",
+      "images/education/2456459/2456459_page_0011.png",
+      "images/education/0772076/0772076_page_0008.png",
+      "images/education/4426997/4426997_page_0006.png",
+      "images/construction/5513408/5513408_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1762408f43b720e0",
+    "query": "What was the combined aerodynamic resistance value for all main structural elements of the experimental setup when using the rotor area as the basis for calculation?",
+    "domain": "energy",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "The combined aerodynamic resistance value for all main structural elements of the experimental setup, when using the rotor area as the basis for calculation, is a total drag coefficient of 0.145.",
+    "generated_answer": "Based on the provided knowledge base, specifically **Fragment 1**, the combined aerodynamic resistance value for all main structural elements was **0.145**.\n\nThis value is explicitly listed in the text as the \"**Total drag coefficient**\" with the note \"**(ref rotor area)**\", indicating it was calculated using the rotor area as the basis.",
+    "retrieved_ids": [
+      "images/energy/7603803/7603803_page_0007.png",
+      "images/energy/7603803/7603803_page_0006.png",
+      "images/construction/1748668/1748668_page_0004.png",
+      "images/energy/4971670/4971670_page_0006.png",
+      "images/energy/1215923/1215923_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "179a585b097073fa",
+    "query": "What changes occurred in the 30-Year Fixed Mortgage rate between the second quarter of 2015 and the third quarter of 2018 in the scenario outlined by PNC during their 2016 Mid-Cycle Stress Test?",
+    "domain": "finance",
+    "question_type": "temporal_comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The 30-Year Fixed Mortgage rate decreased from around 3.9% in 2015 Q2 to about 2.8% in 2016 Q3, then slightly increased to around 3.0% by 2018 Q3.",
+    "generated_answer": "基于提供的知识库片段，特别是**片段 1 (PNC2016Mid-CycleStressTestDisclosures-3)**，可以得出以下关于 30 年期固定抵押贷款利率（30-Year Fixed Mortgage rate）的信息：\n\n1.  **场景与时间段**：该数据属于 PNC 2016 年中周期压力测试披露（2016 Mid-Cycle Stress Test Disclosures）的一部分。图表涵盖的时间段从 **2015 年第二季度 (2015 Q2)** 到 **2018 年第三季度 (2018 Q3)**。\n2.  **利率范围**：文本中显示的 30 年期固定抵押贷款利率（主要，百分比）的坐标轴刻度范围在 **2.9% 到 4.0%** 之间。\n3.  **具体变化数值**：提供的文本片段主要是图表的坐标轴标签和标题的 OCR 识别结果，**并未明确列出 2015 年第二季度和 2018 年第三季度的具体利率数值**。因此，无法从现有文本中精确计算出这两个时间点之间的具体变化数值（例如增加了或减少了多少个基点）。\n\n**总结**：\n在 PNC 2016 年中周期压力测试场景 outlined 中，30 年期固定抵押贷款利率是 tracked 的一个变量，时间跨度为 2015 年第二季度至 2018 年第三季度，图表显示的利率刻度范围为 2.9% 至 4.0%，但提供的文本内容未包含具体的季度利率数据点以确定确切的变化值。",
+    "retrieved_ids": [
+      "images/finance/0184489/0184489_page_0003.png",
+      "images/finance/0184489/0184489_page_0002.png",
+      "images/finance/7257900/7257900_page_0007.png",
+      "images/finance/4274052/4274052_page_0005.png",
+      "images/energy/1793544/1793544_page_0005.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1833b86b286ad034",
+    "query": "In the French study on cardiac rehabilitation for CHD patients, what was the number of individuals assigned to the intervention group following randomisation?",
+    "domain": "healthcare",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "65 participants were assigned to the intervention group following randomisation.",
+    "generated_answer": "基于提供的知识库内容，**无法确定**该法国先天性心脏病（CHD）患者心脏康复研究中随机分组后干预组的具体人数。\n\n原因分析如下：\n\n1.  **相关研究片段缺失数据**：片段 1 和片段 2 来自 P. Amedro 等人发表在《International Journal of Cardiology》上的文章。内容明确涉及\"CHD patient\"（先天性心脏病患者）、\"Interval training session\"（间歇训练，属于心脏康复内容）以及法国研究团队（P. Amedro 为法国研究者，伦理委员会编号显示为 North-West I-2018...）。这与问题描述的研究相符。然而，这两个片段仅描述了患者招募流程（流程图文字）和训练方案参数，**并未提及随机分组后的具体患者人数**。\n2.  **其他片段属于不同研究**：片段 4 虽然提供了随机分组的具体人数（1244 人被分配到糖皮质激素组，1244 人被分配到停药组），但该片段来自《The NEW ENGLAND JOURNAL of MEDICINE》，研究主题是关于“糖皮质激素（glucocorticoid）”的使用，与问题中的“心脏康复（cardiac rehabilitation）”研究不符。\n\n因此，现有的检索内容中不包含该特定研究干预组的分配人数。",
+    "retrieved_ids": [
+      "images/healthcare/7855533/7855533_page_0003.png",
+      "images/healthcare/7855533/7855533_page_0005.png",
+      "images/healthcare/7146650/7146650_page_0007.png",
+      "images/healthcare/1685332/1685332_page_0004.png",
+      "images/healthcare/7146650/7146650_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "184b8b98af02bc5a",
+    "query": "How did the tourism revenue growth rate in Kenya evolve between 1998 and 2011, based on data from the Kenya National Bureau of Statistics?",
+    "domain": "crm",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "The growth rate of tourism revenue in Kenya between 1998 and 2011 fluctuated significantly. It experienced both increases and decreases, with a notable low point around 2008, after which it recovered significantly by 2011.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**肯尼亚 1998 年至 2011 年旅游收入增长率的具体演变情况。\n\n原因如下：\n\n1.  **数据缺失**：虽然 [片段 1] 提到了\"Kenya Tourism Report\"（肯尼亚旅游报告）、\"Tourism Earnings\"（旅游收入）以及数据来源\"Kenya National Bureau of Statistics, Statistical Abstract 2015 (2016)\"，但该片段仅包含图表中的碎片化数字（如 120.000, 100.000 等）和标题信息，**并没有提供 1998 年至 2011 年期间具体的年份数据、增长率数值或趋势描述**。\n2.  **内容无关**：其他片段（[片段 2] 至 [片段 5]）分别涉及 ZESCO 公用事业绩效、矿业报告（黄金生产/收入）以及基金安排数据，与肯尼亚旅游业无关。\n\n因此，现有检索到的知识库内容不足以支持对该问题的回答。",
+    "retrieved_ids": [
+      "images/crm/6551008/6551008_page_0018.png",
+      "images/energy/1793544/1793544_page_0004.png",
+      "images/energy/1793544/1793544_page_0003.png",
+      "images/commerce_manufacturing/5591674/5591674_page_0012.png",
+      "images/finance/3331210/3331210_page_0021.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "185b84e51261c8b4",
+    "query": "What trends and major year-to-year variations were observed in the proportion of NEM Forward Market activity relative to physical volume between the financial years 1999/00 and 2018/19?",
+    "domain": "energy",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "Between the financial years 1999/00 and 2018/19, the proportion of NEM Forward Market activity relative to physical volume generally increased, starting at around 100% and reaching a peak of over 450% in 2011/12. There were notable year-to-year variations, including a sharp rise around 2006/07 to 2010/11, peaking in 2011/12, followed by a substantial decline, stabilisation, and a partial recovery towards 2018/19. Thus, the major trends were a long-term increase, significant volatility with a pronounced peak and subsequent decline, and some recovery by the end of the period.",
+    "generated_answer": "基于提供的知识库内容，**无法详细描述**1999/00 至 2018/19 财政年度间 NEM 远期市场活动相对于物理量的具体趋势和主要年度变化。\n\n原因如下：\n\n1.  **相关信息有限**：只有 **[片段 4]** 涉及该主题。该片段提到了图表标题\"Figure 4 OTC&ASXForward ElectricityMarket Liquidity1999-20193 NEM Forward Market\"以及指标\"NEM Forward Market Liquidity (% of Physical)\"，这表明存在涵盖 1999 年至 2019 年期间的相关数据图表。\n2.  **缺乏具体数据与分析**：提供的文本仅包含图表的标题、坐标轴刻度（50 至 500）以及部分关于“重新定义区域参考价格”（Redefining the regional reference price）的政策文本。**片段中并未包含图表中的具体数据点、曲线走向、趋势描述或年度变化的分析文字**。\n3.  **其他片段无关**：\n    *   [片段 1] 和 [片段 2] 涉及北欧/波罗的海（Nordic/Baltic）日前市场交易量（2010-2020 年）。\n    *   [片段 3] 涉及碳市场与能源市场的波动溢出及相关性（2005-2008 年）。\n    *   [片段 5] 涉及排放交易体系（EU ETS）的配额分配和政策。\n    *   这些片段均不包含关于 NEM 远期市场流动性趋势的具体信息。\n\n因此，仅凭现有检索到的知识库内容，无法回答关于具体趋势和年度变化的问题。",
+    "retrieved_ids": [
+      "images/energy/7548051/7548051_page_0016.png",
+      "images/finance/7548051/7548051_page_0016.png",
+      "images/energy/4871187/4871187_page_0012.png",
+      "images/energy/3629103/3629103_page_0008.png",
+      "images/energy/4871187/4871187_page_0013.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "18628c097def6da0",
+    "query": "Identify the appellant company linked to TMK 3-8-079-022-0000 in the case number 20027685.",
+    "domain": "legal",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Costco Wholesale Corporation",
+    "generated_answer": "Based on the provided content (specifically Fragment 1), the appellant company linked to TMK 3-8-079-022-0000 in case number 20027685 is **Costco Wholesale Corporation**.\n\n**Excerpt from Fragment 1:**\n\"Case No. TMK Appellant 20027685 3-8-079-022-0000 Costco Wholesale Corporation\"",
+    "retrieved_ids": [
+      "images/legal/3180438/3180438_page_0004.png",
+      "images/legal/5767485/5767485_page_0001.png",
+      "images/legal/5018416/5018416_page_0005.png",
+      "images/energy/2711884/2711884_page_0001.png",
+      "images/legal/3374686/3374686_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "189eaae38a02d0ca",
+    "query": "What is the signing date of the contract between Mr. Washburn and the City of Osage Beach?",
+    "domain": "legal",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The signing date of the contract between Mr. Washburn and the City of Osage Beach is 6-25-18.",
+    "generated_answer": "基于提供的知识库内容，无法回答该问题。\n\n虽然片段 1 提到了 Mr. Washburn 作为独立承包商与\"the City\"之间的协议条款（如独立承包商身份、因残疾终止协议等），但文中并未明确提及\"City of Osage Beach\"这一具体城市名称，也没有包含任何关于合同签署日期的信息。其他片段（片段 2 至片段 5）也未涉及该合同的相关信息。\n\n因此，根据现有内容无法得知签署日期。",
+    "retrieved_ids": [
+      "images/legal/3401988/3401988_page_0004.png",
+      "images/construction/1676343/1676343_page_0012.png",
+      "images/construction/1615421/1615421_page_0020.png",
+      "images/legal/3374686/3374686_page_0007.png",
+      "images/crm/0128400/0128400_page_0006.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1985d284421413e7",
+    "query": "How did the trend of internal and external sales for VAA change from 2006 to 2017?",
+    "domain": "commerce_manufacturing",
+    "question_type": "comparison",
+    "answer_type": "image_only",
+    "reference_answer": "Internal sales decreased initially and then increased slightly, while external sales gradually increased over the period.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**VAA 从 2006 年到 2017 年内外部销售的具体变化趋势。\n\n原因如下：\n1.  **片段 1** 虽然提到了\"VAA's Sales\"以及\"Internal Sales\"（内部销售）和\"External Sales\"（外部销售）的分类，但该片段仅展示了图表的坐标轴刻度（如 100, 80, 60 等）和产品组合信息（如瓷器、石器等产品类别），**并未包含 2006 年至 2017 年的具体年份数据或趋势文字描述**。\n2.  **片段 3** 虽然出现了\"2017\"年份数据，但那是关于\"Installment sales receivables\"（分期销售应收账款）且货币单位为卢比（Rupees），与片段 1 中 VAA 使用的欧元（euros）及销售趋势无关。\n3.  **其他片段**（片段 2、4、5）涉及的是电子商务流程、基金融资安排以及服装集团的销售数据，与 VAA 的销售趋势无关。\n\n因此，现有提供的材料不足以支持回答关于 VAA 在 2006 年至 2017 年间销售趋势变化的问题。",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/2127203/2127203_page_0004.png",
+      "images/commerce_manufacturing/0820977/0820977_page_0011.png",
+      "images/finance/0458505/0458505_page_0017.png",
+      "images/finance/3331210/3331210_page_0007.png",
+      "images/commerce_manufacturing/2640274/2640274_page_0013.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "19b2f6b48017f57e",
+    "query": "Which forms and certificates are required for overseas investors to benefit from the treaty-adjusted tax rate?",
+    "domain": "finance",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "1. Self-attested copy of Indian Tax Identification number Permanent Account Number (PAN), if available. 2. Tax Residency Certificate (TRC) (of FY 2021-22 or later) obtained from the tax authorities of the country of which the shareholder is a resident. 3. Form 10F duly filled and signed. 4. Self-declaration (of FY 2021-22 or later) from Non-resident, primarily covering eligibility for tax treaty benefits, beneficial ownership of dividend income, and non-attribution to any Permanent Establishment in India. 5. Lower/NIL withholding tax certificate obtained from tax authority if applicable.",
+    "generated_answer": "Based on the provided knowledge base content (specifically **Snippet 1**), the following documents are required for non-resident shareholders (including Foreign and Institutional Investors) to apply the **Tax Treaty rate**:\n\n1.  **Self-attested copy of Indian Permanent Account Number (PAN)**, if available.\n2.  **Tax Residency Certificate (TRC)**.\n\nAdditionally, the text notes that these should be submitted with withholding details of DPID-Client Id/Folio No.",
+    "retrieved_ids": [
+      "images/finance/2931383/2931383_page_0004.png",
+      "images/finance/3290162/3290162_page_0008.png",
+      "images/finance/3290162/3290162_page_0009.png",
+      "images/finance/3290162/3290162_page_0010.png",
+      "images/finance/3290162/3290162_page_0007.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "19d013c9c44ffaed",
+    "query": "For the first half of the year ending September 30, 2013, what expense value was recorded for the wear and tear and value reduction of fixed assets?",
+    "domain": "commerce_manufacturing",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "The expense value recorded for the wear and tear and value reduction of fixed assets for the first half of the year ending September 30, 2013, was $13,057,000.",
+    "generated_answer": "Based on the provided knowledge base snippets, there is **no information available** regarding the expense value recorded for the wear and tear and value reduction of fixed assets (depreciation and impairment) for the first half of the year ending **September 30, 2013**.\n\nHere is a summary of the relevant data found in the snippets which does not match the requested period:\n*   **Snippet 1:** Defines \"adjusted EBITDA\" and mentions depreciation but provides no specific values or dates.\n*   **Snippet 2:** Provides depreciation data for the year up to **31st March 2021**.\n*   **Snippet 3:** Provides a Consolidated Balance Sheet as at **31 March 2013**, showing asset values but not expense values for a subsequent period.\n*   **Snippet 4:** Shows Property, Plant and Equipment cost movements for the year ending **31 March 2014** (starting 1 April 2013), but does not list depreciation expense values, nor does it cover the specific half-year ending September 30, 2013.\n*   **Snippet 5:** Provides data for the half year ended **30 June 2018**.\n\nTherefore, the specific expense value for the period requested cannot be retrieved from the provided text.",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/6783432/6783432_page_0006.png",
+      "images/legal/4233310/4233310_page_0007.png",
+      "images/finance/7757029/7757029_page_0003.png",
+      "images/finance/6440218/6440218_page_0017.png",
+      "images/finance/0458505/0458505_page_0018.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1a0f721e675215dd",
+    "query": "What are the operational features of the 1/100-second stopwatch?",
+    "domain": "commerce_manufacturing",
+    "question_type": "summarization",
+    "answer_type": "table_required",
+    "reference_answer": "The stopwatch can measure elapsed time and lap/split times, store times in memory, and continue timing even if you exit the Stopwatch Mode.",
+    "generated_answer": "Based on the provided knowledge base content, there is **no specific information** regarding the operational features of a **\"1/100-second stopwatch\"**. The provided text does not mention the resolution (1/100-second) of any stopwatch.\n\nHowever, the content does describe features related to a **Stopwatch Mode** found in the **CASIO Operation Guide 3271** (Snippet 1). The available operational features for this stopwatch include:\n\n*   **Graphic Animation:** A graphic animation plays on the display while a stopwatch timing operation is being performed. This animation can be toggled on and off by holding down a button while the stopwatch is reset to all zeros.\n*   **Recall Mode:** This mode allows users to recall and delete records stored by the Stopwatch Mode.\n*   **Data Logging:** Stopwatch records are stored in \"logs\" that are created automatically by the watch.\n\nPlease note that the other provided snippets (Snippet 3, 4, 5) relate to a **CC408 Security System** (covering topics like arming modes, zones, and alarms) and do not contain information about stopwatches. Snippet 2 discusses the Timekeeping and Demo Mode of the CASIO watch but does not detail stopwatch specifications.",
+    "retrieved_ids": [
+      "images/commerce_manufacturing/6981908/6981908_page_0003.png",
+      "images/commerce_manufacturing/6981908/6981908_page_0002.png",
+      "images/crm/5963931/5963931_page_0026.png",
+      "images/crm/5963931/5963931_page_0024.png",
+      "images/crm/5963931/5963931_page_0025.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1a693856f98bf2f5",
+    "query": "In the early 1900s, what were the measurements of the Winged Box kite utilized by Mr. Barton during British contests?",
+    "domain": "education",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The dimensions of Barton’s Winged Box kite are 2500 mm in width and 2000 mm in height.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**该问题。\n\n原因如下：\n1.  **片段 1** 虽然提到了 20 世纪早期（early years of the 20th century）的风筝历史，但仅列举了 Hargreaves/Cody、Eddy、Conyne 和 Bell 等人的影响，**并未提及 Mr. Barton**，也没有关于\"Winged Box kite\"的具体测量尺寸（measurements）的信息。\n2.  **片段 2 至 5** 分别涉及通风系统、控制板设置、遮阳解决方案和旅游促销内容，与风筝历史完全无关。\n\n因此，所提供的检索内容中不包含回答此问题所需的具体信息。",
+    "retrieved_ids": [
+      "images/education/3106261/3106261_page_0019.png",
+      "images/construction/3235227/3235227_page_0015.png",
+      "images/energy/0312521/0312521_page_0021.png",
+      "images/crm/2058918/2058918_page_0008.png",
+      "images/crm/6653568/6653568_page_0009.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1ac46086e897e89c",
+    "query": "In community-focused initiatives aimed at expanding sustainable power solutions, how is small-batch biofuel fabrication carried out to support local economic activity when implemented by groups skilled in advancing access for underserved populations?",
+    "domain": "energy",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The process involves an individual manually producing cylindrical biomass fuel briquettes using a mechanical press, with finished briquettes collected in a tray, all set within a small, outdoor workspace surrounded by lush vegetation. This method supports local economic activity by enabling small-scale, community-focused production of biofuels, facilitated by groups skilled in advancing access for underserved populations. Such initiatives often leverage local knowledge, business plan development for micro-enterprises, demonstration of new business viability, community engagement, and market activation to ensure effective and inclusive energy access, as described in the provided context.",
+    "generated_answer": "基于提供的知识库片段，无法直接提供关于“小规模生物燃料制造具体如何实施”的详细流程说明，因为现有内容中缺乏具体的操作步骤或技术细节。不过，相关片段中提到了与该主题相关的以下信息：\n\n1.  **生物燃料与商业模式**：片段 2 提到，能源项目经验涵盖可再生能源来源（包括生物质和生物燃料），且能源商业模式包括“制造”（manufacturing）、分销和服务提供。\n2.  **原料来源**：片段 3 提及了“农业/有机废物”（agricultural/organic waste）作为生物乙醇和生物柴油的原料供应系统（feedstock supply systems）。\n3.  **经济活动支持**：片段 4 指出，经济发展目标包括“当地小型企业”（Local small businesses）和“创造就业”（Job Creation），这与支持当地经济活动的目标相符。\n4.  **社区与价值观**：片段 1 提到了社区评估能源项目的价值观，包括社会责任、环境保护、尊重文化（涉及当地社区）和经济性。\n\n综上所述，虽然知识库提到了生物燃料制造可作为商业模式的一部分，并可能利用农业废物作为原料来支持当地经济，但**并未具体说明由特定群体实施的小规模生物燃料制造是如何 carried out（执行）的**。",
+    "retrieved_ids": [
+      "images/energy/7910609/7910609_page_0005.png",
+      "images/energy/1511581/1511581_page_0004.png",
+      "images/energy/0273247/0273247_page_0006.png",
+      "images/construction/5066651/5066651_page_0014.png",
+      "images/crm/1288763/1288763_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1b549adc4e489233",
+    "query": "In Study 3B's AMP, what chance is there for a positive response when experimental primes are used in the error classification?",
+    "domain": "education",
+    "question_type": "factual_retrieval",
+    "answer_type": "image_only",
+    "reference_answer": "The probability of a positive response in Study 3B's AMP with experimental primes in the error classification group is approximately 0.5, as shown by the probability distribution in the image.",
+    "generated_answer": "基于提供的知识库内容，**无法直接回答**在 Study 3B 的 AMP（情感错误归因程序，文中对应为 Implicit evaluations）中，当错误分类（Error group）使用实验性启动（Experimental Primes）时产生积极响应的具体几率。\n\n原因如下：\n\n1.  **片段 1** 虽然提到了 **Study 3B**，并涉及 **Explicit evaluations**（显性评估）和 **Implicit evaluations**（隐性评估），以及 **Accurate group**（准确组）和 **Error group**（错误组）与 **Experimental Prime**（实验启动）的关系，但该片段仅描述了 **Fig. 4** 的分布情况（\"Distribution of explicit and implicit evaluations...\"），文中并未列出具体的概率数值或积极响应的几率。\n2.  **片段 2** 虽然包含具体的概率数据（如 **65th probability**、**95th probability**），但表格标题明确标注为 **Experiment 1** 的最终模型固定效应（\"Table 2: Fixed effects in the final model of Experiment 1\"），与问题询问的 **Study 3B** 不符。\n3.  其他片段（片段 3、4、5）分别涉及词语共现概率、自传体记忆和声乐模仿转移效应，与该问题无关。\n\n因此，根据现有检索到的文字内容，没有包含 Study 3B 中特定条件下积极响应的具体几率数据。",
+    "retrieved_ids": [
+      "images/education/6488717/6488717_page_0012.png",
+      "images/education/2765782/2765782_page_0010.png",
+      "images/education/2765782/2765782_page_0011.png",
+      "images/healthcare/3630825/3630825_page_0003.png",
+      "images/education/6453473/6453473_page_0012.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1bc7400c38a64fba",
+    "query": "What connector links a computer to a LAN of the Ethernet variety?",
+    "domain": "crm",
+    "question_type": "factual_retrieval",
+    "answer_type": "table_required",
+    "reference_answer": "Ethernet connector. It is used to attach the computer to an Ethernet-type local area network.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**该问题。\n\n提供的检索片段中并未明确提及连接计算机到以太网局域网（Ethernet LAN）的具体连接器名称（例如 RJ45）。相关内容仅包含以下信息：\n*   **片段 1 和 片段 4**：提到了计算机的音频连接器，如麦克风（Microphone）、耳机（Headphone）、线路输入（Line-in）和线路输出（Line-out）连接器。\n*   **片段 2 和 片段 5**：提到了德州仪器（Texas Instruments）的 10Base-T1L 链路电缆参数、插入损耗、回波损耗以及 PHY 操作电压设置，但未说明物理连接器的名称。\n*   **片段 3**：提到了 DuraPro 马桶连接器（Toilet Connector）。\n\n因此，根据现有资料，无法确定连接计算机到以太网局域网的具体连接器类型。",
+    "retrieved_ids": [
+      "images/crm/5288185/5288185_page_0010.png",
+      "images/commerce_manufacturing/6115986/6115986_page_0005.png",
+      "images/legal/5390077/5390077_page_0004.png",
+      "images/crm/5288185/5288185_page_0011.png",
+      "images/commerce_manufacturing/6115986/6115986_page_0003.png"
+    ],
+    "method": "baseline_ocr"
+  },
+  {
+    "query_id": "1c8e8a90faaadf0d",
+    "query": "What reasons allow the planned project in the R2 area to satisfy the width criteria for individual homes?",
+    "domain": "construction",
+    "question_type": "causal_reasoning",
+    "answer_type": "table_required",
+    "reference_answer": "The proposed lot widths for Parcel 1 and Parcel 2 are 25 feet and 25.62 feet, respectively, which meet the minimum requirement of 25 feet for detached houses in the R2 zone. Additionally, both parcels meet the minimum lot area requirement of 1,600 square feet, with Parcel 1 being 2,450 square feet and Parcel 2 being 2,481 square feet.",
+    "generated_answer": "基于提供的知识库内容，**无法回答**关于\"R2 区域计划项目满足独立住宅宽度标准的原因”的问题。\n\n原因如下：\n1.  **未提及 R2 区域**：提供的片段中没有任何内容提到\"R2 area\"或\"R2 zone\"。片段 3 中虽然提到了 zoning code，但明确指的是\"R5 zone\"。\n2.  **未提及宽度标准的具体理由**：片段 2 中提到了\"Chapter 33.610 contains the density and lot dimension\"（第 33.610 章包含密度和地块尺寸），但文本在此处截断，且未说明满足宽度标准（width criteria）的具体理由或豁免条件。\n3.  **内容不相关**：其他片段主要涉及死胡同街道（dead-end streets）、行人连接（pedestrian connections）、土地使用历史（Land Use History）或悉尼水务（Sydney Water）相关事宜，与独立住宅的宽度标准无关。\n\n因此，现有检索内容中不包含该问题所需的信息。",
+    "retrieved_ids": [
+      "images/construction/5349734/5349734_page_0004.png",
+      "images/construction/6018212/6018212_page_0004.png",
+      "images/construction/0334580/0334580_page_0008.png",
+      "images/construction/6018212/6018212_page_0003.png",
+      "images/construction/6837658/6837658_page_0004.png"
+    ],
+    "method": "baseline_ocr"
+  }
+]

@@ -20,7 +20,9 @@ Baseline C：基于 OCR 与文档结构解析的多模态 RAG 流程。
 
 from __future__ import annotations
 
+import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -33,6 +35,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
 from app.core.config import settings  # noqa: E402
 from app.langchain_integration.models import get_embedding_model  # noqa: E402
+from evaluation.methods._ocr_common import (  # noqa: E402
+    assert_ocr_stats_healthy,
+    collect_ocr_stats,
+    decode_ocr_subprocess_output,
+    is_ocr_index_healthy,
+    validate_ocr_python,
+)
 
 # 初始化 ChromaDB 客户端和集合
 _client = chromadb.Client(
@@ -42,12 +51,6 @@ _client = chromadb.Client(
     )
 )
 _collection_name = "images_ocr_text"
-_collection = _client.get_or_create_collection(name=_collection_name)
-
-
-_paddle_ocr = None
-
-
 def _run_ocr_subprocess(image_paths: list[str]) -> dict[str, str]:
     """
     在独立子进程中批量执行 OCR，返回 {image_path: ocr_text} 映射。
@@ -55,84 +58,90 @@ def _run_ocr_subprocess(image_paths: list[str]) -> dict[str, str]:
     PaddleOCR 3.4.0 在 import 时初始化 PDX，同一进程不能重复初始化，
     因此将 OCR 隔离到子进程中运行。
     """
-    import json
-    import subprocess
-    import sys
-
     # 内联子进程脚本
     script = """
-import sys, json
-from paddleocr import PaddleOCR
-ocr = PaddleOCR(use_angle_cls=True, lang="en", show_log=False)
-paths = json.loads(sys.argv[1])
-results = {}
-for p in paths:
+import json, os, sys, types
+os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "True")
+def _install_langchain_compat():
     try:
-        r = ocr.ocr(p, cls=True)
-        if r and r[0]:
-            lines = [w[1][0] for line in r for w in line if w]
+        import langchain as _langchain
+        from langchain_core.documents import Document as _Document
+        from langchain_text_splitters import RecursiveCharacterTextSplitter as _TextSplitter
+
+        _docstore_pkg = types.ModuleType("langchain.docstore")
+        _doc_mod = types.ModuleType("langchain.docstore.document")
+        _splitter_mod = types.ModuleType("langchain.text_splitter")
+        _doc_mod.Document = _Document
+        _splitter_mod.RecursiveCharacterTextSplitter = _TextSplitter
+        _docstore_pkg.document = _doc_mod
+        sys.modules["langchain.docstore"] = _docstore_pkg
+        sys.modules["langchain.docstore.document"] = _doc_mod
+        sys.modules["langchain.text_splitter"] = _splitter_mod
+        setattr(_langchain, "docstore", _docstore_pkg)
+        setattr(_langchain, "text_splitter", _splitter_mod)
+    except Exception:
+        pass
+
+def _run_paddle(paths):
+    _install_langchain_compat()
+    from paddleocr import PaddleOCR
+
+    print(f"[INFO] OCR engine used: PaddleOCR batch_size={len(paths)}", file=sys.stderr)
+    ocr = PaddleOCR(use_textline_orientation=True, lang="en")
+    results = {}
+    for p in paths:
+        pred = ocr.predict(p)
+        lines = []
+        for item in pred or []:
+            rec_texts = getattr(item, "rec_texts", None)
+            if rec_texts:
+                lines.extend(str(t).strip() for t in rec_texts if str(t).strip())
+        results[p] = " ".join(lines).strip()
+    return results
+
+def _run_rapid(paths):
+    from rapidocr_onnxruntime import RapidOCR
+
+    print(f"[INFO] OCR engine used: RapidOCR batch_size={len(paths)}", file=sys.stderr)
+    engine = RapidOCR()
+    results = {}
+    for p in paths:
+        try:
+            pred, _ = engine(p)
+            lines = [str(item[1]).strip() for item in (pred or []) if len(item) > 1 and str(item[1]).strip()]
             results[p] = " ".join(lines).strip()
-        else:
+        except Exception:
             results[p] = ""
-    except Exception as e:
-        results[p] = ""
-print(json.dumps(results, ensure_ascii=False))
+    return results
+
+paths = json.loads(sys.argv[1])
+try:
+    results = _run_paddle(paths)
+except Exception as exc:
+    print(f"[WARN] PaddleOCR failed, fallback to RapidOCR: {exc}", file=sys.stderr)
+    results = _run_rapid(paths)
+print(json.dumps(results, ensure_ascii=True))
 """
     paddle_python = os.environ.get("PADDLEOCR_PYTHON") or sys.executable
+    validate_ocr_python(paddle_python)
     proc = subprocess.run(
         [paddle_python, "-c", script, json.dumps(image_paths)],
         capture_output=True,
         text=True,
         encoding="utf-8",
+        errors="replace",
     )
-    if proc.returncode != 0:
-        print(f"[WARN] OCR subprocess error: {proc.stderr[:200]}")
-        return {p: "" for p in image_paths}
-    try:
-        return json.loads(proc.stdout.strip())
-    except Exception:
-        return {p: "" for p in image_paths}
-
-
-def _extract_text_ocr(image_path: str) -> str:
-    """
-    对单张图像执行 OCR，返回提取到的文字字符串。
-
-    优先使用 PaddleOCR（中英文支持更好），若未安装则回退到 pytesseract。
-    若两者均未安装，返回空字符串并打印警告。
-
-    Args:
-        image_path: 图像文件路径
-
-    Returns:
-        str: OCR 提取的文字，多行合并为空格分隔的单行；无文字时返回空字符串
-    """
-    # 优先尝试 PaddleOCR
-    try:
-        global _paddle_ocr
-        from paddleocr import PaddleOCR
-        if _paddle_ocr is None:
-            _paddle_ocr = PaddleOCR(use_angle_cls=True, lang="en", show_log=False)
-        result = _paddle_ocr.ocr(image_path, cls=True)
-        if not result or not result[0]:
-            return ""
-        lines = [word_info[1][0] for line in result for word_info in line if word_info]
-        return " ".join(lines).strip()
-    except ImportError:
-        pass
-
-    # 回退到 pytesseract
-    try:
-        import pytesseract
-        from PIL import Image
-        img = Image.open(image_path)
-        text = pytesseract.image_to_string(img, lang="eng")
-        return " ".join(text.split())
-    except ImportError:
-        pass
-
-    print(f"[WARNING] No OCR library found. Install paddleocr or pytesseract. Returning empty text for {image_path}")
-    return ""
+    stderr_text = (proc.stderr or "").strip()
+    if stderr_text:
+        for line in stderr_text.splitlines():
+            if "OCR engine used" in line or "fallback to RapidOCR" in line:
+                print(line)
+    results = decode_ocr_subprocess_output(
+        returncode=proc.returncode,
+        stdout=proc.stdout,
+        stderr=proc.stderr,
+    )
+    return {p: results.get(p, "") for p in image_paths}
 
 
 def retrieve(query: str, top_k: int = 10) -> List[str]:
@@ -148,7 +157,8 @@ def retrieve(query: str, top_k: int = 10) -> List[str]:
     """
     embedder = get_embedding_model()
     emb = embedder.embed_query(query)
-    results = _collection.query(query_embeddings=[emb], n_results=top_k)
+    collection = _client.get_or_create_collection(name=_collection_name)
+    results = collection.query(query_embeddings=[emb], n_results=top_k)
     ids = results.get("ids", [[]])[0]
     return [str(i) for i in ids]
 
@@ -185,6 +195,15 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
     print(f"Running OCR on {len(valid_records)} images (subprocess) ...")
     image_paths = [r["file_path"] for r in valid_records]
     ocr_results = _run_ocr_subprocess(image_paths)
+    stats = collect_ocr_stats(ocr_results, fallback_text=fallback_text)
+    print(
+        "OCR stats:",
+        f"total={stats['total_count']}",
+        f"non_empty={stats['non_empty_raw_count']}",
+        f"fallback={stats['fallback_count']}",
+        f"unique={stats['unique_final_text_count']}",
+    )
+    assert_ocr_stats_healthy(stats, context=_collection_name)
 
     ids = []
     texts = []
@@ -221,4 +240,10 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
 
 def check_ocr_index() -> bool:
     """检查 OCR 向量索引是否已构建。"""
-    return _collection.count() > 0
+    collection = _client.get_or_create_collection(name=_collection_name)
+    if collection.count() == 0:
+        return False
+
+    sample = collection.peek(limit=10)
+    documents = sample.get("documents") or []
+    return is_ocr_index_healthy(documents, fallback_text="[no text]")

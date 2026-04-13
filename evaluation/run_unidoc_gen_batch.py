@@ -392,6 +392,12 @@ def main():
     if not samples:
         print("没有加载到任何样本，请检查 --subset-root")
         return
+    if args.method == "baseline_ocr" and not unidoc_ocr.check_index(CROSSDOMAIN_KEY):
+        print(
+            "[ERROR] OCR index for crossdomain is missing or unhealthy. "
+            "请先执行 `python -m evaluation.run_unidoc_full_eval --method baseline_ocr --build-index` 重建索引。"
+        )
+        return
     print(f"共 {len(samples)} 条，method={args.method}, top_k={args.top_k}")
 
     run_all = args.phase is None

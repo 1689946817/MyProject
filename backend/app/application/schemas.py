@@ -252,6 +252,54 @@ class DeleteResponse(BaseModel):
     warnings: List[str] = Field(default_factory=list)
 
 
+class ConfigOption(BaseModel):
+    label: str
+    value: str
+
+
+class ConfigGroupOut(BaseModel):
+    key: str
+    label: str
+    description: Optional[str] = None
+
+
+class ConfigItemOut(BaseModel):
+    key: str
+    group: str
+    label: str
+    description: str
+    inputType: str
+    parseAs: str
+    value: Any = None
+    sensitive: bool = False
+    required: bool = False
+    restartRequired: bool = True
+    placeholder: Optional[str] = None
+    options: List[ConfigOption] = Field(default_factory=list)
+
+
+class AdminConfigResponse(BaseModel):
+    groups: List[ConfigGroupOut]
+    items: List[ConfigItemOut]
+    restart_required: bool = True
+    message: str
+
+
+class AdminConfigUpdateRequest(BaseModel):
+    values: dict[str, Any]
+
+
+class AdminConfigUpdateResponse(BaseModel):
+    success: bool
+    message: str
+    restart_required: bool = True
+
+
+class AdminConfigErrorDetail(BaseModel):
+    field_errors: dict[str, str] = Field(default_factory=dict)
+    message: str
+
+
 class DocumentRecordOut(BaseModel):
     """文档记录输出模型"""
     id: str

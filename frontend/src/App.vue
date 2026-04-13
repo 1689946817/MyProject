@@ -46,6 +46,12 @@
             <span>{{ t('nav.documents') }}</span>
           </template>
         </el-menu-item>
+        <el-menu-item index="/settings">
+          <template #title>
+            <i class="i-ep-setting mr-2"></i>
+            <span>{{ t('nav.settings') }}</span>
+          </template>
+        </el-menu-item>
       </el-menu>
 
       <div class="sidebar-footer">

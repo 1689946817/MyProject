@@ -12,7 +12,8 @@ export default {
     knowledgeBase: 'Image Library',
     search: 'Knowledge Search',
     chat: 'Intelligent Q&A',
-    documents: 'Document Parsing'
+    documents: 'Document Parsing',
+    settings: 'System Config'
   },
   theme: {
     dark: 'Dark Mode',
@@ -171,6 +172,22 @@ export default {
       crop_render_failed: 'Table crop failed, fell back to full page',
       fragmented_or_filtered_images: 'Too many fragmented visuals, kept as a full page'
     }
+  },
+  settings: {
+    title: 'System Config',
+    subtitle: 'Review and edit the current .env configuration from one page. Restart the backend manually after saving.',
+    save: 'Save Config',
+    reset: 'Reset Changes',
+    show: 'Show',
+    hide: 'Hide',
+    restartHint: 'Changes are written to .env only. Restart the backend manually for them to take effect.',
+    requiresRestart: 'Restart required after saving',
+    restartTag: 'Restart',
+    sensitive: 'Sensitive',
+    loadFailed: 'Failed to load system config',
+    saveSuccess: 'System config saved',
+    saveFailed: 'Failed to save system config',
+    leaveConfirm: 'You have unsaved config changes. Leave this page anyway?'
   },
   common: {
     loading: 'Loading...',

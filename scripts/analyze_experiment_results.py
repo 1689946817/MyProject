@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import ast
 import json
 import math
@@ -80,8 +81,24 @@ class OutputDirs:
     report: Path
 
 
-def ensure_output_dirs(base_dir: Path) -> OutputDirs:
-    root = base_dir / ANALYSIS_DIRNAME
+def resolve_analysis_dirname(suffix: Optional[str] = None) -> str:
+    if suffix is None:
+        return ANALYSIS_DIRNAME
+    cleaned = suffix.strip().strip("_")
+    if not cleaned:
+        return ANALYSIS_DIRNAME
+    return f"{ANALYSIS_DIRNAME}_{cleaned}"
+
+
+def resolve_legacy_report_name(suffix: Optional[str] = None) -> str:
+    cleaned = "" if suffix is None else suffix.strip().strip("_")
+    if not cleaned:
+        return "analysis_report.md"
+    return f"analysis_report_{cleaned}.md"
+
+
+def ensure_output_dirs(base_dir: Path, analysis_dirname: str = ANALYSIS_DIRNAME) -> OutputDirs:
+    root = base_dir / analysis_dirname
     fig_en = root / FIG_EN_DIRNAME
     fig_zh = root / FIG_ZH_DIRNAME
     tables = root / TABLE_DIRNAME
@@ -513,7 +530,12 @@ def draw_rank_bucket_chart(
     save_figure(fig, output_dir, basename)
 
 
-def write_retrieval_report(summary_df: pd.DataFrame, output_dirs: OutputDirs) -> None:
+def write_retrieval_report(
+    summary_df: pd.DataFrame,
+    output_dirs: OutputDirs,
+    base_dir: Optional[Path] = None,
+    report_suffix: Optional[str] = None,
+) -> None:
     coco = summary_df[summary_df["scope"] == "coco"].copy()
     domain = summary_df[summary_df["scope"] != "coco"].copy()
     domain_avg = domain.groupby("method")[["recall_at_1", "mrr", "map_at_10"]].mean().sort_values("mrr", ascending=False)
@@ -550,6 +572,8 @@ def write_retrieval_report(summary_df: pd.DataFrame, output_dirs: OutputDirs) ->
 - `retrieval_first_hit_distribution_without_ocr`
     """
     (output_dirs.report / "retrieval_analysis.md").write_text(text, encoding="utf-8")
+    if base_dir is not None:
+        (base_dir / resolve_legacy_report_name(report_suffix)).write_text(text, encoding="utf-8")
 
 
 def draw_retrieval_single_domain_chart(
@@ -705,7 +729,12 @@ def draw_generation_improvement_chart(summary_df: pd.DataFrame, methods: Sequenc
     save_figure(fig, output_dir, basename)
 
 
-def write_generation_report(summary_df: pd.DataFrame, output_dirs: OutputDirs) -> None:
+def write_generation_report(
+    summary_df: pd.DataFrame,
+    output_dirs: OutputDirs,
+    base_dir: Optional[Path] = None,
+    report_suffix: Optional[str] = None,
+) -> None:
     ranked = summary_df.sort_values("answer_correctness", ascending=False)
     best = ranked.iloc[0]
     no_rag = summary_df[summary_df["method"] == "no_rag"].iloc[0]
@@ -735,6 +764,8 @@ def write_generation_report(summary_df: pd.DataFrame, output_dirs: OutputDirs) -
 - `generation_improvement_without_ocr`
     """
     (output_dirs.report / "generation_analysis.md").write_text(text, encoding="utf-8")
+    if base_dir is not None:
+        (base_dir / resolve_legacy_report_name(report_suffix)).write_text(text, encoding="utf-8")
 
 
 def parse_training_log(path: Path) -> pd.DataFrame:
@@ -912,8 +943,8 @@ def export_failure_cases(judge_wide_df: pd.DataFrame, output_dirs: OutputDirs) -
     export_dataframe_bundle(worst, output_dirs.tables / "finetune_failure_cases_v2.csv", output_dirs)
 
 
-def run_retrieval_analysis() -> None:
-    output_dirs = ensure_output_dirs(RETRIEVAL_DIR)
+def run_retrieval_analysis(analysis_dirname: str = ANALYSIS_DIRNAME, report_suffix: Optional[str] = None) -> None:
+    output_dirs = ensure_output_dirs(RETRIEVAL_DIR, analysis_dirname=analysis_dirname)
     summary_df, query_df = build_retrieval_frames()
     export_dataframe_bundle(summary_df, output_dirs.tables / "retrieval_summary_v2.csv", output_dirs)
     export_dataframe_bundle(query_df, output_dirs.tables / "retrieval_per_query_v2.csv", output_dirs)
@@ -933,11 +964,11 @@ def run_retrieval_analysis() -> None:
             draw_rank_bucket_chart(query_df, methods, locale, fig_dir, f"retrieval_first_hit_distribution_{suffix}_v2")
             for domain in sorted(summary_df[summary_df["scope"] != "coco"]["scope"].unique()):
                 draw_retrieval_single_domain_chart(summary_df, domain, methods, locale, fig_dir, f"retrieval_{domain}_{suffix}_v2")
-    write_retrieval_report(summary_df, output_dirs)
+    write_retrieval_report(summary_df, output_dirs, base_dir=RETRIEVAL_DIR, report_suffix=report_suffix)
 
 
-def run_generation_analysis() -> None:
-    output_dirs = ensure_output_dirs(GENERATION_DIR)
+def run_generation_analysis(analysis_dirname: str = ANALYSIS_DIRNAME, report_suffix: Optional[str] = None) -> None:
+    output_dirs = ensure_output_dirs(GENERATION_DIR, analysis_dirname=analysis_dirname)
     summary_df, domain_df, qtype_df = build_generation_frames()
     export_dataframe_bundle(summary_df, output_dirs.tables / "generation_summary_v2.csv", output_dirs)
     export_dataframe_bundle(domain_df, output_dirs.tables / "generation_domain_summary_v2.csv", output_dirs)
@@ -956,11 +987,11 @@ def run_generation_analysis() -> None:
             draw_generation_qtype_chart(qtype_df, methods, locale, fig_dir, f"generation_qtype_correctness_{suffix}_v2")
             draw_relevancy_faithfulness_chart(chart_summary_df, methods, locale, fig_dir, f"generation_relevancy_faithfulness_{suffix}_v2")
             draw_generation_improvement_chart(chart_summary_df, methods, locale, fig_dir, f"generation_improvement_{suffix}_v2")
-    write_generation_report(summary_df, output_dirs)
+    write_generation_report(summary_df, output_dirs, base_dir=GENERATION_DIR, report_suffix=report_suffix)
 
 
-def run_finetune_analysis() -> None:
-    output_dirs = ensure_output_dirs(FINETUNE_DIR)
+def run_finetune_analysis(analysis_dirname: str = ANALYSIS_DIRNAME) -> None:
+    output_dirs = ensure_output_dirs(FINETUNE_DIR, analysis_dirname=analysis_dirname)
     long_df, training_df = build_finetune_frames()
     judge_wide_df = long_df.pivot(index="ID", columns="model", values="score").reset_index()
     export_dataframe_bundle(long_df, output_dirs.tables / "finetune_scores_long_v2.csv", output_dirs)
@@ -979,11 +1010,33 @@ def run_finetune_analysis() -> None:
     write_finetune_report(judge_wide_df, training_df, output_dirs)
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Analyze experiment results and generate reports/charts.")
+    parser.add_argument(
+        "--targets",
+        nargs="+",
+        choices=["retrieval", "generation", "finetune"],
+        default=["retrieval", "generation", "finetune"],
+        help="Analysis targets to run. Defaults to all experiment groups.",
+    )
+    parser.add_argument(
+        "--analysis-dir-suffix",
+        default=None,
+        help="Optional suffix for the analysis output directory, e.g. '2' -> analysis_2.",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
-    run_retrieval_analysis()
-    run_generation_analysis()
-    run_finetune_analysis()
-    print("Analysis complete. Outputs saved under each experiment directory's analysis/ folder.")
+    args = parse_args()
+    analysis_dirname = resolve_analysis_dirname(args.analysis_dir_suffix)
+    if "retrieval" in args.targets:
+        run_retrieval_analysis(analysis_dirname=analysis_dirname, report_suffix=args.analysis_dir_suffix)
+    if "generation" in args.targets:
+        run_generation_analysis(analysis_dirname=analysis_dirname, report_suffix=args.analysis_dir_suffix)
+    if "finetune" in args.targets:
+        run_finetune_analysis(analysis_dirname=analysis_dirname)
+    print(f"Analysis complete. Outputs saved under each experiment directory's {analysis_dirname}/ folder.")
 
 
 if __name__ == "__main__":

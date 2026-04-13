@@ -247,6 +247,13 @@ def main() -> None:
         print("No samples loaded. Check --subset-root.")
         return
 
+    if args.method == "baseline_ocr" and not unidoc_ocr.check_index(CROSSDOMAIN_KEY):
+        print(
+            "[ERROR] OCR index for crossdomain is missing or unhealthy. "
+            "Rebuild it with `python -m evaluation.run_unidoc_full_eval --method baseline_ocr --build-index` first."
+        )
+        return
+
     print(f"Total samples: {len(samples)}")
 
     output_dir = Path(args.output_dir)

@@ -28,3 +28,6 @@ jieba>=0.42.1
 
 # P3 升级：Agentic RAG
 langgraph>=0.2.0
+
+# OCR baseline 运行时
+rapidocr_onnxruntime>=1.4.4

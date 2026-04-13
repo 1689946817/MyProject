@@ -1,0 +1,5 @@
+﻿method,answer_correctness,answer_relevancy,image_context_relevancy,image_faithfulness
+baseline_clip,0.87,1.0,0.9184,0.7653
+baseline_ocr,0.24,1.0,1.0,0.0
+no_rag,0.24,0.99,,
+proposed,0.86,1.0,0.9286,0.7347

@@ -1,0 +1,4467 @@
+{
+  "summary": {
+    "method": "baseline_ocr",
+    "domain": "energy",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.6642,
+      "std": 0.353
+    },
+    "recall_at_5": {
+      "mean": 0.945,
+      "std": 0.1797
+    },
+    "recall_at_10": {
+      "mean": 0.96,
+      "std": 0.1617
+    },
+    "mrr": {
+      "mean": 0.9358,
+      "std": 0.2034
+    },
+    "map_at_10": {
+      "mean": 0.922,
+      "std": 0.2103
+    },
+    "latency_ms": {
+      "mean": 356.58,
+      "std": 192.65
+    },
+    "latency_ms_median": 315.14
+  },
+  "by_question_type": {
+    "causal_reasoning": {
+      "count": 11,
+      "recall_at_1": {
+        "mean": 0.7273,
+        "std": 0.2611
+      },
+      "recall_at_5": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      }
+    },
+    "comparison": {
+      "count": 38,
+      "recall_at_1": {
+        "mean": 0.6316,
+        "std": 0.3695
+      },
+      "recall_at_5": {
+        "mean": 0.9211,
+        "std": 0.2104
+      },
+      "recall_at_10": {
+        "mean": 0.9474,
+        "std": 0.1852
+      },
+      "mrr": {
+        "mean": 0.9167,
+        "std": 0.2284
+      },
+      "map_at_10": {
+        "mean": 0.8898,
+        "std": 0.2374
+      }
+    },
+    "factual_retrieval": {
+      "count": 39,
+      "recall_at_1": {
+        "mean": 0.703,
+        "std": 0.3661
+      },
+      "recall_at_5": {
+        "mean": 0.9615,
+        "std": 0.1771
+      },
+      "recall_at_10": {
+        "mean": 0.9615,
+        "std": 0.1771
+      },
+      "mrr": {
+        "mean": 0.9295,
+        "std": 0.2218
+      },
+      "map_at_10": {
+        "mean": 0.9295,
+        "std": 0.2218
+      }
+    },
+    "summarization": {
+      "count": 10,
+      "recall_at_1": {
+        "mean": 0.65,
+        "std": 0.3375
+      },
+      "recall_at_5": {
+        "mean": 0.95,
+        "std": 0.1581
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.95,
+        "std": 0.1581
+      },
+      "map_at_10": {
+        "mean": 0.9143,
+        "std": 0.1838
+      }
+    },
+    "temporal_comparison": {
+      "count": 2,
+      "recall_at_1": {
+        "mean": 0.25,
+        "std": 0.0
+      },
+      "recall_at_5": {
+        "mean": 0.75,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 0.75,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      }
+    }
+  },
+  "by_answer_type": {
+    "image_only": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.8,
+        "std": 0.378
+      },
+      "recall_at_5": {
+        "mean": 0.96,
+        "std": 0.1702
+      },
+      "recall_at_10": {
+        "mean": 0.97,
+        "std": 0.1568
+      },
+      "mrr": {
+        "mean": 0.9017,
+        "std": 0.2379
+      },
+      "map_at_10": {
+        "mean": 0.8885,
+        "std": 0.2413
+      }
+    },
+    "table_required": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.5283,
+        "std": 0.2671
+      },
+      "recall_at_5": {
+        "mean": 0.93,
+        "std": 0.1893
+      },
+      "recall_at_10": {
+        "mean": 0.95,
+        "std": 0.1675
+      },
+      "mrr": {
+        "mean": 0.97,
+        "std": 0.1568
+      },
+      "map_at_10": {
+        "mean": 0.9556,
+        "std": 0.1698
+      }
+    }
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "How does the electrical potential vary between starting and ending states when charging at a higher temperature and discharging at a lower temperature in this experiment?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/6374280/6374280_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/0982617/0982617_page_0003.png",
+        "images/energy/5256917/5256917_page_0004.png",
+        "images/energy/1720670/1720670_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 351.81
+    },
+    {
+      "query_index": 1,
+      "query": "In an alkaline environment with oxygen reduction at potentials ranging from 0.4 to 0.8 V versus RHE, what differences are observed in the efficiency of H2O2 generation between graphite electrodes modified with anthraquinone and those without modification?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/2373870/2373870_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/6091053/6091053_page_0003.png",
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/0452773/0452773_page_0009.png",
+        "images/energy/2528547/2528547_page_0005.png",
+        "images/energy/3903260/3903260_page_0005.png",
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/2257807/2257807_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 328.43
+    },
+    {
+      "query_index": 2,
+      "query": "Which procedures were employed for enzymatic conversion and fermentation after treating rice straw with a mixture of sodium carbonate and sodium sulfite at elevated temperature?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/2257807/2257807_page_0010.png",
+        "images/energy/2257807/2257807_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2257807/2257807_page_0011.png",
+        "images/energy/2257807/2257807_page_0010.png",
+        "images/energy/0988834/0988834_page_0024.png",
+        "images/energy/0988834/0988834_page_0025.png",
+        "images/energy/0376414/0376414_page_0009.png",
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/0376414/0376414_page_0007.png",
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/5387778/5387778_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 308.32
+    },
+    {
+      "query_index": 3,
+      "query": "Between 2010 and 2015 in the Western Canada Sedimentary Basin, what is the difference in the share of high-magnitude seismic occurrences linked to wells used for fluid disposal compared to those utilized for hydraulic fracturing?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/5839285/5839285_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5839285/5839285_page_0007.png",
+        "images/energy/3826050/3826050_page_0011.png",
+        "images/energy/0930171/0930171_page_0005.png",
+        "images/energy/5483674/5483674_page_0007.png",
+        "images/energy/0930171/0930171_page_0004.png",
+        "images/energy/0350904/0350904_page_0003.png",
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/3626869/3626869_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 340.57
+    },
+    {
+      "query_index": 4,
+      "query": "What was the shift in accumulated profits for EQTEC plc over the period from mid-2015 to the end of 2016?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4343531/4343531_page_0014.png",
+        "images/energy/4343531/4343531_page_0013.png",
+        "images/energy/4343531/4343531_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4343531/4343531_page_0014.png",
+        "images/energy/4343531/4343531_page_0012.png",
+        "images/energy/4343531/4343531_page_0013.png",
+        "images/energy/1793544/1793544_page_0004.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/1793544/1793544_page_0003.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5483674/5483674_page_0008.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/5483674/5483674_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 309.89
+    },
+    {
+      "query_index": 5,
+      "query": "In the Chabahar solar still investigation conducted on July 6, how did shifting the surrounding air temperature from 20 degrees Celsius to 40 degrees Celsius influence the overall volume of distilled water collected per unit area?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/6007268/6007268_page_0005.png",
+        "images/energy/0452773/0452773_page_0009.png",
+        "images/energy/5256917/5256917_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 370.31
+    },
+    {
+      "query_index": 6,
+      "query": "Which entity is acknowledged as the central technology institution in the Q2 2021 overview addressing regulatory changes in net metering and distributed solar generation initiatives within The 50 States of Solar analysis?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1803924/1803924_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/3022576/3022576_page_0009.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/0614328/0614328_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 437.56
+    },
+    {
+      "query_index": 7,
+      "query": "When the methane input is held constant at 9 NL min⁻¹ during the gas-solid equilibrium tests, what impact does varying the ratio of oxidant to reformer stream have on process conditions?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5387778/5387778_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5387778/5387778_page_0005.png",
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/0988834/0988834_page_0025.png",
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/0312521/0312521_page_0021.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/6284594/6284594_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 266.34
+    },
+    {
+      "query_index": 8,
+      "query": "How does the average fluid output per second of the solar-based sprayer compare when run exclusively from solar energy versus when using either the 1SMF or MF9-B backup batteries throughout daylight hours?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/5256917/5256917_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/5256917/5256917_page_0004.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/1849255/1849255_page_0006.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/5536060/5536060_page_0006.png",
+        "images/energy/0350904/0350904_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 403.55
+    },
+    {
+      "query_index": 9,
+      "query": "For applicants seeking funding through the REF Brownfield initiative who are incorporating energy storage, what are the detailed stipulations for the signed agreement covering the storage aspect?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5536060/5536060_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5536060/5536060_page_0006.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/4343531/4343531_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 616.26
+    },
+    {
+      "query_index": 10,
+      "query": "How does the electron transfer count during the oxygen reduction process differ between a graphite electrode modified with anthraquinone and an unmodified graphite rod when examined across 0.4 to 0.8 volts versus the reversible hydrogen electrode?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/2373870/2373870_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/6091053/6091053_page_0003.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/2257807/2257807_page_0010.png",
+        "images/energy/2528547/2528547_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 364.84
+    },
+    {
+      "query_index": 11,
+      "query": "By how much did the gap between the US and UK natural gas benchmarks increase from one day to the next on 20 and 21 July 2021?",
+      "domain": "energy",
+      "question_type": "temporal_comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/0423894/0423894_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 0.75,
+      "recall_at_10": 0.75,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 292.99
+    },
+    {
+      "query_index": 12,
+      "query": "During the interval from 1972 to 2013 in the Raton Basin area, when did the most powerful seismic event with a magnitude of 5.3 occur?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/3826050/3826050_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3826050/3826050_page_0011.png",
+        "images/energy/5839285/5839285_page_0007.png",
+        "images/energy/0930171/0930171_page_0005.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/3359128/3359128_page_0004.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/1597086/1597086_page_0003.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/5483674/5483674_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 316.92
+    },
+    {
+      "query_index": 13,
+      "query": "How thick is the a-MoSx film produced by the cyclic voltammetry-based deposition onto the Ti/p-InP structure according to the reported experimental procedure?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/6091053/6091053_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/6091053/6091053_page_0003.png",
+        "images/energy/3903260/3903260_page_0005.png",
+        "images/energy/0452773/0452773_page_0009.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/2528547/2528547_page_0005.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/1215923/1215923_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 355.27
+    },
+    {
+      "query_index": 14,
+      "query": "What were the significant shifts and turning points in the monthly average petroleum cost (in USD) between the spring of 2008 and the end of winter 2012 as tracked by the Department of Commerce?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1968605/1968605_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1968605/1968605_page_0009.png",
+        "images/energy/5798277/5798277_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/1793544/1793544_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 286.95
+    },
+    {
+      "query_index": 15,
+      "query": "How do the high and statistically notable estimates for specific parameters in the B matrix of the asymmetric BEKK model clarify the ongoing influence of prior fluctuations on subsequent volatility in EUA returns throughout the second stage of the EU Emissions Trading System?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/4871187/4871187_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/1282033/1282033_page_0006.png",
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/7157717/7157717_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 341.43
+    },
+    {
+      "query_index": 16,
+      "query": "Which steps concerning advance planning, authority notifications, environmental assessments, crew briefings, and securing the vessel must be followed before and during mooring according to the listed requirements?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/0355852/0355852_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/0355852/0355852_page_0016.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/0930171/0930171_page_0004.png",
+        "images/energy/4850210/4850210_page_0002.png",
+        "images/energy/3359128/3359128_page_0004.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/5536060/5536060_page_0006.png",
+        "images/energy/0930171/0930171_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 304.86
+    },
+    {
+      "query_index": 17,
+      "query": "For the NEK region, what proportions of passenger vehicles are expected to operate on electric power in 2025, 2035, and 2050 based on anticipated shifts away from internal combustion engines?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0561319/0561319_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/7554920/7554920_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 424.11
+    },
+    {
+      "query_index": 18,
+      "query": "What trend is observed in the percentage of light reflected as a function of light wavelength for indium phosphide nanostructures with different measured depths of 4.3, 9.2, 16.9, and 24.5 micrometers under laboratory testing?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3903260/3903260_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3903260/3903260_page_0005.png",
+        "images/energy/0452773/0452773_page_0009.png",
+        "images/energy/6091053/6091053_page_0003.png",
+        "images/energy/1849255/1849255_page_0006.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/1215923/1215923_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 587.78
+    },
+    {
+      "query_index": 19,
+      "query": "During the period from 1990 to 2015, what differences are evident in how petroleum use evolved in the Asia Pacific region compared to North America?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/5799028/5799028_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/1968605/1968605_page_0009.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5483674/5483674_page_0007.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/7554920/7554920_page_0011.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/5066075/5066075_page_0005.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 280.76
+    },
+    {
+      "query_index": 20,
+      "query": "How are expenses distributed among key areas such as equipment, chemical usage, labor, and management in algae-based biofuel manufacturing using either alkali or enzyme-driven approaches?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0988834/0988834_page_0024.png",
+        "images/energy/0988834/0988834_page_0025.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0988834/0988834_page_0024.png",
+        "images/energy/0988834/0988834_page_0025.png",
+        "images/energy/2257807/2257807_page_0010.png",
+        "images/energy/2257807/2257807_page_0011.png",
+        "images/energy/0273247/0273247_page_0006.png",
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/0376414/0376414_page_0009.png",
+        "images/energy/5010415/5010415_page_0010.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/0376414/0376414_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 279.89
+    },
+    {
+      "query_index": 21,
+      "query": "Within the computational scenarios outlined for various parameter settings, what range was assigned to the vertical placement of the chimney connection?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/1215923/1215923_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/2342156/2342156_page_0006.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/1720670/1720670_page_0005.png",
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/7127915/7127915_page_0002.png",
+        "images/energy/0312521/0312521_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 308.47
+    },
+    {
+      "query_index": 22,
+      "query": "Which path is anticipated for the specialized transport carrying decommissioned Navy reactor material between the Ballston Spa Rail Spur and the Kesselring facility?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3359128/3359128_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3359128/3359128_page_0004.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/3703294/3703294_page_0003.png",
+        "images/energy/3703294/3703294_page_0004.png",
+        "images/energy/7127915/7127915_page_0002.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/3626869/3626869_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 318.27
+    },
+    {
+      "query_index": 23,
+      "query": "List the principal actions and their associated timestamps during the B5.1 experimental protocol for nuclear system evaluation.",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4697637/4697637_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/0312521/0312521_page_0021.png",
+        "images/energy/0350904/0350904_page_0003.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/0312521/0312521_page_0022.png",
+        "images/energy/7127915/7127915_page_0002.png",
+        "images/energy/3703294/3703294_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 675.74
+    },
+    {
+      "query_index": 24,
+      "query": "During the 2008-2012 period of the EU Emissions Trading System, what does the statistically significant value of the parameter reflecting the transfer of fluctuations from the carbon permits market to Brent crude oil suggest according to the asymmetric BEKK approach?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/4871187/4871187_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/1968605/1968605_page_0009.png",
+        "images/energy/6865334/6865334_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 327.88
+    },
+    {
+      "query_index": 25,
+      "query": "How much backing do people give to ending the use of gasoline and diesel vehicles, based on the research by Adrian Rinscheid and colleagues?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/6865334/6865334_page_0014.png"
+      ],
+      "predicted_ids": [
+        "images/energy/6865334/6865334_page_0014.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/0543716/0543716_page_0030.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/0273247/0273247_page_0006.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/0614328/0614328_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 276.0
+    },
+    {
+      "query_index": 26,
+      "query": "Across the six weeks, how much did stored energy values fluctuate among the twenty participants applying the quartet of control approaches in Australia?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3022576/3022576_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1625576/1625576_page_0005.png",
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/1793544/1793544_page_0005.png",
+        "images/energy/3022576/3022576_page_0009.png",
+        "images/energy/0312521/0312521_page_0023.png",
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/6865334/6865334_page_0014.png",
+        "images/energy/4871187/4871187_page_0012.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 4,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.25,
+      "ap_at_10": 0.25,
+      "latency_ms": 285.41
+    },
+    {
+      "query_index": 27,
+      "query": "In what way does the depiction of a vivid sunset reflect environmental concerns addressed during the 2020 Australian Bushfire summit?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1340602/1340602_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1340602/1340602_page_0018.png",
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/4850210/4850210_page_0002.png",
+        "images/energy/0355852/0355852_page_0016.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/6865334/6865334_page_0014.png",
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/0930171/0930171_page_0005.png",
+        "images/energy/0273247/0273247_page_0006.png",
+        "images/energy/5483674/5483674_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 286.98
+    },
+    {
+      "query_index": 28,
+      "query": "How do the estimated values of propagation rate and starting load reduction compare across the three examined system loading conditions in the IEEE 300 bus cascading failure simulations?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1597086/1597086_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1597086/1597086_page_0003.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/1943378/1943378_page_0003.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/2342156/2342156_page_0006.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/0648106/0648106_page_0004.png",
+        "images/energy/2342156/2342156_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 284.27
+    },
+    {
+      "query_index": 29,
+      "query": "Which prominent urban centers can be found close to the land-water-land area dividing Sweden and Denmark known for its coastal environment studies?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3912800/3912800_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3912800/3912800_page_0001.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/3362281/3362281_page_0017.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/3144511/3144511_page_0003.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/0423894/0423894_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 607.08
+    },
+    {
+      "query_index": 30,
+      "query": "Which values were set for agitation speed, electrical current, experiment length, and counter material in the additive evaluation process using a Hull-cell for plating lead?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/2528547/2528547_page_0005.png",
+        "images/energy/2528547/2528547_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/2528547/2528547_page_0005.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/0452773/0452773_page_0009.png",
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/6091053/6091053_page_0003.png",
+        "images/energy/0376414/0376414_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 272.44
+    },
+    {
+      "query_index": 31,
+      "query": "What were the variations in year-over-year shifts in auction outcomes across each LDA between the 2020/2021 and 2021/2022 delivery periods within the PJM market?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1870376/1870376_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/5066075/5066075_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 274.38
+    },
+    {
+      "query_index": 32,
+      "query": "For the 5500XL, which problems could lead to the unit failing to achieve sufficient heat to engage the circulation fan, as described under trouble code three?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0312521/0312521_page_0023.png",
+        "images/energy/0312521/0312521_page_0022.png",
+        "images/energy/0312521/0312521_page_0024.png",
+        "images/energy/0312521/0312521_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0312521/0312521_page_0022.png",
+        "images/energy/0312521/0312521_page_0024.png",
+        "images/energy/0312521/0312521_page_0023.png",
+        "images/energy/0312521/0312521_page_0021.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/5256917/5256917_page_0004.png",
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/0982617/0982617_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 283.9
+    },
+    {
+      "query_index": 33,
+      "query": "What trends are observed in global primary energy use between 1990 and 2060 when considering major scenario projections developed by various international organizations and companies?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1711172/1711172_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/7157717/7157717_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 348.76
+    },
+    {
+      "query_index": 34,
+      "query": "Within the stage focused on direct field evaluations in the chemical analysis protocol, what are the subsections included?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/0350904/0350904_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0350904/0350904_page_0003.png",
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/2257807/2257807_page_0010.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/5387778/5387778_page_0005.png",
+        "images/energy/2257807/2257807_page_0011.png",
+        "images/energy/1793544/1793544_page_0005.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/1943378/1943378_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 711.91
+    },
+    {
+      "query_index": 35,
+      "query": "What process does the FINIX software use to alternate between temperature-related and structural calculations for fuel rods, including the sequence of steps and criteria for repeating thermal or mechanical evaluations?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/7127915/7127915_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7127915/7127915_page_0002.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/3703294/3703294_page_0003.png",
+        "images/energy/3703294/3703294_page_0004.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/5387778/5387778_page_0005.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/2342156/2342156_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 320.12
+    },
+    {
+      "query_index": 36,
+      "query": "By how much did the UK natural gas benchmark value denominated in US dollars per MMBtu differ from July 20 to July 21, 2021?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/4512120/4512120_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 0.75,
+      "recall_at_10": 0.75,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 288.65
+    },
+    {
+      "query_index": 37,
+      "query": "What are the differences in calculated life expectancy at 80°C and 100°C for NYCWY 0.6/1 kV 4x10/10 mm2 power cable samples following 11-hour and 15-hour high-temperature treatments at either 125°C or 140°C?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/0982617/0982617_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/0982617/0982617_page_0003.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/2342156/2342156_page_0006.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/3703294/3703294_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 371.63
+    },
+    {
+      "query_index": 38,
+      "query": "In what way does the light reflection behavior differ between flat indium phosphide and nanostructured indium phosphide films with a range of pore extensions when measured across various wavelengths?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3903260/3903260_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3903260/3903260_page_0005.png",
+        "images/energy/0452773/0452773_page_0009.png",
+        "images/energy/6091053/6091053_page_0003.png",
+        "images/energy/1849255/1849255_page_0006.png",
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/6284594/6284594_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 427.26
+    },
+    {
+      "query_index": 39,
+      "query": "How do the roles of residents in running and managing solar energy systems vary across the segmented, shared, and both types of direct sale models in apartment complexes?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/1282033/1282033_page_0007.png",
+        "images/energy/1282033/1282033_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/1282033/1282033_page_0006.png",
+        "images/energy/1282033/1282033_page_0007.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/3022576/3022576_page_0009.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/4425296/4425296_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 353.99
+    },
+    {
+      "query_index": 40,
+      "query": "How did the main US and Asia LNG benchmark contracts for the prompt delivery month shift in value in dollars per MMBtu from July 20 to July 21, 2021?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/1968605/1968605_page_0009.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/1999636/1999636_page_0005.png",
+        "images/energy/3629103/3629103_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 0.75,
+      "recall_at_10": 0.75,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 306.98
+    },
+    {
+      "query_index": 41,
+      "query": "In simulations of liberalized power sector markets using autonomous decision-making entities, what icons are used to indicate major world monetary units such as the US, European, and British currencies?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/5731992/5731992_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/1282033/1282033_page_0007.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/7554920/7554920_page_0011.png",
+        "images/energy/0423894/0423894_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 2070.76
+    },
+    {
+      "query_index": 42,
+      "query": "At the Sapphire Wind Farm Community Consultative Committee gathering, who has ongoing responsibility for communicating updates on talks related to lighting for aircraft?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/4850210/4850210_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/4850210/4850210_page_0002.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/3144511/3144511_page_0003.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/2711884/2711884_page_0003.png",
+        "images/energy/0355852/0355852_page_0016.png",
+        "images/energy/7910609/7910609_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 401.59
+    },
+    {
+      "query_index": 43,
+      "query": "In the Nepal-TRNSCGE framework, how are the different segments of household travel demand organized into individually-owned and externally-provided options, and what are the subsequent breakdowns based on mode of vehicle and types of propulsion systems?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/7554920/7554920_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7554920/7554920_page_0011.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/1282033/1282033_page_0007.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/0543716/0543716_page_0030.png",
+        "images/energy/1597086/1597086_page_0003.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/2183227/2183227_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 321.18
+    },
+    {
+      "query_index": 44,
+      "query": "To what extent do emissions differ from the 1990 benchmark across the four modeled pathways for the electricity, natural gas, and transportation categories?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/0901042/0901042_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/7554920/7554920_page_0011.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/0543716/0543716_page_0030.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/5049171/5049171_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 315.19
+    },
+    {
+      "query_index": 45,
+      "query": "What variation is observed in the computed flapwise and chordwise cyclic bending moments for wind turbine blades when applying Spera's formulas across different standard deviation indices from zero to three?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4971670/4971670_page_0005.png",
+        "images/energy/4971670/4971670_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4971670/4971670_page_0005.png",
+        "images/energy/4971670/4971670_page_0006.png",
+        "images/energy/7603803/7603803_page_0007.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 353.7
+    },
+    {
+      "query_index": 46,
+      "query": "According to Part L of the Building Regulations 2002, how does the permitted thermal transmittance for wall structures compare between newly constructed properties and those undergoing significant changes?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1950267/1950267_page_0006.png",
+        "images/energy/1950267/1950267_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1950267/1950267_page_0005.png",
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/5798277/5798277_page_0013.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/1950267/1950267_page_0006.png",
+        "images/energy/2342156/2342156_page_0006.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/5049171/5049171_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.6666666666666666,
+      "latency_ms": 285.39
+    },
+    {
+      "query_index": 47,
+      "query": "How does the amount of immediate energy received by a crystalline module, according to the SQ Flex Sizing WinCAPS calculations, vary throughout daylight hours?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/4416777/4416777_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/6007268/6007268_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/5256917/5256917_page_0004.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/6007268/6007268_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 309.37
+    },
+    {
+      "query_index": 48,
+      "query": "How did the value of Algerian hydrocarbon shipments to Europe evolve from 2017 through 2020 as reported by Eurostat, and what was the scale of the drop following the highest point?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3362281/3362281_page_0017.png",
+        "images/energy/3362281/3362281_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3362281/3362281_page_0017.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/3362281/3362281_page_0018.png",
+        "images/energy/1968605/1968605_page_0009.png",
+        "images/energy/1999636/1999636_page_0005.png",
+        "images/energy/5066075/5066075_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.6428571428571428,
+      "latency_ms": 296.39
+    },
+    {
+      "query_index": 49,
+      "query": "Between April and June 2021, what differences were observed in the spot market trajectories for 37kt shipments from the UK Continent to the US Atlantic Coast and 30kt movements from Singapore to Australia?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1999636/1999636_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1999636/1999636_page_0005.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/3359128/3359128_page_0004.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/3629103/3629103_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 357.14
+    },
+    {
+      "query_index": 50,
+      "query": "Can you provide the specific values of overall heat transfer and correction factors applied to the heat exchangers, namely the heater processing flue gas to CO2, the recuperator exchanging CO2 with itself, and the cooler transferring heat from CO2 to water, as determined in the sCO2 cycle cost assessment by Matteo Marchionni and colleagues in 2017?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/1720670/1720670_page_0005.png",
+        "images/energy/1720670/1720670_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/1720670/1720670_page_0005.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/5387778/5387778_page_0005.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/3703294/3703294_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 273.75
+    },
+    {
+      "query_index": 51,
+      "query": "For a detached residential building featuring a slab-on-grade foundation located in the 6A climate region, how much did building expenses change when moving from the 2012 to the 2015 International Energy Conservation Code?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/5798277/5798277_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/5798277/5798277_page_0013.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/1950267/1950267_page_0005.png",
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/5049171/5049171_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 370.1
+    },
+    {
+      "query_index": 52,
+      "query": "Identify the entry among the geospatial datasets that offers height measurements in a collection of spatial points, specifying its file format and the organization responsible for supplying it.",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/6007268/6007268_page_0004.png",
+        "images/energy/6007268/6007268_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/6007268/6007268_page_0004.png",
+        "images/energy/6007268/6007268_page_0005.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/5483674/5483674_page_0007.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/7116675/7116675_page_0004.png",
+        "images/energy/1793544/1793544_page_0005.png",
+        "images/energy/0350904/0350904_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 269.72
+    },
+    {
+      "query_index": 53,
+      "query": "In a floating wind turbine system, which structural section is designed to house more than one type of ballast, and how are these ballast types positioned relative to one another within that section?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/2497225/2497225_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/4971670/4971670_page_0006.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/4971670/4971670_page_0005.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/7603803/7603803_page_0007.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/2711884/2711884_page_0003.png",
+        "images/energy/3359128/3359128_page_0004.png",
+        "images/energy/5256917/5256917_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 315.1
+    },
+    {
+      "query_index": 54,
+      "query": "In what manner do meteorological inputs and half-hourly operational checks influence the proposal, validation, and execution of electricity sales and delivery within a virtual power plant arrangement?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/2183227/2183227_page_0014.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/1282033/1282033_page_0007.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/3022576/3022576_page_0009.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/1943378/1943378_page_0003.png",
+        "images/energy/4512120/4512120_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 347.0
+    },
+    {
+      "query_index": 55,
+      "query": "During the 2016 efforts by California's regulatory authorities following the SoCalGas Aliso Canyon incident, which measure accounted for the greatest decrease in the use of natural gas, based on therm equivalents?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/5049171/5049171_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/5066075/5066075_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 328.25
+    },
+    {
+      "query_index": 56,
+      "query": "What are the differences in the percentage allocation of operating expenses such as electricity, wages, asset write-off, and miscellaneous costs between the hydroponic cultivation approach using traditional lighting and the intended OZEPf configuration?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1849255/1849255_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1849255/1849255_page_0006.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/5256917/5256917_page_0004.png",
+        "images/energy/0988834/0988834_page_0024.png",
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/1282033/1282033_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 286.26
+    },
+    {
+      "query_index": 57,
+      "query": "When utilizing pineapple residues for glucose utilization in the SSCF procedure, what numerical value is obtained for the parameter γ in the Logistic-based modified Luedeking-Piret kinetic modeling?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0376414/0376414_page_0009.png",
+        "images/energy/0376414/0376414_page_0007.png",
+        "images/energy/0376414/0376414_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/0376414/0376414_page_0009.png",
+        "images/energy/0376414/0376414_page_0007.png",
+        "images/energy/2257807/2257807_page_0010.png",
+        "images/energy/2257807/2257807_page_0011.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/0988834/0988834_page_0025.png",
+        "images/energy/0988834/0988834_page_0024.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 282.01
+    },
+    {
+      "query_index": 58,
+      "query": "In harmonic phase angle studies, what impact does varying the direction of incoming flow have on the spatial distributions observed for Ur at values of 6 and 8?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1943378/1943378_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1943378/1943378_page_0003.png",
+        "images/energy/1943378/1943378_page_0004.png",
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/3703294/3703294_page_0003.png",
+        "images/energy/3912800/3912800_page_0001.png",
+        "images/energy/0350904/0350904_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 286.18
+    },
+    {
+      "query_index": 59,
+      "query": "What arrangement and modes of engagement were evident among those discussing energy priorities and governmental involvement in the Yukon, particularly in relation to collaborative brainstorming tools?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/7910609/7910609_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7910609/7910609_page_0005.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/4850210/4850210_page_0002.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/4871187/4871187_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 363.39
+    },
+    {
+      "query_index": 60,
+      "query": "What hardware elements and their interconnections, such as those that manage electrical storage, regulation, and monitoring, can be found in the Helios 2 solar setup?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/6154223/6154223_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/5256917/5256917_page_0004.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/1943378/1943378_page_0003.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/5536060/5536060_page_0006.png",
+        "images/energy/6284594/6284594_page_0005.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 275.51
+    },
+    {
+      "query_index": 61,
+      "query": "During the 2009 ZESCO performance review covering January through September, what was the cumulative weighted result attributed to System Losses?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1793544/1793544_page_0003.png",
+        "images/energy/1793544/1793544_page_0004.png",
+        "images/energy/1793544/1793544_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1793544/1793544_page_0003.png",
+        "images/energy/1793544/1793544_page_0004.png",
+        "images/energy/1793544/1793544_page_0005.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/5256917/5256917_page_0004.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/5798277/5798277_page_0013.png",
+        "images/energy/2711884/2711884_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 344.06
+    },
+    {
+      "query_index": 62,
+      "query": "What was the impact on cumulative purified water output per unit area when air movement increased from still conditions to 10 meters per second during the July 6 Chabahar solar distillation test?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/5256917/5256917_page_0005.png",
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/6007268/6007268_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 297.12
+    },
+    {
+      "query_index": 63,
+      "query": "For the IEEE 300 bus network, what value does the mean cascading parameter reach when the system operates at 1.1 times its typical demand?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1597086/1597086_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1597086/1597086_page_0003.png",
+        "images/energy/2342156/2342156_page_0006.png",
+        "images/energy/1943378/1943378_page_0003.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/3022576/3022576_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 427.8
+    },
+    {
+      "query_index": 64,
+      "query": "For the best-performing silicon photovoltaic device featuring nanostructures and an area factor of 2.30, independently evaluated by TÜV Corporation using AM 1.5G light, what are the reported metrics for maximum open-circuit voltage, short-circuit current, fill factor, and conversion efficiency?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0452773/0452773_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0452773/0452773_page_0009.png",
+        "images/energy/3903260/3903260_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/6091053/6091053_page_0003.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/5256917/5256917_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 397.56
+    },
+    {
+      "query_index": 65,
+      "query": "Which labeled repositories within the organization, specifically identified as S1 to S3, contribute information that undergoes preparation before being included in the CRM system?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/7116675/7116675_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7116675/7116675_page_0004.png",
+        "images/energy/1793544/1793544_page_0005.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/1793544/1793544_page_0003.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/0350904/0350904_page_0004.png",
+        "images/energy/5536060/5536060_page_0006.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/0648106/0648106_page_0004.png",
+        "images/energy/0312521/0312521_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 319.86
+    },
+    {
+      "query_index": 66,
+      "query": "What was the combined aerodynamic resistance value for all main structural elements of the experimental setup when using the rotor area as the basis for calculation?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/7603803/7603803_page_0007.png",
+        "images/energy/7603803/7603803_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7603803/7603803_page_0007.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/4971670/4971670_page_0006.png",
+        "images/energy/1215923/1215923_page_0004.png",
+        "images/energy/4971670/4971670_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/1215923/1215923_page_0003.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/1720670/1720670_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 353.25
+    },
+    {
+      "query_index": 67,
+      "query": "How is a phasor-based evaluation of harmonics systematically performed in an ISM-based distribution network, beginning with the starting condition and specifying the procedure for deciding when to halt the iterative assessment?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1943378/1943378_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1943378/1943378_page_0003.png",
+        "images/energy/1943378/1943378_page_0004.png",
+        "images/energy/2342156/2342156_page_0006.png",
+        "images/energy/1597086/1597086_page_0003.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/0648106/0648106_page_0004.png",
+        "images/energy/3022576/3022576_page_0009.png",
+        "images/energy/1793544/1793544_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 321.25
+    },
+    {
+      "query_index": 68,
+      "query": "How do the values of generated electricity per unit of water for fish farming operations compare among the main Spanish river basins such as Duero, Ebro, Jucar, and Tajo?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5010415/5010415_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5010415/5010415_page_0010.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/0988834/0988834_page_0024.png",
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/0988834/0988834_page_0025.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 307.39
+    },
+    {
+      "query_index": 69,
+      "query": "Over what decade following the adoption of robust state measures targeting non-renewable energy usage is the most significant decrease in fossil energy use achieved?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0273247/0273247_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/1968605/1968605_page_0009.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/4425296/4425296_page_0007.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 313.59
+    },
+    {
+      "query_index": 70,
+      "query": "Which parts of New York City are powered by electrical energy originating from both fossil-based gaseous and liquid fuels?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0614328/0614328_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/3626869/3626869_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 322.16
+    },
+    {
+      "query_index": 71,
+      "query": "Between 2016 and 2020, what shift occurred in the share of API-based offerings for the electricity market platform operated by Nord Pool?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/7548051/7548051_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/4871187/4871187_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 329.66
+    },
+    {
+      "query_index": 72,
+      "query": "What trends and major year-to-year variations were observed in the proportion of NEM Forward Market activity relative to physical volume between the financial years 1999/00 and 2018/19?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3629103/3629103_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7548051/7548051_page_0016.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/3629103/3629103_page_0008.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/2183227/2183227_page_0014.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 297.5
+    },
+    {
+      "query_index": 73,
+      "query": "How does the use of fuel supplied to local power plants like Astoria, Arthur Kill, and Ravenswood contrast with electricity brought in from outside regions when serving New York City’s energy demands?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0614328/0614328_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/7910609/7910609_page_0005.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/0327430/0327430_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 356.79
+    },
+    {
+      "query_index": 74,
+      "query": "For individuals renting in apartment complexes, which of the four listed solar energy arrangements minimizes paperwork and organizational tasks for residents?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/1282033/1282033_page_0007.png",
+        "images/energy/1282033/1282033_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/1282033/1282033_page_0006.png",
+        "images/energy/1282033/1282033_page_0007.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/5536060/5536060_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 308.96
+    },
+    {
+      "query_index": 75,
+      "query": "In the scenario of an inter-turn winding issue within a large-capacity oil-immersed distribution transformer, what trend is observed in the phase A leakage inductance as the proportion of damaged winding turns increases?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/7257408/7257408_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7257408/7257408_page_0007.png",
+        "images/energy/0982617/0982617_page_0003.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/1943378/1943378_page_0003.png",
+        "images/energy/1597086/1597086_page_0003.png",
+        "images/energy/7603803/7603803_page_0007.png",
+        "images/energy/1943378/1943378_page_0004.png",
+        "images/energy/7603803/7603803_page_0006.png",
+        "images/energy/3703294/3703294_page_0003.png",
+        "images/energy/3703294/3703294_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 284.89
+    },
+    {
+      "query_index": 76,
+      "query": "Over the years 2006 to 2031, what was the impact of mechanisms aimed at emissions reduction on the balance of power output between advanced and conventional natural gas combined cycle technologies?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/3626869/3626869_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/0901042/0901042_page_0011.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/0543716/0543716_page_0030.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/0901042/0901042_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 311.24
+    },
+    {
+      "query_index": 77,
+      "query": "Which designated initiative focuses on long-term scenario exploration and challenging assumptions about energy futures in Europe for the year 2050?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/7157717/7157717_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/7910609/7910609_page_0005.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/2711884/2711884_page_0001.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 342.87
+    },
+    {
+      "query_index": 78,
+      "query": "How do the upfront investment requirements per kilowatt for wind and solar power installations evolve from the start of the period in 2020 to the end in 2050, based on figures provided in the 2021 Energy Systems Research conference?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/0423894/0423894_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/0423894/0423894_page_0004.png",
+        "images/energy/2711884/2711884_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.6111111111111112,
+      "latency_ms": 271.67
+    },
+    {
+      "query_index": 79,
+      "query": "Which measures related to aircraft warning lights were listed as follow-up tasks at the April 30, 2019 gathering of the consultative group for the Sapphire Wind Farm in Inverell?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/4850210/4850210_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/4850210/4850210_page_0002.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/2711884/2711884_page_0003.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/3144511/3144511_page_0003.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/0355852/0355852_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 293.36
+    },
+    {
+      "query_index": 80,
+      "query": "What was the effect on the precision of peripheral assembly power estimates when comparing two different TCP0 scattering treatments during benchmark simulations of a one-dimensional reactor model proposed by a South Korean institution?",
+      "domain": "energy",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/3703294/3703294_page_0003.png",
+        "images/energy/3703294/3703294_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/3703294/3703294_page_0004.png",
+        "images/energy/3703294/3703294_page_0003.png",
+        "images/energy/7127915/7127915_page_0002.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/1720670/1720670_page_0005.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/0614328/0614328_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 298.85
+    },
+    {
+      "query_index": 81,
+      "query": "In the context of vessel loading or unloading, what are the specified practices for maintaining crew communications throughout the transfer, such as the use of specific radio equipment and channels?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/0355852/0355852_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/0355852/0355852_page_0016.png",
+        "images/energy/3359128/3359128_page_0004.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/0648106/0648106_page_0004.png",
+        "images/energy/0312521/0312521_page_0022.png",
+        "images/energy/0312521/0312521_page_0023.png",
+        "images/energy/1999636/1999636_page_0005.png",
+        "images/energy/7127915/7127915_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 332.93
+    },
+    {
+      "query_index": 82,
+      "query": "What secondary heading appears under the main title for the summary report concerning the 8.8-megawatt wind energy development at Parzeczew in Poland?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/2711884/2711884_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/2711884/2711884_page_0003.png",
+        "images/energy/3144511/3144511_page_0003.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/4850210/4850210_page_0002.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/4512120/4512120_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 291.72
+    },
+    {
+      "query_index": 83,
+      "query": "How did TDO's ownership percentages in the VIC/P57 and VIC/L31 sites within the Gippsland Basin, Victoria alter from the end of June 2014 to the end of December 2014?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5483674/5483674_page_0007.png",
+        "images/energy/5483674/5483674_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5483674/5483674_page_0007.png",
+        "images/energy/5483674/5483674_page_0008.png",
+        "images/energy/0930171/0930171_page_0005.png",
+        "images/energy/4343531/4343531_page_0014.png",
+        "images/energy/0930171/0930171_page_0004.png",
+        "images/energy/1793544/1793544_page_0004.png",
+        "images/energy/5049171/5049171_page_0001.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/0350904/0350904_page_0003.png",
+        "images/energy/4850210/4850210_page_0001.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 373.91
+    },
+    {
+      "query_index": 84,
+      "query": "For the Enhanced Affiliate Actual Cost Transparency initiative involving PSEG Long Island and LIPA, which people handled modifications to each project draft, and when and why were these updates carried out?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/0327430/0327430_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0327430/0327430_page_0017.png",
+        "images/energy/0327430/0327430_page_0015.png",
+        "images/energy/5798277/5798277_page_0013.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/1803924/1803924_page_0009.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/5536060/5536060_page_0006.png",
+        "images/energy/5798277/5798277_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 310.27
+    },
+    {
+      "query_index": 85,
+      "query": "Which values correspond to the building heating load factors for each of the eight time intervals described in the 2013 optimization analysis featured in Volume 1, Issue 4 of the Journal of Sustainable Development of Energy, Water and Environment Systems?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/2342156/2342156_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/0423894/0423894_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 321.81
+    },
+    {
+      "query_index": 86,
+      "query": "What was the difference in the operating activity cash outflows for EQTEC plc comparing the end of 2015 to the same date in 2016?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4343531/4343531_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4343531/4343531_page_0013.png",
+        "images/energy/4343531/4343531_page_0014.png",
+        "images/energy/4343531/4343531_page_0012.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/5483674/5483674_page_0007.png",
+        "images/energy/5483674/5483674_page_0008.png",
+        "images/energy/0312521/0312521_page_0021.png",
+        "images/energy/1793544/1793544_page_0004.png",
+        "images/energy/4871187/4871187_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 296.93
+    },
+    {
+      "query_index": 87,
+      "query": "Which web address corresponds to the organisation providing assistance to at-risk residents in Clackmannanshire through the energy-focused LEAP initiative?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1453158/1453158_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1453158/1453158_page_0003.png",
+        "images/energy/7910609/7910609_page_0005.png",
+        "images/energy/5066075/5066075_page_0007.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/0327430/0327430_page_0017.png",
+        "images/energy/1793544/1793544_page_0004.png",
+        "images/energy/2711884/2711884_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 317.83
+    },
+    {
+      "query_index": 88,
+      "query": "How did the front-month settlement for Henry Hub, measured in US dollars per MMBtu, change from July 20 to July 21, 2021?",
+      "domain": "energy",
+      "question_type": "temporal_comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5066075/5066075_page_0004.png",
+        "images/energy/5066075/5066075_page_0005.png",
+        "images/energy/5066075/5066075_page_0006.png",
+        "images/energy/4871187/4871187_page_0012.png",
+        "images/energy/4871187/4871187_page_0013.png",
+        "images/energy/1968605/1968605_page_0009.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/7548051/7548051_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 0.75,
+      "recall_at_10": 0.75,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 293.7
+    },
+    {
+      "query_index": 89,
+      "query": "What shifts occurred in atomic power usage patterns among major world areas, particularly growth in Asia Pacific and changes in North America, over the period 1990 to 2015?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/5799028/5799028_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/1870376/1870376_page_0003.png",
+        "images/energy/5731992/5731992_page_0001.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/0423894/0423894_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 296.16
+    },
+    {
+      "query_index": 90,
+      "query": "Which short-form denotes the method of transforming gaseous substances into liquid products using the X-to-Liquids approach in the energy sector?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/0543716/0543716_page_0030.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0543716/0543716_page_0030.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/7157717/7157717_page_0010.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/4416777/4416777_page_0018.png",
+        "images/energy/2183227/2183227_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 303.53
+    },
+    {
+      "query_index": 91,
+      "query": "Within the boundaries of Vic/P57, how are the various leads distributed between those associated with the higher and lower stratigraphic sections of the Latrobe Group?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0930171/0930171_page_0004.png",
+        "images/energy/0930171/0930171_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5483674/5483674_page_0007.png",
+        "images/energy/0930171/0930171_page_0005.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/5483674/5483674_page_0008.png",
+        "images/energy/5839285/5839285_page_0007.png",
+        "images/energy/0312521/0312521_page_0022.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/5066075/5066075_page_0007.png",
+        "images/energy/4343531/4343531_page_0014.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 291.52
+    },
+    {
+      "query_index": 92,
+      "query": "Over the colder months spanning from late autumn to early spring, which device out of the heater, computer, dishwasher, and toaster reaches the most pronounced spikes in power usage, and how does its maximum consumption differ from the others during these months?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/1625576/1625576_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/5798277/5798277_page_0015.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/0614328/0614328_page_0007.png",
+        "images/energy/1625576/1625576_page_0005.png",
+        "images/energy/0312521/0312521_page_0024.png",
+        "images/energy/0312521/0312521_page_0021.png",
+        "images/energy/5799028/5799028_page_0003.png",
+        "images/energy/5798277/5798277_page_0014.png",
+        "images/energy/0312521/0312521_page_0023.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.7,
+      "latency_ms": 305.75
+    },
+    {
+      "query_index": 93,
+      "query": "How do the measured quantities of conventional fuel used per kilowatt-hour of electricity differ among the Exergetic, ORGRES, SFU, and Physical calculation approaches when both electric and thermal outputs are generated together?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/4512120/4512120_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/1720670/1720670_page_0005.png",
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/5049171/5049171_page_0002.png",
+        "images/energy/7554920/7554920_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 347.3
+    },
+    {
+      "query_index": 94,
+      "query": "Between the two sodium-based electrolyte formulations, which one demonstrates the highest heat-releasing event upon heating, and near what temperature does this event take place?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0479678/0479678_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0479678/0479678_page_0007.png",
+        "images/energy/6374280/6374280_page_0005.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/4512120/4512120_page_0008.png",
+        "images/energy/1720670/1720670_page_0005.png",
+        "images/energy/6284594/6284594_page_0005.png",
+        "images/energy/4512120/4512120_page_0009.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/5798277/5798277_page_0014.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 294.87
+    },
+    {
+      "query_index": 95,
+      "query": "In community-focused initiatives aimed at expanding sustainable power solutions, how is small-batch biofuel fabrication carried out to support local economic activity when implemented by groups skilled in advancing access for underserved populations?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/1511581/1511581_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/7910609/7910609_page_0005.png",
+        "images/energy/1511581/1511581_page_0004.png",
+        "images/energy/0273247/0273247_page_0006.png",
+        "images/energy/0561319/0561319_page_0013.png",
+        "images/energy/1453158/1453158_page_0003.png",
+        "images/energy/0988834/0988834_page_0025.png",
+        "images/energy/1282033/1282033_page_0008.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/0988834/0988834_page_0024.png",
+        "images/energy/5010415/5010415_page_0010.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 271.02
+    },
+    {
+      "query_index": 96,
+      "query": "How does the total capacity for onshore wind installations evolve between 2020 and 2050 in the study conducted by Michael Child and colleagues published in Energy Procedia 135 (2017)?",
+      "domain": "energy",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/4425296/4425296_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/energy/4425296/4425296_page_0007.png",
+        "images/energy/0423894/0423894_page_0003.png",
+        "images/energy/3626869/3626869_page_0009.png",
+        "images/energy/1711172/1711172_page_0004.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/0901042/0901042_page_0012.png",
+        "images/energy/5536060/5536060_page_0006.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/1215923/1215923_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 321.9
+    },
+    {
+      "query_index": 97,
+      "query": "Which quantitative feed composition values and molar ratios were set for methane, carbon dioxide, water, and O/R during experiments with the fixed-bed system for chemical looping?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/5387778/5387778_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/energy/5387778/5387778_page_0005.png",
+        "images/energy/2373870/2373870_page_0006.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/2528547/2528547_page_0004.png",
+        "images/energy/7127915/7127915_page_0002.png",
+        "images/energy/0376414/0376414_page_0008.png",
+        "images/energy/1720670/1720670_page_0004.png",
+        "images/energy/2342156/2342156_page_0005.png",
+        "images/energy/1720670/1720670_page_0003.png",
+        "images/energy/2257807/2257807_page_0011.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 271.03
+    },
+    {
+      "query_index": 98,
+      "query": "Which high, medium, and lower voltage dataset categories are managed by the intelligent remote control unit within the advanced substation framework?",
+      "domain": "energy",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/energy/0648106/0648106_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/energy/0648106/0648106_page_0004.png",
+        "images/energy/2183227/2183227_page_0014.png",
+        "images/energy/2497225/2497225_page_0003.png",
+        "images/energy/3022576/3022576_page_0009.png",
+        "images/energy/0312521/0312521_page_0023.png",
+        "images/energy/0982617/0982617_page_0003.png",
+        "images/energy/4697637/4697637_page_0002.png",
+        "images/energy/1625576/1625576_page_0004.png",
+        "images/energy/0982617/0982617_page_0004.png",
+        "images/energy/3626869/3626869_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 311.33
+    },
+    {
+      "query_index": 99,
+      "query": "Which aspects related to ecological value, such as habitat surroundings, legally designated areas, avian and bat species, and other organisms of concern, are highlighted in the summary of the wind energy development?",
+      "domain": "energy",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/energy/3144511/3144511_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/energy/2711884/2711884_page_0003.png",
+        "images/energy/3144511/3144511_page_0003.png",
+        "images/energy/4850210/4850210_page_0002.png",
+        "images/energy/2711884/2711884_page_0002.png",
+        "images/energy/2711884/2711884_page_0001.png",
+        "images/energy/4850210/4850210_page_0001.png",
+        "images/energy/7910609/7910609_page_0005.png",
+        "images/energy/6284594/6284594_page_0006.png",
+        "images/energy/0355852/0355852_page_0017.png",
+        "images/energy/3626869/3626869_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 597.72
+    }
+  ],
+  "meta": {
+    "timestamp": "20260411_193420",
+    "method": "baseline_ocr",
+    "domain": "energy",
+    "top_k": 10
+  }
+}

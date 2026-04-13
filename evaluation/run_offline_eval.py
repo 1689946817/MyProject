@@ -179,10 +179,16 @@ def main() -> None:
         print("No samples loaded from dataset, please check dataset-path.")
         return
 
+    if args.method == "baseline_ocr" and not baseline_ocr_rag.check_ocr_index():
+        print(
+            "[ERROR] OCR index is missing or unhealthy. Rebuild the `images_ocr_text` "
+            "collection before running baseline_ocr evaluation."
+        )
+        return
+
     output_dir = Path(args.output_dir) if args.output_dir else None
     run_experiment(samples, method=args.method, top_k=args.top_k, output_dir=output_dir)
 
 
 if __name__ == "__main__":
     main()
-

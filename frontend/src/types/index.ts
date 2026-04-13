@@ -136,3 +136,45 @@ export interface DocChunk {
   chunk_index: number
   content: string
 }
+
+export interface ConfigOption {
+  label: string
+  value: string
+}
+
+export interface ConfigGroup {
+  key: string
+  label: string
+  description?: string | null
+}
+
+export interface ConfigItem {
+  key: string
+  group: string
+  label: string
+  description: string
+  inputType: "text" | "textarea" | "password" | "switch" | "number" | "select"
+  parseAs: "string" | "bool" | "int" | "float" | "csv" | "url" | "path"
+  value: string | number | boolean
+  sensitive: boolean
+  required: boolean
+  restartRequired: boolean
+  placeholder?: string | null
+  options?: ConfigOption[]
+}
+
+export interface ConfigResponse {
+  groups: ConfigGroup[]
+  items: ConfigItem[]
+  restart_required: boolean
+  message: string
+}
+
+export interface ConfigUpdatePayload {
+  values: Record<string, string | number | boolean>
+}
+
+export interface ConfigValidationError {
+  field_errors?: Record<string, string>
+  message?: string
+}

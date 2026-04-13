@@ -1,0 +1,4461 @@
+{
+  "summary": {
+    "method": "proposed",
+    "domain": "finance",
+    "top_k": 10,
+    "num_queries": 100,
+    "recall_at_1": {
+      "mean": 0.6945,
+      "std": 0.3541
+    },
+    "recall_at_5": {
+      "mean": 0.9588,
+      "std": 0.1705
+    },
+    "recall_at_10": {
+      "mean": 0.99,
+      "std": 0.1
+    },
+    "mrr": {
+      "mean": 0.9327,
+      "std": 0.2101
+    },
+    "map_at_10": {
+      "mean": 0.9125,
+      "std": 0.2171
+    },
+    "latency_ms": {
+      "mean": 505.4604,
+      "std": 403.0005
+    },
+    "latency_ms_median": 319.9
+  },
+  "by_question_type": {
+    "causal_reasoning": {
+      "count": 6,
+      "recall_at_1": {
+        "mean": 0.4028,
+        "std": 0.3351
+      },
+      "recall_at_5": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.9167,
+        "std": 0.2041
+      },
+      "map_at_10": {
+        "mean": 0.9083,
+        "std": 0.2245
+      }
+    },
+    "comparison": {
+      "count": 35,
+      "recall_at_1": {
+        "mean": 0.6714,
+        "std": 0.3903
+      },
+      "recall_at_5": {
+        "mean": 0.9167,
+        "std": 0.258
+      },
+      "recall_at_10": {
+        "mean": 0.9714,
+        "std": 0.169
+      },
+      "mrr": {
+        "mean": 0.8981,
+        "std": 0.2652
+      },
+      "map_at_10": {
+        "mean": 0.8776,
+        "std": 0.2696
+      }
+    },
+    "factual_retrieval": {
+      "count": 47,
+      "recall_at_1": {
+        "mean": 0.7766,
+        "std": 0.3094
+      },
+      "recall_at_5": {
+        "mean": 0.9787,
+        "std": 0.102
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.9539,
+        "std": 0.1787
+      },
+      "map_at_10": {
+        "mean": 0.928,
+        "std": 0.1888
+      }
+    },
+    "summarization": {
+      "count": 9,
+      "recall_at_1": {
+        "mean": 0.5037,
+        "std": 0.3293
+      },
+      "recall_at_5": {
+        "mean": 0.9778,
+        "std": 0.0667
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.9444,
+        "std": 0.1667
+      },
+      "map_at_10": {
+        "mean": 0.9407,
+        "std": 0.1656
+      }
+    },
+    "temporal_comparison": {
+      "count": 3,
+      "recall_at_1": {
+        "mean": 0.8333,
+        "std": 0.2887
+      },
+      "recall_at_5": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "map_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      }
+    }
+  },
+  "by_answer_type": {
+    "image_only": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.8567,
+        "std": 0.3247
+      },
+      "recall_at_5": {
+        "mean": 0.98,
+        "std": 0.1414
+      },
+      "recall_at_10": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "mrr": {
+        "mean": 0.9303,
+        "std": 0.2152
+      },
+      "map_at_10": {
+        "mean": 0.9287,
+        "std": 0.2149
+      }
+    },
+    "table_required": {
+      "count": 50,
+      "recall_at_1": {
+        "mean": 0.5323,
+        "std": 0.3069
+      },
+      "recall_at_5": {
+        "mean": 0.9377,
+        "std": 0.1944
+      },
+      "recall_at_10": {
+        "mean": 0.98,
+        "std": 0.1414
+      },
+      "mrr": {
+        "mean": 0.935,
+        "std": 0.2071
+      },
+      "map_at_10": {
+        "mean": 0.8963,
+        "std": 0.2203
+      }
+    }
+  },
+  "per_query": [
+    {
+      "query_index": 0,
+      "query": "In the context of WAM Active's financials, how does the NTA before tax differ between June 2021 and the previous month, May 2021?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/6002966/6002966_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/4880250/4880250_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 511.8
+    },
+    {
+      "query_index": 1,
+      "query": "In the World Political Economy blog, which economic concern is tied to the concept of 'Regulatory Expansion' as it pertains to global political and economic discussions?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5510314/5510314_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/5510314/5510314_page_0015.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/5430240/5430240_page_0011.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/2579258/2579258_page_0024.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 321.05
+    },
+    {
+      "query_index": 2,
+      "query": "What impact do alterations in mating patterns and distribution shifts have on the Gini index and Lorenz curves for income disparity in the years 1960 and 2005?",
+      "domain": "finance",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/6077605/6077605_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/6077605/6077605_page_0006.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/5396106/5396106_page_0009.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/3290162/3290162_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 693.49
+    },
+    {
+      "query_index": 3,
+      "query": "What was the variation in the net book value for right-of-use assets reported in property and equipment categories from early April to the end of September 2019 with the application of HKFRS 16?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/5910185/5910185_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/5910185/5910185_page_0009.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/7757029/7757029_page_0004.png",
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/6797004/6797004_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 275.58
+    },
+    {
+      "query_index": 4,
+      "query": "Was funding allocated for the call center services outsourcing in the 2020 budget plan?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/6838482/6838482_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/1695414/1695414_page_0004.png",
+        "images/finance/7475318/7475318_page_0023.png",
+        "images/finance/2025833/2025833_page_0005.png",
+        "images/finance/0718967/0718967_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.75,
+      "latency_ms": 318.38
+    },
+    {
+      "query_index": 5,
+      "query": "How has the RIT Capital discount or premium rate changed in the years before May 2021, as noted by BSE Limited?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5799744/5799744_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1125177/1125177_page_0003.png",
+        "images/finance/1125177/1125177_page_0002.png",
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/5799744/5799744_page_0009.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/0310269/0310269_page_0013.png",
+        "images/finance/0458505/0458505_page_0018.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 4,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.25,
+      "ap_at_10": 0.25,
+      "latency_ms": 332.08
+    },
+    {
+      "query_index": 6,
+      "query": "What approaches were emphasized at the APEC 2017 gathering to improve food security and support sustainable farming amidst climate challenges?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/5430240/5430240_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5430240/5430240_page_0011.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/5607917/5607917_page_0005.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/3331210/3331210_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 821.73
+    },
+    {
+      "query_index": 7,
+      "query": "What is the relationship between the £3.90 million forecast variance and the allocation of £2 million from the Covid reserve in the 2021/22 budget?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/1695414/1695414_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/1695414/1695414_page_0004.png",
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/0718967/0718967_page_0020.png",
+        "images/finance/7475318/7475318_page_0023.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/0718967/0718967_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 285.34
+    },
+    {
+      "query_index": 8,
+      "query": "Within the financial groups mentioned, which one is associated with managing European funds and assets?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4282204/4282204_page_0001.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/1125177/1125177_page_0002.png",
+        "images/finance/4702442/4702442_page_0007.png",
+        "images/finance/1125177/1125177_page_0003.png",
+        "images/finance/5703797/5703797_page_0019.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 284.1
+    },
+    {
+      "query_index": 9,
+      "query": "What were the notable fluctuations and highest points in the quota percentage of fund arrangements from 2000 to 2007 according to the GRA Credit Outstanding data?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/3331210/3331210_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/3353890/3353890_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1493.61
+    },
+    {
+      "query_index": 10,
+      "query": "What are the variations in GDP impact for the PRC due to Covid-19 under several potential cases as discussed in the 2020 publication of the International Journal of Advanced Science and Technology?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6807878/6807878_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/6807878/6807878_page_0004.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/6038205/6038205_page_0024.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/6038205/6038205_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 401.46
+    },
+    {
+      "query_index": 11,
+      "query": "According to the EXPRESSCREDIT SIA financial statements, how did the value of 1 EUR change between the end of 2017 and the end of 2018?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/0310269/0310269_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0310269/0310269_page_0013.png",
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/1125177/1125177_page_0002.png",
+        "images/finance/3331210/3331210_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 372.2
+    },
+    {
+      "query_index": 12,
+      "query": "How are the dependent and independent variables connected within the neural network's experimental framework?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1173389/1173389_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1173389/1173389_page_0003.png",
+        "images/finance/4816113/4816113_page_0015.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/6038205/6038205_page_0024.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/7072014/7072014_page_0009.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/5607917/5607917_page_0005.png",
+        "images/finance/0184489/0184489_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 331.01
+    },
+    {
+      "query_index": 13,
+      "query": "How does the financial data detail the yearly access assumptions for specific arrangements such as SBA/PRGF/SAF and SRF?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3331210/3331210_page_0021.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/0718967/0718967_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8333333333333333,
+      "latency_ms": 267.1
+    },
+    {
+      "query_index": 14,
+      "query": "Which factors are considered important for investment decisions concerning BA’s role, the quality of the product or service, and market appeal, according to the hierarchical structure?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4816113/4816113_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4816113/4816113_page_0015.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/1125177/1125177_page_0003.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/1125177/1125177_page_0002.png",
+        "images/finance/3290162/3290162_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 261.11
+    },
+    {
+      "query_index": 15,
+      "query": "Which forms and certificates are required for overseas investors to benefit from the treaty-adjusted tax rate?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/2931383/2931383_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/6834566/6834566_page_0017.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/5799744/5799744_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 284.43
+    },
+    {
+      "query_index": 16,
+      "query": "What variation occurred in the Bureau de Change (BDC) segment's average exchange rate in Nigeria between the first quarter of 2012 and the last quarter of 2013, as detailed in the FY-2013 Economic Report and 2014 Outlook?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/3769357/3769357_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/1615160/1615160_page_0010.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/1968605/1968605_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 283.32
+    },
+    {
+      "query_index": 17,
+      "query": "How much funding has been designated for the utility expenditures and bulk buying in the town's financial ledger, specifically under the code 1089200?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/2025833/2025833_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/2025833/2025833_page_0005.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/7475318/7475318_page_0023.png",
+        "images/finance/7914979/7914979_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8333333333333333,
+      "latency_ms": 651.98
+    },
+    {
+      "query_index": 18,
+      "query": "Which investment considerations, such as involvement from business angels and the appeal of products and markets, are emphasized for making decisions?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4816113/4816113_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4816113/4816113_page_0015.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/1600279/1600279_page_0020.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/7051201/7051201_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 304.34
+    },
+    {
+      "query_index": 19,
+      "query": "How has the insider trading ratio of sales to purchases changed in the latest data provided by Washington Service and Bloomberg?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1686887/1686887_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/1615160/1615160_page_0010.png",
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/1968605/1968605_page_0009.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/1326258/1326258_page_0010.png",
+        "images/finance/3353890/3353890_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 255.1
+    },
+    {
+      "query_index": 20,
+      "query": "What is the relationship between NLP-based policy indicators and the actual policy balance throughout the years in the context of Federal Reserve reviews?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5607917/5607917_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5607917/5607917_page_0005.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/2579258/2579258_page_0024.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 270.0
+    },
+    {
+      "query_index": 21,
+      "query": "By the end of April 2021, how did the components of the BDC loan under the Highly Affected Sectors Credit Availability Program adjust?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/7051201/7051201_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/1695414/1695414_page_0004.png",
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/1695414/1695414_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 279.78
+    },
+    {
+      "query_index": 22,
+      "query": "How many contracts must be controlled in Corporate Tax Futures to meet the accountability level of more than 50,000 contracts?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/6834566/6834566_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/6834566/6834566_page_0017.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/5799744/5799744_page_0009.png",
+        "images/finance/7072014/7072014_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1070.71
+    },
+    {
+      "query_index": 23,
+      "query": "How has the South African Rand's value changed relative to the US Dollar over the last five decades in terms of its purchasing power alignment?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/3353890/3353890_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/6360569/6360569_page_0008.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/1615160/1615160_page_0010.png",
+        "images/finance/1968605/1968605_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 343.3
+    },
+    {
+      "query_index": 24,
+      "query": "How does VOL_DER relate to SP500 based on the quantitative findings for the US financial market?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/7072014/7072014_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7072014/7072014_page_0009.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/1326258/1326258_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 274.29
+    },
+    {
+      "query_index": 25,
+      "query": "According to the 2003 Executive Opinion Survey, how were countries ranked by the quality of their education systems?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1372325/1372325_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/3702924/3702924_page_0013.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/4274052/4274052_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 296.09
+    },
+    {
+      "query_index": 26,
+      "query": "What is the comparison between the current trade receivables and those overdue by more than a year as of mid-2010 for Filinvest Development Corporation?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/5703797/5703797_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/6797004/6797004_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 304.8
+    },
+    {
+      "query_index": 27,
+      "query": "How did currency fluctuations affect the valuation of mine plant and equipment in ZCI Limited's financials for the fiscal year ending 2014?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6440218/6440218_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/0070518/0070518_page_0002.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/7051201/7051201_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 365.72
+    },
+    {
+      "query_index": 28,
+      "query": "Can you detail the breakdown of the company's 2016 income tax, covering Hong Kong and international taxes as well as deferred tax?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/4880250/4880250_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/4880250/4880250_page_0006.png",
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/7757029/7757029_page_0004.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/4702442/4702442_page_0007.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/7757029/7757029_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1851.43
+    },
+    {
+      "query_index": 29,
+      "query": "What is the difference between the MSCI World Index's cumulative price and total returns over the period from 1988 to mid-2021?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5758419/5758419_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5758419/5758419_page_0002.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/1326258/1326258_page_0010.png",
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/1659677/1659677_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 462.71
+    },
+    {
+      "query_index": 30,
+      "query": "According to the Nahmani Grunder forecast as of April 2021, what were the anticipated percentage shifts for the S&P 500, Europe Stoxx 600, and MSCI EM indices in the year 2020?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4195303/4195303_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/5758419/5758419_page_0002.png",
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/7501084/7501084_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 277.57
+    },
+    {
+      "query_index": 31,
+      "query": "What explains the connection between owning a tax haven subsidiary and reduced effective tax rates, according to the statistical analyses involving GETR and Naively-Averaged ExTR?",
+      "domain": "finance",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/3290162/3290162_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/5396106/5396106_page_0009.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3331210/3331210_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 270.45
+    },
+    {
+      "query_index": 32,
+      "query": "What was the comparison between the COVID-19 basket inflation's annual rate change and the official inflation rate from early 2020 to March 2021?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/6360569/6360569_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/7600205/7600205_page_0016.png",
+        "images/finance/5607917/5607917_page_0005.png",
+        "images/finance/1326258/1326258_page_0010.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/6360569/6360569_page_0008.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 10,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.1,
+      "ap_at_10": 0.1,
+      "latency_ms": 366.37
+    },
+    {
+      "query_index": 33,
+      "query": "In comparing the various parameters like ω2 and β2, what are their respective η2 measurements?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/1326258/1326258_page_0028.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/1326258/1326258_page_0028.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/7072014/7072014_page_0009.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/6077605/6077605_page_0006.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/6038205/6038205_page_0024.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 306.13
+    },
+    {
+      "query_index": 34,
+      "query": "Based on Lea's 2010 analysis, which nations prioritize variable rate mortgages over other mortgage types?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/3235516/3235516_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/7501084/7501084_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 270.33
+    },
+    {
+      "query_index": 35,
+      "query": "Based on the statistics from 1994 to 2011, how many children do women in Denmark and Sweden have on average a decade after their first childbirth?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/3702924/3702924_page_0012.png",
+        "images/finance/3702924/3702924_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3702924/3702924_page_0013.png",
+        "images/finance/3702924/3702924_page_0012.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/6077605/6077605_page_0006.png",
+        "images/finance/5883246/5883246_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 258.23
+    },
+    {
+      "query_index": 36,
+      "query": "For the fiscal year 2018, what was the quantity of entitlements given to Mr. Brayan within the framework of the Special plan?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/0002128/0002128_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0002128/0002128_page_0013.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/0310269/0310269_page_0013.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/0718967/0718967_page_0019.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 308.61
+    },
+    {
+      "query_index": 37,
+      "query": "How did output per worker change between 2010 and 2018 in certain emerging markets like Indonesia and Mexico?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/7501084/7501084_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/4751111/4751111_page_0005.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/3331210/3331210_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 490.35
+    },
+    {
+      "query_index": 38,
+      "query": "At South University, how do the financial reduction goals of the Provost and the President contrast?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/7475318/7475318_page_0023.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7475318/7475318_page_0023.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/7475318/7475318_page_0024.png",
+        "images/finance/7475318/7475318_page_0026.png",
+        "images/finance/7475318/7475318_page_0027.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/0718967/0718967_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 506.24
+    },
+    {
+      "query_index": 39,
+      "query": "In the timeframe from April 2016 to March 2019, what is the difference in volatility of ETH's CG – CC spreads when comparing Q3-18 to Q1-19?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1326258/1326258_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1326258/1326258_page_0010.png",
+        "images/finance/1326258/1326258_page_0028.png",
+        "images/finance/7072014/7072014_page_0009.png",
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/6360569/6360569_page_0008.png",
+        "images/finance/6038205/6038205_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1463.29
+    },
+    {
+      "query_index": 40,
+      "query": "How are the allowances for outdated and sluggish items allocated for raw materials and trading inventories as of mid-2018, covering both the start and during the period?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/0458505/0458505_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/0310269/0310269_page_0013.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/3331210/3331210_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 301.82
+    },
+    {
+      "query_index": 41,
+      "query": "How can premature redemption of a financial instrument lead to losses for a client?",
+      "domain": "finance",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/1125177/1125177_page_0003.png",
+        "images/finance/1125177/1125177_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1125177/1125177_page_0002.png",
+        "images/finance/1125177/1125177_page_0003.png",
+        "images/finance/6834566/6834566_page_0017.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/0184489/0184489_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1348.83
+    },
+    {
+      "query_index": 42,
+      "query": "What were the differences between temporary-layoff and jobless unemployment rates regarding their trend from early 2020 to mid-2021?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/7600205/7600205_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7600205/7600205_page_0016.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/6038205/6038205_page_0024.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/2579258/2579258_page_0024.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 514.91
+    },
+    {
+      "query_index": 43,
+      "query": "How much equity is allocated to the Company's shareholders in 2012 under HKFRS?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/7757029/7757029_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/5910185/5910185_page_0009.png",
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/7757029/7757029_page_0004.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/4702442/4702442_page_0007.png",
+        "images/finance/0458505/0458505_page_0017.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 4,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.25,
+      "ap_at_10": 0.26785714285714285,
+      "latency_ms": 298.43
+    },
+    {
+      "query_index": 44,
+      "query": "Within the Webcon BPS workflow for registering sales opportunities, what happens if the negotiation phase ends without a positive outcome?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4009370/4009370_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4009370/4009370_page_0006.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/4816113/4816113_page_0015.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/7475318/7475318_page_0027.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/1125177/1125177_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1701.89
+    },
+    {
+      "query_index": 45,
+      "query": "Can you identify the GWAC percentages for home loans from the years 2009 and 2010 based on the given information?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4274052/4274052_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/5396106/5396106_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 289.88
+    },
+    {
+      "query_index": 46,
+      "query": "Identify the unique statistical measures ω2, γ2, θ2, β2, η2, ξ2, p22, and UV2 along with their intervals used in the evaluation of complex models.",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/1326258/1326258_page_0028.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/1326258/1326258_page_0028.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/7072014/7072014_page_0009.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/6038205/6038205_page_0022.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 404.68
+    },
+    {
+      "query_index": 47,
+      "query": "What changes occurred in the 30-Year Fixed Mortgage rate between the second quarter of 2015 and the third quarter of 2018 in the scenario outlined by PNC during their 2016 Mid-Cycle Stress Test?",
+      "domain": "finance",
+      "question_type": "temporal_comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/0184489/0184489_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/3353890/3353890_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 272.69
+    },
+    {
+      "query_index": 48,
+      "query": "In which time frame were initial child births recorded in Austria based on the labor statistics?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/3702924/3702924_page_0012.png",
+        "images/finance/3702924/3702924_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3702924/3702924_page_0012.png",
+        "images/finance/3702924/3702924_page_0013.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/7600205/7600205_page_0016.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/6807878/6807878_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 476.85
+    },
+    {
+      "query_index": 49,
+      "query": "In the potential new EMU group, which nations exhibit the highest average disparity in interest rates?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/2579258/2579258_page_0024.png"
+      ],
+      "predicted_ids": [
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3702924/3702924_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 625.22
+    },
+    {
+      "query_index": 50,
+      "query": "How did the number of COVID-19 cases progress in France during the first half of 2021, culminating in a total exceeding 6 million?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4563850/4563850_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6807878/6807878_page_0004.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/3702924/3702924_page_0013.png",
+        "images/finance/0718967/0718967_page_0020.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/1695414/1695414_page_0004.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/4195303/4195303_page_0009.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.5,
+      "latency_ms": 828.53
+    },
+    {
+      "query_index": 51,
+      "query": "In what way do the 1997-2019 trends in policy signals and balance, based on NLP methods, exhibit changes as per the AXA IM Research findings?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5607917/5607917_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5607917/5607917_page_0005.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/5758419/5758419_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 272.77
+    },
+    {
+      "query_index": 52,
+      "query": "What was the shift in the CG – CC price difference for Bitcoin from Q3 2017 to Q1 2018?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1326258/1326258_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1326258/1326258_page_0010.png",
+        "images/finance/1326258/1326258_page_0028.png",
+        "images/finance/6360569/6360569_page_0008.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/1968605/1968605_page_0009.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/4274052/4274052_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 362.76
+    },
+    {
+      "query_index": 53,
+      "query": "How did the financial results of Filinvest Development Corporation's aggregated activities in 2010 differ from those in 2009?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/5703797/5703797_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/1600279/1600279_page_0020.png",
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/6797004/6797004_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 579.2
+    },
+    {
+      "query_index": 54,
+      "query": "In the May 2021 financial model by the KIUC Board, what are the proportions of equity and liabilities?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/7914979/7914979_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/4880250/4880250_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 308.18
+    },
+    {
+      "query_index": 55,
+      "query": "By the conclusion of June 2021, which portfolio showed the greatest unfavorable deviation in the 2021/22 fiscal year?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/1695414/1695414_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/0718967/0718967_page_0020.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/1695414/1695414_page_0004.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/4880250/4880250_page_0007.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 0.3333333333333333,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.5535714285714285,
+      "latency_ms": 947.96
+    },
+    {
+      "query_index": 56,
+      "query": "How did U.S. energy-related petroleum import values change from the start of 2012 to early 2015 based on Commerce Department data?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1615160/1615160_page_0010.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1615160/1615160_page_0010.png",
+        "images/finance/1968605/1968605_page_0009.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/6360569/6360569_page_0008.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/4751111/4751111_page_0005.png",
+        "images/finance/5883246/5883246_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 685.44
+    },
+    {
+      "query_index": 57,
+      "query": "How did the Real GDP index of Peru evolve between 1970 and 2010 based on data from the Banco Central de Reserva del Perú?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/4751111/4751111_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4751111/4751111_page_0005.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/3331210/3331210_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 432.43
+    },
+    {
+      "query_index": 58,
+      "query": "How much is allocated under miscellaneous costs for the police department in the town's fiscal records?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/2025833/2025833_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/0718967/0718967_page_0022.png",
+        "images/finance/2025833/2025833_page_0005.png",
+        "images/finance/1695414/1695414_page_0004.png",
+        "images/finance/0358930/0358930_page_0004.png",
+        "images/finance/0718967/0718967_page_0021.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/1695414/1695414_page_0003.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.75,
+      "latency_ms": 277.13
+    },
+    {
+      "query_index": 59,
+      "query": "How long was the average duration of commercial paper held by TexPool Prime during the year 2020?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/1600279/1600279_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1600279/1600279_page_0020.png",
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/7600205/7600205_page_0016.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/6834566/6834566_page_0017.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 308.39
+    },
+    {
+      "query_index": 60,
+      "query": "Which economic topics are emphasized in the 'World Political Economy' blog concerning global politics, with an emphasis on increasing regulations?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5510314/5510314_page_0015.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5510314/5510314_page_0015.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/5430240/5430240_page_0011.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/4751111/4751111_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 290.03
+    },
+    {
+      "query_index": 61,
+      "query": "What were the variations in adjusted net savings as a percentage of GNI across different 2005 regions, focusing on low versus middle income groups?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/5883246/5883246_page_0022.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/5396106/5396106_page_0009.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/6077605/6077605_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 274.27
+    },
+    {
+      "query_index": 62,
+      "query": "How much was credited for the 2020 ordinance concerning CR 519 Sidewalks in the fiscal overview from July 27, 2020?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/2025833/2025833_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/0718967/0718967_page_0022.png",
+        "images/finance/7475318/7475318_page_0023.png",
+        "images/finance/1695414/1695414_page_0004.png",
+        "images/finance/0718967/0718967_page_0020.png",
+        "images/finance/2025833/2025833_page_0005.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.6,
+      "latency_ms": 261.76
+    },
+    {
+      "query_index": 63,
+      "query": "From 2000 to 2014, which nation within the ASEAN bloc saw the greatest increase in foreign direct investment, based on the ASEAN Economic Community analysis?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/2601755/2601755_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/5430240/5430240_page_0011.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/2579258/2579258_page_0024.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 319.81
+    },
+    {
+      "query_index": 64,
+      "query": "Where are the new crossing points located in the Falcon Zone that trends northwest-southeast at Hemi?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/0070518/0070518_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0070518/0070518_page_0002.png",
+        "images/finance/7475318/7475318_page_0026.png",
+        "images/finance/5430240/5430240_page_0011.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/7475318/7475318_page_0024.png",
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/4816113/4816113_page_0015.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/6834566/6834566_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 294.2
+    },
+    {
+      "query_index": 65,
+      "query": "What was the pattern in the Non-Profitable Tech Stock Index over the years 2014 to 2020, with emphasis on the change from 2019 to 2020?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1686887/1686887_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/5758419/5758419_page_0002.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/2931383/2931383_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 273.42
+    },
+    {
+      "query_index": 66,
+      "query": "During the fiscal year 2021-22, which act saw the least number of audits of financial statements performed?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/0718967/0718967_page_0021.png",
+        "images/finance/0718967/0718967_page_0020.png",
+        "images/finance/0718967/0718967_page_0022.png",
+        "images/finance/0718967/0718967_page_0019.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0718967/0718967_page_0020.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/0358930/0358930_page_0004.png",
+        "images/finance/0718967/0718967_page_0022.png",
+        "images/finance/0358930/0358930_page_0003.png",
+        "images/finance/1695414/1695414_page_0003.png",
+        "images/finance/5799744/5799744_page_0009.png",
+        "images/finance/0718967/0718967_page_0021.png",
+        "images/finance/4702442/4702442_page_0007.png",
+        "images/finance/1695414/1695414_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 0.75,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.8125,
+      "latency_ms": 265.05
+    },
+    {
+      "query_index": 67,
+      "query": "What is the method for determining the ending settlement value of Corporate Tax Futures using the top marginal US Corporate Tax Rate at settlement time?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/6834566/6834566_page_0017.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/6834566/6834566_page_0017.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/7072014/7072014_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 251.25
+    },
+    {
+      "query_index": 68,
+      "query": "What were the economic impacts of minimizing physical contact on worldwide industries such as aviation and travel amid COVID-19?",
+      "domain": "finance",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/6807878/6807878_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/6807878/6807878_page_0004.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/6038205/6038205_page_0024.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/5430240/5430240_page_0011.png",
+        "images/finance/4195303/4195303_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 283.68
+    },
+    {
+      "query_index": 69,
+      "query": "According to the analysis by Research Affiliates, which asset class shows the highest percentage variance in exposure levels?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1659677/1659677_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/7072014/7072014_page_0009.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/5396106/5396106_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 304.24
+    },
+    {
+      "query_index": 70,
+      "query": "What were the trends in the shares of API versus Non-API services in Nord Pool from 2016 to 2020 based on the 2020 Annual Review?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/7548051/7548051_page_0016.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/1615160/1615160_page_0010.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/1968605/1968605_page_0009.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/3331210/3331210_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1086.62
+    },
+    {
+      "query_index": 71,
+      "query": "As of June 30, 2018, what amounts are recorded for trade deposits and for prepayments linked to customs and letters of credit?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/0458505/0458505_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/0310269/0310269_page_0013.png",
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/2025833/2025833_page_0006.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3331210/3331210_page_0022.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 283.01
+    },
+    {
+      "query_index": 72,
+      "query": "How does the duration of approved arrangements fluctuate from 2000 to 2007, highlighting changes in both precautionary and non-precautionary categories?",
+      "domain": "finance",
+      "question_type": "temporal_comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/3331210/3331210_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/7600205/7600205_page_0016.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/6038205/6038205_page_0020.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 357.15
+    },
+    {
+      "query_index": 73,
+      "query": "In PNC's adverse scenario covering Q3 2017 through Q3 2019, what is the estimated loss percentage for Commercial Real Estate?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/7257900/7257900_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/7051201/7051201_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 2526.13
+    },
+    {
+      "query_index": 74,
+      "query": "What are the relative performance percentages of various investment categories as analyzed by Research Affiliates?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1659677/1659677_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/5758419/5758419_page_0002.png",
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/7475318/7475318_page_0025.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 289.99
+    },
+    {
+      "query_index": 75,
+      "query": "What are the variations between the median and mean outcomes following a technological disturbance as depicted in the fifth figure?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/6038205/6038205_page_0024.png",
+        "images/finance/6038205/6038205_page_0020.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6038205/6038205_page_0024.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/1326258/1326258_page_0028.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/6807878/6807878_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9166666666666666,
+      "latency_ms": 1035.17
+    },
+    {
+      "query_index": 76,
+      "query": "During the years 2000 to 2007, how did the typical duration of fund arrangements change, and in which year was this duration the greatest?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/3331210/3331210_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/3331210/3331210_page_0021.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/1600279/1600279_page_0020.png",
+        "images/finance/4195303/4195303_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 319.99
+    },
+    {
+      "query_index": 77,
+      "query": "What phrase is associated with the auditing company Keefe McCullough for HANDY, Inc.?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/0358930/0358930_page_0003.png",
+        "images/finance/0358930/0358930_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0358930/0358930_page_0004.png",
+        "images/finance/0358930/0358930_page_0003.png",
+        "images/finance/0718967/0718967_page_0019.png",
+        "images/finance/0718967/0718967_page_0020.png",
+        "images/finance/0718967/0718967_page_0021.png",
+        "images/finance/0718967/0718967_page_0022.png",
+        "images/finance/5799744/5799744_page_0009.png",
+        "images/finance/4282204/4282204_page_0001.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/7757029/7757029_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 278.07
+    },
+    {
+      "query_index": 78,
+      "query": "What is the difference in non-current asset values between 2013 and 2012 in the provided financial figures in HKD?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/7757029/7757029_page_0004.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/7757029/7757029_page_0004.png",
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/4702442/4702442_page_0007.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/0458505/0458505_page_0018.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 272.29
+    },
+    {
+      "query_index": 79,
+      "query": "In the analysis of the US market, what is the calculated covariance for VOL_DER and CPI_US?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/7072014/7072014_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7072014/7072014_page_0009.png",
+        "images/finance/1326258/1326258_page_0010.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/1326258/1326258_page_0028.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/5607917/5607917_page_0005.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/6360569/6360569_page_0008.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/1968605/1968605_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 572.95
+    },
+    {
+      "query_index": 80,
+      "query": "How do different trade scenario models affect the economic output of Northern Asia?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/0873425/0873425_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/6038205/6038205_page_0024.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 317.68
+    },
+    {
+      "query_index": 81,
+      "query": "What were the significant patterns in the fluctuations of oil prices from 2008 to 2012, based on the Department of Commerce figures?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1968605/1968605_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1968605/1968605_page_0009.png",
+        "images/finance/1615160/1615160_page_0010.png",
+        "images/finance/6360569/6360569_page_0008.png",
+        "images/finance/3769357/3769357_page_0016.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/7548051/7548051_page_0016.png",
+        "images/finance/1326258/1326258_page_0010.png",
+        "images/finance/3353890/3353890_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 280.59
+    },
+    {
+      "query_index": 82,
+      "query": "What was the variation in the after-tax NTA from May to June 2021 based on the available data?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/6002966/6002966_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/7914979/7914979_page_0006.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 0,
+      "first_hit_rank": null,
+      "recall_at_1": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "reciprocal_rank": 0.0,
+      "ap_at_10": 0.0,
+      "latency_ms": 385.7
+    },
+    {
+      "query_index": 83,
+      "query": "For the year 2016, what are the reported amounts for taxes related to Hong Kong Profits and those outside Hong Kong, including deferred taxes?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/4880250/4880250_page_0006.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/4880250/4880250_page_0006.png",
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/7757029/7757029_page_0004.png",
+        "images/finance/4702442/4702442_page_0007.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/5910185/5910185_page_0009.png",
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/2931383/2931383_page_0004.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 858.1
+    },
+    {
+      "query_index": 84,
+      "query": "What are the reasons that employing credit leverage can elevate a client's financial commitments?",
+      "domain": "finance",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/1125177/1125177_page_0003.png",
+        "images/finance/1125177/1125177_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/1125177/1125177_page_0002.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/1125177/1125177_page_0003.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/3415032/3415032_page_0002.png"
+      ],
+      "hit_flags": [
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 2,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.5,
+      "ap_at_10": 0.45,
+      "latency_ms": 674.31
+    },
+    {
+      "query_index": 85,
+      "query": "What were the reasons that led economic analysts to expect different global GDP reductions between -0.089% and -0.404% during the Covid-19 outbreak?",
+      "domain": "finance",
+      "question_type": "causal_reasoning",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6807878/6807878_page_0003.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/6807878/6807878_page_0004.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/5510314/5510314_page_0015.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1176.71
+    },
+    {
+      "query_index": 86,
+      "query": "In the January 2020 assembly at South University, what were the main conclusions regarding the strategy to lower costs and the $2.4M objective?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/7475318/7475318_page_0027.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/7475318/7475318_page_0023.png",
+        "images/finance/7475318/7475318_page_0026.png",
+        "images/finance/7475318/7475318_page_0024.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7475318/7475318_page_0023.png",
+        "images/finance/7475318/7475318_page_0025.png",
+        "images/finance/7475318/7475318_page_0024.png",
+        "images/finance/7475318/7475318_page_0026.png",
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/7475318/7475318_page_0027.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/6786265/6786265_page_0008.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 5,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.2,
+      "recall_at_5": 0.8,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 0.9666666666666666,
+      "latency_ms": 596.38
+    },
+    {
+      "query_index": 87,
+      "query": "How much are Finders Resources Limited's current liabilities listed for mid-2012?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/6797004/6797004_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/6440218/6440218_page_0017.png",
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/7051201/7051201_page_0016.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 431.46
+    },
+    {
+      "query_index": 88,
+      "query": "What are the main financial insights from inventory and bank balances for the six months ending June 2018?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/0458505/0458505_page_0018.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/6797004/6797004_page_0008.png",
+        "images/finance/6797004/6797004_page_0009.png",
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/5703797/5703797_page_0020.png",
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/0310269/0310269_page_0013.png",
+        "images/finance/7914979/7914979_page_0006.png",
+        "images/finance/1695414/1695414_page_0002.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 392.62
+    },
+    {
+      "query_index": 89,
+      "query": "What is the GDP effect on various regions when considering the Asia-wide Free Trade Area according to the 2004 APEC Economic Outlook?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/0873425/0873425_page_0011.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/5430240/5430240_page_0011.png",
+        "images/finance/6807878/6807878_page_0003.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/6807878/6807878_page_0005.png",
+        "images/finance/4563850/4563850_page_0004.png",
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/5883246/5883246_page_0021.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 275.63
+    },
+    {
+      "query_index": 90,
+      "query": "Can you provide the main points of the changes to the BPO call center service contracts that were covered during the June 2020 committee and board meetings?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/6838482/6838482_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/finance/6838482/6838482_page_0007.png",
+        "images/finance/6838482/6838482_page_0008.png",
+        "images/finance/6834566/6834566_page_0016.png",
+        "images/finance/2025833/2025833_page_0005.png",
+        "images/finance/1695414/1695414_page_0002.png",
+        "images/finance/1600279/1600279_page_0020.png",
+        "images/finance/7051201/7051201_page_0017.png",
+        "images/finance/7051201/7051201_page_0016.png",
+        "images/finance/5799744/5799744_page_0009.png",
+        "images/finance/2025833/2025833_page_0006.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 278.07
+    },
+    {
+      "query_index": 91,
+      "query": "How much was earned from external customer sales in Hong Kong, SAR, during the years 2001 and 2002 according to the segment revenue?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/4702442/4702442_page_0007.png"
+      ],
+      "predicted_ids": [
+        "images/finance/4702442/4702442_page_0007.png",
+        "images/finance/4880250/4880250_page_0007.png",
+        "images/finance/7757029/7757029_page_0004.png",
+        "images/finance/4880250/4880250_page_0006.png",
+        "images/finance/5703797/5703797_page_0019.png",
+        "images/finance/0458505/0458505_page_0017.png",
+        "images/finance/0458505/0458505_page_0018.png",
+        "images/finance/7757029/7757029_page_0003.png",
+        "images/finance/5910185/5910185_page_0008.png",
+        "images/finance/2601755/2601755_page_0018.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 374.37
+    },
+    {
+      "query_index": 92,
+      "query": "How did the U.S. Home Price Index, tracked by S&P/Case-Shiller, change from mid-2015 to late 2018 under the PNC stress test conditions?",
+      "domain": "finance",
+      "question_type": "temporal_comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/0184489/0184489_page_0002.png"
+      ],
+      "predicted_ids": [
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/7257900/7257900_page_0007.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/3353890/3353890_page_0003.png",
+        "images/finance/3235516/3235516_page_0009.png",
+        "images/finance/3353890/3353890_page_0002.png",
+        "images/finance/1686887/1686887_page_0004.png",
+        "images/finance/1968605/1968605_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 513.92
+    },
+    {
+      "query_index": 93,
+      "query": "How do active management strategies, including asset allocation and security selection, affect the performance and risk of pension plans relative to their policy benchmarks?",
+      "domain": "finance",
+      "question_type": "summarization",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/3415032/3415032_page_0005.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3415032/3415032_page_0005.png",
+        "images/finance/3415032/3415032_page_0004.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/1659677/1659677_page_0003.png",
+        "images/finance/6002966/6002966_page_0010.png",
+        "images/finance/4195303/4195303_page_0009.png",
+        "images/finance/5758419/5758419_page_0002.png",
+        "images/finance/0184489/0184489_page_0003.png",
+        "images/finance/6002966/6002966_page_0009.png",
+        "images/finance/5396106/5396106_page_0012.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 3,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.3333333333333333,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 286.9
+    },
+    {
+      "query_index": 94,
+      "query": "How do the estimates for Pareto's Alpha change from 95 to 70 across various implicate scenarios?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5396106/5396106_page_0012.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/5396106/5396106_page_0009.png",
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/4816113/4816113_page_0015.png",
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/1326258/1326258_page_0028.png",
+        "images/finance/6038205/6038205_page_0024.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 311.78
+    },
+    {
+      "query_index": 95,
+      "query": "In what way do the impacts of having a tax haven subsidiary on effective tax rates vary when comparing naively-averaged and revenue-weighted ExTR measures?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/3290162/3290162_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/3290162/3290162_page_0009.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/3415032/3415032_page_0002.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/3331210/3331210_page_0007.png",
+        "images/finance/5396106/5396106_page_0009.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 4,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.25,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 329.08
+    },
+    {
+      "query_index": 96,
+      "query": "In the primary scenario of the HFCS research, what is the threshold set for the original dataset regarding household net wealth?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/5396106/5396106_page_0009.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5396106/5396106_page_0009.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/3290162/3290162_page_0007.png",
+        "images/finance/6077605/6077605_page_0006.png",
+        "images/finance/4274052/4274052_page_0005.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/3702924/3702924_page_0012.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/3290162/3290162_page_0010.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 303.12
+    },
+    {
+      "query_index": 97,
+      "query": "According to the 2003 Executive Opinion Survey, how did different nations rank in terms of limiting foreign ownership?",
+      "domain": "finance",
+      "question_type": "factual_retrieval",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/1372325/1372325_page_0013.png"
+      ],
+      "predicted_ids": [
+        "images/finance/1372325/1372325_page_0013.png",
+        "images/finance/2601755/2601755_page_0018.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/3290162/3290162_page_0008.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/2931383/2931383_page_0004.png",
+        "images/finance/3290162/3290162_page_0010.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/3702924/3702924_page_0013.png",
+        "images/finance/7501084/7501084_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 1,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1494.73
+    },
+    {
+      "query_index": 98,
+      "query": "In 2005, how did the adjusted net saving percentages of GNI compare among the low, middle, and high-income classifications?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "table_required",
+      "relevant_ids": [
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/5883246/5883246_page_0022.png"
+      ],
+      "predicted_ids": [
+        "images/finance/5883246/5883246_page_0022.png",
+        "images/finance/5883246/5883246_page_0021.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/6077605/6077605_page_0004.png",
+        "images/finance/5396106/5396106_page_0012.png",
+        "images/finance/0873425/0873425_page_0011.png",
+        "images/finance/5396106/5396106_page_0009.png",
+        "images/finance/6077605/6077605_page_0006.png",
+        "images/finance/3331210/3331210_page_0022.png",
+        "images/finance/7501084/7501084_page_0013.png"
+      ],
+      "hit_flags": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 2,
+      "first_hit_rank": 1,
+      "recall_at_1": 0.5,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0,
+      "ap_at_10": 1.0,
+      "latency_ms": 1035.22
+    },
+    {
+      "query_index": 99,
+      "query": "What trend is observed in unemployment rates over the years from 1995 to 2020 based on Figure 12?",
+      "domain": "finance",
+      "question_type": "comparison",
+      "answer_type": "image_only",
+      "relevant_ids": [
+        "images/finance/6786265/6786265_page_0008.png"
+      ],
+      "predicted_ids": [
+        "images/finance/7600205/7600205_page_0016.png",
+        "images/finance/6038205/6038205_page_0022.png",
+        "images/finance/6786265/6786265_page_0008.png",
+        "images/finance/6038205/6038205_page_0020.png",
+        "images/finance/2579258/2579258_page_0024.png",
+        "images/finance/7501084/7501084_page_0013.png",
+        "images/finance/0184489/0184489_page_0002.png",
+        "images/finance/6038205/6038205_page_0024.png",
+        "images/finance/6077605/6077605_page_0005.png",
+        "images/finance/6077605/6077605_page_0004.png"
+      ],
+      "hit_flags": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "hit_count": 1,
+      "first_hit_rank": 3,
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ap_at_10": 0.3333333333333333,
+      "latency_ms": 366.99
+    }
+  ],
+  "meta": {
+    "timestamp": "20260326_004208",
+    "method": "proposed",
+    "domain": "finance",
+    "top_k": 10
+  }
+}
