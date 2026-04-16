@@ -9,6 +9,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
+from app.core.timing import timing_stage
 
 logger = logging.getLogger(__name__)
 _COMPRESSION_CONCURRENCY = 3
@@ -52,8 +53,8 @@ async def compress_context(
         return documents
 
     if chat_model is None:
-        from app.langchain_integration.models import get_chat_model
-        chat_model = get_chat_model()
+        from app.langchain_integration.models import get_task_text_chat_model
+        chat_model = get_task_text_chat_model()
 
     semaphore = asyncio.Semaphore(_COMPRESSION_CONCURRENCY)
 
@@ -83,10 +84,11 @@ async def compress_context(
             logger.warning(f"[Compression] 压缩失败，保留原文: {e}")
             return doc
 
-    compressed = [
-        doc for doc in await asyncio.gather(*(_compress_single_document(doc) for doc in documents))
-        if doc is not None
-    ]
+    with timing_stage("context_compression", meta={"document_count": len(documents)}):
+        compressed = [
+            doc for doc in await asyncio.gather(*(_compress_single_document(doc) for doc in documents))
+            if doc is not None
+        ]
 
-    logger.info(f"[Compression] {len(documents)} → {len(compressed)} 篇文档")
-    return compressed
+        logger.info(f"[Compression] {len(documents)} → {len(compressed)} 篇文档")
+        return compressed

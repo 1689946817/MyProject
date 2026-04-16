@@ -93,6 +93,9 @@ class Settings(BaseSettings):
     MLLM_BASE_URL: Optional[str] = None  # 多模态模型 API 基础 URL
     MLLM_API_KEY: Optional[str] = None  # 多模态模型 API 密钥
     MLLM_MODEL_NAME: Optional[str] = None  # 多模态模型名称
+    CHAT_COMPLETION_TIMEOUT_SECONDS: int = 180  # 聊天模型非流式请求超时时间（秒）
+    ENABLE_TIMING_LOGS: bool = True
+    EXPOSE_TIMINGS_IN_API: bool = False
 
     # 嵌入模型配置（文本向量，用于主流程）
     EMBEDDING_BASE_URL: Optional[str] = None  # 嵌入模型 API 基础 URL
@@ -110,6 +113,9 @@ class Settings(BaseSettings):
     LLM_BASE_URL: Optional[str] = None  # 文本生成模型 API 基础 URL
     LLM_API_KEY: Optional[str] = None  # 文本生成模型 API 密钥
     LLM_MODEL_NAME: Optional[str] = None  # 文本生成模型名称
+    TASK_LLM_BASE_URL: Optional[str] = None  # 轻量任务文本模型 API 基础 URL
+    TASK_LLM_API_KEY: Optional[str] = None  # 轻量任务文本模型 API 密钥
+    TASK_LLM_MODEL_NAME: Optional[str] = None  # 轻量任务文本模型名称
 
     # P0 升级：查询重写
     QUERY_REWRITE_ENABLED: bool = True

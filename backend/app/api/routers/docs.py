@@ -20,8 +20,11 @@ from app.application.schemas import (
     DocumentRecordOut,
     DocumentRecordUpdateRequest,
     ImageRecordOut,
+    TimingSummary,
     UploadDocumentResponse,
 )
+from app.core.config import settings
+from app.core.timing import RequestTimingCollector, bind_timing_collector
 from app.data.database import get_db
 from app.data.doc_models import DocumentRecord
 from app.langchain_integration.adapters import get_langchain_adapter
@@ -29,7 +32,7 @@ from app.langchain_integration.adapters import get_langchain_adapter
 router = APIRouter(prefix="/api/docs", tags=["documents"])
 
 
-@router.post("/upload", response_model=UploadDocumentResponse)
+@router.post("/upload", response_model=UploadDocumentResponse, response_model_exclude_none=True)
 async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
@@ -38,13 +41,23 @@ async def upload_document(
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="仅支持 PDF 文件")
 
-    adapter = get_langchain_adapter()
-    record = await adapter.create_document_upload_record(db=db, file=file)
-    background_tasks.add_task(adapter.process_document_record_task, record.id)
-    return UploadDocumentResponse(
-        document=DocumentRecordOut.model_validate(record),
-        message="文档已上传，正在后台解析",
-    )
+    collector = RequestTimingCollector("/api/docs/upload", "document_upload")
+    collector.set_metadata(filename=file.filename)
+    response: UploadDocumentResponse | None = None
+    try:
+        with bind_timing_collector(collector), collector.stage("document_upload_total"):
+            adapter = get_langchain_adapter()
+            record = await adapter.create_document_upload_record(db=db, file=file)
+            background_tasks.add_task(adapter.process_document_record_task, record.id)
+            response = UploadDocumentResponse(
+                document=DocumentRecordOut.model_validate(record),
+                message="文档已上传，正在后台解析",
+            )
+        if settings.EXPOSE_TIMINGS_IN_API and response is not None:
+            response.timings = TimingSummary.model_validate(collector.snapshot())
+        return response
+    finally:
+        collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
 
 @router.get("/list", response_model=List[DocumentRecordOut])
@@ -178,13 +191,19 @@ def get_document_progress(
     except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
-    return DocumentProgressResponse(
-        document=DocumentRecordOut.model_validate(record),
-        status=record.status,
-        stage=getattr(record, "parse_stage", "queued") or "queued",
-        progress_percent=int(getattr(record, "progress_percent", 0) or 0),
-        message=getattr(record, "progress_message", None),
-    )
+    collector = RequestTimingCollector("/api/docs/{doc_id}/progress", "document_progress")
+    try:
+        with bind_timing_collector(collector), collector.stage("document_progress_total"):
+            return DocumentProgressResponse(
+                document=DocumentRecordOut.model_validate(record),
+                status=record.status,
+                stage=getattr(record, "parse_stage", "queued") or "queued",
+                progress_percent=int(getattr(record, "progress_percent", 0) or 0),
+                message=getattr(record, "progress_message", None),
+                timings=TimingSummary.model_validate(collector.snapshot()) if settings.EXPOSE_TIMINGS_IN_API else None,
+            )
+    finally:
+        collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
 
 @router.get("/{doc_id}/result", response_model=DocParseResult)
@@ -225,8 +244,14 @@ def get_doc_result(
     except Exception:
         pass
 
-    return DocParseResult(
-        document=DocumentRecordOut.model_validate(record),
-        chunks=chunks,
-        images=[ImageRecordOut.model_validate(r) for r in img_records],
-    )
+    collector = RequestTimingCollector("/api/docs/{doc_id}/result", "document_result")
+    try:
+        with bind_timing_collector(collector), collector.stage("document_result_total"):
+            return DocParseResult(
+                document=DocumentRecordOut.model_validate(record),
+                chunks=chunks,
+                images=[ImageRecordOut.model_validate(r) for r in img_records],
+                timings=TimingSummary.model_validate(collector.snapshot()) if settings.EXPOSE_TIMINGS_IN_API else None,
+            )
+    finally:
+        collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)

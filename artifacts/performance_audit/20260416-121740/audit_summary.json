@@ -1,0 +1,459 @@
+{
+  "overall": {
+    "run_count": 11,
+    "success_count": 11,
+    "failure_count": 0,
+    "timeout_count": 0,
+    "scenario_count": 8
+  },
+  "scenarios": {
+    "rag_table_non_stream": {
+      "scenario_name": "rag_table_non_stream",
+      "endpoint": "/api/rag/chat",
+      "run_count": 2,
+      "success_count": 2,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 2,
+        "min": 182971.394,
+        "max": 217584.23,
+        "avg": 200277.812,
+        "p50": 200277.812,
+        "p90": 214122.946,
+        "p95": 215853.588
+      },
+      "timing_total_ms": {
+        "count": 2,
+        "min": 182950.59,
+        "max": 217563.861,
+        "avg": 200257.226,
+        "p50": 200257.226,
+        "p90": 214102.534,
+        "p95": 215833.197
+      },
+      "first_token_ms": null,
+      "top_stages": [
+        {
+          "name": "rag_chat_total",
+          "avg_elapsed_ms": 200257.177,
+          "avg_share": 1.0,
+          "run_count": 2
+        },
+        {
+          "name": "adapter_rag_chat",
+          "avg_elapsed_ms": 199449.382,
+          "avg_share": 0.9963,
+          "run_count": 2
+        },
+        {
+          "name": "final_answer_generation",
+          "avg_elapsed_ms": 76273.029,
+          "avg_share": 0.3832,
+          "run_count": 2
+        },
+        {
+          "name": "intent_classification",
+          "avg_elapsed_ms": 64160.769,
+          "avg_share": 0.3203,
+          "run_count": 2
+        },
+        {
+          "name": "rag_retrieval",
+          "avg_elapsed_ms": 58302.068,
+          "avg_share": 0.2893,
+          "run_count": 2
+        }
+      ]
+    },
+    "rag_table_stream": {
+      "scenario_name": "rag_table_stream",
+      "endpoint": "/api/rag/chat/stream",
+      "run_count": 2,
+      "success_count": 2,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 2,
+        "min": 171974.247,
+        "max": 193439.03,
+        "avg": 182706.639,
+        "p50": 182706.639,
+        "p90": 191292.552,
+        "p95": 192365.791
+      },
+      "timing_total_ms": {
+        "count": 2,
+        "min": 171932.312,
+        "max": 193405.294,
+        "avg": 182668.803,
+        "p50": 182668.803,
+        "p90": 191257.996,
+        "p95": 192331.645
+      },
+      "first_token_ms": {
+        "count": 2,
+        "min": 171824.376,
+        "max": 193313.538,
+        "avg": 182568.957,
+        "p50": 182568.957,
+        "p90": 191164.622,
+        "p95": 192239.08
+      },
+      "top_stages": [
+        {
+          "name": "rag_retrieval",
+          "avg_elapsed_ms": 65627.853,
+          "avg_share": 0.3614,
+          "run_count": 2
+        },
+        {
+          "name": "async_search_with_dict_output",
+          "avg_elapsed_ms": 65627.799,
+          "avg_share": 0.3614,
+          "run_count": 2
+        },
+        {
+          "name": "intent_classification",
+          "avg_elapsed_ms": 63351.588,
+          "avg_share": 0.3472,
+          "run_count": 2
+        },
+        {
+          "name": "chat_completion_async",
+          "avg_elapsed_ms": 53345.062,
+          "avg_share": 0.292,
+          "run_count": 6
+        },
+        {
+          "name": "final_answer_generation",
+          "avg_elapsed_ms": 52997.813,
+          "avg_share": 0.2876,
+          "run_count": 2
+        }
+      ]
+    },
+    "text_search_specs": {
+      "scenario_name": "text_search_specs",
+      "endpoint": "/api/search/text-to-image",
+      "run_count": 2,
+      "success_count": 2,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 2,
+        "min": 42054.57,
+        "max": 62902.171,
+        "avg": 52478.371,
+        "p50": 52478.371,
+        "p90": 60817.411,
+        "p95": 61859.791
+      },
+      "timing_total_ms": {
+        "count": 2,
+        "min": 42016.854,
+        "max": 62859.102,
+        "avg": 52437.978,
+        "p50": 52437.978,
+        "p90": 60774.877,
+        "p95": 61816.99
+      },
+      "first_token_ms": null,
+      "top_stages": [
+        {
+          "name": "text_to_image_total",
+          "avg_elapsed_ms": 52437.93,
+          "avg_share": 1.0,
+          "run_count": 2
+        },
+        {
+          "name": "adapter_text_to_image_search",
+          "avg_elapsed_ms": 52436.166,
+          "avg_share": 1.0,
+          "run_count": 2
+        },
+        {
+          "name": "text_to_image_search_internal",
+          "avg_elapsed_ms": 52436.13,
+          "avg_share": 1.0,
+          "run_count": 2
+        },
+        {
+          "name": "multi_query_hybrid_search",
+          "avg_elapsed_ms": 31466.004,
+          "avg_share": 0.5855,
+          "run_count": 2
+        },
+        {
+          "name": "query_expand",
+          "avg_elapsed_ms": 30705.782,
+          "avg_share": 0.5708,
+          "run_count": 2
+        }
+      ]
+    },
+    "image_search_sample": {
+      "scenario_name": "image_search_sample",
+      "endpoint": "/api/search/image-to-image",
+      "run_count": 1,
+      "success_count": 1,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 1,
+        "min": 94806.869,
+        "max": 94806.869,
+        "avg": 94806.869,
+        "p50": 94806.869,
+        "p90": 94806.869,
+        "p95": 94806.869
+      },
+      "timing_total_ms": {
+        "count": 1,
+        "min": 94466.66,
+        "max": 94466.66,
+        "avg": 94466.66,
+        "p50": 94466.66,
+        "p90": 94466.66,
+        "p95": 94466.66
+      },
+      "first_token_ms": null,
+      "top_stages": [
+        {
+          "name": "image_to_image_total",
+          "avg_elapsed_ms": 94466.622,
+          "avg_share": 1.0,
+          "run_count": 1
+        },
+        {
+          "name": "adapter_image_to_image_search",
+          "avg_elapsed_ms": 94465.042,
+          "avg_share": 1.0,
+          "run_count": 1
+        },
+        {
+          "name": "image_to_image_search_internal",
+          "avg_elapsed_ms": 94465.02,
+          "avg_share": 1.0,
+          "run_count": 1
+        },
+        {
+          "name": "text_to_image_search_internal",
+          "avg_elapsed_ms": 74670.793,
+          "avg_share": 0.7904,
+          "run_count": 1
+        },
+        {
+          "name": "multi_query_hybrid_search",
+          "avg_elapsed_ms": 39225.822,
+          "avg_share": 0.4152,
+          "run_count": 1
+        }
+      ]
+    },
+    "image_upload_sample": {
+      "scenario_name": "image_upload_sample",
+      "endpoint": "/api/knowledge-base/upload",
+      "run_count": 1,
+      "success_count": 1,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 1,
+        "min": 28589.443,
+        "max": 28589.443,
+        "avg": 28589.443,
+        "p50": 28589.443,
+        "p90": 28589.443,
+        "p95": 28589.443
+      },
+      "timing_total_ms": {
+        "count": 1,
+        "min": 28576.964,
+        "max": 28576.964,
+        "avg": 28576.964,
+        "p50": 28576.964,
+        "p90": 28576.964,
+        "p95": 28576.964
+      },
+      "first_token_ms": null,
+      "top_stages": [
+        {
+          "name": "knowledge_base_upload_total",
+          "avg_elapsed_ms": 28576.74,
+          "avg_share": 1.0,
+          "run_count": 1
+        },
+        {
+          "name": "process_image_uploads",
+          "avg_elapsed_ms": 28573.772,
+          "avg_share": 0.9999,
+          "run_count": 1
+        },
+        {
+          "name": "process_image_upload",
+          "avg_elapsed_ms": 28573.672,
+          "avg_share": 0.9999,
+          "run_count": 1
+        },
+        {
+          "name": "image_description_generation",
+          "avg_elapsed_ms": 27557.59,
+          "avg_share": 0.9643,
+          "run_count": 1
+        },
+        {
+          "name": "chat_completion_async",
+          "avg_elapsed_ms": 27550.729,
+          "avg_share": 0.9641,
+          "run_count": 1
+        }
+      ]
+    },
+    "document_upload_sample": {
+      "scenario_name": "document_upload_sample",
+      "endpoint": "/api/docs/upload",
+      "run_count": 1,
+      "success_count": 1,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 1,
+        "min": 96.201,
+        "max": 96.201,
+        "avg": 96.201,
+        "p50": 96.201,
+        "p90": 96.201,
+        "p95": 96.201
+      },
+      "timing_total_ms": {
+        "count": 1,
+        "min": 43.776,
+        "max": 43.776,
+        "avg": 43.776,
+        "p50": 43.776,
+        "p90": 43.776,
+        "p95": 43.776
+      },
+      "first_token_ms": null,
+      "top_stages": [
+        {
+          "name": "document_upload_total",
+          "avg_elapsed_ms": 43.551,
+          "avg_share": 0.9949,
+          "run_count": 1
+        }
+      ]
+    },
+    "document_progress_once": {
+      "scenario_name": "document_progress_once",
+      "endpoint": "/api/docs/feedbeeb-eff3-4831-a08d-abdf1b1fb9d3/progress",
+      "run_count": 1,
+      "success_count": 1,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 1,
+        "min": 47.975,
+        "max": 47.975,
+        "avg": 47.975,
+        "p50": 47.975,
+        "p90": 47.975,
+        "p95": 47.975
+      },
+      "timing_total_ms": {
+        "count": 1,
+        "min": 0.17,
+        "max": 0.17,
+        "avg": 0.17,
+        "p50": 0.17,
+        "p90": 0.17,
+        "p95": 0.17
+      },
+      "first_token_ms": null,
+      "top_stages": []
+    },
+    "document_result_once": {
+      "scenario_name": "document_result_once",
+      "endpoint": "/api/docs/feedbeeb-eff3-4831-a08d-abdf1b1fb9d3/result",
+      "run_count": 1,
+      "success_count": 1,
+      "success_rate": 1.0,
+      "wall_ms": {
+        "count": 1,
+        "min": 69.715,
+        "max": 69.715,
+        "avg": 69.715,
+        "p50": 69.715,
+        "p90": 69.715,
+        "p95": 69.715
+      },
+      "timing_total_ms": {
+        "count": 1,
+        "min": 0.114,
+        "max": 0.114,
+        "avg": 0.114,
+        "p50": 0.114,
+        "p90": 0.114,
+        "p95": 0.114
+      },
+      "first_token_ms": null,
+      "top_stages": []
+    }
+  },
+  "bottlenecks": [
+    {
+      "name": "rag_chat_total",
+      "avg_elapsed_ms": 200257.177,
+      "avg_share": 1.0,
+      "run_count": 2
+    },
+    {
+      "name": "image_to_image_total",
+      "avg_elapsed_ms": 94466.622,
+      "avg_share": 1.0,
+      "run_count": 1
+    },
+    {
+      "name": "adapter_image_to_image_search",
+      "avg_elapsed_ms": 94465.042,
+      "avg_share": 1.0,
+      "run_count": 1
+    },
+    {
+      "name": "image_to_image_search_internal",
+      "avg_elapsed_ms": 94465.02,
+      "avg_share": 1.0,
+      "run_count": 1
+    },
+    {
+      "name": "text_to_image_total",
+      "avg_elapsed_ms": 52437.93,
+      "avg_share": 1.0,
+      "run_count": 2
+    },
+    {
+      "name": "adapter_text_to_image_search",
+      "avg_elapsed_ms": 52436.166,
+      "avg_share": 1.0,
+      "run_count": 2
+    },
+    {
+      "name": "knowledge_base_upload_total",
+      "avg_elapsed_ms": 28576.74,
+      "avg_share": 1.0,
+      "run_count": 1
+    },
+    {
+      "name": "process_image_uploads",
+      "avg_elapsed_ms": 28573.772,
+      "avg_share": 0.9999,
+      "run_count": 1
+    },
+    {
+      "name": "process_image_upload",
+      "avg_elapsed_ms": 28573.672,
+      "avg_share": 0.9999,
+      "run_count": 1
+    },
+    {
+      "name": "adapter_rag_chat",
+      "avg_elapsed_ms": 199449.382,
+      "avg_share": 0.9963,
+      "run_count": 2
+    }
+  ]
+}

@@ -22,7 +22,8 @@ from app.application.knowledge_management import (
     filter_enabled_image_hit_dicts,
 )
 from app.core.config import settings
-from app.langchain_integration.models import get_chat_model, MultimodalChatModel
+from app.core.timing import timing_stage
+from app.langchain_integration.models import get_multimodal_chat_model, MultimodalChatModel
 from app.langchain_integration.vectorstores import ChromaVectorStore, get_vector_store
 from app.retrieval.rerank import cross_encoder_rerank, simple_rerank
 from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
@@ -92,46 +93,49 @@ async def _multi_query_hybrid_search(
     2. 每个子查询独立执行混合检索
     3. 按 doc_id 去重合并（取最高分）
     """
-    if enable_query_rewrite and settings.QUERY_REWRITE_ENABLED:
-        try:
-            from app.langchain_integration.query_transform import get_query_rewriter
-            rewriter = get_query_rewriter()
-            queries = await rewriter.expand(query)
-        except Exception as e:
-            logger.warning(f"[Retriever] 查询扩展失败，使用原始查询: {e}")
+    with timing_stage(
+        "multi_query_hybrid_search",
+        meta={"candidate_k": candidate_k, "enable_query_rewrite": enable_query_rewrite},
+    ):
+        if enable_query_rewrite and settings.QUERY_REWRITE_ENABLED:
+            try:
+                from app.langchain_integration.query_transform import get_query_rewriter
+                rewriter = get_query_rewriter()
+                queries = await rewriter.expand(query)
+            except Exception as e:
+                logger.warning(f"[Retriever] 查询扩展失败，使用原始查询: {e}")
+                queries = [query]
+        else:
             queries = [query]
-    else:
-        queries = [query]
 
-    all_results: Dict[str, Dict[str, Any]] = {}
+        all_results: Dict[str, Dict[str, Any]] = {}
 
-    # 并行执行各子查询的混合检索
-    loop = asyncio.get_event_loop()
-    tasks = [
-        loop.run_in_executor(None, _hybrid_search_sync, q, vector_store, candidate_k)
-        for q in queries
-    ]
-    all_hits = await asyncio.gather(*tasks)
+        loop = asyncio.get_event_loop()
+        tasks = [
+            loop.run_in_executor(None, _hybrid_search_sync, q, vector_store, candidate_k)
+            for q in queries
+        ]
+        all_hits = await asyncio.gather(*tasks)
 
-    for hits in all_hits:
-        for hit in hits:
-            doc_id = hit["id"]
-            new_score = hit.get("rrf_score", hit.get("score", 0.0))
-            existing_score = all_results.get(doc_id, {}).get("rrf_score", -1)
-            if doc_id not in all_results or new_score > existing_score:
-                hit["rrf_score"] = new_score
-                all_results[doc_id] = hit
+        for hits in all_hits:
+            for hit in hits:
+                doc_id = hit["id"]
+                new_score = hit.get("rrf_score", hit.get("score", 0.0))
+                existing_score = all_results.get(doc_id, {}).get("rrf_score", -1)
+                if doc_id not in all_results or new_score > existing_score:
+                    hit["rrf_score"] = new_score
+                    all_results[doc_id] = hit
 
-    merged = sorted(
-        all_results.values(),
-        key=lambda x: x.get("rrf_score", x.get("score", 0.0)),
-        reverse=True,
-    )
+        merged = sorted(
+            all_results.values(),
+            key=lambda x: x.get("rrf_score", x.get("score", 0.0)),
+            reverse=True,
+        )
 
-    logger.info(
-        f"[Retriever] Multi-Query 合并: {len(queries)} 个查询 → {len(merged)} 个去重结果"
-    )
-    return merged
+        logger.info(
+            f"[Retriever] Multi-Query 合并: {len(queries)} 个查询 → {len(merged)} 个去重结果"
+        )
+        return merged
 
 
 class MultimodalRetriever:
@@ -150,7 +154,7 @@ class MultimodalRetriever:
         top_k: int = 10,
     ):
         self.vector_store = vector_store or get_vector_store()
-        self.chat_model = chat_model or get_chat_model()
+        self.chat_model = chat_model or get_multimodal_chat_model()
         self.top_k = top_k
 
     async def text_to_image_search(
@@ -170,29 +174,34 @@ class MultimodalRetriever:
         if use_fast_path:
             candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
 
-        candidates = await _multi_query_hybrid_search(
-            query,
-            self.vector_store,
-            candidate_k,
-            enable_query_rewrite=not use_fast_path,
-        )
-        candidates = filter_enabled_image_hit_dicts(candidates)
-
-        reranked = cross_encoder_rerank(query, candidates, top_k=k)
-        reranked = _prefer_table_crops(reranked)
-
-        documents = []
-        for hit in reranked:
-            doc = Document(
-                page_content=hit.get("document", ""),
-                metadata=hit.get("metadata", {}),
+        with timing_stage(
+            "text_to_image_search_internal",
+            meta={"top_k": k, "candidate_k": candidate_k, "fast_path": use_fast_path},
+        ):
+            candidates = await _multi_query_hybrid_search(
+                query,
+                self.vector_store,
+                candidate_k,
+                enable_query_rewrite=not use_fast_path,
             )
-            doc.metadata["score"] = hit.get(
-                "rerank_score", hit.get("rrf_score", hit.get("score", 0.0))
-            )
-            documents.append(doc)
+            candidates = filter_enabled_image_hit_dicts(candidates)
 
-        return filter_enabled_image_documents(documents)
+            with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
+                reranked = cross_encoder_rerank(query, candidates, top_k=k)
+                reranked = _prefer_table_crops(reranked)
+
+            documents = []
+            for hit in reranked:
+                doc = Document(
+                    page_content=hit.get("document", ""),
+                    metadata=hit.get("metadata", {}),
+                )
+                doc.metadata["score"] = hit.get(
+                    "rerank_score", hit.get("rrf_score", hit.get("score", 0.0))
+                )
+                documents.append(doc)
+
+            return filter_enabled_image_documents(documents)
 
     async def image_to_image_search(
         self,
@@ -203,16 +212,18 @@ class MultimodalRetriever:
         """图像到图像检索：先生成描述，再走文本检索路径。"""
         k = top_k or self.top_k
 
-        contents = await file.read()
-        b64_image = base64.b64encode(contents).decode("utf-8")
+        with timing_stage("image_to_image_search_internal", meta={"top_k": k, "fast_path": fast}):
+            contents = await file.read()
+            b64_image = base64.b64encode(contents).decode("utf-8")
 
-        description = await self.chat_model.agenerate_description(
-            image_b64=b64_image,
-            prompt=IMAGE_DESCRIPTION_PROMPT,
-        )
+            with timing_stage("image_query_description_generation"):
+                description = await self.chat_model.agenerate_description(
+                    image_b64=b64_image,
+                    prompt=IMAGE_DESCRIPTION_PROMPT,
+                )
 
-        documents = await self.text_to_image_search(description, top_k=k, fast=fast)
-        return documents, description
+            documents = await self.text_to_image_search(description, top_k=k, fast=fast)
+            return documents, description
 
     def search_with_dict_output(
         self,
@@ -247,14 +258,19 @@ class MultimodalRetriever:
         if use_fast_path:
             candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
 
-        candidates = await _multi_query_hybrid_search(
-            query,
-            self.vector_store,
-            candidate_k,
-            enable_query_rewrite=not use_fast_path,
-        )
-        candidates = filter_enabled_image_hit_dicts(candidates)
-        return _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=k))
+        with timing_stage(
+            "async_search_with_dict_output",
+            meta={"top_k": k, "candidate_k": candidate_k, "fast_path": use_fast_path},
+        ):
+            candidates = await _multi_query_hybrid_search(
+                query,
+                self.vector_store,
+                candidate_k,
+                enable_query_rewrite=not use_fast_path,
+            )
+            candidates = filter_enabled_image_hit_dicts(candidates)
+            with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
+                return _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=k))
 
 
 # 全局检索器实例缓存

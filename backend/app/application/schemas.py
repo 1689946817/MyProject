@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 数据模型定义模块
 
@@ -125,6 +127,7 @@ class UploadImagesResponse(BaseModel):
     用于返回批量上传图像的结果。
     """
     images: List[ImageRecordOut]  # 上传的图像记录列表
+    timings: Optional["TimingSummary"] = None
 
 
 class SearchResultItem(BaseModel):
@@ -159,6 +162,7 @@ class TextSearchResponse(BaseModel):
     """
     query: str  # 搜索查询文本
     results: List[SearchResultItem]  # 搜索结果列表
+    timings: Optional["TimingSummary"] = None
 
 
 class ImageSearchResponse(BaseModel):
@@ -168,6 +172,24 @@ class ImageSearchResponse(BaseModel):
     """
     query_description: str  # 基于输入图像生成的查询描述
     results: List[SearchResultItem]  # 搜索结果列表
+    timings: Optional["TimingSummary"] = None
+
+
+class TimingStage(BaseModel):
+    name: str
+    elapsed_ms: float
+    status: str = "ok"
+    meta: dict[str, Any] = Field(default_factory=dict)
+
+
+class TimingSummary(BaseModel):
+    trace_id: str
+    request_path: str
+    request_kind: str
+    total_ms: float
+    first_token_ms: Optional[float] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    stages: List[TimingStage] = Field(default_factory=list)
 
 
 class ChatSourceItem(BaseModel):
@@ -197,6 +219,7 @@ class ChatResponse(BaseModel):
     use_rag: bool = True
     has_uploaded_image: bool = False
     retrieval_steps: List[dict[str, Any]] = Field(default_factory=list)
+    timings: Optional[TimingSummary] = None
 
 
 class ChatSessionCreateResponse(BaseModel):
@@ -355,6 +378,7 @@ class UploadDocumentResponse(BaseModel):
     """上传文档响应模型"""
     document: DocumentRecordOut
     message: str = ""
+    timings: Optional[TimingSummary] = None
 
 
 class DocumentProgressResponse(BaseModel):
@@ -364,6 +388,7 @@ class DocumentProgressResponse(BaseModel):
     stage: str
     progress_percent: int = 0
     message: Optional[str] = None
+    timings: Optional[TimingSummary] = None
 
 
 class DocChunk(BaseModel):
@@ -379,3 +404,4 @@ class DocParseResult(BaseModel):
     document: DocumentRecordOut
     chunks: List[DocChunk]
     images: List[ImageRecordOut]
+    timings: Optional[TimingSummary] = None

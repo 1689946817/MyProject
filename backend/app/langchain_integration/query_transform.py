@@ -7,7 +7,8 @@ import logging
 from typing import List, Optional
 
 from app.core.config import settings
-from app.langchain_integration.models import MultimodalChatModel
+from app.core.timing import timing_stage
+from app.langchain_integration.models import MultimodalChatModel, get_task_text_chat_model
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +28,11 @@ class QueryRewriter:
 
     def __init__(self, chat_model: Optional[MultimodalChatModel] = None):
         if chat_model is None:
-            # 使用 LLM 配置（文本生成模型）而非 MLLM
+            task_model = get_task_text_chat_model()
             chat_model = MultimodalChatModel(
-                base_url=settings.LLM_BASE_URL,
-                api_key=settings.LLM_API_KEY,
-                model_name=settings.LLM_MODEL_NAME,
+                base_url=task_model.base_url,
+                api_key=task_model.api_key,
+                model_name=task_model.model_name,
                 temperature=0.3,
             )
         self.chat_model = chat_model
@@ -40,12 +41,13 @@ class QueryRewriter:
         """将查询改写为检索友好表达"""
         from langchain_core.messages import SystemMessage, HumanMessage
 
-        messages = [
-            SystemMessage(content=REWRITE_SYSTEM_PROMPT),
-            HumanMessage(content=query),
-        ]
-        result = await self.chat_model._agenerate(messages)
-        return result.generations[0].message.content.strip()
+        with timing_stage("query_rewrite", meta={"query_length": len(query)}):
+            messages = [
+                SystemMessage(content=REWRITE_SYSTEM_PROMPT),
+                HumanMessage(content=query),
+            ]
+            result = await self.chat_model._agenerate(messages)
+            return result.generations[0].message.content.strip()
 
     async def expand(self, query: str, n: Optional[int] = None) -> List[str]:
         """
@@ -56,12 +58,13 @@ class QueryRewriter:
         n = n or settings.QUERY_MULTI_QUERY_COUNT
         system_prompt = EXPAND_SYSTEM_PROMPT.format(n=n)
 
-        messages = [
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=query),
-        ]
-        result = await self.chat_model._agenerate(messages)
-        raw = result.generations[0].message.content.strip()
+        with timing_stage("query_expand", meta={"query_length": len(query), "expand_count": n}):
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=query),
+            ]
+            result = await self.chat_model._agenerate(messages)
+            raw = result.generations[0].message.content.strip()
 
         sub_queries = [line.strip() for line in raw.splitlines() if line.strip()]
         # 截取前 n 个

@@ -1,0 +1,2857 @@
+{
+  "generated_at": "2026-04-16T16:15:56",
+  "base_url": "http://127.0.0.1:9090",
+  "context": {
+    "latest_doc_id": "82b50d9f-d77f-484f-a394-e09b6f7f56d2"
+  },
+  "runs": [
+    {
+      "scenario_name": "rag_table_non_stream",
+      "kind": "rag_chat",
+      "endpoint": "/api/rag/chat",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 104322.566,
+      "timings": {
+        "trace_id": "0920c126-986c-4713-9282-fd2ef70522b7",
+        "request_path": "/api/rag/chat",
+        "request_kind": "rag_chat",
+        "total_ms": 103747.98,
+        "metadata": {
+          "top_k": 5,
+          "has_uploaded_image": false,
+          "execution_mode": "multimodal_rag",
+          "presentation_mode": "rag_answer"
+        },
+        "stages": [
+          {
+            "name": "chat_session_load",
+            "elapsed_ms": 40.766,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "chat_history_load",
+            "elapsed_ms": 9.657,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "intent_classification",
+            "elapsed_ms": 0.378,
+            "status": "ok",
+            "meta": {
+              "has_uploaded_image": false
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 11601.791,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-flash",
+              "message_count": 2,
+              "image_count": 0
+            }
+          },
+          {
+            "name": "query_expand",
+            "elapsed_ms": 11604.169,
+            "status": "ok",
+            "meta": {
+              "query_length": 39,
+              "expand_count": 3
+            }
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "elapsed_ms": 14971.462,
+            "status": "ok",
+            "meta": {
+              "candidate_k": 20,
+              "enable_query_rewrite": true
+            }
+          },
+          {
+            "name": "rerank",
+            "elapsed_ms": 29035.198,
+            "status": "ok",
+            "meta": {
+              "candidate_count": 24,
+              "top_k": 5
+            }
+          },
+          {
+            "name": "async_search_with_dict_output",
+            "elapsed_ms": 44025.647,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "candidate_k": 20,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "rag_retrieval",
+            "elapsed_ms": 44025.674,
+            "status": "ok",
+            "meta": {
+              "top_k": 5
+            }
+          },
+          {
+            "name": "document_text_retrieval",
+            "elapsed_ms": 943.847,
+            "status": "ok",
+            "meta": {
+              "top_k": 3
+            }
+          },
+          {
+            "name": "image_context_prepare",
+            "elapsed_ms": 481.906,
+            "status": "ok",
+            "meta": {
+              "document_count": 5
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 56753.709,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-plus",
+              "message_count": 1,
+              "image_count": 5
+            }
+          },
+          {
+            "name": "final_answer_generation",
+            "elapsed_ms": 57247.51,
+            "status": "ok",
+            "meta": {
+              "document_count": 5,
+              "text_chunk_count": 3
+            }
+          },
+          {
+            "name": "adapter_rag_chat",
+            "elapsed_ms": 102222.279,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "has_uploaded_image": false
+            }
+          },
+          {
+            "name": "chat_message_persist",
+            "elapsed_ms": 36.682,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "rag_chat_total",
+            "elapsed_ms": 103747.88,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "has_uploaded_image": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "answer": "根据提供的文档文本和图像信息，为您整理华为 NetEngine AR6000 系列路由器的技术规格与功能特性对照表如下：\n\n### 1. 产品概述\n根据文档内容，NetEngine AR6000 系列是华为面向企业总部和分支推出的盒式系列路由器。它基于无阻塞交换架构，融合了 SD-WAN、5G、路由、交换、VPN、安全等多种功能，性能领先业界平均水平 2 倍。\n\n### 2. 功能特性与业务价值对照表\n根据 **图像 1** 和 **图像 5**，该系列路由器的主要功能特性如下：\n\n| 业务需求 | 特性及价值 / 详细功能支持 |\n| :--- | :--- |\n| **高性能** | • 基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎<br>• 提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验 |\n| **高可靠** | • 板卡热插拔，保证业务连续稳定<br>• 提供企业业务的链路备份，提高业务接入的可靠性<br>• 毫秒级的故障检测和判断机制，缩短业务中断时间 |\n| **5G 上行** | • 全系列支持 RU-201<br>• 支持 2.5GE LAN 口，满足 5G 高带宽回传；SA/NSA 双架构，灵活接入<br>• 与传统有线链路互为备份，业务不掉线 |\n| **易运维** | • 通过 iMaster NCE-Campus 实现本地或云平台管理<br>• 支持 Netconf、SNMP、WEB 网管和 Telemetry 高性能数据采集<br>• 简化网络部署，运维可视化，降低 OPEX |\n| **业务融合** | • 融合路由、交换、VPN、安全、WLAN 等多种功能于一体，节省空间，降低企业 TCO |\n| **安全** | • 内置防火墙、IPS、URL 过滤、多种 VPN 技术<br>• 支持 ACL/ACL6、基于域的状态防火墙、802.1x/MAC/Portal 认证、AAA、RADIUS、国密算法 SM3/SM4 等（参考 **图像 5**） |\n| **SD-WAN** | • 内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接<br>• ZTP 一键式部署（邮件 URL，U 盘，DHCP 等）<br>• 支持 SaaS 首包识别，基于带宽和链路质量选路<br>• 多链路选路/双 CPE、双 Hub 灵活组网，端到端 IPSec 加密 |\n| **基础网络功能** | • **路由：** 支持 IPv4/IPv6 单播路由（RIP, OSPF, IS-IS, BGP 等）、组播（PIM, IGMP 等）<br>• **VPN：** IPsec VPN, GRE, L2TP, VxLAN, SD-WAN EVPN 等<br>• **QoS：** DiffServ, MPLS QoS, 流量监管/整形, Hierarchical QoS 等<br>• **管理维护：** Web 网管, SNMP, NETCONF/YANG, NetStream 等 |\n\n### 3. 技术规格与型号性能对照表\n根据 **图像 3**、**图像 4** 及 **文本片段 2**，不同型号的具体规格如下：\n\n| 规格项目 | NetEngine AR651 系列<br>(AR651EW/AR651W/AR651W-8P/AR651) | NetEngine AR611 系列<br>(AR611/AR611W/AR611W-LTE4CN) | NetEngine AR631I-LTE4CN | NetEngine AR5710 系列<br>(AR5710-H8T2TS1 / AR5710-H4T4N2X) | NetEngine AR6121E<br>(参考文本片段 2) |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **SD-WAN 典型性能** | 600Mbps | 50Mbps | 80Mbps | 900Mbps | - |\n| **SD-WAN 转发性能** | 800Mbps | 80Mbps | 120Mbps | 1.5Gbps | - |\n| **固定 WAN 接口** | 2 * GE Combo | 1 * GE Combo | 1 * GE Combo | 2*GE Combo (H8T2TS1)<br>2*10GE SFP+ (H4T4N2X) | 2*GE combo WAN, 1*10GE(SFP+) WAN |\n| **固定 LAN/WAN 接口** | 8 * GE 电 | 4 * GE 电 | 3*GE 电 + 1*GE Combo | 8*GE 电 (H8T2TS1)<br>4*2.5GE 电 + 4*GE 电 (H4T4N2X) | 8*GE LAN, 1*GE combo LAN |\n| **LTE / 5G 支持** | 支持 5G RU | 内置 LTE (AR611W-LTE4CN)<br>支持 5G RU | 内置 LTE，支持 5G RU | 支持 5G RU | - |\n| **Wi-Fi 支持** | 内置 Wi-Fi<br>(AR651EW/AR651W/AR651W-8P) | 内置 Wi-Fi<br>(AR611W/AR611W-LTE4CN) | - | - | - |\n| **其他接口** | - | - | - | - | 2*USB2.0, 2*SIC 槽位 |\n\n### 4. 标准与合规性\n根据 **图像 2**，该系列符合以下标准：\n*   **EMC 标准：** EN 55032, CISPR 32, FCC CFR Part 15, GB 9254 等。\n*   **环境标准：** RoHS, REACH, WEEE。\n*   **安全标准：** IEC 60950-1, EN 60950-1, UL 60950-1, GB 4943.1 等。\n\n**注意：** 部分具体型号（如 AR6140E-9G-2AC）在文本片段 1 中被提及，但详细的接口规格表未在所有图像中完全展示，以上表格主要基于提供的图像和文本片段整理。",
+        "results": [
+          {
+            "id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+            "description": "[###] 该图片是一份华为 NetEngine AR6000 系列路由器的软件功能规格表。[###] 图片详细列举了该系列网络设备所支持的各项网络协议与技术特性，涵盖了从基础连接、路由交换、隧道技术到高级安全和管理维护的全方位功能，主要用于展示设备的技术能力和适用范围。[###] 画面主体是一个清晰的二维表格，采用蓝白配色方案。表头部分使用浅蓝色背景搭配白色文字，突出显示了“规格名称”和“NetEngine AR6000 系列”。表格内容分为左右两栏，左侧列出了功能分类（如基础功能、局域网、IPv4 单播路由等），右侧对应列出了具体的协议标准和技术名词（如 DHCP, OSPF, BGP, MPLS 等）。整体排版整齐，行间距适中，便于阅读和检索信息。[###] 规格名称, NetEngine AR6000 系列, 基础功能, DHCPv4 Server/Client/Relay, 局域网, IEEE 802.1P, VLAN 管理, STP/RSTP/MSTP, IPv4 单播路由, 路由策略, RIP, OSPF, IS-IS, BGP, IPv6 单播路由, OSPFv3, BGP4+, IPv6 基本功能, IPv6 ND, IPv6 ACL, IPv6 隧道技术, GRE 隧道, 6to4, 组播, IGMP, PIM SM, MPLS, MPLS LDP, MPLS L3 VPN, VPLS, VPN, IPsec VPN, GRE, L2TP VPN, VxLAN, SD-WAN EVPN, QoS, DiffServ 模式, 流量监管 (CAR), 拥塞管理, 广域网优化, FEC, 安全, ACL/ACL6, 防火墙, 802.1x 认证, AAA, RADIUS, IPS/AV/URL 过滤, 管理维护, SNMP, NETCONF/YANG, NetStream, NQA[###] NetEngine AR6000, 路由器规格表, OSPF, BGP, MPLS, VPN, IPv6, 网络安全, QoS, 华为网络设备, 路由协议, 网络管理",
+            "score": 0.44100111722946167,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+            "description": "[###] 该图片是一份企业级网络设备（推测为华为NetEngine AR系列路由器）的技术规格与功能特性对照表，常见于产品白皮书、售前方案PPT或官网产品详情页。\n\n[###] 表格的核心意图是建立“业务需求”与“产品特性及价值”之间的映射关系，旨在向客户展示该设备如何通过自研芯片、5G支持、SD-WAN技术及智能运维等手段，解决企业在高性能、高可靠性、安全及成本控制方面的痛点。\n\n[###] 画面主体是一个标准的两列多行表格。表头采用醒目的天蓝色背景搭配白色文字，左侧列标题为“业务需求”，右侧为“特性及价值”。表格主体背景为白色，行与行之间通过浅蓝色的细线进行分隔，视觉风格简洁、商务且专业。文字排版清晰，右侧内容多采用项目符号（bullet points）罗列具体技术参数和优势，其中包含两处蓝色的超链接文本，指向更详细的产品彩页。\n\n[###] 表头：业务需求、特性及价值\n第一行：高性能；基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎；提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验\n第二行：高可靠；板卡热插拔，保证业务连续稳定；提供企业业务的链路备份，提高业务接入的可靠性；毫秒级的故障检测和判断机制，缩短业务中断时间\n第三行：5G 上行；NetEngine AR6000 全系列支持 RU-201；支持 2.5GE LAN 口，满足 5G 高带宽回传时，高性能转发要求；SA/NSA 双架构，灵活接入；与传统有线链路互为备份，业务不掉线；想了解 RU-201 的更多信息，请参考华为 RU-201 产品彩页；想了解 5G SIC 板卡的更多信息，请参考华为 NetEngine AR 企业路由器 5G SIC 业务板卡彩页\n第四行：易运维；通过 iMaster NCE-Campus 实现本地部署管理或云平台管理，支持 Netconf、SNMP 等多种管理协议、WEB 网管和 Telemetry 高性能数据采集，简化网络部署，运维可视化，降低 OPEX\n第五行：业务融合；融合路由、交换、VPN、安全、WLAN 等多种功能于一体，满足企业业务多元化的需求，节省空间，降低企业 TCO\n第六行：安全；内置防火墙、IPS、URL 过滤、多种 VPN 技术，为用户提供全面的安全防护能力\n第七行：SD-WAN；内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接；ZTP 一键式部署（邮件 URL，U 盘，DHCP 等），零技能要求，设备分钟级开通；支持 SaaS 首包识别（FPI），复杂应用识别；基于带宽和链路质量选路，保证关键应用体验，带宽利用率高达 90%；多链路选路/双 CPE、双 Hub 灵活组网，保证站点业务不掉线；端到端 IPSec 加密，设备安全可信，保障业务安全传输\n\n[###] NetEngine AR6000, 5G上行, SD-WAN, 自研SOC芯片, 企业路由器, 高可靠性, iMaster NCE-Campus, 业务融合, 网络安全, ZTP一键部署",
+            "score": 0.6898146271705627,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+            "description": "[###] 该图片是一份技术产品规格参数表截图，具体属于网络设备（NetEngine AR6000 系列）的合规性与标准认证列表。[###] 图片核心内容展示了该系列设备所符合的国际及地区性行业标准，主要涵盖了电磁兼容（EMC）、环境保护以及电气安全三个主要维度，用于向用户或监管机构证明产品的合规性和安全性。[###] 画面采用简洁的表格布局，顶部为浅蓝色背景的表头，主体为白色背景配黑色文字。左侧一列列出了三大类标准名称，右侧对应列出了具体的标准编号代码，整体视觉清晰，信息密度高，属于典型的工程技术文档风格。[###] 表头：规格名称，NetEngine AR6000 系列；左侧分类：EMC 标准，环境标准，安全标准；右侧具体标准代码：EN 55032, EN 55035, CISPR 32, CISPR 35, IEC/EN 61000-3-2, EN 61000-3-3, ETSI EN 300 386, ETSI EN 301 489-1, ETSI EN 301 489-3, ETSI EN 301 489-17, ETSI EN 301 489-52, FCC CFR Part 15, Subpart B, ANSI C63.4, ICES-003 Issue 7, EN 50121-1, EN 50121-4, GB 9254, RoHS, REACH, WEEE, IEC 60950-1, IEC 62368-1, EN 60950-1, UL 60950-1, CSA C22.2 No 60950-1, GB 4943.1。[###] NetEngine AR6000, EMC标准, 电磁兼容, 环境标准, RoHS, 安全标准, IEC 60950, FCC认证, 产品规格表, 华为网络设备",
+            "score": 0.592257022857666,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+            "description": "[###] 这是一张企业级网络设备的技术规格参数对比表。具体来说，它展示了华为 NetEngine 系列不同型号路由器（涵盖 AR651、AR611、AR631I 等系列）在性能、接口和无线功能上的详细差异，属于典型的产品 Datasheet 或选型指南截图。[###] 该图表的核心意图是为网络工程师或采购人员提供直观的选型依据，通过横向对比 SD-WAN 吞吐量、物理接口配置以及对 LTE/5G 和 Wi-Fi 的支持情况，帮助用户快速区分高性能型号（如 AR651 系列）与入门或特定功能型号（如 AR611、AR631I 系列）的能力边界，以便根据实际业务需求选择合适的设备。[###] 画面主体是一个结构严谨的六行四列数据表格。表头采用醒目的天蓝色背景搭配白色字体，清晰标示出三个主要的产品系列列。表格主体部分为白底黑字，行与列之间由淡蓝色的细线分隔，视觉风格简洁、商务。左侧第一列作为索引列，纵向排列了具体的性能指标项目，右侧三列则对应填充了具体的数值和配置描述。[###] 表头：模型，NetEngine AR651EW/AR651W/AR651W-8P/AR651，NetEngine AR611/AR611W/AR611W-LTE4CN，NetEngine AR631I-LTE4CN；第一行数据：SD-WAN 典型性能*，600Mbps，50Mbps，80Mbps；第二行数据：SD-WAN 转发性能**，800Mbps，80Mbps，120Mbps；第三行数据：固定 LAN/WAN 接口 ***，WAN: 2 * GE Combo / LAN/WAN: 8 * GE 电，WAN: 1*GE Combo / LAN/WAN: 4*GE 电，WAN: 1*GE Combo / LAN: 3*GE 电+1*GE Combo；第四行数据：LTE/5G，支持 5G RU，内置 LTE (AR611W-LTE4CN) , 支持 5G RU，内置 LTE, 支持 5G RU；第五行数据：Wi-Fi，内置 Wi-Fi (AR651EW/AR651W/AR651W-8P)，内置 Wi-Fi (AR611W/AR611W-LTE4CN)，-。[###] NetEngine, AR651, AR611, AR631I, SD-WAN性能, 5G RU, GE Combo接口, 企业路由器, 华为NetEngine, 路由器选型",
+            "score": 0.5395584106445312,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "0ff8fc40-e784-4aad-aea8-cb1a961b53c0",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\0ff8fc40-e784-4aad-aea8-cb1a961b53c0.jpg",
+            "description": "[###] 该图片是一份技术产品规格对比表，具体展示了华为 NetEngine 系列两款不同型号路由器的硬件参数与性能指标。[###] 表格旨在直观地对比 AR5710-H8T2TS1 与 AR5710-H4T4N2X 这两款设备在 SD-WAN 性能、物理接口配置以及 5G 扩展能力上的异同，帮助用户进行选型参考。[###] 图像采用标准的表格布局，表头使用醒目的浅蓝色背景搭配白色字体，下方数据区域为白底黑字，通过清晰的网格线分隔不同维度的参数，整体风格简洁专业，符合技术文档规范。[###] 表头文字：模型、NetEngine AR5710-H8T2TS1、NetEngine AR5710-H4T4N2X；左侧参数项：SD-WAN 典型性能*、SD-WAN 转发性能**、固定 LAN/WAN 接口 ***、LTE/5G；具体数据包括：900Mbps、1.5Gbps、WAN: 2*GE Combo、LAN: 8*GE 电、WAN: 2*10GE SFP+、LAN: 4*2.5GE 电, 4*GE 电、支持 5G RU。[###] NetEngine, AR5710, 路由器规格, SD-WAN 性能, 5G 路由, 接口配置, 企业网络, 华为设备, 参数对比, 10GE SFP+",
+            "score": 0.7391928434371948,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          }
+        ],
+        "sources": [
+          {
+            "source_type": "image",
+            "source_id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+            "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 15",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+            "content": "[###] 该图片是一份华为 NetEngine AR6000 系列路由器的软件功能规格表。[###] 图片详细列举了该系列网络设备所支持的各项网络协议与技术特性，涵盖了从基础连接、路由交换、隧道技术到高级安全和管理维护的全方位功能，主要用于展示设备的技术能力和适用范围。[###] 画面主体是一个清晰的二维表格，采用蓝白配色方案。表头部分使用浅蓝色背景搭配白色文字，突出显示了“规格名称”和“NetEngine AR6000 系列”。表格内容分为左右两栏，左侧列出了功能分类（如基础功能、局域网、IPv4 单播路由等），右侧对应列出了具体的协议标准和技术名词（如 DHCP, OSPF, BGP, MPLS 等）。整体排版整齐，行间距适中，便于阅读和检索信息。[###] 规格名称, NetEngine AR6000 系列, 基础功能, DHCPv4 Server/Client/Relay, 局域网, IEEE 802.1P, VLAN 管理, STP/RSTP/MSTP, IPv4 单播路由, 路由策略, RIP, OSPF, IS-IS, BGP, IPv6 单播路由, OSPFv3, BGP4+, IPv6 基本功能, IPv6 ND, IPv6 ACL, IPv6 隧道技术, GRE 隧道, 6to4, 组播, IGMP, PIM SM, MPLS, MPLS LDP, MPLS L3 VPN, VPLS, VPN, IPsec VPN, GRE, L2TP VPN, VxLAN, SD-WAN EVPN, QoS, DiffServ 模式, 流量监管 (CAR), 拥塞管理, 广域网优化, FEC, 安全, ACL/ACL6, 防火墙, 802.1x 认证, AAA, RADIUS, IPS/AV/URL 过滤, 管理维护, SNMP, NETCONF/YANG, NetStream, NQA[###] NetEngine AR6000, 路由器规格表, OSPF, BGP, MPLS, VPN, IPv6, 网络安全, QoS, 华为网络设备, 路由协议, 网络管理",
+            "score": 0.44100111722946167,
+            "rerank_score": 6.387082099914551,
+            "metadata": {
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+              "asset_type": "mineru_image",
+              "file_name": "华为NetEngine AR6000系列企业路由器详版彩页.pdf",
+              "id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+              "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 15",
+              "source": "pdf",
+              "doc_id": "50b65f11-b411-414c-8c6e-163f25910b42",
+              "parent_doc_enabled": true,
+              "enabled": true
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+            "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 3",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+            "content": "[###] 该图片是一份企业级网络设备（推测为华为NetEngine AR系列路由器）的技术规格与功能特性对照表，常见于产品白皮书、售前方案PPT或官网产品详情页。\n\n[###] 表格的核心意图是建立“业务需求”与“产品特性及价值”之间的映射关系，旨在向客户展示该设备如何通过自研芯片、5G支持、SD-WAN技术及智能运维等手段，解决企业在高性能、高可靠性、安全及成本控制方面的痛点。\n\n[###] 画面主体是一个标准的两列多行表格。表头采用醒目的天蓝色背景搭配白色文字，左侧列标题为“业务需求”，右侧为“特性及价值”。表格主体背景为白色，行与行之间通过浅蓝色的细线进行分隔，视觉风格简洁、商务且专业。文字排版清晰，右侧内容多采用项目符号（bullet points）罗列具体技术参数和优势，其中包含两处蓝色的超链接文本，指向更详细的产品彩页。\n\n[###] 表头：业务需求、特性及价值\n第一行：高性能；基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎；提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验\n第二行：高可靠；板卡热插拔，保证业务连续稳定；提供企业业务的链路备份，提高业务接入的可靠性；毫秒级的故障检测和判断机制，缩短业务中断时间\n第三行：5G 上行；NetEngine AR6000 全系列支持 RU-201；支持 2.5GE LAN 口，满足 5G 高带宽回传时，高性能转发要求；SA/NSA 双架构，灵活接入；与传统有线链路互为备份，业务不掉线；想了解 RU-201 的更多信息，请参考华为 RU-201 产品彩页；想了解 5G SIC 板卡的更多信息，请参考华为 NetEngine AR 企业路由器 5G SIC 业务板卡彩页\n第四行：易运维；通过 iMaster NCE-Campus 实现本地部署管理或云平台管理，支持 Netconf、SNMP 等多种管理协议、WEB 网管和 Telemetry 高性能数据采集，简化网络部署，运维可视化，降低 OPEX\n第五行：业务融合；融合路由、交换、VPN、安全、WLAN 等多种功能于一体，满足企业业务多元化的需求，节省空间，降低企业 TCO\n第六行：安全；内置防火墙、IPS、URL 过滤、多种 VPN 技术，为用户提供全面的安全防护能力\n第七行：SD-WAN；内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接；ZTP 一键式部署（邮件 URL，U 盘，DHCP 等），零技能要求，设备分钟级开通；支持 SaaS 首包识别（FPI），复杂应用识别；基于带宽和链路质量选路，保证关键应用体验，带宽利用率高达 90%；多链路选路/双 CPE、双 Hub 灵活组网，保证站点业务不掉线；端到端 IPSec 加密，设备安全可信，保障业务安全传输\n\n[###] NetEngine AR6000, 5G上行, SD-WAN, 自研SOC芯片, 企业路由器, 高可靠性, iMaster NCE-Campus, 业务融合, 网络安全, ZTP一键部署",
+            "score": 0.6898146271705627,
+            "rerank_score": 6.088626384735107,
+            "metadata": {
+              "asset_type": "mineru_image",
+              "source": "pdf",
+              "doc_id": "50b65f11-b411-414c-8c6e-163f25910b42",
+              "parent_doc_enabled": true,
+              "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 3",
+              "file_name": "华为NetEngine AR6000系列企业路由器详版彩页.pdf",
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+              "id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+              "enabled": true
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+            "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 8",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+            "content": "[###] 该图片是一份技术产品规格参数表截图，具体属于网络设备（NetEngine AR6000 系列）的合规性与标准认证列表。[###] 图片核心内容展示了该系列设备所符合的国际及地区性行业标准，主要涵盖了电磁兼容（EMC）、环境保护以及电气安全三个主要维度，用于向用户或监管机构证明产品的合规性和安全性。[###] 画面采用简洁的表格布局，顶部为浅蓝色背景的表头，主体为白色背景配黑色文字。左侧一列列出了三大类标准名称，右侧对应列出了具体的标准编号代码，整体视觉清晰，信息密度高，属于典型的工程技术文档风格。[###] 表头：规格名称，NetEngine AR6000 系列；左侧分类：EMC 标准，环境标准，安全标准；右侧具体标准代码：EN 55032, EN 55035, CISPR 32, CISPR 35, IEC/EN 61000-3-2, EN 61000-3-3, ETSI EN 300 386, ETSI EN 301 489-1, ETSI EN 301 489-3, ETSI EN 301 489-17, ETSI EN 301 489-52, FCC CFR Part 15, Subpart B, ANSI C63.4, ICES-003 Issue 7, EN 50121-1, EN 50121-4, GB 9254, RoHS, REACH, WEEE, IEC 60950-1, IEC 62368-1, EN 60950-1, UL 60950-1, CSA C22.2 No 60950-1, GB 4943.1。[###] NetEngine AR6000, EMC标准, 电磁兼容, 环境标准, RoHS, 安全标准, IEC 60950, FCC认证, 产品规格表, 华为网络设备",
+            "score": 0.592257022857666,
+            "rerank_score": 5.2646918296813965,
+            "metadata": {
+              "source": "pdf",
+              "parent_doc_enabled": true,
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+              "id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+              "asset_type": "mineru_image",
+              "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 8",
+              "doc_id": "50b65f11-b411-414c-8c6e-163f25910b42",
+              "enabled": true,
+              "file_name": "华为NetEngine AR6000系列企业路由器详版彩页.pdf"
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+            "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 6",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+            "content": "[###] 这是一张企业级网络设备的技术规格参数对比表。具体来说，它展示了华为 NetEngine 系列不同型号路由器（涵盖 AR651、AR611、AR631I 等系列）在性能、接口和无线功能上的详细差异，属于典型的产品 Datasheet 或选型指南截图。[###] 该图表的核心意图是为网络工程师或采购人员提供直观的选型依据，通过横向对比 SD-WAN 吞吐量、物理接口配置以及对 LTE/5G 和 Wi-Fi 的支持情况，帮助用户快速区分高性能型号（如 AR651 系列）与入门或特定功能型号（如 AR611、AR631I 系列）的能力边界，以便根据实际业务需求选择合适的设备。[###] 画面主体是一个结构严谨的六行四列数据表格。表头采用醒目的天蓝色背景搭配白色字体，清晰标示出三个主要的产品系列列。表格主体部分为白底黑字，行与列之间由淡蓝色的细线分隔，视觉风格简洁、商务。左侧第一列作为索引列，纵向排列了具体的性能指标项目，右侧三列则对应填充了具体的数值和配置描述。[###] 表头：模型，NetEngine AR651EW/AR651W/AR651W-8P/AR651，NetEngine AR611/AR611W/AR611W-LTE4CN，NetEngine AR631I-LTE4CN；第一行数据：SD-WAN 典型性能*，600Mbps，50Mbps，80Mbps；第二行数据：SD-WAN 转发性能**，800Mbps，80Mbps，120Mbps；第三行数据：固定 LAN/WAN 接口 ***，WAN: 2 * GE Combo / LAN/WAN: 8 * GE 电，WAN: 1*GE Combo / LAN/WAN: 4*GE 电，WAN: 1*GE Combo / LAN: 3*GE 电+1*GE Combo；第四行数据：LTE/5G，支持 5G RU，内置 LTE (AR611W-LTE4CN) , 支持 5G RU，内置 LTE, 支持 5G RU；第五行数据：Wi-Fi，内置 Wi-Fi (AR651EW/AR651W/AR651W-8P)，内置 Wi-Fi (AR611W/AR611W-LTE4CN)，-。[###] NetEngine, AR651, AR611, AR631I, SD-WAN性能, 5G RU, GE Combo接口, 企业路由器, 华为NetEngine, 路由器选型",
+            "score": 0.5395584106445312,
+            "rerank_score": 4.762282371520996,
+            "metadata": {
+              "enabled": true,
+              "parent_doc_enabled": true,
+              "source": "pdf",
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+              "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 6",
+              "file_name": "华为SD-WAN解决方案彩页_R25C00.pdf",
+              "id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+              "doc_id": "90fb61a9-f19c-47c6-9b3d-7c9b82b4932f",
+              "asset_type": "mineru_image"
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "0ff8fc40-e784-4aad-aea8-cb1a961b53c0",
+            "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 5",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\0ff8fc40-e784-4aad-aea8-cb1a961b53c0.jpg",
+            "content": "[###] 该图片是一份技术产品规格对比表，具体展示了华为 NetEngine 系列两款不同型号路由器的硬件参数与性能指标。[###] 表格旨在直观地对比 AR5710-H8T2TS1 与 AR5710-H4T4N2X 这两款设备在 SD-WAN 性能、物理接口配置以及 5G 扩展能力上的异同，帮助用户进行选型参考。[###] 图像采用标准的表格布局，表头使用醒目的浅蓝色背景搭配白色字体，下方数据区域为白底黑字，通过清晰的网格线分隔不同维度的参数，整体风格简洁专业，符合技术文档规范。[###] 表头文字：模型、NetEngine AR5710-H8T2TS1、NetEngine AR5710-H4T4N2X；左侧参数项：SD-WAN 典型性能*、SD-WAN 转发性能**、固定 LAN/WAN 接口 ***、LTE/5G；具体数据包括：900Mbps、1.5Gbps、WAN: 2*GE Combo、LAN: 8*GE 电、WAN: 2*10GE SFP+、LAN: 4*2.5GE 电, 4*GE 电、支持 5G RU。[###] NetEngine, AR5710, 路由器规格, SD-WAN 性能, 5G 路由, 接口配置, 企业网络, 华为设备, 参数对比, 10GE SFP+",
+            "score": 0.7391928434371948,
+            "rerank_score": 4.260966777801514,
+            "metadata": {
+              "parent_doc_enabled": true,
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\0ff8fc40-e784-4aad-aea8-cb1a961b53c0.jpg",
+              "source": "pdf",
+              "enabled": true,
+              "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 5",
+              "asset_type": "mineru_image",
+              "doc_id": "90fb61a9-f19c-47c6-9b3d-7c9b82b4932f",
+              "id": "0ff8fc40-e784-4aad-aea8-cb1a961b53c0",
+              "file_name": "华为SD-WAN解决方案彩页_R25C00.pdf"
+            }
+          }
+        ],
+        "session_id": "67bff130-a198-4b41-aefc-48a168670c41",
+        "presentation_mode": "rag_answer",
+        "execution_mode": "multimodal_rag",
+        "use_rag": true,
+        "has_uploaded_image": false,
+        "retrieval_steps": [
+          {
+            "key": "intent",
+            "label": "意图",
+            "summary": "multimodal_rag / rag_answer",
+            "details": {
+              "execution_mode": "multimodal_rag",
+              "presentation_mode": "rag_answer",
+              "use_rag": true,
+              "has_uploaded_image": false,
+              "reason": "product_spec_lookup"
+            }
+          },
+          {
+            "key": "query",
+            "label": "查询",
+            "summary": "告诉我华为NetEngine AR6000系列路由器的技术规格与功能特性对照表",
+            "details": {
+              "query": "告诉我华为NetEngine AR6000系列路由器的技术规格与功能特性对照表",
+              "top_k": 5
+            }
+          },
+          {
+            "key": "retrieval",
+            "label": "检索",
+            "summary": "召回 5 条结果",
+            "details": {
+              "count": 5,
+              "top_source_ids": [
+                "30aefa78-6cb4-4876-b0d4-03f81d946122",
+                "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+                "745a59da-80aa-4145-9561-65f7f5ab520e"
+              ],
+              "source_types": [
+                "mineru_image"
+              ]
+            }
+          },
+          {
+            "key": "grading",
+            "label": "评分",
+            "summary": "平均分 5.353，最高分 6.387",
+            "details": {
+              "avg_rerank_score": 5.35273,
+              "max_rerank_score": 6.387082,
+              "min_rerank_score": 4.260967,
+              "scored_count": 5
+            }
+          }
+        ],
+        "timings": {
+          "trace_id": "0920c126-986c-4713-9282-fd2ef70522b7",
+          "request_path": "/api/rag/chat",
+          "request_kind": "rag_chat",
+          "total_ms": 103747.98,
+          "metadata": {
+            "top_k": 5,
+            "has_uploaded_image": false,
+            "execution_mode": "multimodal_rag",
+            "presentation_mode": "rag_answer"
+          },
+          "stages": [
+            {
+              "name": "chat_session_load",
+              "elapsed_ms": 40.766,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "chat_history_load",
+              "elapsed_ms": 9.657,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "intent_classification",
+              "elapsed_ms": 0.378,
+              "status": "ok",
+              "meta": {
+                "has_uploaded_image": false
+              }
+            },
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 11601.791,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-flash",
+                "message_count": 2,
+                "image_count": 0
+              }
+            },
+            {
+              "name": "query_expand",
+              "elapsed_ms": 11604.169,
+              "status": "ok",
+              "meta": {
+                "query_length": 39,
+                "expand_count": 3
+              }
+            },
+            {
+              "name": "multi_query_hybrid_search",
+              "elapsed_ms": 14971.462,
+              "status": "ok",
+              "meta": {
+                "candidate_k": 20,
+                "enable_query_rewrite": true
+              }
+            },
+            {
+              "name": "rerank",
+              "elapsed_ms": 29035.198,
+              "status": "ok",
+              "meta": {
+                "candidate_count": 24,
+                "top_k": 5
+              }
+            },
+            {
+              "name": "async_search_with_dict_output",
+              "elapsed_ms": 44025.647,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "candidate_k": 20,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "rag_retrieval",
+              "elapsed_ms": 44025.674,
+              "status": "ok",
+              "meta": {
+                "top_k": 5
+              }
+            },
+            {
+              "name": "document_text_retrieval",
+              "elapsed_ms": 943.847,
+              "status": "ok",
+              "meta": {
+                "top_k": 3
+              }
+            },
+            {
+              "name": "image_context_prepare",
+              "elapsed_ms": 481.906,
+              "status": "ok",
+              "meta": {
+                "document_count": 5
+              }
+            },
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 56753.709,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-plus",
+                "message_count": 1,
+                "image_count": 5
+              }
+            },
+            {
+              "name": "final_answer_generation",
+              "elapsed_ms": 57247.51,
+              "status": "ok",
+              "meta": {
+                "document_count": 5,
+                "text_chunk_count": 3
+              }
+            },
+            {
+              "name": "adapter_rag_chat",
+              "elapsed_ms": 102222.279,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "has_uploaded_image": false
+              }
+            },
+            {
+              "name": "chat_message_persist",
+              "elapsed_ms": 36.682,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "rag_chat_total",
+              "elapsed_ms": 103747.88,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "has_uploaded_image": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_name": "rag_table_non_stream",
+      "kind": "rag_chat",
+      "endpoint": "/api/rag/chat",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 102608.774,
+      "timings": {
+        "trace_id": "34e5a369-e452-4541-bd3f-ed66bc2ed04b",
+        "request_path": "/api/rag/chat",
+        "request_kind": "rag_chat",
+        "total_ms": 102586.379,
+        "metadata": {
+          "top_k": 5,
+          "has_uploaded_image": false,
+          "execution_mode": "multimodal_rag",
+          "presentation_mode": "rag_answer"
+        },
+        "stages": [
+          {
+            "name": "chat_session_load",
+            "elapsed_ms": 7.618,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "chat_history_load",
+            "elapsed_ms": 3.903,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "intent_classification",
+            "elapsed_ms": 0.095,
+            "status": "ok",
+            "meta": {
+              "has_uploaded_image": false
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 7260.991,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-flash",
+              "message_count": 2,
+              "image_count": 0
+            }
+          },
+          {
+            "name": "query_expand",
+            "elapsed_ms": 7261.234,
+            "status": "ok",
+            "meta": {
+              "query_length": 39,
+              "expand_count": 3
+            }
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "elapsed_ms": 7892.666,
+            "status": "ok",
+            "meta": {
+              "candidate_k": 20,
+              "enable_query_rewrite": true
+            }
+          },
+          {
+            "name": "rerank",
+            "elapsed_ms": 23884.632,
+            "status": "ok",
+            "meta": {
+              "candidate_count": 29,
+              "top_k": 5
+            }
+          },
+          {
+            "name": "async_search_with_dict_output",
+            "elapsed_ms": 31803.518,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "candidate_k": 20,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "rag_retrieval",
+            "elapsed_ms": 31803.543,
+            "status": "ok",
+            "meta": {
+              "top_k": 5
+            }
+          },
+          {
+            "name": "document_text_retrieval",
+            "elapsed_ms": 901.978,
+            "status": "ok",
+            "meta": {
+              "top_k": 3
+            }
+          },
+          {
+            "name": "image_context_prepare",
+            "elapsed_ms": 6.431,
+            "status": "ok",
+            "meta": {
+              "document_count": 5
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 69820.448,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-plus",
+              "message_count": 1,
+              "image_count": 5
+            }
+          },
+          {
+            "name": "final_answer_generation",
+            "elapsed_ms": 69831.855,
+            "status": "ok",
+            "meta": {
+              "document_count": 5,
+              "text_chunk_count": 3
+            }
+          },
+          {
+            "name": "adapter_rag_chat",
+            "elapsed_ms": 102537.709,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "has_uploaded_image": false
+            }
+          },
+          {
+            "name": "chat_message_persist",
+            "elapsed_ms": 36.253,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "rag_chat_total",
+            "elapsed_ms": 102586.34,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "has_uploaded_image": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "answer": "根据提供的文档内容和图像信息，为您整理华为 NetEngine AR6000 系列路由器的技术规格与功能特性对照表如下：\n\n### 1. 产品概述\n根据文档内容，NetEngine AR6000 系列是华为面向企业总部和分支推出的盒式系列产品。它基于无阻塞交换架构，融合了 SD-WAN、5G、路由、交换、VPN、安全等多种功能，性能领先业界平均水平 2 倍。\n\n### 2. 业务需求与特性价值对照表\n根据**图像 1**，该系列路由器针对不同业务需求提供了相应的特性及价值：\n\n| 业务需求 | 特性及价值 |\n| :--- | :--- |\n| **高性能** | • 基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎<br>• 提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验 |\n| **高可靠** | • 板卡热插拔，保证业务连续稳定<br>• 提供企业业务的链路备份，提高业务接入的可靠性<br>• 毫秒级的故障检测和判断机制，缩短业务中断时间 |\n| **5G 上行** | • NetEngine AR6000 全系列支持 RU-201<br>• 支持 2.5GE LAN 口，满足 5G 高带宽回传时，高性能转发要求；SA/NSA 双架构，灵活接入<br>• 与传统有线链路互为备份，业务不掉线 |\n| **易运维** | • 通过 iMaster NCE-Campus 实现本地部署管理或云平台管理<br>• 支持 Netconf、SNMP 等多种管理协议、WEB 网管和 Telemetry 高性能数据采集<br>• 简化网络部署，运维可视化，降低 OPEX |\n| **业务融合** | • 融合路由、交换、VPN、安全、WLAN 等多种功能于一体<br>• 满足企业业务多元化的需求，节省空间，降低企业 TCO |\n| **安全** | • 内置防火墙、IPS、URL 过滤、多种 VPN 技术，为用户提供全面的安全防护能力 |\n| **SD-WAN** | • 内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接<br>• ZTP 一键式部署（邮件 URL，U 盘，DHCP 等），零技能要求，设备分钟级开通<br>• 支持 SaaS 首包识别 (FPI)，复杂应用识别；基于带宽和链路质量选路，保证关键应用体验，带宽利用率高达 90%<br>• 多链路选路/双 CPE、双 Hub 灵活组网，保证站点业务不掉线；端到端 IPSec 加密，设备安全可信 |\n\n### 3. 详细软件功能规格表\n根据文档中的详细规格列表，NetEngine AR6000 系列支持以下软件功能：\n\n| 规格名称 | NetEngine AR6000 系列支持功能 |\n| :--- | :--- |\n| **基础功能** | DHCPv4 Server/Client/Relay, DHCPv6 Server/Client/Relay, PPPoE server/client, NAT, 接口管理, DNS |\n| **局域网** | IEEE 802.1P, IEEE 802.1Q, IEEE 802.3, VLAN 管理, VLAN 聚合, MAC 管理, STP/RSTP/MSTP, QinQ |\n| **IPv4 单播路由** | 路由策略, 静态路由, RIP, OSPF, IS-IS, BGP, IP FRR |\n| **IPv6 单播路由** | 静态路由, 路由策略, RIPng, OSPFv3, ISIS-IPv6, BGP4+ |\n| **IPv6 基本功能** | IPv6 ND, IPv6 PMTU, IPv6 FIB, IPv6 ACL, ICMPv6, DNSv6, DHCPv6, PPPoE client IPV6 |\n| **IPv6 隧道技术** | IPv6 over IPv4 手动隧道, 自动隧道, GRE 隧道, IPv6 over IPv4 隧道, 6to4, ISATAP |\n| **组播** | IGMP V1/V2/V3, PIM SM, PIM DM, MSDP, MBGP, IPv6 PIM, MLD |\n| **MPLS** | MPLS LDP, MPLS L3 VPN, VLL, VPLS, PWE3, 静态 LSP, 动态 LSP, MPLS TE, LDP FRR, TE FRR |\n| **VPN** | IPsec VPN, GRE, Ethernet over GRE, DSVPN, A2A VPN, L2TP VPN, L2TPv3 VPN, VxLAN, SD-WAN EVPN |\n| **QoS** | Diffserv 模式, MPLS QoS, 优先级映射, 流量监管 (CAR), 流量整形, 拥塞避免, 拥塞管理, HQoS, MQC, 端口三级调度和三级整形 (Hierarchical QoS), 智能应用控制 (SAC) |\n| **广域网优化** | FEC, 多发选收, 逐包负载分担 |\n| **安全** | ACL/ACL6, 基于域的状态防火墙, 802.1x 认证, MAC 认证, Portal 认证, AAA, RADIUS, HWTACACS, PKI, 风暴抑制, ARP 安全, ICMP 安全, 攻击防范, URPF, CPCAR, 黑名单, 攻击溯源, **国密算法 SM3/SM4**, 上网行为管理, IPS/AV/URL 过滤 |\n| **管理维护** | 升级维护, 设备管理, Web 网管, GTL, SNMP (v1/v2c/v3), RMON, NTP, CWMP, Auto-Config, 邮件/U 盘/DHCP Option 开局, NETCONF/YANG, 命令行, NetStream, TWAMP Light, IP FPM, TCP FPM, IP Accounting, NQA |\n\n### 4. 主要型号硬件规格对照表\n根据**图像 3**、**图像 4** 及 **文本片段 2**，不同型号的具体硬件规格如下：\n\n| 模型 | NetEngine AR651 系列<br>(AR651EW/AR651W/AR651W-8P/AR651) | NetEngine AR611 系列<br>(AR611/AR611W/AR611W-LTE4CN) | NetEngine AR631I-LTE4CN | NetEngine AR5710 系列<br>(AR5710-H8T2TS1 / AR5710-H4T4N2X) | NetEngine AR6121E |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **SD-WAN 典型性能** | 600Mbps | 50Mbps | 80Mbps | 900Mbps | - |\n| **SD-WAN 转发性能** | 800Mbps | 80Mbps | 120Mbps | 1.5Gbps | - |\n| **固定 LAN/WAN 接口** | WAN: 2*GE Combo<br>LAN/WAN: 8*GE 电 | WAN: 1*GE Combo<br>LAN/WAN: 4*GE 电 | WAN: 1*GE Combo<br>LAN: 3*GE 电 + 1*GE Combo | **AR5710-H8T2TS1:**<br>WAN: 2*GE Combo<br>LAN: 8*GE 电<br>**AR5710-H4T4N2X:**<br>WAN: 2*10GE SFP+<br>LAN: 4*2.5GE 电, 4*GE 电 | 2*GE combo WAN, 1*10GE(SFP+) WAN, 8*GE LAN, 1*GE combo LAN |\n| **LTE/5G** | 支持 5G RU | 内置 LTE (AR611W-LTE4CN)，支持 5G RU | 内置 LTE，支持 5G RU | 支持 5G RU | - |\n| **Wi-Fi** | 内置 Wi-Fi (AR651EW/AR651W/AR651W-8P) | 内置 Wi-Fi (AR611W/AR611W-LTE4CN) | - | - | - |\n| **其他接口** | - | - | - | - | 2*USB2.0, 2*SIC 插槽 |\n\n### 5. 合规与安全标准\n根据**图像 2**，该系列符合以下标准：\n\n*   **EMC 标准:** EN 55032, EN 55035, CISPR 32, CISPR 35, IEC/EN 61000-3-2, EN 61000-3-3, ETSI EN 300 386, ETSI EN 301 489 系列, FCC CFR Part 15, ANSI C63.4, ICES-003, EN 50121, GB 9254 等。\n*   **环境标准:** RoHS, REACH, WEEE。\n*   **安全标准:** IEC 60950-1, IEC 62368-1, EN 60950-1, UL 60950-1, CSA C22.2 No 60950-1, GB 4943.1。\n\n**注：** 部分具体型号（如 AR6140E-9G-2AC）在文本中被提及，但未在上述图像表格中列出详细参数，其具体规格需参考详细订购指南。",
+        "results": [
+          {
+            "id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+            "description": "[###] 该图片是一份华为 NetEngine AR6000 系列路由器的软件功能规格表。[###] 图片详细列举了该系列网络设备所支持的各项网络协议与技术特性，涵盖了从基础连接、路由交换、隧道技术到高级安全和管理维护的全方位功能，主要用于展示设备的技术能力和适用范围。[###] 画面主体是一个清晰的二维表格，采用蓝白配色方案。表头部分使用浅蓝色背景搭配白色文字，突出显示了“规格名称”和“NetEngine AR6000 系列”。表格内容分为左右两栏，左侧列出了功能分类（如基础功能、局域网、IPv4 单播路由等），右侧对应列出了具体的协议标准和技术名词（如 DHCP, OSPF, BGP, MPLS 等）。整体排版整齐，行间距适中，便于阅读和检索信息。[###] 规格名称, NetEngine AR6000 系列, 基础功能, DHCPv4 Server/Client/Relay, 局域网, IEEE 802.1P, VLAN 管理, STP/RSTP/MSTP, IPv4 单播路由, 路由策略, RIP, OSPF, IS-IS, BGP, IPv6 单播路由, OSPFv3, BGP4+, IPv6 基本功能, IPv6 ND, IPv6 ACL, IPv6 隧道技术, GRE 隧道, 6to4, 组播, IGMP, PIM SM, MPLS, MPLS LDP, MPLS L3 VPN, VPLS, VPN, IPsec VPN, GRE, L2TP VPN, VxLAN, SD-WAN EVPN, QoS, DiffServ 模式, 流量监管 (CAR), 拥塞管理, 广域网优化, FEC, 安全, ACL/ACL6, 防火墙, 802.1x 认证, AAA, RADIUS, IPS/AV/URL 过滤, 管理维护, SNMP, NETCONF/YANG, NetStream, NQA[###] NetEngine AR6000, 路由器规格表, OSPF, BGP, MPLS, VPN, IPv6, 网络安全, QoS, 华为网络设备, 路由协议, 网络管理",
+            "score": 0.22895371913909912,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+            "description": "[###] 该图片是一份企业级网络设备（推测为华为NetEngine AR系列路由器）的技术规格与功能特性对照表，常见于产品白皮书、售前方案PPT或官网产品详情页。\n\n[###] 表格的核心意图是建立“业务需求”与“产品特性及价值”之间的映射关系，旨在向客户展示该设备如何通过自研芯片、5G支持、SD-WAN技术及智能运维等手段，解决企业在高性能、高可靠性、安全及成本控制方面的痛点。\n\n[###] 画面主体是一个标准的两列多行表格。表头采用醒目的天蓝色背景搭配白色文字，左侧列标题为“业务需求”，右侧为“特性及价值”。表格主体背景为白色，行与行之间通过浅蓝色的细线进行分隔，视觉风格简洁、商务且专业。文字排版清晰，右侧内容多采用项目符号（bullet points）罗列具体技术参数和优势，其中包含两处蓝色的超链接文本，指向更详细的产品彩页。\n\n[###] 表头：业务需求、特性及价值\n第一行：高性能；基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎；提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验\n第二行：高可靠；板卡热插拔，保证业务连续稳定；提供企业业务的链路备份，提高业务接入的可靠性；毫秒级的故障检测和判断机制，缩短业务中断时间\n第三行：5G 上行；NetEngine AR6000 全系列支持 RU-201；支持 2.5GE LAN 口，满足 5G 高带宽回传时，高性能转发要求；SA/NSA 双架构，灵活接入；与传统有线链路互为备份，业务不掉线；想了解 RU-201 的更多信息，请参考华为 RU-201 产品彩页；想了解 5G SIC 板卡的更多信息，请参考华为 NetEngine AR 企业路由器 5G SIC 业务板卡彩页\n第四行：易运维；通过 iMaster NCE-Campus 实现本地部署管理或云平台管理，支持 Netconf、SNMP 等多种管理协议、WEB 网管和 Telemetry 高性能数据采集，简化网络部署，运维可视化，降低 OPEX\n第五行：业务融合；融合路由、交换、VPN、安全、WLAN 等多种功能于一体，满足企业业务多元化的需求，节省空间，降低企业 TCO\n第六行：安全；内置防火墙、IPS、URL 过滤、多种 VPN 技术，为用户提供全面的安全防护能力\n第七行：SD-WAN；内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接；ZTP 一键式部署（邮件 URL，U 盘，DHCP 等），零技能要求，设备分钟级开通；支持 SaaS 首包识别（FPI），复杂应用识别；基于带宽和链路质量选路，保证关键应用体验，带宽利用率高达 90%；多链路选路/双 CPE、双 Hub 灵活组网，保证站点业务不掉线；端到端 IPSec 加密，设备安全可信，保障业务安全传输\n\n[###] NetEngine AR6000, 5G上行, SD-WAN, 自研SOC芯片, 企业路由器, 高可靠性, iMaster NCE-Campus, 业务融合, 网络安全, ZTP一键部署",
+            "score": 0.40643930435180664,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+            "description": "[###] 该图片是一份技术产品规格参数表截图，具体属于网络设备（NetEngine AR6000 系列）的合规性与标准认证列表。[###] 图片核心内容展示了该系列设备所符合的国际及地区性行业标准，主要涵盖了电磁兼容（EMC）、环境保护以及电气安全三个主要维度，用于向用户或监管机构证明产品的合规性和安全性。[###] 画面采用简洁的表格布局，顶部为浅蓝色背景的表头，主体为白色背景配黑色文字。左侧一列列出了三大类标准名称，右侧对应列出了具体的标准编号代码，整体视觉清晰，信息密度高，属于典型的工程技术文档风格。[###] 表头：规格名称，NetEngine AR6000 系列；左侧分类：EMC 标准，环境标准，安全标准；右侧具体标准代码：EN 55032, EN 55035, CISPR 32, CISPR 35, IEC/EN 61000-3-2, EN 61000-3-3, ETSI EN 300 386, ETSI EN 301 489-1, ETSI EN 301 489-3, ETSI EN 301 489-17, ETSI EN 301 489-52, FCC CFR Part 15, Subpart B, ANSI C63.4, ICES-003 Issue 7, EN 50121-1, EN 50121-4, GB 9254, RoHS, REACH, WEEE, IEC 60950-1, IEC 62368-1, EN 60950-1, UL 60950-1, CSA C22.2 No 60950-1, GB 4943.1。[###] NetEngine AR6000, EMC标准, 电磁兼容, 环境标准, RoHS, 安全标准, IEC 60950, FCC认证, 产品规格表, 华为网络设备",
+            "score": 0.4545345902442932,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+            "description": "[###] 这是一张企业级网络设备的技术规格参数对比表。具体来说，它展示了华为 NetEngine 系列不同型号路由器（涵盖 AR651、AR611、AR631I 等系列）在性能、接口和无线功能上的详细差异，属于典型的产品 Datasheet 或选型指南截图。[###] 该图表的核心意图是为网络工程师或采购人员提供直观的选型依据，通过横向对比 SD-WAN 吞吐量、物理接口配置以及对 LTE/5G 和 Wi-Fi 的支持情况，帮助用户快速区分高性能型号（如 AR651 系列）与入门或特定功能型号（如 AR611、AR631I 系列）的能力边界，以便根据实际业务需求选择合适的设备。[###] 画面主体是一个结构严谨的六行四列数据表格。表头采用醒目的天蓝色背景搭配白色字体，清晰标示出三个主要的产品系列列。表格主体部分为白底黑字，行与列之间由淡蓝色的细线分隔，视觉风格简洁、商务。左侧第一列作为索引列，纵向排列了具体的性能指标项目，右侧三列则对应填充了具体的数值和配置描述。[###] 表头：模型，NetEngine AR651EW/AR651W/AR651W-8P/AR651，NetEngine AR611/AR611W/AR611W-LTE4CN，NetEngine AR631I-LTE4CN；第一行数据：SD-WAN 典型性能*，600Mbps，50Mbps，80Mbps；第二行数据：SD-WAN 转发性能**，800Mbps，80Mbps，120Mbps；第三行数据：固定 LAN/WAN 接口 ***，WAN: 2 * GE Combo / LAN/WAN: 8 * GE 电，WAN: 1*GE Combo / LAN/WAN: 4*GE 电，WAN: 1*GE Combo / LAN: 3*GE 电+1*GE Combo；第四行数据：LTE/5G，支持 5G RU，内置 LTE (AR611W-LTE4CN) , 支持 5G RU，内置 LTE, 支持 5G RU；第五行数据：Wi-Fi，内置 Wi-Fi (AR651EW/AR651W/AR651W-8P)，内置 Wi-Fi (AR611W/AR611W-LTE4CN)，-。[###] NetEngine, AR651, AR611, AR631I, SD-WAN性能, 5G RU, GE Combo接口, 企业路由器, 华为NetEngine, 路由器选型",
+            "score": 0.4278853237628937,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "0ff8fc40-e784-4aad-aea8-cb1a961b53c0",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\0ff8fc40-e784-4aad-aea8-cb1a961b53c0.jpg",
+            "description": "[###] 该图片是一份技术产品规格对比表，具体展示了华为 NetEngine 系列两款不同型号路由器的硬件参数与性能指标。[###] 表格旨在直观地对比 AR5710-H8T2TS1 与 AR5710-H4T4N2X 这两款设备在 SD-WAN 性能、物理接口配置以及 5G 扩展能力上的异同，帮助用户进行选型参考。[###] 图像采用标准的表格布局，表头使用醒目的浅蓝色背景搭配白色字体，下方数据区域为白底黑字，通过清晰的网格线分隔不同维度的参数，整体风格简洁专业，符合技术文档规范。[###] 表头文字：模型、NetEngine AR5710-H8T2TS1、NetEngine AR5710-H4T4N2X；左侧参数项：SD-WAN 典型性能*、SD-WAN 转发性能**、固定 LAN/WAN 接口 ***、LTE/5G；具体数据包括：900Mbps、1.5Gbps、WAN: 2*GE Combo、LAN: 8*GE 电、WAN: 2*10GE SFP+、LAN: 4*2.5GE 电, 4*GE 电、支持 5G RU。[###] NetEngine, AR5710, 路由器规格, SD-WAN 性能, 5G 路由, 接口配置, 企业网络, 华为设备, 参数对比, 10GE SFP+",
+            "score": 0.4372354745864868,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          }
+        ],
+        "sources": [
+          {
+            "source_type": "image",
+            "source_id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+            "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 15",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+            "content": "[###] 该图片是一份华为 NetEngine AR6000 系列路由器的软件功能规格表。[###] 图片详细列举了该系列网络设备所支持的各项网络协议与技术特性，涵盖了从基础连接、路由交换、隧道技术到高级安全和管理维护的全方位功能，主要用于展示设备的技术能力和适用范围。[###] 画面主体是一个清晰的二维表格，采用蓝白配色方案。表头部分使用浅蓝色背景搭配白色文字，突出显示了“规格名称”和“NetEngine AR6000 系列”。表格内容分为左右两栏，左侧列出了功能分类（如基础功能、局域网、IPv4 单播路由等），右侧对应列出了具体的协议标准和技术名词（如 DHCP, OSPF, BGP, MPLS 等）。整体排版整齐，行间距适中，便于阅读和检索信息。[###] 规格名称, NetEngine AR6000 系列, 基础功能, DHCPv4 Server/Client/Relay, 局域网, IEEE 802.1P, VLAN 管理, STP/RSTP/MSTP, IPv4 单播路由, 路由策略, RIP, OSPF, IS-IS, BGP, IPv6 单播路由, OSPFv3, BGP4+, IPv6 基本功能, IPv6 ND, IPv6 ACL, IPv6 隧道技术, GRE 隧道, 6to4, 组播, IGMP, PIM SM, MPLS, MPLS LDP, MPLS L3 VPN, VPLS, VPN, IPsec VPN, GRE, L2TP VPN, VxLAN, SD-WAN EVPN, QoS, DiffServ 模式, 流量监管 (CAR), 拥塞管理, 广域网优化, FEC, 安全, ACL/ACL6, 防火墙, 802.1x 认证, AAA, RADIUS, IPS/AV/URL 过滤, 管理维护, SNMP, NETCONF/YANG, NetStream, NQA[###] NetEngine AR6000, 路由器规格表, OSPF, BGP, MPLS, VPN, IPv6, 网络安全, QoS, 华为网络设备, 路由协议, 网络管理",
+            "score": 0.22895371913909912,
+            "rerank_score": 6.387082099914551,
+            "metadata": {
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+              "source": "pdf",
+              "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 15",
+              "enabled": true,
+              "parent_doc_enabled": true,
+              "asset_type": "mineru_image",
+              "doc_id": "50b65f11-b411-414c-8c6e-163f25910b42",
+              "id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+              "file_name": "华为NetEngine AR6000系列企业路由器详版彩页.pdf"
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+            "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 3",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+            "content": "[###] 该图片是一份企业级网络设备（推测为华为NetEngine AR系列路由器）的技术规格与功能特性对照表，常见于产品白皮书、售前方案PPT或官网产品详情页。\n\n[###] 表格的核心意图是建立“业务需求”与“产品特性及价值”之间的映射关系，旨在向客户展示该设备如何通过自研芯片、5G支持、SD-WAN技术及智能运维等手段，解决企业在高性能、高可靠性、安全及成本控制方面的痛点。\n\n[###] 画面主体是一个标准的两列多行表格。表头采用醒目的天蓝色背景搭配白色文字，左侧列标题为“业务需求”，右侧为“特性及价值”。表格主体背景为白色，行与行之间通过浅蓝色的细线进行分隔，视觉风格简洁、商务且专业。文字排版清晰，右侧内容多采用项目符号（bullet points）罗列具体技术参数和优势，其中包含两处蓝色的超链接文本，指向更详细的产品彩页。\n\n[###] 表头：业务需求、特性及价值\n第一行：高性能；基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎；提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验\n第二行：高可靠；板卡热插拔，保证业务连续稳定；提供企业业务的链路备份，提高业务接入的可靠性；毫秒级的故障检测和判断机制，缩短业务中断时间\n第三行：5G 上行；NetEngine AR6000 全系列支持 RU-201；支持 2.5GE LAN 口，满足 5G 高带宽回传时，高性能转发要求；SA/NSA 双架构，灵活接入；与传统有线链路互为备份，业务不掉线；想了解 RU-201 的更多信息，请参考华为 RU-201 产品彩页；想了解 5G SIC 板卡的更多信息，请参考华为 NetEngine AR 企业路由器 5G SIC 业务板卡彩页\n第四行：易运维；通过 iMaster NCE-Campus 实现本地部署管理或云平台管理，支持 Netconf、SNMP 等多种管理协议、WEB 网管和 Telemetry 高性能数据采集，简化网络部署，运维可视化，降低 OPEX\n第五行：业务融合；融合路由、交换、VPN、安全、WLAN 等多种功能于一体，满足企业业务多元化的需求，节省空间，降低企业 TCO\n第六行：安全；内置防火墙、IPS、URL 过滤、多种 VPN 技术，为用户提供全面的安全防护能力\n第七行：SD-WAN；内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接；ZTP 一键式部署（邮件 URL，U 盘，DHCP 等），零技能要求，设备分钟级开通；支持 SaaS 首包识别（FPI），复杂应用识别；基于带宽和链路质量选路，保证关键应用体验，带宽利用率高达 90%；多链路选路/双 CPE、双 Hub 灵活组网，保证站点业务不掉线；端到端 IPSec 加密，设备安全可信，保障业务安全传输\n\n[###] NetEngine AR6000, 5G上行, SD-WAN, 自研SOC芯片, 企业路由器, 高可靠性, iMaster NCE-Campus, 业务融合, 网络安全, ZTP一键部署",
+            "score": 0.40643930435180664,
+            "rerank_score": 6.088626384735107,
+            "metadata": {
+              "asset_type": "mineru_image",
+              "source": "pdf",
+              "doc_id": "50b65f11-b411-414c-8c6e-163f25910b42",
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+              "parent_doc_enabled": true,
+              "enabled": true,
+              "file_name": "华为NetEngine AR6000系列企业路由器详版彩页.pdf",
+              "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 3",
+              "id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391"
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+            "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 8",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+            "content": "[###] 该图片是一份技术产品规格参数表截图，具体属于网络设备（NetEngine AR6000 系列）的合规性与标准认证列表。[###] 图片核心内容展示了该系列设备所符合的国际及地区性行业标准，主要涵盖了电磁兼容（EMC）、环境保护以及电气安全三个主要维度，用于向用户或监管机构证明产品的合规性和安全性。[###] 画面采用简洁的表格布局，顶部为浅蓝色背景的表头，主体为白色背景配黑色文字。左侧一列列出了三大类标准名称，右侧对应列出了具体的标准编号代码，整体视觉清晰，信息密度高，属于典型的工程技术文档风格。[###] 表头：规格名称，NetEngine AR6000 系列；左侧分类：EMC 标准，环境标准，安全标准；右侧具体标准代码：EN 55032, EN 55035, CISPR 32, CISPR 35, IEC/EN 61000-3-2, EN 61000-3-3, ETSI EN 300 386, ETSI EN 301 489-1, ETSI EN 301 489-3, ETSI EN 301 489-17, ETSI EN 301 489-52, FCC CFR Part 15, Subpart B, ANSI C63.4, ICES-003 Issue 7, EN 50121-1, EN 50121-4, GB 9254, RoHS, REACH, WEEE, IEC 60950-1, IEC 62368-1, EN 60950-1, UL 60950-1, CSA C22.2 No 60950-1, GB 4943.1。[###] NetEngine AR6000, EMC标准, 电磁兼容, 环境标准, RoHS, 安全标准, IEC 60950, FCC认证, 产品规格表, 华为网络设备",
+            "score": 0.4545345902442932,
+            "rerank_score": 5.2646918296813965,
+            "metadata": {
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+              "doc_id": "50b65f11-b411-414c-8c6e-163f25910b42",
+              "asset_type": "mineru_image",
+              "parent_doc_enabled": true,
+              "id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+              "title": "华为NetEngine AR6000系列企业路由器详版彩页.pdf MinerU 图片 8",
+              "file_name": "华为NetEngine AR6000系列企业路由器详版彩页.pdf",
+              "enabled": true,
+              "source": "pdf"
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+            "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 6",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+            "content": "[###] 这是一张企业级网络设备的技术规格参数对比表。具体来说，它展示了华为 NetEngine 系列不同型号路由器（涵盖 AR651、AR611、AR631I 等系列）在性能、接口和无线功能上的详细差异，属于典型的产品 Datasheet 或选型指南截图。[###] 该图表的核心意图是为网络工程师或采购人员提供直观的选型依据，通过横向对比 SD-WAN 吞吐量、物理接口配置以及对 LTE/5G 和 Wi-Fi 的支持情况，帮助用户快速区分高性能型号（如 AR651 系列）与入门或特定功能型号（如 AR611、AR631I 系列）的能力边界，以便根据实际业务需求选择合适的设备。[###] 画面主体是一个结构严谨的六行四列数据表格。表头采用醒目的天蓝色背景搭配白色字体，清晰标示出三个主要的产品系列列。表格主体部分为白底黑字，行与列之间由淡蓝色的细线分隔，视觉风格简洁、商务。左侧第一列作为索引列，纵向排列了具体的性能指标项目，右侧三列则对应填充了具体的数值和配置描述。[###] 表头：模型，NetEngine AR651EW/AR651W/AR651W-8P/AR651，NetEngine AR611/AR611W/AR611W-LTE4CN，NetEngine AR631I-LTE4CN；第一行数据：SD-WAN 典型性能*，600Mbps，50Mbps，80Mbps；第二行数据：SD-WAN 转发性能**，800Mbps，80Mbps，120Mbps；第三行数据：固定 LAN/WAN 接口 ***，WAN: 2 * GE Combo / LAN/WAN: 8 * GE 电，WAN: 1*GE Combo / LAN/WAN: 4*GE 电，WAN: 1*GE Combo / LAN: 3*GE 电+1*GE Combo；第四行数据：LTE/5G，支持 5G RU，内置 LTE (AR611W-LTE4CN) , 支持 5G RU，内置 LTE, 支持 5G RU；第五行数据：Wi-Fi，内置 Wi-Fi (AR651EW/AR651W/AR651W-8P)，内置 Wi-Fi (AR611W/AR611W-LTE4CN)，-。[###] NetEngine, AR651, AR611, AR631I, SD-WAN性能, 5G RU, GE Combo接口, 企业路由器, 华为NetEngine, 路由器选型",
+            "score": 0.4278853237628937,
+            "rerank_score": 4.762282371520996,
+            "metadata": {
+              "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 6",
+              "file_name": "华为SD-WAN解决方案彩页_R25C00.pdf",
+              "enabled": true,
+              "parent_doc_enabled": true,
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+              "doc_id": "90fb61a9-f19c-47c6-9b3d-7c9b82b4932f",
+              "id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+              "source": "pdf",
+              "asset_type": "mineru_image"
+            }
+          },
+          {
+            "source_type": "image",
+            "source_id": "0ff8fc40-e784-4aad-aea8-cb1a961b53c0",
+            "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 5",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\0ff8fc40-e784-4aad-aea8-cb1a961b53c0.jpg",
+            "content": "[###] 该图片是一份技术产品规格对比表，具体展示了华为 NetEngine 系列两款不同型号路由器的硬件参数与性能指标。[###] 表格旨在直观地对比 AR5710-H8T2TS1 与 AR5710-H4T4N2X 这两款设备在 SD-WAN 性能、物理接口配置以及 5G 扩展能力上的异同，帮助用户进行选型参考。[###] 图像采用标准的表格布局，表头使用醒目的浅蓝色背景搭配白色字体，下方数据区域为白底黑字，通过清晰的网格线分隔不同维度的参数，整体风格简洁专业，符合技术文档规范。[###] 表头文字：模型、NetEngine AR5710-H8T2TS1、NetEngine AR5710-H4T4N2X；左侧参数项：SD-WAN 典型性能*、SD-WAN 转发性能**、固定 LAN/WAN 接口 ***、LTE/5G；具体数据包括：900Mbps、1.5Gbps、WAN: 2*GE Combo、LAN: 8*GE 电、WAN: 2*10GE SFP+、LAN: 4*2.5GE 电, 4*GE 电、支持 5G RU。[###] NetEngine, AR5710, 路由器规格, SD-WAN 性能, 5G 路由, 接口配置, 企业网络, 华为设备, 参数对比, 10GE SFP+",
+            "score": 0.4372354745864868,
+            "rerank_score": 4.260966777801514,
+            "metadata": {
+              "source": "pdf",
+              "file_name": "华为SD-WAN解决方案彩页_R25C00.pdf",
+              "enabled": true,
+              "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\0ff8fc40-e784-4aad-aea8-cb1a961b53c0.jpg",
+              "id": "0ff8fc40-e784-4aad-aea8-cb1a961b53c0",
+              "title": "华为SD-WAN解决方案彩页_R25C00.pdf MinerU 图片 5",
+              "doc_id": "90fb61a9-f19c-47c6-9b3d-7c9b82b4932f",
+              "parent_doc_enabled": true,
+              "asset_type": "mineru_image"
+            }
+          }
+        ],
+        "session_id": "821f06d9-c3ef-4c42-a8dd-7bc8635640fc",
+        "presentation_mode": "rag_answer",
+        "execution_mode": "multimodal_rag",
+        "use_rag": true,
+        "has_uploaded_image": false,
+        "retrieval_steps": [
+          {
+            "key": "intent",
+            "label": "意图",
+            "summary": "multimodal_rag / rag_answer",
+            "details": {
+              "execution_mode": "multimodal_rag",
+              "presentation_mode": "rag_answer",
+              "use_rag": true,
+              "has_uploaded_image": false,
+              "reason": "product_spec_lookup"
+            }
+          },
+          {
+            "key": "query",
+            "label": "查询",
+            "summary": "告诉我华为NetEngine AR6000系列路由器的技术规格与功能特性对照表",
+            "details": {
+              "query": "告诉我华为NetEngine AR6000系列路由器的技术规格与功能特性对照表",
+              "top_k": 5
+            }
+          },
+          {
+            "key": "retrieval",
+            "label": "检索",
+            "summary": "召回 5 条结果",
+            "details": {
+              "count": 5,
+              "top_source_ids": [
+                "30aefa78-6cb4-4876-b0d4-03f81d946122",
+                "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+                "745a59da-80aa-4145-9561-65f7f5ab520e"
+              ],
+              "source_types": [
+                "mineru_image"
+              ]
+            }
+          },
+          {
+            "key": "grading",
+            "label": "评分",
+            "summary": "平均分 5.353，最高分 6.387",
+            "details": {
+              "avg_rerank_score": 5.35273,
+              "max_rerank_score": 6.387082,
+              "min_rerank_score": 4.260967,
+              "scored_count": 5
+            }
+          }
+        ],
+        "timings": {
+          "trace_id": "34e5a369-e452-4541-bd3f-ed66bc2ed04b",
+          "request_path": "/api/rag/chat",
+          "request_kind": "rag_chat",
+          "total_ms": 102586.379,
+          "metadata": {
+            "top_k": 5,
+            "has_uploaded_image": false,
+            "execution_mode": "multimodal_rag",
+            "presentation_mode": "rag_answer"
+          },
+          "stages": [
+            {
+              "name": "chat_session_load",
+              "elapsed_ms": 7.618,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "chat_history_load",
+              "elapsed_ms": 3.903,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "intent_classification",
+              "elapsed_ms": 0.095,
+              "status": "ok",
+              "meta": {
+                "has_uploaded_image": false
+              }
+            },
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 7260.991,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-flash",
+                "message_count": 2,
+                "image_count": 0
+              }
+            },
+            {
+              "name": "query_expand",
+              "elapsed_ms": 7261.234,
+              "status": "ok",
+              "meta": {
+                "query_length": 39,
+                "expand_count": 3
+              }
+            },
+            {
+              "name": "multi_query_hybrid_search",
+              "elapsed_ms": 7892.666,
+              "status": "ok",
+              "meta": {
+                "candidate_k": 20,
+                "enable_query_rewrite": true
+              }
+            },
+            {
+              "name": "rerank",
+              "elapsed_ms": 23884.632,
+              "status": "ok",
+              "meta": {
+                "candidate_count": 29,
+                "top_k": 5
+              }
+            },
+            {
+              "name": "async_search_with_dict_output",
+              "elapsed_ms": 31803.518,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "candidate_k": 20,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "rag_retrieval",
+              "elapsed_ms": 31803.543,
+              "status": "ok",
+              "meta": {
+                "top_k": 5
+              }
+            },
+            {
+              "name": "document_text_retrieval",
+              "elapsed_ms": 901.978,
+              "status": "ok",
+              "meta": {
+                "top_k": 3
+              }
+            },
+            {
+              "name": "image_context_prepare",
+              "elapsed_ms": 6.431,
+              "status": "ok",
+              "meta": {
+                "document_count": 5
+              }
+            },
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 69820.448,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-plus",
+                "message_count": 1,
+                "image_count": 5
+              }
+            },
+            {
+              "name": "final_answer_generation",
+              "elapsed_ms": 69831.855,
+              "status": "ok",
+              "meta": {
+                "document_count": 5,
+                "text_chunk_count": 3
+              }
+            },
+            {
+              "name": "adapter_rag_chat",
+              "elapsed_ms": 102537.709,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "has_uploaded_image": false
+              }
+            },
+            {
+              "name": "chat_message_persist",
+              "elapsed_ms": 36.253,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "rag_chat_total",
+              "elapsed_ms": 102586.34,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "has_uploaded_image": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_name": "rag_table_stream",
+      "kind": "rag_chat_stream",
+      "endpoint": "/api/rag/chat/stream",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 91015.2,
+      "timings": {
+        "trace_id": "3f2fa1e2-34d6-4540-9bcf-111d0244eae8",
+        "request_path": "/api/rag/chat/stream",
+        "request_kind": "rag_chat_stream",
+        "total_ms": 90983.763,
+        "first_token_ms": 90891.96,
+        "metadata": {
+          "top_k": 5,
+          "has_uploaded_image": false,
+          "execution_mode": "multimodal_rag",
+          "presentation_mode": "rag_answer"
+        },
+        "stages": [
+          {
+            "name": "chat_session_load",
+            "elapsed_ms": 7.96,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "chat_history_load",
+            "elapsed_ms": 2.636,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "intent_classification",
+            "elapsed_ms": 0.14,
+            "status": "ok",
+            "meta": {
+              "has_uploaded_image": false
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 9350.535,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-flash",
+              "message_count": 2,
+              "image_count": 0
+            }
+          },
+          {
+            "name": "query_expand",
+            "elapsed_ms": 9350.85,
+            "status": "ok",
+            "meta": {
+              "query_length": 39,
+              "expand_count": 3
+            }
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "elapsed_ms": 10221.273,
+            "status": "ok",
+            "meta": {
+              "candidate_k": 20,
+              "enable_query_rewrite": true
+            }
+          },
+          {
+            "name": "rerank",
+            "elapsed_ms": 21208.456,
+            "status": "ok",
+            "meta": {
+              "candidate_count": 25,
+              "top_k": 5
+            }
+          },
+          {
+            "name": "async_search_with_dict_output",
+            "elapsed_ms": 31446.889,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "candidate_k": 20,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "rag_retrieval",
+            "elapsed_ms": 31446.918,
+            "status": "ok",
+            "meta": {
+              "top_k": 5
+            }
+          },
+          {
+            "name": "document_text_retrieval",
+            "elapsed_ms": 541.357,
+            "status": "ok",
+            "meta": {
+              "top_k": 3
+            }
+          },
+          {
+            "name": "image_context_prepare",
+            "elapsed_ms": 7.245,
+            "status": "ok",
+            "meta": {
+              "document_count": 5
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 58879.192,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-plus",
+              "message_count": 1,
+              "image_count": 5
+            }
+          },
+          {
+            "name": "final_answer_generation",
+            "elapsed_ms": 58891.298,
+            "status": "ok",
+            "meta": {
+              "document_count": 5,
+              "text_chunk_count": 3
+            }
+          },
+          {
+            "name": "chat_message_persist",
+            "elapsed_ms": 37.164,
+            "status": "ok",
+            "meta": {}
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "sse_length": 176535
+      }
+    },
+    {
+      "scenario_name": "rag_table_stream",
+      "kind": "rag_chat_stream",
+      "endpoint": "/api/rag/chat/stream",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 106438.145,
+      "timings": {
+        "trace_id": "eb74b6ad-a896-4af9-bd26-a8c6dd99920b",
+        "request_path": "/api/rag/chat/stream",
+        "request_kind": "rag_chat_stream",
+        "total_ms": 105912.36,
+        "first_token_ms": 105827.403,
+        "metadata": {
+          "top_k": 5,
+          "has_uploaded_image": false,
+          "execution_mode": "multimodal_rag",
+          "presentation_mode": "rag_answer"
+        },
+        "stages": [
+          {
+            "name": "chat_session_load",
+            "elapsed_ms": 20.124,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "chat_history_load",
+            "elapsed_ms": 3.125,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "intent_classification",
+            "elapsed_ms": 0.141,
+            "status": "ok",
+            "meta": {
+              "has_uploaded_image": false
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 10846.063,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-flash",
+              "message_count": 2,
+              "image_count": 0
+            }
+          },
+          {
+            "name": "query_expand",
+            "elapsed_ms": 10846.316,
+            "status": "ok",
+            "meta": {
+              "query_length": 39,
+              "expand_count": 3
+            }
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "elapsed_ms": 11413.844,
+            "status": "ok",
+            "meta": {
+              "candidate_k": 20,
+              "enable_query_rewrite": true
+            }
+          },
+          {
+            "name": "rerank",
+            "elapsed_ms": 21224.644,
+            "status": "ok",
+            "meta": {
+              "candidate_count": 25,
+              "top_k": 5
+            }
+          },
+          {
+            "name": "async_search_with_dict_output",
+            "elapsed_ms": 32645.362,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "candidate_k": 20,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "rag_retrieval",
+            "elapsed_ms": 32645.386,
+            "status": "ok",
+            "meta": {
+              "top_k": 5
+            }
+          },
+          {
+            "name": "document_text_retrieval",
+            "elapsed_ms": 510.764,
+            "status": "ok",
+            "meta": {
+              "top_k": 3
+            }
+          },
+          {
+            "name": "image_context_prepare",
+            "elapsed_ms": 7.295,
+            "status": "ok",
+            "meta": {
+              "document_count": 5
+            }
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 72634.017,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-plus",
+              "message_count": 1,
+              "image_count": 5
+            }
+          },
+          {
+            "name": "final_answer_generation",
+            "elapsed_ms": 72645.813,
+            "status": "ok",
+            "meta": {
+              "document_count": 5,
+              "text_chunk_count": 3
+            }
+          },
+          {
+            "name": "chat_message_persist",
+            "elapsed_ms": 31.426,
+            "status": "ok",
+            "meta": {}
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "sse_length": 183810
+      }
+    },
+    {
+      "scenario_name": "text_search_specs",
+      "kind": "text_to_image",
+      "endpoint": "/api/search/text-to-image",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 37717.131,
+      "timings": {
+        "trace_id": "e3b9578d-af8d-435c-88de-a03597796a58",
+        "request_path": "/api/search/text-to-image",
+        "request_kind": "text_to_image_search",
+        "total_ms": 37691.481,
+        "metadata": {
+          "top_k": 5
+        },
+        "stages": [
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 13525.851,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-flash",
+              "message_count": 2,
+              "image_count": 0
+            }
+          },
+          {
+            "name": "query_expand",
+            "elapsed_ms": 13526.062,
+            "status": "ok",
+            "meta": {
+              "query_length": 25,
+              "expand_count": 3
+            }
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "elapsed_ms": 14649.305,
+            "status": "ok",
+            "meta": {
+              "candidate_k": 20,
+              "enable_query_rewrite": true
+            }
+          },
+          {
+            "name": "rerank",
+            "elapsed_ms": 23013.139,
+            "status": "ok",
+            "meta": {
+              "candidate_count": 28,
+              "top_k": 5
+            }
+          },
+          {
+            "name": "text_to_image_search_internal",
+            "elapsed_ms": 37690.286,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "candidate_k": 20,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "adapter_text_to_image_search",
+            "elapsed_ms": 37690.312,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "text_to_image_total",
+            "elapsed_ms": 37691.44,
+            "status": "ok",
+            "meta": {
+              "top_k": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "query": "华为 NetEngine AR6000 技术规格表",
+        "results": [
+          {
+            "id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+            "description": "[###] 该图片是一份华为 NetEngine AR6000 系列路由器的软件功能规格表。[###] 图片详细列举了该系列网络设备所支持的各项网络协议与技术特性，涵盖了从基础连接、路由交换、隧道技术到高级安全和管理维护的全方位功能，主要用于展示设备的技术能力和适用范围。[###] 画面主体是一个清晰的二维表格，采用蓝白配色方案。表头部分使用浅蓝色背景搭配白色文字，突出显示了“规格名称”和“NetEngine AR6000 系列”。表格内容分为左右两栏，左侧列出了功能分类（如基础功能、局域网、IPv4 单播路由等），右侧对应列出了具体的协议标准和技术名词（如 DHCP, OSPF, BGP, MPLS 等）。整体排版整齐，行间距适中，便于阅读和检索信息。[###] 规格名称, NetEngine AR6000 系列, 基础功能, DHCPv4 Server/Client/Relay, 局域网, IEEE 802.1P, VLAN 管理, STP/RSTP/MSTP, IPv4 单播路由, 路由策略, RIP, OSPF, IS-IS, BGP, IPv6 单播路由, OSPFv3, BGP4+, IPv6 基本功能, IPv6 ND, IPv6 ACL, IPv6 隧道技术, GRE 隧道, 6to4, 组播, IGMP, PIM SM, MPLS, MPLS LDP, MPLS L3 VPN, VPLS, VPN, IPsec VPN, GRE, L2TP VPN, VxLAN, SD-WAN EVPN, QoS, DiffServ 模式, 流量监管 (CAR), 拥塞管理, 广域网优化, FEC, 安全, ACL/ACL6, 防火墙, 802.1x 认证, AAA, RADIUS, IPS/AV/URL 过滤, 管理维护, SNMP, NETCONF/YANG, NetStream, NQA[###] NetEngine AR6000, 路由器规格表, OSPF, BGP, MPLS, VPN, IPv6, 网络安全, QoS, 华为网络设备, 路由协议, 网络管理",
+            "score": 6.286282062530518,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+            "description": "[###] 该图片是一份技术产品规格参数表截图，具体属于网络设备（NetEngine AR6000 系列）的合规性与标准认证列表。[###] 图片核心内容展示了该系列设备所符合的国际及地区性行业标准，主要涵盖了电磁兼容（EMC）、环境保护以及电气安全三个主要维度，用于向用户或监管机构证明产品的合规性和安全性。[###] 画面采用简洁的表格布局，顶部为浅蓝色背景的表头，主体为白色背景配黑色文字。左侧一列列出了三大类标准名称，右侧对应列出了具体的标准编号代码，整体视觉清晰，信息密度高，属于典型的工程技术文档风格。[###] 表头：规格名称，NetEngine AR6000 系列；左侧分类：EMC 标准，环境标准，安全标准；右侧具体标准代码：EN 55032, EN 55035, CISPR 32, CISPR 35, IEC/EN 61000-3-2, EN 61000-3-3, ETSI EN 300 386, ETSI EN 301 489-1, ETSI EN 301 489-3, ETSI EN 301 489-17, ETSI EN 301 489-52, FCC CFR Part 15, Subpart B, ANSI C63.4, ICES-003 Issue 7, EN 50121-1, EN 50121-4, GB 9254, RoHS, REACH, WEEE, IEC 60950-1, IEC 62368-1, EN 60950-1, UL 60950-1, CSA C22.2 No 60950-1, GB 4943.1。[###] NetEngine AR6000, EMC标准, 电磁兼容, 环境标准, RoHS, 安全标准, IEC 60950, FCC认证, 产品规格表, 华为网络设备",
+            "score": 5.932676315307617,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+            "description": "[###] 该图片是一份企业级网络设备（推测为华为NetEngine AR系列路由器）的技术规格与功能特性对照表，常见于产品白皮书、售前方案PPT或官网产品详情页。\n\n[###] 表格的核心意图是建立“业务需求”与“产品特性及价值”之间的映射关系，旨在向客户展示该设备如何通过自研芯片、5G支持、SD-WAN技术及智能运维等手段，解决企业在高性能、高可靠性、安全及成本控制方面的痛点。\n\n[###] 画面主体是一个标准的两列多行表格。表头采用醒目的天蓝色背景搭配白色文字，左侧列标题为“业务需求”，右侧为“特性及价值”。表格主体背景为白色，行与行之间通过浅蓝色的细线进行分隔，视觉风格简洁、商务且专业。文字排版清晰，右侧内容多采用项目符号（bullet points）罗列具体技术参数和优势，其中包含两处蓝色的超链接文本，指向更详细的产品彩页。\n\n[###] 表头：业务需求、特性及价值\n第一行：高性能；基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎；提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验\n第二行：高可靠；板卡热插拔，保证业务连续稳定；提供企业业务的链路备份，提高业务接入的可靠性；毫秒级的故障检测和判断机制，缩短业务中断时间\n第三行：5G 上行；NetEngine AR6000 全系列支持 RU-201；支持 2.5GE LAN 口，满足 5G 高带宽回传时，高性能转发要求；SA/NSA 双架构，灵活接入；与传统有线链路互为备份，业务不掉线；想了解 RU-201 的更多信息，请参考华为 RU-201 产品彩页；想了解 5G SIC 板卡的更多信息，请参考华为 NetEngine AR 企业路由器 5G SIC 业务板卡彩页\n第四行：易运维；通过 iMaster NCE-Campus 实现本地部署管理或云平台管理，支持 Netconf、SNMP 等多种管理协议、WEB 网管和 Telemetry 高性能数据采集，简化网络部署，运维可视化，降低 OPEX\n第五行：业务融合；融合路由、交换、VPN、安全、WLAN 等多种功能于一体，满足企业业务多元化的需求，节省空间，降低企业 TCO\n第六行：安全；内置防火墙、IPS、URL 过滤、多种 VPN 技术，为用户提供全面的安全防护能力\n第七行：SD-WAN；内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接；ZTP 一键式部署（邮件 URL，U 盘，DHCP 等），零技能要求，设备分钟级开通；支持 SaaS 首包识别（FPI），复杂应用识别；基于带宽和链路质量选路，保证关键应用体验，带宽利用率高达 90%；多链路选路/双 CPE、双 Hub 灵活组网，保证站点业务不掉线；端到端 IPSec 加密，设备安全可信，保障业务安全传输\n\n[###] NetEngine AR6000, 5G上行, SD-WAN, 自研SOC芯片, 企业路由器, 高可靠性, iMaster NCE-Campus, 业务融合, 网络安全, ZTP一键部署",
+            "score": 5.576325416564941,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+            "description": "[###] 这是一张企业级网络设备的技术规格参数对比表。具体来说，它展示了华为 NetEngine 系列不同型号路由器（涵盖 AR651、AR611、AR631I 等系列）在性能、接口和无线功能上的详细差异，属于典型的产品 Datasheet 或选型指南截图。[###] 该图表的核心意图是为网络工程师或采购人员提供直观的选型依据，通过横向对比 SD-WAN 吞吐量、物理接口配置以及对 LTE/5G 和 Wi-Fi 的支持情况，帮助用户快速区分高性能型号（如 AR651 系列）与入门或特定功能型号（如 AR611、AR631I 系列）的能力边界，以便根据实际业务需求选择合适的设备。[###] 画面主体是一个结构严谨的六行四列数据表格。表头采用醒目的天蓝色背景搭配白色字体，清晰标示出三个主要的产品系列列。表格主体部分为白底黑字，行与列之间由淡蓝色的细线分隔，视觉风格简洁、商务。左侧第一列作为索引列，纵向排列了具体的性能指标项目，右侧三列则对应填充了具体的数值和配置描述。[###] 表头：模型，NetEngine AR651EW/AR651W/AR651W-8P/AR651，NetEngine AR611/AR611W/AR611W-LTE4CN，NetEngine AR631I-LTE4CN；第一行数据：SD-WAN 典型性能*，600Mbps，50Mbps，80Mbps；第二行数据：SD-WAN 转发性能**，800Mbps，80Mbps，120Mbps；第三行数据：固定 LAN/WAN 接口 ***，WAN: 2 * GE Combo / LAN/WAN: 8 * GE 电，WAN: 1*GE Combo / LAN/WAN: 4*GE 电，WAN: 1*GE Combo / LAN: 3*GE 电+1*GE Combo；第四行数据：LTE/5G，支持 5G RU，内置 LTE (AR611W-LTE4CN) , 支持 5G RU，内置 LTE, 支持 5G RU；第五行数据：Wi-Fi，内置 Wi-Fi (AR651EW/AR651W/AR651W-8P)，内置 Wi-Fi (AR611W/AR611W-LTE4CN)，-。[###] NetEngine, AR651, AR611, AR631I, SD-WAN性能, 5G RU, GE Combo接口, 企业路由器, 华为NetEngine, 路由器选型",
+            "score": 4.758825778961182,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "e4584a2c-b52d-444f-96a6-5aebb34d4569",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\e4584a2c-b52d-444f-96a6-5aebb34d4569.jpg",
+            "description": "[###] 这是一张网络技术架构或产品组件清单的表格截图，常见于网络解决方案的技术白皮书、产品手册或系统架构说明文档中。\n\n[###] 该表格详细列出了企业网络解决方案（特别是 SD-WAN 场景）中的关键硬件和软件组件，明确了每个部件的具体产品型号（主要涉及华为的 iMaster NCE 系列和 NetEngine AR 系列）及其在网络架构中的核心功能，旨在帮助技术人员理解系统构成。\n\n[###] 画面主体为一个标准的三列五行表格。表头背景采用浅蓝色，文字为白色，显得专业清晰；表格主体背景为白色，文字为黑色，行与行之间有浅蓝色的细线分隔。整体布局工整，从左至右依次展示了“部件”名称、“产品”具体型号以及对应的“功能说明”。\n\n[###] 表头：部件、产品、功能说明\n第一行：控制器、iMaster NCE、对网络设备进行集中化、自动化管理\n第二行：网络分析器、iMaster NCE-CampusInsight、采集网络指标，应用 ML 技术，进行故障定位和智能调优\n第三行：分布式控制组件、RR、负责 CPE 之间的 VPN 路由和隧道信息分发\n第四行：CPE、NetEngine AR8000/AR6000/AR5000/ AR600 等系列 CPE，如 NetEngine AR5710/ NetEngine AR6710、NetEngine AR 分支接入路由器，全系列支持 SD-WAN\n第五行：vCPE、NetEngine AR6700V，AR6700V-L、云原生路由器、可部署在私有云和公有云环境中\n\n[###] SD-WAN, iMaster NCE, NetEngine AR, CPE, vCPE, 网络分析器, 分布式控制组件, 华为网络产品, 企业网架构, 云原生路由器",
+            "score": 4.617000102996826,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          }
+        ],
+        "timings": {
+          "trace_id": "e3b9578d-af8d-435c-88de-a03597796a58",
+          "request_path": "/api/search/text-to-image",
+          "request_kind": "text_to_image_search",
+          "total_ms": 37691.481,
+          "metadata": {
+            "top_k": 5
+          },
+          "stages": [
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 13525.851,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-flash",
+                "message_count": 2,
+                "image_count": 0
+              }
+            },
+            {
+              "name": "query_expand",
+              "elapsed_ms": 13526.062,
+              "status": "ok",
+              "meta": {
+                "query_length": 25,
+                "expand_count": 3
+              }
+            },
+            {
+              "name": "multi_query_hybrid_search",
+              "elapsed_ms": 14649.305,
+              "status": "ok",
+              "meta": {
+                "candidate_k": 20,
+                "enable_query_rewrite": true
+              }
+            },
+            {
+              "name": "rerank",
+              "elapsed_ms": 23013.139,
+              "status": "ok",
+              "meta": {
+                "candidate_count": 28,
+                "top_k": 5
+              }
+            },
+            {
+              "name": "text_to_image_search_internal",
+              "elapsed_ms": 37690.286,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "candidate_k": 20,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "adapter_text_to_image_search",
+              "elapsed_ms": 37690.312,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "text_to_image_total",
+              "elapsed_ms": 37691.44,
+              "status": "ok",
+              "meta": {
+                "top_k": 5
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_name": "text_search_specs",
+      "kind": "text_to_image",
+      "endpoint": "/api/search/text-to-image",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 35065.871,
+      "timings": {
+        "trace_id": "00dcc232-bfae-4fa6-a8ee-70f9c88dd655",
+        "request_path": "/api/search/text-to-image",
+        "request_kind": "text_to_image_search",
+        "total_ms": 34634.359,
+        "metadata": {
+          "top_k": 5
+        },
+        "stages": [
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 11907.182,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-flash",
+              "message_count": 2,
+              "image_count": 0
+            }
+          },
+          {
+            "name": "query_expand",
+            "elapsed_ms": 11907.465,
+            "status": "ok",
+            "meta": {
+              "query_length": 25,
+              "expand_count": 3
+            }
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "elapsed_ms": 12429.446,
+            "status": "ok",
+            "meta": {
+              "candidate_k": 20,
+              "enable_query_rewrite": true
+            }
+          },
+          {
+            "name": "rerank",
+            "elapsed_ms": 22195.701,
+            "status": "ok",
+            "meta": {
+              "candidate_count": 26,
+              "top_k": 5
+            }
+          },
+          {
+            "name": "text_to_image_search_internal",
+            "elapsed_ms": 34634.19,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "candidate_k": 20,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "adapter_text_to_image_search",
+            "elapsed_ms": 34634.224,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "text_to_image_total",
+            "elapsed_ms": 34634.31,
+            "status": "ok",
+            "meta": {
+              "top_k": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "query": "华为 NetEngine AR6000 技术规格表",
+        "results": [
+          {
+            "id": "30aefa78-6cb4-4876-b0d4-03f81d946122",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\30aefa78-6cb4-4876-b0d4-03f81d946122.jpg",
+            "description": "[###] 该图片是一份华为 NetEngine AR6000 系列路由器的软件功能规格表。[###] 图片详细列举了该系列网络设备所支持的各项网络协议与技术特性，涵盖了从基础连接、路由交换、隧道技术到高级安全和管理维护的全方位功能，主要用于展示设备的技术能力和适用范围。[###] 画面主体是一个清晰的二维表格，采用蓝白配色方案。表头部分使用浅蓝色背景搭配白色文字，突出显示了“规格名称”和“NetEngine AR6000 系列”。表格内容分为左右两栏，左侧列出了功能分类（如基础功能、局域网、IPv4 单播路由等），右侧对应列出了具体的协议标准和技术名词（如 DHCP, OSPF, BGP, MPLS 等）。整体排版整齐，行间距适中，便于阅读和检索信息。[###] 规格名称, NetEngine AR6000 系列, 基础功能, DHCPv4 Server/Client/Relay, 局域网, IEEE 802.1P, VLAN 管理, STP/RSTP/MSTP, IPv4 单播路由, 路由策略, RIP, OSPF, IS-IS, BGP, IPv6 单播路由, OSPFv3, BGP4+, IPv6 基本功能, IPv6 ND, IPv6 ACL, IPv6 隧道技术, GRE 隧道, 6to4, 组播, IGMP, PIM SM, MPLS, MPLS LDP, MPLS L3 VPN, VPLS, VPN, IPsec VPN, GRE, L2TP VPN, VxLAN, SD-WAN EVPN, QoS, DiffServ 模式, 流量监管 (CAR), 拥塞管理, 广域网优化, FEC, 安全, ACL/ACL6, 防火墙, 802.1x 认证, AAA, RADIUS, IPS/AV/URL 过滤, 管理维护, SNMP, NETCONF/YANG, NetStream, NQA[###] NetEngine AR6000, 路由器规格表, OSPF, BGP, MPLS, VPN, IPv6, 网络安全, QoS, 华为网络设备, 路由协议, 网络管理",
+            "score": 6.286282062530518,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "745a59da-80aa-4145-9561-65f7f5ab520e",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\745a59da-80aa-4145-9561-65f7f5ab520e.jpg",
+            "description": "[###] 该图片是一份技术产品规格参数表截图，具体属于网络设备（NetEngine AR6000 系列）的合规性与标准认证列表。[###] 图片核心内容展示了该系列设备所符合的国际及地区性行业标准，主要涵盖了电磁兼容（EMC）、环境保护以及电气安全三个主要维度，用于向用户或监管机构证明产品的合规性和安全性。[###] 画面采用简洁的表格布局，顶部为浅蓝色背景的表头，主体为白色背景配黑色文字。左侧一列列出了三大类标准名称，右侧对应列出了具体的标准编号代码，整体视觉清晰，信息密度高，属于典型的工程技术文档风格。[###] 表头：规格名称，NetEngine AR6000 系列；左侧分类：EMC 标准，环境标准，安全标准；右侧具体标准代码：EN 55032, EN 55035, CISPR 32, CISPR 35, IEC/EN 61000-3-2, EN 61000-3-3, ETSI EN 300 386, ETSI EN 301 489-1, ETSI EN 301 489-3, ETSI EN 301 489-17, ETSI EN 301 489-52, FCC CFR Part 15, Subpart B, ANSI C63.4, ICES-003 Issue 7, EN 50121-1, EN 50121-4, GB 9254, RoHS, REACH, WEEE, IEC 60950-1, IEC 62368-1, EN 60950-1, UL 60950-1, CSA C22.2 No 60950-1, GB 4943.1。[###] NetEngine AR6000, EMC标准, 电磁兼容, 环境标准, RoHS, 安全标准, IEC 60950, FCC认证, 产品规格表, 华为网络设备",
+            "score": 5.932676315307617,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "6ea74645-d0ee-484a-9ce7-f84d4cf2a391",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\6ea74645-d0ee-484a-9ce7-f84d4cf2a391.jpg",
+            "description": "[###] 该图片是一份企业级网络设备（推测为华为NetEngine AR系列路由器）的技术规格与功能特性对照表，常见于产品白皮书、售前方案PPT或官网产品详情页。\n\n[###] 表格的核心意图是建立“业务需求”与“产品特性及价值”之间的映射关系，旨在向客户展示该设备如何通过自研芯片、5G支持、SD-WAN技术及智能运维等手段，解决企业在高性能、高可靠性、安全及成本控制方面的痛点。\n\n[###] 画面主体是一个标准的两列多行表格。表头采用醒目的天蓝色背景搭配白色文字，左侧列标题为“业务需求”，右侧为“特性及价值”。表格主体背景为白色，行与行之间通过浅蓝色的细线进行分隔，视觉风格简洁、商务且专业。文字排版清晰，右侧内容多采用项目符号（bullet points）罗列具体技术参数和优势，其中包含两处蓝色的超链接文本，指向更详细的产品彩页。\n\n[###] 表头：业务需求、特性及价值\n第一行：高性能；基于自研 SOC 芯片架构，集成 ARM 多核处理器，LSW 交换芯片，硬件加解密引擎；提供领先于业界平均水平 2 倍的性能，为关键业务提供低时延体验\n第二行：高可靠；板卡热插拔，保证业务连续稳定；提供企业业务的链路备份，提高业务接入的可靠性；毫秒级的故障检测和判断机制，缩短业务中断时间\n第三行：5G 上行；NetEngine AR6000 全系列支持 RU-201；支持 2.5GE LAN 口，满足 5G 高带宽回传时，高性能转发要求；SA/NSA 双架构，灵活接入；与传统有线链路互为备份，业务不掉线；想了解 RU-201 的更多信息，请参考华为 RU-201 产品彩页；想了解 5G SIC 板卡的更多信息，请参考华为 NetEngine AR 企业路由器 5G SIC 业务板卡彩页\n第四行：易运维；通过 iMaster NCE-Campus 实现本地部署管理或云平台管理，支持 Netconf、SNMP 等多种管理协议、WEB 网管和 Telemetry 高性能数据采集，简化网络部署，运维可视化，降低 OPEX\n第五行：业务融合；融合路由、交换、VPN、安全、WLAN 等多种功能于一体，满足企业业务多元化的需求，节省空间，降低企业 TCO\n第六行：安全；内置防火墙、IPS、URL 过滤、多种 VPN 技术，为用户提供全面的安全防护能力\n第七行：SD-WAN；内置 SD-WAN 解决方案，构建低成本、商业级的互联网连接；ZTP 一键式部署（邮件 URL，U 盘，DHCP 等），零技能要求，设备分钟级开通；支持 SaaS 首包识别（FPI），复杂应用识别；基于带宽和链路质量选路，保证关键应用体验，带宽利用率高达 90%；多链路选路/双 CPE、双 Hub 灵活组网，保证站点业务不掉线；端到端 IPSec 加密，设备安全可信，保障业务安全传输\n\n[###] NetEngine AR6000, 5G上行, SD-WAN, 自研SOC芯片, 企业路由器, 高可靠性, iMaster NCE-Campus, 业务融合, 网络安全, ZTP一键部署",
+            "score": 5.576325416564941,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "87484673-7d36-4e60-ad54-edc9b84c4651",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\87484673-7d36-4e60-ad54-edc9b84c4651.jpg",
+            "description": "[###] 这是一张企业级网络设备的技术规格参数对比表。具体来说，它展示了华为 NetEngine 系列不同型号路由器（涵盖 AR651、AR611、AR631I 等系列）在性能、接口和无线功能上的详细差异，属于典型的产品 Datasheet 或选型指南截图。[###] 该图表的核心意图是为网络工程师或采购人员提供直观的选型依据，通过横向对比 SD-WAN 吞吐量、物理接口配置以及对 LTE/5G 和 Wi-Fi 的支持情况，帮助用户快速区分高性能型号（如 AR651 系列）与入门或特定功能型号（如 AR611、AR631I 系列）的能力边界，以便根据实际业务需求选择合适的设备。[###] 画面主体是一个结构严谨的六行四列数据表格。表头采用醒目的天蓝色背景搭配白色字体，清晰标示出三个主要的产品系列列。表格主体部分为白底黑字，行与列之间由淡蓝色的细线分隔，视觉风格简洁、商务。左侧第一列作为索引列，纵向排列了具体的性能指标项目，右侧三列则对应填充了具体的数值和配置描述。[###] 表头：模型，NetEngine AR651EW/AR651W/AR651W-8P/AR651，NetEngine AR611/AR611W/AR611W-LTE4CN，NetEngine AR631I-LTE4CN；第一行数据：SD-WAN 典型性能*，600Mbps，50Mbps，80Mbps；第二行数据：SD-WAN 转发性能**，800Mbps，80Mbps，120Mbps；第三行数据：固定 LAN/WAN 接口 ***，WAN: 2 * GE Combo / LAN/WAN: 8 * GE 电，WAN: 1*GE Combo / LAN/WAN: 4*GE 电，WAN: 1*GE Combo / LAN: 3*GE 电+1*GE Combo；第四行数据：LTE/5G，支持 5G RU，内置 LTE (AR611W-LTE4CN) , 支持 5G RU，内置 LTE, 支持 5G RU；第五行数据：Wi-Fi，内置 Wi-Fi (AR651EW/AR651W/AR651W-8P)，内置 Wi-Fi (AR611W/AR611W-LTE4CN)，-。[###] NetEngine, AR651, AR611, AR631I, SD-WAN性能, 5G RU, GE Combo接口, 企业路由器, 华为NetEngine, 路由器选型",
+            "score": 4.758825778961182,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "e4584a2c-b52d-444f-96a6-5aebb34d4569",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\e4584a2c-b52d-444f-96a6-5aebb34d4569.jpg",
+            "description": "[###] 这是一张网络技术架构或产品组件清单的表格截图，常见于网络解决方案的技术白皮书、产品手册或系统架构说明文档中。\n\n[###] 该表格详细列出了企业网络解决方案（特别是 SD-WAN 场景）中的关键硬件和软件组件，明确了每个部件的具体产品型号（主要涉及华为的 iMaster NCE 系列和 NetEngine AR 系列）及其在网络架构中的核心功能，旨在帮助技术人员理解系统构成。\n\n[###] 画面主体为一个标准的三列五行表格。表头背景采用浅蓝色，文字为白色，显得专业清晰；表格主体背景为白色，文字为黑色，行与行之间有浅蓝色的细线分隔。整体布局工整，从左至右依次展示了“部件”名称、“产品”具体型号以及对应的“功能说明”。\n\n[###] 表头：部件、产品、功能说明\n第一行：控制器、iMaster NCE、对网络设备进行集中化、自动化管理\n第二行：网络分析器、iMaster NCE-CampusInsight、采集网络指标，应用 ML 技术，进行故障定位和智能调优\n第三行：分布式控制组件、RR、负责 CPE 之间的 VPN 路由和隧道信息分发\n第四行：CPE、NetEngine AR8000/AR6000/AR5000/ AR600 等系列 CPE，如 NetEngine AR5710/ NetEngine AR6710、NetEngine AR 分支接入路由器，全系列支持 SD-WAN\n第五行：vCPE、NetEngine AR6700V，AR6700V-L、云原生路由器、可部署在私有云和公有云环境中\n\n[###] SD-WAN, iMaster NCE, NetEngine AR, CPE, vCPE, 网络分析器, 分布式控制组件, 华为网络产品, 企业网架构, 云原生路由器",
+            "score": 4.617000102996826,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          }
+        ],
+        "timings": {
+          "trace_id": "00dcc232-bfae-4fa6-a8ee-70f9c88dd655",
+          "request_path": "/api/search/text-to-image",
+          "request_kind": "text_to_image_search",
+          "total_ms": 34634.359,
+          "metadata": {
+            "top_k": 5
+          },
+          "stages": [
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 11907.182,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-flash",
+                "message_count": 2,
+                "image_count": 0
+              }
+            },
+            {
+              "name": "query_expand",
+              "elapsed_ms": 11907.465,
+              "status": "ok",
+              "meta": {
+                "query_length": 25,
+                "expand_count": 3
+              }
+            },
+            {
+              "name": "multi_query_hybrid_search",
+              "elapsed_ms": 12429.446,
+              "status": "ok",
+              "meta": {
+                "candidate_k": 20,
+                "enable_query_rewrite": true
+              }
+            },
+            {
+              "name": "rerank",
+              "elapsed_ms": 22195.701,
+              "status": "ok",
+              "meta": {
+                "candidate_count": 26,
+                "top_k": 5
+              }
+            },
+            {
+              "name": "text_to_image_search_internal",
+              "elapsed_ms": 34634.19,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "candidate_k": 20,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "adapter_text_to_image_search",
+              "elapsed_ms": 34634.224,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "text_to_image_total",
+              "elapsed_ms": 34634.31,
+              "status": "ok",
+              "meta": {
+                "top_k": 5
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_name": "image_search_sample",
+      "kind": "image_to_image",
+      "endpoint": "/api/search/image-to-image",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 81832.833,
+      "timings": {
+        "trace_id": "3a7ee77f-c32b-4fbe-b5e7-f91be5f3222a",
+        "request_path": "/api/search/image-to-image",
+        "request_kind": "image_to_image_search",
+        "total_ms": 81494.927,
+        "metadata": {
+          "top_k": 5
+        },
+        "stages": [
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 15953.21,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-plus",
+              "message_count": 1,
+              "image_count": 1
+            }
+          },
+          {
+            "name": "image_query_description_generation",
+            "elapsed_ms": 15953.639,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 18225.634,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-flash",
+              "message_count": 2,
+              "image_count": 0
+            }
+          },
+          {
+            "name": "query_expand",
+            "elapsed_ms": 18225.885,
+            "status": "ok",
+            "meta": {
+              "query_length": 504,
+              "expand_count": 3
+            }
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "elapsed_ms": 19258.467,
+            "status": "ok",
+            "meta": {
+              "candidate_k": 20,
+              "enable_query_rewrite": true
+            }
+          },
+          {
+            "name": "rerank",
+            "elapsed_ms": 46259.373,
+            "status": "ok",
+            "meta": {
+              "candidate_count": 64,
+              "top_k": 5
+            }
+          },
+          {
+            "name": "text_to_image_search_internal",
+            "elapsed_ms": 65538.987,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "candidate_k": 20,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "image_to_image_search_internal",
+            "elapsed_ms": 81493.687,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "adapter_image_to_image_search",
+            "elapsed_ms": 81493.716,
+            "status": "ok",
+            "meta": {
+              "top_k": 5,
+              "fast_path": false
+            }
+          },
+          {
+            "name": "image_to_image_total",
+            "elapsed_ms": 81494.878,
+            "status": "ok",
+            "meta": {
+              "top_k": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "query_description": "[###] 该图片是一张户外实拍照片，主要记录了一辆经过个性化改装和涂鸦装饰的大型巴士停在停车场的情景。[###] 图像的核心意图是展示这辆独特的“猫咪主题”车辆及其周围环境，车辆可能用于巡回活动、移动商店或作为特殊的露营房车，几名路人正站在车旁，似乎在进行交流或准备登车。[###] 画面主体是一辆大型巴士，其车头被极具创意地绘制成一只巨大的白色猫脸，拥有绿色的眼睛、粉色的鼻子和黑色的胡须，显得非常生动有趣。车身侧面采用紫色和深紫红色相间的涂装，并带有彩色的涂鸦图案。车辆左侧站立着三名女性，分别穿着粉色上衣配牛仔裤、全黑装束以及白色T恤配短裤，她们正面向车辆。背景是郁郁葱葱的绿色树林，地面为灰色的沥青路面，右侧还停放着一辆深红色的SUV。[###] 车身侧面紫色区域有彩色的艺术字体，依稀包含 \"Kitty\" 或类似的字样（可能是品牌名或车名）；车身下方有一行较小的网址文字，看起来像是 \"www.kittycruiser.com\"（具体拼写因清晰度受限）。[###] 猫咪巴士, 改装房车, 紫色涂鸦车, 猫脸车头, 停车场实拍, 户外车辆, 独特交通工具, 树林背景, 巡回宣传车, 创意车身设计",
+        "results": [
+          {
+            "id": "46b1596c-5c67-4921-bce7-36fb9fb1e876",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\46b1596c-5c67-4921-bce7-36fb9fb1e876.jpg",
+            "description": "[###] 该图片是一张户外实景摄影照片，记录了一辆经过个性化外观改装的大型巴士（可能是移动商店车）停靠在路边的场景。[###] 图像主要展示了一辆名为“Kitty's Mobile Boutique”的特色车辆，其车头被绘制成了巨大的猫咪面孔，旨在吸引路人注意并进行移动商业活动，画面捕捉了车辆停靠及旁边行人互动的瞬间。[###] 画面主体是一辆银灰色与深紫色相间的大型巴士，车头正前方绘制着醒目的白色猫脸，拥有绿色的眼睛、粉色鼻子及黑色的胡须线条。车身侧面印有彩色的品牌标识。在巴士左侧的沥青路面上，站着三位女性，其中一位身穿粉色上衣和蓝色牛仔裤，正面向巴士方向。背景是茂密的绿色树林，右侧边缘停放着一辆深红色的SUV汽车。[###] 车身侧面可见文字 \"Kitty's Mobile Boutique\"。[###] 改装巴士, 猫脸车, 移动精品店, 户外停车, 特色车辆, 街头摄影, 紫色巴士, 路人, SUV, 创意涂装",
+            "score": 8.247222900390625,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "67808e5e-4ecb-46cb-9617-28da98a68504",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\67808e5e-4ecb-46cb-9617-28da98a68504.jpg",
+            "description": "[###] 该图片是一张户外场景的实拍照片，主体是一辆经过高度个性化改装的大型巴士。[###] 图像主要展示了一辆车头被绘制成巨大猫脸的独特巴士，停靠在树木环绕的停车场中，旁边有几位路人正在驻足观看或交谈，突出了车辆的趣味性和视觉冲击力。[###] 画面中心是一辆银色与深紫色拼接的巴士，其最显著的特征是车头被装饰成一只白色的猫脸，拥有夸张的绿色眼睛、粉色鼻子和黑色胡须。车身侧面有紫色的涂装和文字图案。在巴士左侧，有三名女性站立，分别穿着粉色上衣配牛仔裤、黑色衣物以及白色T恤配黑色长靴。巴士右侧紧邻一辆深红色的SUV。背景是茂密的绿色树林，地面为带有白色标线的灰色沥青路面。[###] 车身侧面紫色区域印有彩色艺术字 \"Kitty Litter\"，下方有一行较小的文字难以完全辨认，依稀可见 \"The Cat Bus\" 字样。[###] 猫脸巴士, 改装房车, 个性化涂装, 户外实拍, 停车场, 路人围观, 紫色大巴, 卡通车头, 树木背景, 创意车辆",
+            "score": 7.704824924468994,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "43d884a8-0730-46b8-9aaf-58285f2a4745",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\43d884a8-0730-46b8-9aaf-58285f2a4745.jpg",
+            "description": "[###] 该图片是一张企业级网络路由器的产品正面特写图，属于典型的 IT 硬件设备展示摄影。[###] 图片主要用于展示华为 NetEngine 系列路由器的物理外观和接口布局，帮助用户识别设备型号（AR6140-9G-2AC）并了解其端口配置，常见于产品手册、电商详情页或网络工程方案设计中。[###] 画面主体为一个扁平的长方体黑色金属机箱，顶部覆盖大面积黑色面板，前面板为白色，两者之间通过一条细红线进行视觉分割。前面板左侧印有清晰的型号标识，右侧整齐排列着各类网络接口，包括四个带有蓝色拨杆的 RJ45 以太网口、两个 SFP 光模块插槽、一个蓝色的 Console 配置口、一个黑色的 ETH 管理口以及最右侧的 USB 接口。背景为纯白色，突出了设备本身的工业设计细节。[###] 图中可见的关键文字包括右上角的品牌标识 \"HUAWEI\"，左侧的产品型号 \"NetEngine AR6140-9G-2AC\"，以及接口上方的微小标识如 \"GE0/0/0\"、\"GE0/0/1\"、\"GE0/0/2\"、\"GE0/0/3\"、\"SFP\"、\"CONSOLE\"、\"ETH\" 和 \"USB\" 符号。[###] 华为路由器, NetEngine AR6140, 企业级网关, AR6140-9G-2AC, 网络接口面板, 华为 AR 系列, 路由器前面板, 企业网络设备, SFP 光口, 通信硬件",
+            "score": 4.360846996307373,
+            "asset_type": "mineru_image",
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "8fa6c93e-509a-4976-8c19-0d628a6d16ef",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\8fa6c93e-509a-4976-8c19-0d628a6d16ef.jpg",
+            "description": "[###] 该图片是一张数据中心服务器机架的特写摄影，属于工业科技类的基础设施图像。[###] 图像展示了高密度部署的计算硬件，体现了现代IT基础设施的规模化与标准化，通常用于云计算服务、大数据存储或企业级网络托管，强调了秩序感与强大的数据处理能力。[###] 画面被垂直堆叠的服务器单元填满，呈现出强烈的重复几何美感。主体为黑色的服务器前面板，带有密集的网状散热孔，中间穿插着银灰色的横向金属条（可能是硬盘托架或把手）。左侧边缘可见机架的垂直立柱和固定螺丝，整体色调为冷峻的黑灰工业风，光线均匀，突出了金属质感和精密制造的细节。[###] 图中无明显清晰可辨的文字信息，仅在服务器面板左侧可见微小的白色指示灯或模糊的工业标识点，无法提取具体字符。[###] 服务器, 数据中心, 机架式服务器, 云计算硬件, 网络基础设施, 科技摄影, 黑色金属, 散热孔, 堆叠部署, 企业级IT",
+            "score": 4.310369968414307,
+            "asset_type": "embedded_image",
+            "page_number": 4,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          },
+          {
+            "id": "71ba97d8-e1db-4270-a207-19f3feba66d6",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\71ba97d8-e1db-4270-a207-19f3feba66d6.jpg",
+            "description": "[###] 该图片是一份网络安全态势感知系统或数据防泄漏（DLP）监控界面的截图。[###] 主要展示了文件在不同地理位置（如北京、贵州、湖南、伦敦、广州）及网络区域（内网、外网）之间的扩散路径和传播方式，同时通过颜色编码直观地反映了各个节点资产的价值等级，用于辅助安全人员分析数据泄露风险或病毒传播路径。[###] 画面背景为深蓝色的科技风格界面。左侧设有详细的图例区域，定义了节点颜色代表的资产价值（从红色的“很高”到绿色的“很低”）以及文件扩散的图标（邮件和HTTP）。右侧主体部分是一个网络拓扑结构图，包含多个电脑形状的节点，节点之间通过带有箭头的线条连接，表示数据流向。节点上方标注了具体的分部名称，下方标注了IP地址的后缀。可以看到“内网”区域被一个大的蓝色线框包围，而“英国伦敦”节点位于框外，暗示其属于外网区域。[###] 地域信息、显示图例、节点资产价值图例、5-很高、4-高、3-中、2-低、1-很低、文件扩散方式图例、邮件扩散、http扩散、外网、内网、英国伦敦、湖南分部、贵州分部、北京分部、中国广州、11.11、111、1.114、113、115、1.115、10、112。[###] 网络安全、态势感知、数据流向、拓扑图、资产价值、文件扩散、内网监控、DLP、IT运维、网络拓扑。",
+            "score": 4.208297252655029,
+            "asset_type": "embedded_image",
+            "page_number": 5,
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          }
+        ],
+        "timings": {
+          "trace_id": "3a7ee77f-c32b-4fbe-b5e7-f91be5f3222a",
+          "request_path": "/api/search/image-to-image",
+          "request_kind": "image_to_image_search",
+          "total_ms": 81494.927,
+          "metadata": {
+            "top_k": 5
+          },
+          "stages": [
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 15953.21,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-plus",
+                "message_count": 1,
+                "image_count": 1
+              }
+            },
+            {
+              "name": "image_query_description_generation",
+              "elapsed_ms": 15953.639,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 18225.634,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-flash",
+                "message_count": 2,
+                "image_count": 0
+              }
+            },
+            {
+              "name": "query_expand",
+              "elapsed_ms": 18225.885,
+              "status": "ok",
+              "meta": {
+                "query_length": 504,
+                "expand_count": 3
+              }
+            },
+            {
+              "name": "multi_query_hybrid_search",
+              "elapsed_ms": 19258.467,
+              "status": "ok",
+              "meta": {
+                "candidate_k": 20,
+                "enable_query_rewrite": true
+              }
+            },
+            {
+              "name": "rerank",
+              "elapsed_ms": 46259.373,
+              "status": "ok",
+              "meta": {
+                "candidate_count": 64,
+                "top_k": 5
+              }
+            },
+            {
+              "name": "text_to_image_search_internal",
+              "elapsed_ms": 65538.987,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "candidate_k": 20,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "image_to_image_search_internal",
+              "elapsed_ms": 81493.687,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "adapter_image_to_image_search",
+              "elapsed_ms": 81493.716,
+              "status": "ok",
+              "meta": {
+                "top_k": 5,
+                "fast_path": false
+              }
+            },
+            {
+              "name": "image_to_image_total",
+              "elapsed_ms": 81494.878,
+              "status": "ok",
+              "meta": {
+                "top_k": 5
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_name": "image_upload_sample",
+      "kind": "image_upload",
+      "endpoint": "/api/knowledge-base/upload",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 25752.852,
+      "timings": {
+        "trace_id": "ce5172cf-92b3-4a4d-b72b-4fde7a8c0536",
+        "request_path": "/api/knowledge-base/upload",
+        "request_kind": "knowledge_base_upload",
+        "total_ms": 25740.094,
+        "metadata": {
+          "file_count": 1,
+          "split": "custom"
+        },
+        "stages": [
+          {
+            "name": "upload_file_read",
+            "elapsed_ms": 0.024,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "upload_file_save",
+            "elapsed_ms": 0.544,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "chat_completion_async",
+            "elapsed_ms": 24777.632,
+            "status": "ok",
+            "meta": {
+              "model_name": "qwen3.5-plus",
+              "message_count": 1,
+              "image_count": 1
+            }
+          },
+          {
+            "name": "image_description_generation",
+            "elapsed_ms": 24782.453,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "image_vector_upsert",
+            "elapsed_ms": 878.655,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "bm25_incremental_update",
+            "elapsed_ms": 41.564,
+            "status": "ok",
+            "meta": {}
+          },
+          {
+            "name": "process_image_upload",
+            "elapsed_ms": 25737.862,
+            "status": "ok",
+            "meta": {
+              "split": "custom",
+              "filename": "02b1bdae-446e-4bec-a8aa-07c19729e072.jpg"
+            }
+          },
+          {
+            "name": "process_image_uploads",
+            "elapsed_ms": 25737.902,
+            "status": "ok",
+            "meta": {
+              "file_count": 1,
+              "split": "custom"
+            }
+          },
+          {
+            "name": "knowledge_base_upload_total",
+            "elapsed_ms": 25740.057,
+            "status": "ok",
+            "meta": {
+              "file_count": 1,
+              "split": "custom"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "images": [
+          {
+            "id": "7d8c1682-2473-4b68-9823-d82fc3cb5d50",
+            "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\images\\custom\\7d8c1682-2473-4b68-9823-d82fc3cb5d50.jpg",
+            "upload_time": "2026-04-16T08:15:24.137690",
+            "generated_description": "[###] 该图片是一张户外实景摄影照片，主要展示了一辆经过个性化改装的大型房车（RV）停靠在路边的场景。[###] 图像的核心意图是呈现这辆独特的“猫脸”主题房车及其在户外环境中的状态，记录了休闲旅行或露营生活中的一个瞬间，突出了车主的创意设计与个性化的车辆文化。[###] 画面主体是一辆银灰色底盘的大型巴士，车头被极具创意地绘制成一只巨大的白色猫脸，拥有绿色的眼睛、粉色的鼻子和黑色的胡须，显得生动有趣且极具辨识度。车身侧面采用了紫色与酒红色的条纹装饰，并印有卡通风格的图案。车辆停在铺有沥青的停车场内，背景是茂密的绿色树林，光线自然明亮。在车辆左侧，有三名穿着休闲服装的行人（看似游客或车主亲友）正在驻足观看或交谈；车辆右侧则紧挨着停放了一辆深红色的SUV。[###] 车身侧面可见明显的艺术字体 \"The Catty Wagon\"，下方有一行较小的网址文字，依稀可辨认为 \"www.cattywagon.com\"。[###] 房车, 改装巴士, 猫脸车, 户外摄影, 个性化涂装, 旅行生活, 停车场, 创意车辆, 休闲度假, RV文化",
+            "status": "Completed",
+            "title": "02b1bdae-446e-4bec-a8aa-07c19729e072",
+            "tags": [],
+            "enabled": true,
+            "custom_metadata": {},
+            "continued_from_previous_page": false,
+            "continued_to_next_page": false
+          }
+        ],
+        "timings": {
+          "trace_id": "ce5172cf-92b3-4a4d-b72b-4fde7a8c0536",
+          "request_path": "/api/knowledge-base/upload",
+          "request_kind": "knowledge_base_upload",
+          "total_ms": 25740.094,
+          "metadata": {
+            "file_count": 1,
+            "split": "custom"
+          },
+          "stages": [
+            {
+              "name": "upload_file_read",
+              "elapsed_ms": 0.024,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "upload_file_save",
+              "elapsed_ms": 0.544,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "chat_completion_async",
+              "elapsed_ms": 24777.632,
+              "status": "ok",
+              "meta": {
+                "model_name": "qwen3.5-plus",
+                "message_count": 1,
+                "image_count": 1
+              }
+            },
+            {
+              "name": "image_description_generation",
+              "elapsed_ms": 24782.453,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "image_vector_upsert",
+              "elapsed_ms": 878.655,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "bm25_incremental_update",
+              "elapsed_ms": 41.564,
+              "status": "ok",
+              "meta": {}
+            },
+            {
+              "name": "process_image_upload",
+              "elapsed_ms": 25737.862,
+              "status": "ok",
+              "meta": {
+                "split": "custom",
+                "filename": "02b1bdae-446e-4bec-a8aa-07c19729e072.jpg"
+              }
+            },
+            {
+              "name": "process_image_uploads",
+              "elapsed_ms": 25737.902,
+              "status": "ok",
+              "meta": {
+                "file_count": 1,
+                "split": "custom"
+              }
+            },
+            {
+              "name": "knowledge_base_upload_total",
+              "elapsed_ms": 25740.057,
+              "status": "ok",
+              "meta": {
+                "file_count": 1,
+                "split": "custom"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_name": "document_upload_sample",
+      "kind": "document_upload",
+      "endpoint": "/api/docs/upload",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 61.935,
+      "timings": {
+        "trace_id": "d319d4d2-184e-4d25-a91a-c1878f08bd21",
+        "request_path": "/api/docs/upload",
+        "request_kind": "document_upload",
+        "total_ms": 17.446,
+        "metadata": {
+          "filename": "dc2fb2e7-e4ca-4769-8dba-35c97d792659.pdf"
+        },
+        "stages": [
+          {
+            "name": "document_upload_total",
+            "elapsed_ms": 17.402,
+            "status": "ok",
+            "meta": {}
+          }
+        ]
+      },
+      "error": null,
+      "response_excerpt": {
+        "document": {
+          "id": "82b50d9f-d77f-484f-a394-e09b6f7f56d2",
+          "file_name": "dc2fb2e7-e4ca-4769-8dba-35c97d792659.pdf",
+          "title": "dc2fb2e7-e4ca-4769-8dba-35c97d792659",
+          "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\docs\\82b50d9f-d77f-484f-a394-e09b6f7f56d2.pdf",
+          "upload_time": "2026-04-16T08:15:49.891316",
+          "status": "Processing",
+          "chunk_count": 0,
+          "image_count": 0,
+          "document_type": "pdf",
+          "tags": [],
+          "enabled": true,
+          "custom_metadata": {},
+          "parse_backend": "mineru",
+          "parse_stage": "queued",
+          "progress_percent": 0,
+          "progress_message": "文档已上传，等待解析"
+        },
+        "message": "文档已上传，正在后台解析",
+        "timings": {
+          "trace_id": "d319d4d2-184e-4d25-a91a-c1878f08bd21",
+          "request_path": "/api/docs/upload",
+          "request_kind": "document_upload",
+          "total_ms": 17.446,
+          "metadata": {
+            "filename": "dc2fb2e7-e4ca-4769-8dba-35c97d792659.pdf"
+          },
+          "stages": [
+            {
+              "name": "document_upload_total",
+              "elapsed_ms": 17.402,
+              "status": "ok",
+              "meta": {}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_name": "document_progress_once",
+      "kind": "document_progress",
+      "endpoint": "/api/docs/82b50d9f-d77f-484f-a394-e09b6f7f56d2/progress",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 40.253,
+      "timings": {
+        "trace_id": "581c9336-a2f5-4ed9-b8e8-233aaf456df9",
+        "request_path": "/api/docs/{doc_id}/progress",
+        "request_kind": "document_progress",
+        "total_ms": 0.079,
+        "first_token_ms": null,
+        "metadata": {},
+        "stages": []
+      },
+      "error": null,
+      "response_excerpt": {
+        "document": {
+          "id": "82b50d9f-d77f-484f-a394-e09b6f7f56d2",
+          "file_name": "dc2fb2e7-e4ca-4769-8dba-35c97d792659.pdf",
+          "title": "dc2fb2e7-e4ca-4769-8dba-35c97d792659",
+          "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\docs\\82b50d9f-d77f-484f-a394-e09b6f7f56d2.pdf",
+          "upload_time": "2026-04-16T08:15:49.891316",
+          "status": "Processing",
+          "chunk_count": 0,
+          "image_count": 0,
+          "document_type": "pdf",
+          "tags": [],
+          "notes": null,
+          "enabled": true,
+          "custom_metadata": {},
+          "parse_backend": "mineru",
+          "parse_stage": "parsing_text",
+          "progress_percent": 25,
+          "progress_message": "MinerU 解析中：0/? 页"
+        },
+        "status": "Processing",
+        "stage": "parsing_text",
+        "progress_percent": 25,
+        "message": "MinerU 解析中：0/? 页",
+        "timings": {
+          "trace_id": "581c9336-a2f5-4ed9-b8e8-233aaf456df9",
+          "request_path": "/api/docs/{doc_id}/progress",
+          "request_kind": "document_progress",
+          "total_ms": 0.079,
+          "first_token_ms": null,
+          "metadata": {},
+          "stages": []
+        }
+      }
+    },
+    {
+      "scenario_name": "document_result_once",
+      "kind": "document_result",
+      "endpoint": "/api/docs/82b50d9f-d77f-484f-a394-e09b6f7f56d2/result",
+      "ok": true,
+      "http_status": 200,
+      "wall_ms": 69.861,
+      "timings": {
+        "trace_id": "2ffc9536-5cc4-4923-9198-78d931016197",
+        "request_path": "/api/docs/{doc_id}/result",
+        "request_kind": "document_result",
+        "total_ms": 0.107,
+        "first_token_ms": null,
+        "metadata": {},
+        "stages": []
+      },
+      "error": null,
+      "response_excerpt": {
+        "document": {
+          "id": "82b50d9f-d77f-484f-a394-e09b6f7f56d2",
+          "file_name": "dc2fb2e7-e4ca-4769-8dba-35c97d792659.pdf",
+          "title": "dc2fb2e7-e4ca-4769-8dba-35c97d792659",
+          "file_path": "E:\\BiShe\\Code2\\MyProject\\storage\\docs\\82b50d9f-d77f-484f-a394-e09b6f7f56d2.pdf",
+          "upload_time": "2026-04-16T08:15:49.891316",
+          "status": "Failed",
+          "chunk_count": 0,
+          "image_count": 0,
+          "document_type": "pdf",
+          "tags": [],
+          "notes": null,
+          "enabled": true,
+          "custom_metadata": {},
+          "parse_backend": "mineru",
+          "parse_stage": "failed",
+          "progress_percent": 100,
+          "progress_message": ""
+        },
+        "chunks": [],
+        "images": [],
+        "timings": {
+          "trace_id": "2ffc9536-5cc4-4923-9198-78d931016197",
+          "request_path": "/api/docs/{doc_id}/result",
+          "request_kind": "document_result",
+          "total_ms": 0.107,
+          "first_token_ms": null,
+          "metadata": {},
+          "stages": []
+        }
+      }
+    }
+  ],
+  "summary": {
+    "overall": {
+      "run_count": 11,
+      "success_count": 11,
+      "failure_count": 0,
+      "timeout_count": 0,
+      "scenario_count": 8
+    },
+    "scenarios": {
+      "rag_table_non_stream": {
+        "scenario_name": "rag_table_non_stream",
+        "endpoint": "/api/rag/chat",
+        "run_count": 2,
+        "success_count": 2,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 2,
+          "min": 102608.774,
+          "max": 104322.566,
+          "avg": 103465.67,
+          "p50": 103465.67,
+          "p90": 104151.187,
+          "p95": 104236.876
+        },
+        "timing_total_ms": {
+          "count": 2,
+          "min": 102586.379,
+          "max": 103747.98,
+          "avg": 103167.179,
+          "p50": 103167.179,
+          "p90": 103631.82,
+          "p95": 103689.9
+        },
+        "first_token_ms": null,
+        "top_stages": [
+          {
+            "name": "rag_chat_total",
+            "avg_elapsed_ms": 103167.11,
+            "avg_share": 1.0,
+            "run_count": 2
+          },
+          {
+            "name": "adapter_rag_chat",
+            "avg_elapsed_ms": 102379.994,
+            "avg_share": 0.9924,
+            "run_count": 2
+          },
+          {
+            "name": "final_answer_generation",
+            "avg_elapsed_ms": 63539.682,
+            "avg_share": 0.6163,
+            "run_count": 2
+          },
+          {
+            "name": "rag_retrieval",
+            "avg_elapsed_ms": 37914.609,
+            "avg_share": 0.3672,
+            "run_count": 2
+          },
+          {
+            "name": "async_search_with_dict_output",
+            "avg_elapsed_ms": 37914.582,
+            "avg_share": 0.3672,
+            "run_count": 2
+          }
+        ]
+      },
+      "rag_table_stream": {
+        "scenario_name": "rag_table_stream",
+        "endpoint": "/api/rag/chat/stream",
+        "run_count": 2,
+        "success_count": 2,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 2,
+          "min": 91015.2,
+          "max": 106438.145,
+          "avg": 98726.673,
+          "p50": 98726.673,
+          "p90": 104895.851,
+          "p95": 105666.998
+        },
+        "timing_total_ms": {
+          "count": 2,
+          "min": 90983.763,
+          "max": 105912.36,
+          "avg": 98448.062,
+          "p50": 98448.062,
+          "p90": 104419.5,
+          "p95": 105165.93
+        },
+        "first_token_ms": {
+          "count": 2,
+          "min": 90891.96,
+          "max": 105827.403,
+          "avg": 98359.682,
+          "p50": 98359.682,
+          "p90": 104333.859,
+          "p95": 105080.631
+        },
+        "top_stages": [
+          {
+            "name": "final_answer_generation",
+            "avg_elapsed_ms": 65768.556,
+            "avg_share": 0.6666,
+            "run_count": 2
+          },
+          {
+            "name": "chat_completion_async",
+            "avg_elapsed_ms": 37927.452,
+            "avg_share": 0.3845,
+            "run_count": 4
+          },
+          {
+            "name": "rag_retrieval",
+            "avg_elapsed_ms": 32046.152,
+            "avg_share": 0.3269,
+            "run_count": 2
+          },
+          {
+            "name": "async_search_with_dict_output",
+            "avg_elapsed_ms": 32046.126,
+            "avg_share": 0.3269,
+            "run_count": 2
+          },
+          {
+            "name": "rerank",
+            "avg_elapsed_ms": 21216.55,
+            "avg_share": 0.2167,
+            "run_count": 2
+          }
+        ]
+      },
+      "text_search_specs": {
+        "scenario_name": "text_search_specs",
+        "endpoint": "/api/search/text-to-image",
+        "run_count": 2,
+        "success_count": 2,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 2,
+          "min": 35065.871,
+          "max": 37717.131,
+          "avg": 36391.501,
+          "p50": 36391.501,
+          "p90": 37452.005,
+          "p95": 37584.568
+        },
+        "timing_total_ms": {
+          "count": 2,
+          "min": 34634.359,
+          "max": 37691.481,
+          "avg": 36162.92,
+          "p50": 36162.92,
+          "p90": 37385.769,
+          "p95": 37538.625
+        },
+        "first_token_ms": null,
+        "top_stages": [
+          {
+            "name": "text_to_image_total",
+            "avg_elapsed_ms": 36162.875,
+            "avg_share": 1.0,
+            "run_count": 2
+          },
+          {
+            "name": "adapter_text_to_image_search",
+            "avg_elapsed_ms": 36162.268,
+            "avg_share": 1.0,
+            "run_count": 2
+          },
+          {
+            "name": "text_to_image_search_internal",
+            "avg_elapsed_ms": 36162.238,
+            "avg_share": 1.0,
+            "run_count": 2
+          },
+          {
+            "name": "rerank",
+            "avg_elapsed_ms": 22604.42,
+            "avg_share": 0.6257,
+            "run_count": 2
+          },
+          {
+            "name": "multi_query_hybrid_search",
+            "avg_elapsed_ms": 13539.376,
+            "avg_share": 0.3738,
+            "run_count": 2
+          }
+        ]
+      },
+      "image_search_sample": {
+        "scenario_name": "image_search_sample",
+        "endpoint": "/api/search/image-to-image",
+        "run_count": 1,
+        "success_count": 1,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 1,
+          "min": 81832.833,
+          "max": 81832.833,
+          "avg": 81832.833,
+          "p50": 81832.833,
+          "p90": 81832.833,
+          "p95": 81832.833
+        },
+        "timing_total_ms": {
+          "count": 1,
+          "min": 81494.927,
+          "max": 81494.927,
+          "avg": 81494.927,
+          "p50": 81494.927,
+          "p90": 81494.927,
+          "p95": 81494.927
+        },
+        "first_token_ms": null,
+        "top_stages": [
+          {
+            "name": "image_to_image_total",
+            "avg_elapsed_ms": 81494.878,
+            "avg_share": 1.0,
+            "run_count": 1
+          },
+          {
+            "name": "adapter_image_to_image_search",
+            "avg_elapsed_ms": 81493.716,
+            "avg_share": 1.0,
+            "run_count": 1
+          },
+          {
+            "name": "image_to_image_search_internal",
+            "avg_elapsed_ms": 81493.687,
+            "avg_share": 1.0,
+            "run_count": 1
+          },
+          {
+            "name": "text_to_image_search_internal",
+            "avg_elapsed_ms": 65538.987,
+            "avg_share": 0.8042,
+            "run_count": 1
+          },
+          {
+            "name": "rerank",
+            "avg_elapsed_ms": 46259.373,
+            "avg_share": 0.5676,
+            "run_count": 1
+          }
+        ]
+      },
+      "image_upload_sample": {
+        "scenario_name": "image_upload_sample",
+        "endpoint": "/api/knowledge-base/upload",
+        "run_count": 1,
+        "success_count": 1,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 1,
+          "min": 25752.852,
+          "max": 25752.852,
+          "avg": 25752.852,
+          "p50": 25752.852,
+          "p90": 25752.852,
+          "p95": 25752.852
+        },
+        "timing_total_ms": {
+          "count": 1,
+          "min": 25740.094,
+          "max": 25740.094,
+          "avg": 25740.094,
+          "p50": 25740.094,
+          "p90": 25740.094,
+          "p95": 25740.094
+        },
+        "first_token_ms": null,
+        "top_stages": [
+          {
+            "name": "knowledge_base_upload_total",
+            "avg_elapsed_ms": 25740.057,
+            "avg_share": 1.0,
+            "run_count": 1
+          },
+          {
+            "name": "process_image_uploads",
+            "avg_elapsed_ms": 25737.902,
+            "avg_share": 0.9999,
+            "run_count": 1
+          },
+          {
+            "name": "process_image_upload",
+            "avg_elapsed_ms": 25737.862,
+            "avg_share": 0.9999,
+            "run_count": 1
+          },
+          {
+            "name": "image_description_generation",
+            "avg_elapsed_ms": 24782.453,
+            "avg_share": 0.9628,
+            "run_count": 1
+          },
+          {
+            "name": "chat_completion_async",
+            "avg_elapsed_ms": 24777.632,
+            "avg_share": 0.9626,
+            "run_count": 1
+          }
+        ]
+      },
+      "document_upload_sample": {
+        "scenario_name": "document_upload_sample",
+        "endpoint": "/api/docs/upload",
+        "run_count": 1,
+        "success_count": 1,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 1,
+          "min": 61.935,
+          "max": 61.935,
+          "avg": 61.935,
+          "p50": 61.935,
+          "p90": 61.935,
+          "p95": 61.935
+        },
+        "timing_total_ms": {
+          "count": 1,
+          "min": 17.446,
+          "max": 17.446,
+          "avg": 17.446,
+          "p50": 17.446,
+          "p90": 17.446,
+          "p95": 17.446
+        },
+        "first_token_ms": null,
+        "top_stages": [
+          {
+            "name": "document_upload_total",
+            "avg_elapsed_ms": 17.402,
+            "avg_share": 0.9975,
+            "run_count": 1
+          }
+        ]
+      },
+      "document_progress_once": {
+        "scenario_name": "document_progress_once",
+        "endpoint": "/api/docs/82b50d9f-d77f-484f-a394-e09b6f7f56d2/progress",
+        "run_count": 1,
+        "success_count": 1,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 1,
+          "min": 40.253,
+          "max": 40.253,
+          "avg": 40.253,
+          "p50": 40.253,
+          "p90": 40.253,
+          "p95": 40.253
+        },
+        "timing_total_ms": {
+          "count": 1,
+          "min": 0.079,
+          "max": 0.079,
+          "avg": 0.079,
+          "p50": 0.079,
+          "p90": 0.079,
+          "p95": 0.079
+        },
+        "first_token_ms": null,
+        "top_stages": []
+      },
+      "document_result_once": {
+        "scenario_name": "document_result_once",
+        "endpoint": "/api/docs/82b50d9f-d77f-484f-a394-e09b6f7f56d2/result",
+        "run_count": 1,
+        "success_count": 1,
+        "success_rate": 1.0,
+        "wall_ms": {
+          "count": 1,
+          "min": 69.861,
+          "max": 69.861,
+          "avg": 69.861,
+          "p50": 69.861,
+          "p90": 69.861,
+          "p95": 69.861
+        },
+        "timing_total_ms": {
+          "count": 1,
+          "min": 0.107,
+          "max": 0.107,
+          "avg": 0.107,
+          "p50": 0.107,
+          "p90": 0.107,
+          "p95": 0.107
+        },
+        "first_token_ms": null,
+        "top_stages": []
+      }
+    },
+    "bottlenecks": [
+      {
+        "name": "rag_chat_total",
+        "avg_elapsed_ms": 103167.11,
+        "avg_share": 1.0,
+        "run_count": 2
+      },
+      {
+        "name": "image_to_image_total",
+        "avg_elapsed_ms": 81494.878,
+        "avg_share": 1.0,
+        "run_count": 1
+      },
+      {
+        "name": "adapter_image_to_image_search",
+        "avg_elapsed_ms": 81493.716,
+        "avg_share": 1.0,
+        "run_count": 1
+      },
+      {
+        "name": "image_to_image_search_internal",
+        "avg_elapsed_ms": 81493.687,
+        "avg_share": 1.0,
+        "run_count": 1
+      },
+      {
+        "name": "text_to_image_total",
+        "avg_elapsed_ms": 36162.875,
+        "avg_share": 1.0,
+        "run_count": 2
+      },
+      {
+        "name": "adapter_text_to_image_search",
+        "avg_elapsed_ms": 36162.268,
+        "avg_share": 1.0,
+        "run_count": 2
+      },
+      {
+        "name": "knowledge_base_upload_total",
+        "avg_elapsed_ms": 25740.057,
+        "avg_share": 1.0,
+        "run_count": 1
+      },
+      {
+        "name": "process_image_uploads",
+        "avg_elapsed_ms": 25737.902,
+        "avg_share": 0.9999,
+        "run_count": 1
+      },
+      {
+        "name": "process_image_upload",
+        "avg_elapsed_ms": 25737.862,
+        "avg_share": 0.9999,
+        "run_count": 1
+      },
+      {
+        "name": "document_upload_total",
+        "avg_elapsed_ms": 17.402,
+        "avg_share": 0.9975,
+        "run_count": 1
+      }
+    ],
+    "actionable_bottlenecks": [
+      {
+        "name": "image_description_generation",
+        "avg_elapsed_ms": 24782.453,
+        "avg_share": 0.9628,
+        "run_count": 1
+      },
+      {
+        "name": "final_answer_generation",
+        "avg_elapsed_ms": 64654.119,
+        "avg_share": 0.6414,
+        "run_count": 4
+      },
+      {
+        "name": "rerank",
+        "avg_elapsed_ms": 26688.735,
+        "avg_share": 0.395,
+        "run_count": 7
+      },
+      {
+        "name": "chat_completion_async",
+        "avg_elapsed_ms": 29348.943,
+        "avg_share": 0.3872,
+        "run_count": 13
+      },
+      {
+        "name": "rag_retrieval",
+        "avg_elapsed_ms": 34980.38,
+        "avg_share": 0.3471,
+        "run_count": 4
+      },
+      {
+        "name": "multi_query_hybrid_search",
+        "avg_elapsed_ms": 12976.638,
+        "avg_share": 0.2036,
+        "run_count": 7
+      },
+      {
+        "name": "image_query_description_generation",
+        "avg_elapsed_ms": 15953.639,
+        "avg_share": 0.1958,
+        "run_count": 1
+      },
+      {
+        "name": "query_expand",
+        "avg_elapsed_ms": 11817.426,
+        "avg_share": 0.1877,
+        "run_count": 7
+      },
+      {
+        "name": "image_vector_upsert",
+        "avg_elapsed_ms": 878.655,
+        "avg_share": 0.0341,
+        "run_count": 1
+      },
+      {
+        "name": "document_text_retrieval",
+        "avg_elapsed_ms": 724.486,
+        "avg_share": 0.0072,
+        "run_count": 4
+      }
+    ]
+  }
+}

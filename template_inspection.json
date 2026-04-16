@@ -1,0 +1,1726 @@
+{
+  "paragraphs": [
+    {
+      "index": 1,
+      "text": "论文题目\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 2,
+      "text": "基于NeRF技术的三维重建系统的设计与实现\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 3,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 4,
+      "text": "学院名称\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 5,
+      "text": "XXX 学院\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 6,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 7,
+      "text": "专业名称\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 8,
+      "text": "XXX XXX\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 9,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 10,
+      "text": "学生姓名\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 11,
+      "text": "XXX\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 12,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 13,
+      "text": "指导教师\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 14,
+      "text": "XXX  XXX\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 15,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 16,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 17,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 18,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 19,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 20,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 21,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 22,
+      "text": "二○二X年 六月\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 23,
+      "text": "\\r\u0007",
+      "style": "网格型"
+    },
+    {
+      "index": 25,
+      "text": "学号________________                                密级________________\\r",
+      "style": "正文"
+    },
+    {
+      "index": 26,
+      "text": "（黑体五号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 27,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 28,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 29,
+      "text": "东北大学本科毕业论文\\r",
+      "style": "正文"
+    },
+    {
+      "index": 30,
+      "text": "（一号宋体加粗居中）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 31,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 32,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 33,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 34,
+      "text": "基于NeRF技术的三维重建系统的设计与实现\\r",
+      "style": "正文"
+    },
+    {
+      "index": 35,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 36,
+      "text": "（二号，中文黑体，英文、数字Tims New Roman体，居中，标题行间距为32磅）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 37,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 38,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 39,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 40,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 41,
+      "text": "学 院 名 称  ：XXX XXX\\r",
+      "style": "正文"
+    },
+    {
+      "index": 42,
+      "text": "专 业 名 称  ：XXX XXX\\r",
+      "style": "正文"
+    },
+    {
+      "index": 43,
+      "text": "学 生 姓 名  ：XXX\\r",
+      "style": "正文"
+    },
+    {
+      "index": 44,
+      "text": "指 导 教 师  ：XXX  教授\\r",
+      "style": "正文"
+    },
+    {
+      "index": 45,
+      "text": "XXX  职称（如有双导师）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 46,
+      "text": "（宋体 小三号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 47,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 48,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 49,
+      "text": "20XX年6月",
+      "style": "正文"
+    },
+    {
+      "index": 50,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 51,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 52,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 53,
+      "text": "Design and Implementation of 3D Reconstruction System Based on NeRF \\r",
+      "style": "内标题"
+    },
+    {
+      "index": 54,
+      "text": "（二号加粗Tims New Roman居中，标题行间距为32磅）\\r",
+      "style": "内标题"
+    },
+    {
+      "index": 55,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 56,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 57,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 58,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 59,
+      "text": "\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 60,
+      "text": "by Zhang San\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 61,
+      "text": "\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 62,
+      "text": "\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 63,
+      "text": "Supervisor:\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 64,
+      "text": "Professor\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 65,
+      "text": "Li Si\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 66,
+      "text": "\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 67,
+      "text": "Associate Supervisor:\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 68,
+      "text": "Senior Engineer \\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 69,
+      "text": "Wang Wu\\r\u0007",
+      "style": "内封皮信息"
+    },
+    {
+      "index": 70,
+      "text": "\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 71,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 72,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 73,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 74,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 75,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 76,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 77,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 78,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 79,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 80,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 81,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 82,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 83,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 84,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 85,
+      "text": "（英文、数字Times New Roman体 小三号）\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 86,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 87,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 88,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 89,
+      "text": "\\r",
+      "style": "论文中空行"
+    },
+    {
+      "index": 90,
+      "text": "Northeastern University\\r",
+      "style": "正文"
+    },
+    {
+      "index": 91,
+      "text": "June 20XX\\r",
+      "style": "正文"
+    },
+    {
+      "index": 93,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 94,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 95,
+      "text": "郑 重 声 明\\r",
+      "style": "正文"
+    },
+    {
+      "index": 96,
+      "text": "（宋体加粗二号居中）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 97,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 98,
+      "text": "本人呈交的学位论文，是在导师的指导下，独立进行研究工作所取得的成果，所有数据、图片资料真实可靠。尽我所知，除文中已经注明引用的内容外，本学位论文的研究成果不包含他人享有著作权的内容。对本论文所涉及的研究工作做出贡献的其他个人和集体，均已在文中以明确的方式标明。本学位论文的知识产权归属于培养单位。\\r",
+      "style": "正文"
+    },
+    {
+      "index": 99,
+      "text": "（宋体四号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 100,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 101,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 102,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 103,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 104,
+      "text": "本人签名：                          日期：\\r",
+      "style": "正文"
+    },
+    {
+      "index": 105,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 106,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 107,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 108,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 109,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 110,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 111,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 112,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 113,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 114,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 115,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 116,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 117,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 118,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 119,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 120,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 121,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 122,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 123,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 125,
+      "text": "摘  要\\r",
+      "style": "正文"
+    },
+    {
+      "index": 126,
+      "text": "（黑体小二号，段前0.8，段后0.5行）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 127,
+      "text": "随着人类对矿产品需求的不断增加以及易采资源变得越来越少，开采复杂难采资源是未来采矿的必然趋势。另一方面，随着国家环境保护政策的日益严格，如何合理、高效、经济、安全地进行矿产资源的开发、利用，降低资源的损失、减少矿石的贫化，是矿产资源开发者共同关心的问题。充填采矿法因其具有提高回采率、降低贫化率、控制地压和减缓对环境扰动等显著优点，应用越来越广泛。（宋体小四号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 128,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 129,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 130,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 131,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 132,
+      "text": "关键词一般为3～5个，与摘要正文空一行。最后一个关键词后无标点符号。\\r",
+      "style": "正文"
+    },
+    {
+      "index": 133,
+      "text": "关键词：关键词1；关键词2；关键词3；关键词4；关键词5\\r",
+      "style": "正文"
+    },
+    {
+      "index": 134,
+      "text": "（黑体小四号）         （宋体小四号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 135,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 137,
+      "text": "ABSTRACT \\r",
+      "style": "正文"
+    },
+    {
+      "index": 138,
+      "text": "(Times New Roman小二号加粗，段前0.8，段后0.5行)\\r",
+      "style": "正文"
+    },
+    {
+      "index": 139,
+      "text": "With the constantincrease of the mankind demanding the mineral products, easily mining resource is becoming more and more scarce, and it’s the inevitable trend of mining complex ore body. On the other hand, national environmental protection policy increasingly stringent. How to exploit and utilization mineral resourcesreasonably, efficiently, economically, safely and reduce loss of resource and dilution of ore is the question of mineral developers caring about. Due to the advantages of increasing recovery rate, reducing dilution rate, controlling underground pressure and mitigating of environmental disturbance, filling method is becoming more and more widely used.(Times New Roman小四号，两端对齐)\\r",
+      "style": "正文"
+    },
+    {
+      "index": 140,
+      "text": "论文用thesis表述，不用paper\\r",
+      "style": "正文"
+    },
+    {
+      "index": 141,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 142,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 143,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 144,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 145,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 146,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 147,
+      "text": "与摘要正文空一行\\r",
+      "style": "正文"
+    },
+    {
+      "index": 148,
+      "text": "Key words: Key words 1; Key words 2; Key words 3; Key words 4; Key words 5\\r",
+      "style": "正文"
+    },
+    {
+      "index": 149,
+      "text": "（Times New Roman小四号加粗） （Times New Roman小四号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 150,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 152,
+      "text": "目  录\\r",
+      "style": "正文"
+    },
+    {
+      "index": 153,
+      "text": "（黑体小二号，段前0.8，段后0.5行）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 154,
+      "text": "摘要……………………………………………………………….………………………I\\r",
+      "style": "TOC 1"
+    },
+    {
+      "index": 155,
+      "text": "ABSTRACT…………………………………………………………………………….II\\r",
+      "style": "正文"
+    },
+    {
+      "index": 156,
+      "text": "1 绪论…………………………………………………………………………………….1\\r",
+      "style": "正文"
+    },
+    {
+      "index": 157,
+      "text": "1.1 课题研究背景及意义……………………………………………………………1\\r",
+      "style": "正文"
+    },
+    {
+      "index": 158,
+      "text": "1.2 国内研究现状…………………………………………………………….….…3\\r",
+      "style": "正文"
+    },
+    {
+      "index": 159,
+      "text": "1.3 本文研究内容和技术路线………………………………………………..……6\\r",
+      "style": "正文"
+    },
+    {
+      "index": 160,
+      "text": "1.4.1 本文的研究内容………………………………………………….………6\\r",
+      "style": "正文"
+    },
+    {
+      "index": 161,
+      "text": "1.4.2 本文的研究方法和技术路线…………………………………………....10\\r",
+      "style": "正文"
+    },
+    {
+      "index": 162,
+      "text": "1.4 论文组织结构……………………………………………………….……….…11\\r",
+      "style": "正文"
+    },
+    {
+      "index": 163,
+      "text": "2  尾砂胶结充填体力学特性研究……………………………………………....13\\r",
+      "style": "正文"
+    },
+    {
+      "index": 164,
+      "text": "2.1 尾砂胶结充填体的物理力学性能及胶凝机理……………………………....13\\r",
+      "style": "正文"
+    },
+    {
+      "index": 165,
+      "text": "2.1.1 尾砂胶结充填体的物理力学性能……………………………………...13\\r",
+      "style": "正文"
+    },
+    {
+      "index": 166,
+      "text": "2.1.2 尾砂胶结充填体的胶凝机理…………………………………………...15\\r",
+      "style": "正文"
+    },
+    {
+      "index": 167,
+      "text": "2.2 尾砂胶结充填体的力学实验……………………………………………...........16\\r",
+      "style": "正文"
+    },
+    {
+      "index": 168,
+      "text": "2.2.1 尾砂物理力学参数测试…………………………………………………..16\\r",
+      "style": "正文"
+    },
+    {
+      "index": 169,
+      "text": "2.2.2 尾砂胶结充填体力学实验……………………………………………...17\\r",
+      "style": "正文"
+    },
+    {
+      "index": 170,
+      "text": "2.3 尾砂胶结充填体破坏规律分析…………………………………………........19\\r",
+      "style": "正文"
+    },
+    {
+      "index": 171,
+      "text": "2.4 本章小结…………………………………………………………………........…20\\r",
+      "style": "正文"
+    },
+    {
+      "index": 172,
+      "text": "（各章的名称黑体四号，其余宋体小四号，英文、阿拉伯数字用Times New Roman体）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 173,
+      "text": "（行间距为1.5倍）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 174,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 175,
+      "text": "结论…………………………………………………………….………………………51\\r",
+      "style": "正文"
+    },
+    {
+      "index": 176,
+      "text": "参考文献……………………………………………………….………………………53\\r",
+      "style": "正文"
+    },
+    {
+      "index": 177,
+      "text": "附录…………………………………………………………….………………………57\\r",
+      "style": "正文"
+    },
+    {
+      "index": 178,
+      "text": "致谢………………………………………………………….………………………61\\r",
+      "style": "正文"
+    },
+    {
+      "index": 179,
+      "text": "（结论、参考文献、致谢及附录黑体四号)",
+      "style": "正文"
+    },
+    {
+      "index": 180,
+      "text": "1 绪论\\r",
+      "style": "正文"
+    },
+    {
+      "index": 181,
+      "text": "（黑体小二号，章标题段前为0.8行、段后为0.5行）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 182,
+      "text": "1.1 课题研究背景及意义\\r",
+      "style": "正文"
+    },
+    {
+      "index": 183,
+      "text": "（黑体四号，段前为0.5行、段后为0.5行）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 184,
+      "text": "人类每时每刻都与周围环境进行着信息交互，其中视觉获取的信息占据五大感官的70%，是人们感知世界的重要手段。人类的生活环境是一个三维世界，人类在漫长的进化过程中习得了感知真实环境三维信息的能力。在古时期，人类唯有通过肉眼观察去理解周围场景，但并不能很好的将场景保存或再现给他人。自1920年第一个数字图像记录了1866年大西洋跨洋电报电缆在纽芬兰登陆的历史场景开始，人们可以通过图像看到跨越时空的真实场景。在此之后，人们一直在努力将自然场景转化为数字化对象。但是图片仅有二维信息，依旧无法还原真实场景中任意视角的观察效果。\\r",
+      "style": "A论文正文"
+    },
+    {
+      "index": 185,
+      "text": "（宋体小四号，正文行间距固定为23磅，字符间距为标准）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 186,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 187,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 188,
+      "text": "1.2 国内外研究现状\\r",
+      "style": "正文"
+    },
+    {
+      "index": 189,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 190,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 191,
+      "text": "1.3 本文研究内容和技术路线\\r",
+      "style": "正文"
+    },
+    {
+      "index": 192,
+      "text": "1.3.1 本文的研究内容（黑体小四号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 193,
+      "text": "本文拟通过室内实验，建立中关铁矿全尾砂胶结充填体的损伤本构方程和损伤演化方程，利用充填体与围岩的能量匹配分析得到满足中关铁矿实际开采条件的最佳强度和配比，从而降低矿山生产成本。\\r",
+      "style": "正文"
+    },
+    {
+      "index": 194,
+      "text": "在室内实验研究的基础上，对中关铁矿首先开采的-230中段进行数值模拟，对其采场结构参数进行优化，得到阶段空场嗣后充填采矿法的最佳采场结构参数，为矿山的设计、生产提供依据。\\r",
+      "style": "正文"
+    },
+    {
+      "index": 195,
+      "text": "本文以中关铁矿为工程背景，研究的内容主要如下：\\r",
+      "style": "正文"
+    },
+    {
+      "index": 196,
+      "text": "(1)在实验室进行充填体力学实验，得到相应的物理力学参数；\t\\r",
+      "style": "正文"
+    },
+    {
+      "index": 197,
+      "text": "(2)进行充填体的受力和损伤力学研究；\\r",
+      "style": "正文"
+    },
+    {
+      "index": 198,
+      "text": "(3)充填体与采场围岩合理匹配分析；\\r",
+      "style": "正文"
+    },
+    {
+      "index": 199,
+      "text": "(4)从充填体的力学特性出发，利用有限差分软件FLAC3D，通过研究充填体的破坏指数及矿房顶底板受力、位移及塑性区等指标，优化采场结构参数。\\r",
+      "style": "正文"
+    },
+    {
+      "index": 200,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 201,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 202,
+      "text": "1.4 论文组织结构\\r",
+      "style": "正文"
+    },
+    {
+      "index": 203,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 204,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 205,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 207,
+      "text": "2 尾砂胶结充填体力学特性研究\\r",
+      "style": "正文"
+    },
+    {
+      "index": 208,
+      "text": "（每一章开始页设置在奇数页码，打印后在右侧）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 209,
+      "text": "2.4 本章小结\\r",
+      "style": "正文"
+    },
+    {
+      "index": 210,
+      "text": "（除第一章和最后一章，其他章每章结尾应有本章小结）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 211,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 212,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 213,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 214,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 215,
+      "text": "公式、图文示例： \\r",
+      "style": "正文"
+    },
+    {
+      "index": 216,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 217,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 218,
+      "text": "（1）公式示例：（公式内容居中，公式标号右对齐）\\r",
+      "style": "批注文字"
+    },
+    {
+      "index": 219,
+      "text": "\u0001                             （2.1）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 220,
+      "text": "上面的公式中，\u0001表示磁场的强度，\u0001表示电位移矢量，\u0001表示导体电流密度，\u0001表示交变磁场产生的电场强度，\u0001表示磁感应强度，\u0001表示电荷密度，令\u0001表示介电常数，\u0001表示磁导率，\u0001表示电导率，则存在如下的关系：\\r",
+      "style": "正文"
+    },
+    {
+      "index": 221,
+      "text": "\u0001                              （2.2）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 222,
+      "text": "\u0001                               （2.3）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 223,
+      "text": "\u0001                              （2.4）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 224,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 225,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 226,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 227,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 228,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 229,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 230,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 231,
+      "text": "（2）表示例：\\r",
+      "style": "正文"
+    },
+    {
+      "index": 232,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 233,
+      "text": "普通表示例：\\r",
+      "style": "正文"
+    },
+    {
+      "index": 234,
+      "text": "表 2.1 不同配比充填体力学参数\\r",
+      "style": "正文"
+    },
+    {
+      "index": 235,
+      "text": "组数\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 236,
+      "text": "灰砂比\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 237,
+      "text": "抗压强度\u0001\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 238,
+      "text": "峰值应变\\r",
+      "style": "正文"
+    },
+    {
+      "index": 239,
+      "text": "\u0001\\r\u0007",
+      "style": "批注文字"
+    },
+    {
+      "index": 240,
+      "text": "泊松比\\r",
+      "style": "正文"
+    },
+    {
+      "index": 241,
+      "text": "\u0001\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 242,
+      "text": "弹性模量\u0001\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 243,
+      "text": "\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 244,
+      "text": "1\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 245,
+      "text": "1:4\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 246,
+      "text": "2.25\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 247,
+      "text": "0.004398\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 248,
+      "text": "0.24\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 249,
+      "text": "1890\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 250,
+      "text": "\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 251,
+      "text": "2\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 252,
+      "text": "1:6\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 253,
+      "text": "1.86\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 254,
+      "text": "0.007050\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 255,
+      "text": "0.25\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 256,
+      "text": "889\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 257,
+      "text": "\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 258,
+      "text": "3\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 259,
+      "text": "1:8\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 260,
+      "text": "1.12\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 261,
+      "text": "0.009780\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 262,
+      "text": "0.26\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 263,
+      "text": "356\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 264,
+      "text": "\\r\u0007",
+      "style": "正文"
+    },
+    {
+      "index": 265,
+      "text": "（三线表，表标题中文宋体五号、数字及字母Times New Roman五号，段前段后0.5行，行距固定值23磅，表内容宋体或Times New Roman五号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 266,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 267,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 268,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 269,
+      "text": "（3）图示例：\\r",
+      "style": "正文"
+    },
+    {
+      "index": 270,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 271,
+      "text": "/\\r",
+      "style": "正文"
+    },
+    {
+      "index": 272,
+      "text": "图 2.1 不同配比充填体应力-应变曲线\\r",
+      "style": "正文"
+    },
+    {
+      "index": 273,
+      "text": "（图标题中文宋体五号、数字及字母Times New Roman五号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 274,
+      "text": "（段前段后0.5行，行距固定值23磅）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 275,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 276,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 277,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 278,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 279,
+      "text": "\u0001\\r",
+      "style": "正文"
+    },
+    {
+      "index": 280,
+      "text": "图2.2 EMAT工作原理示意图\\r",
+      "style": "正文"
+    },
+    {
+      "index": 281,
+      "text": "（各种绘制图尽量画矢量图，图内文字中文宋体五号、数字及字母Times New Roman五号）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 282,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 283,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 284,
+      "text": "\u0001\u0001\\r",
+      "style": "正文"
+    },
+    {
+      "index": 285,
+      "text": "(a) 电磁超声检测装置                 (b) 待测钢轨\\r",
+      "style": "正文"
+    },
+    {
+      "index": 286,
+      "text": "图2.3 电磁超声检测装置与待测钢轨\\r",
+      "style": "正文"
+    },
+    {
+      "index": 287,
+      "text": "（子图标注方法，图内横纵坐标变量，单位需标注完整）\\r",
+      "style": "批注文字"
+    },
+    {
+      "index": 288,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 289,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 290,
+      "text": "\u0001\\r",
+      "style": "正文"
+    },
+    {
+      "index": 291,
+      "text": "图2.4 AX301开发板USB转串口模块原理图\\r",
+      "style": "正文"
+    },
+    {
+      "index": 292,
+      "text": "（电路图，不能有背景色，背景底纹）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 293,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 294,
+      "text": "\u0001\\r",
+      "style": "正文"
+    },
+    {
+      "index": 295,
+      "text": "图2.5 AN108模块AD部分硬件结构\\r",
+      "style": "正文"
+    },
+    {
+      "index": 296,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 297,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 298,
+      "text": ".......\\r",
+      "style": "正文"
+    },
+    {
+      "index": 300,
+      "text": "参考文献示例如下页： \\r",
+      "style": "正文"
+    },
+    {
+      "index": 301,
+      "text": "\\r",
+      "style": "正文"
+    },
+    {
+      "index": 303,
+      "text": "参考文献\\r",
+      "style": "正文"
+    },
+    {
+      "index": 304,
+      "text": "（黑体小二号，段前0.8，段后0.5行）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 305,
+      "text": "哈里森, 沃尔德伦. 经济数学与金融数学[M]. 谢远涛, 译. 北京: 中国人民大学出版社, 2012: 235-236.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 306,
+      "text": "北京市政协民族和宗教委员会, 北京联合大学民族与宗教研究所. 历代王朝与民族宗教[M]. 北京: 民族出版社, 2012: 112.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 307,
+      "text": "牛志明, 斯温兰德, 雷光春. 综合湿地管理国际研讨会论文集[C]. 北京: 海洋出版社, 2012.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 308,
+      "text": "CALMS R B. Infrared spectroscopic studies on solid oxygen [D]. Berkeley: Univ. of California, 1965.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 309,
+      "text": "吴云芳. 面向中文信息处理的现代汉语并列结构研究[D/OL]. 北京: 北京大学, 2003[2013-10-14]. http://thesis.lib.pku.edu.cn/dlib/List.asp?lang=gb&type =Reader&DocGroupID=4&DocID=6328.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 310,
+      "text": "U.S. Department of Transportation Federal Highway Administration. Guidelines for handling excavated acid-producing material: PB91-194001[R]. Springfield: U.S.Department of Commerce National Information Service, 1990.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 311,
+      "text": "中华人民共和国国务院新闻办公室. 国防白皮书：中国武装力量的多样化运用[R/OL]. (2013-04-16)[2014-06-11]. http://www.mod.gov.cn/affair/2013-04/16/ content_4442839.htm.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 312,
+      "text": "张凯军. 轨道火车及高速轨道火车紧急安全制动辅助装置: 201220158825.2[P]. 2012-04-05.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 313,
+      "text": "全国信息与文献标准化技术委员会. 文献著录：第4部分 非书资料: GB/T3792.4—2009[S]. 北京: 中国标准出版社, 2010: 3.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 314,
+      "text": "周易外传:卷5[M] //王夫之. 船山全书:第6册. 长沙: 岳麓书社, 2011: 1109.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 315,
+      "text": "贾东琴, 柯平. 面向数字素养的高校图书馆数字服务体系研究[C] //中国图书馆学会. 中国图书馆学会年会论文集:2011年卷. 北京: 国家图书馆出版社, 2011: 45-52.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 316,
+      "text": "中华医学会湖北分会. 临床内科杂志[J]. 1984, 1(1)-. 武汉: 中华医学会湖北分会, 1984-.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 317,
+      "text": "中国图书馆学会. 图书馆学通讯[J]. 1957(1)-1990(4). 北京: 北京图书馆, 1957-1990.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 318,
+      "text": "袁训来, 陈哲, 肖书海, 等. 蓝田生物群：一个认识多细胞生物起源和早期演化的新窗口[J]. 科学通报, 2012, 55(34): 3219.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 319,
+      "text": "丁文详. 数字革命与竞争国际化[N]. 中国青年报, 2000-11-20(15).\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 320,
+      "text": "同济大学土木工程防灾国家重点实验室. 汶川地震震害研究[M/OL]. 上海: 同济大学出版社, 2011: 5-6[2013-05-09]. http://apabi.lib.pku.edu.cn/usp/pku/pub. mvc?pid=book.detail&metaid=m.20120406-YPT-889-0010.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 321,
+      "text": "李炳穆. 韩国图书馆法[J/OL]. 图书情报工作, 2008, 52 (6): 6-12[2013-10-25]. http://www.docin.com/p-400265742.html.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 322,
+      "text": "余建斌. 我们的科技一直在追赶：访中国工程院院长周济[N/OL]. 人民日报, 2013-01-12(2)[2013-03-20]. http://paper.people.cn/rmrb/html/2013-01/12/nw.D110000renmrb_20130112_5-02.htm.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 323,
+      "text": "Edwin B. World Steel in Figure 2023 [J]. World Steel Association, Belgium, 2023: 1-30. \\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 324,
+      "text": "Gao W H, Zhou W T, Lyu X J, et al. Comprehensive utilization of steel slag: A review [J]. Powder Techology, 2023, 422: 118449.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 325,
+      "text": "Guo J, Bao Y, Wang M. Steel slag in China: treatment, recycling, and management [J] Waste Manag., 2018, 78: 318–330.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 326,
+      "text": "Juliet D, Nick W. Statistical review of world Energy 2023 [J]. Energy Institut, 2023, 1–60.\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 327,
+      "text": "Olabi A G, Wilberforce T, Elsaid K, et al. Large scale application of carbon capture to process industries – A review [J]. J. Cleaner Prod., 2022, 362: 132300. \\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 328,
+      "text": "\\r",
+      "style": "列表段落"
+    },
+    {
+      "index": 329,
+      "text": "(宋体小四号)\\r",
+      "style": "正文"
+    },
+    {
+      "index": 330,
+      "text": "（参考文献中的标点符号均以半角形式体现，西文半角标点符号之后需加半角空格）\\r",
+      "style": "正文"
+    },
+    {
+      "index": 331,
+      "text": "……\\r",
+      "style": "正文"
+    },
+    {
+      "index": 332,
+      "text": "\\r",
+      "style": "正文"
+    }
+  ],
+  "tables": [
+    {
+      "index": 1,
+      "rows": 8,
+      "cols": 2,
+      "cells": [
+        [
+          "论文题目\\r\u0007",
+          "基于NeRF技术的三维重建系统的设计与实现\\r\u0007"
+        ],
+        [
+          "学院名称\\r\u0007",
+          "XXX 学院\\r\u0007"
+        ],
+        [
+          "专业名称\\r\u0007",
+          "XXX XXX\\r\u0007"
+        ],
+        [
+          "学生姓名\\r\u0007",
+          "XXX\\r\u0007"
+        ],
+        [
+          "指导教师\\r\u0007",
+          "XXX  XXX\\r\u0007"
+        ],
+        [
+          "\\r\u0007",
+          "\\r\u0007"
+        ],
+        [
+          "\\r\u0007",
+          "\\r\u0007"
+        ],
+        [
+          "二○二X年 六月\\r\u0007",
+          ""
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "rows": 3,
+      "cols": 3,
+      "cells": [
+        [
+          "\\r\u0007",
+          "by Zhang San\\r\u0007",
+          "\\r\u0007"
+        ],
+        [
+          "Supervisor:\\r\u0007",
+          "Professor\\r\u0007",
+          "Li Si\\r\u0007"
+        ],
+        [
+          "Associate Supervisor:\\r\u0007",
+          "Senior Engineer \\r\u0007",
+          "Wang Wu\\r\u0007"
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "rows": 4,
+      "cols": 6,
+      "cells": [
+        [
+          "组数\\r\u0007",
+          "灰砂比\\r\u0007",
+          "抗压强度\u0001\\r\u0007",
+          "峰值应变\\r \u0001\\r\u0007",
+          "泊松比\\r\u0001\\r\u0007",
+          "弹性模量\u0001\\r\u0007"
+        ],
+        [
+          "1\\r\u0007",
+          "1:4\\r\u0007",
+          "2.25\\r\u0007",
+          "0.004398\\r\u0007",
+          "0.24\\r\u0007",
+          "1890\\r\u0007"
+        ],
+        [
+          "2\\r\u0007",
+          "1:6\\r\u0007",
+          "1.86\\r\u0007",
+          "0.007050\\r\u0007",
+          "0.25\\r\u0007",
+          "889\\r\u0007"
+        ],
+        [
+          "3\\r\u0007",
+          "1:8\\r\u0007",
+          "1.12\\r\u0007",
+          "0.009780\\r\u0007",
+          "0.26\\r\u0007",
+          "356\\r\u0007"
+        ]
+      ]
+    }
+  ]
+}

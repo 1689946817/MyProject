@@ -14,8 +14,11 @@ from app.application.schemas import (
     DeleteResponse,
     ImageRecordOut,
     ImageRecordUpdateRequest,
+    TimingSummary,
     UploadImagesResponse,
 )
+from app.core.config import settings
+from app.core.timing import RequestTimingCollector, bind_timing_collector
 from app.data.database import get_db
 from app.data.models import ImageRecord
 from app.langchain_integration.adapters import get_langchain_adapter
@@ -141,19 +144,34 @@ async def reprocess_image(
     return DeleteResponse(success=True, message="图片已重新处理", warnings=warnings)
 
 
-@router.post("/upload", response_model=UploadImagesResponse)
+@router.post("/upload", response_model=UploadImagesResponse, response_model_exclude_none=True)
 async def upload_images(
     files: List[UploadFile] = File(...),
     split: str = "custom",
     source_dataset: Optional[str] = None,
     db: Session = Depends(get_db),
 ) -> UploadImagesResponse:
-    adapter = get_langchain_adapter()
-    processed = await adapter.process_image_uploads(
-        db=db,
-        files=files,
-        split=split,
-        source_dataset=source_dataset,
-    )
-    records = [rec for rec, _desc in processed]
-    return UploadImagesResponse(images=[ImageRecordOut.model_validate(r) for r in records])
+    collector = RequestTimingCollector("/api/knowledge-base/upload", "knowledge_base_upload")
+    collector.set_metadata(file_count=len(files), split=split)
+    response: UploadImagesResponse | None = None
+    try:
+        with bind_timing_collector(collector), collector.stage(
+            "knowledge_base_upload_total",
+            meta={"file_count": len(files), "split": split},
+        ):
+            adapter = get_langchain_adapter()
+            processed = await adapter.process_image_uploads(
+                db=db,
+                files=files,
+                split=split,
+                source_dataset=source_dataset,
+            )
+            records = [rec for rec, _desc in processed]
+            response = UploadImagesResponse(
+                images=[ImageRecordOut.model_validate(r) for r in records],
+            )
+        if settings.EXPOSE_TIMINGS_IN_API and response is not None:
+            response.timings = TimingSummary.model_validate(collector.snapshot())
+        return response
+    finally:
+        collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)

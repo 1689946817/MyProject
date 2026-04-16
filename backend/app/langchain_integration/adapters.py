@@ -35,6 +35,7 @@ from app.application.knowledge_management import (
     safe_unlink,
 )
 from app.core.config import settings
+from app.core.timing import get_current_timing_collector, timing_stage
 from app.langchain_integration.agentic_rag import classify_chat_intent
 from app.langchain_integration.chains import (
     get_image_description_chain,
@@ -49,7 +50,12 @@ from app.langchain_integration.doc_parser import (
     normalize_mineru_markdown_for_chunking,
 )
 from app.langchain_integration.mineru_client import MinerUClient, MinerUParseResult
-from app.langchain_integration.models import build_image_data_url, get_chat_model, guess_image_mime_type
+from app.langchain_integration.models import (
+    build_image_data_url,
+    get_multimodal_chat_model,
+    get_primary_text_chat_model,
+    guess_image_mime_type,
+)
 from app.langchain_integration.retrievers import get_multimodal_retriever
 from app.langchain_integration.vectorstores import get_vector_store, get_document_vector_store
 
@@ -118,78 +124,73 @@ class LangChainAdapter:
         """
         import uuid
 
-        # 生成唯一 ID
-        image_id = str(uuid.uuid4())
+        with timing_stage("process_image_upload", meta={"split": split, "filename": file.filename}):
+            image_id = str(uuid.uuid4())
 
-        # 读取文件内容
-        contents = await file.read()
+            with timing_stage("upload_file_read"):
+                contents = await file.read()
 
-        # 确定文件扩展名
-        filename = file.filename or "image.jpg"
-        ext = os.path.splitext(filename)[1].lower()
-        if not ext:
-            ext = ".jpg"
+            filename = file.filename or "image.jpg"
+            ext = os.path.splitext(filename)[1].lower()
+            if not ext:
+                ext = ".jpg"
 
-        # 构建存储路径
-        storage_path = str(get_image_path(image_id, split))
-        os.makedirs(os.path.dirname(storage_path), exist_ok=True)
+            storage_path = str(get_image_path(image_id, split))
+            os.makedirs(os.path.dirname(storage_path), exist_ok=True)
 
-        # 保存文件
-        with open(storage_path, "wb") as f:
-            f.write(contents)
+            with timing_stage("upload_file_save"):
+                with open(storage_path, "wb") as f:
+                    f.write(contents)
 
-        # 创建数据库记录
-        record = ImageRecord(
-            id=image_id,
-            file_path=storage_path,
-            source_dataset=source_dataset,
-            title=os.path.splitext(filename)[0],
-            status="Processing",
-        )
-        db.add(record)
-        db.commit()
-        db.refresh(record)
-
-        try:
-            # 使用 LangChain Chain 生成描述
-            b64_image = base64.b64encode(contents).decode("utf-8")
-            description = await self.image_description_chain.ainvoke({
-                "image_b64": b64_image,
-            })
-
-            # 更新数据库记录
-            record.generated_description = description
-            record.status = "Completed"
+            record = ImageRecord(
+                id=image_id,
+                file_path=storage_path,
+                source_dataset=source_dataset,
+                title=os.path.splitext(filename)[0],
+                status="Processing",
+            )
+            db.add(record)
             db.commit()
             db.refresh(record)
 
-            # 写入向量存储
-            self.vector_store.upsert_image_description(
-                doc_id=image_id,
-                text=description,
-                metadata={
-                    "id": image_id,
-                    "file_path": storage_path,
-                    "filename": filename,
-                    "split": split,
-                    "source_dataset": source_dataset,
-                    "title": os.path.splitext(filename)[0],
-                    "tags": [],
-                    "enabled": True,
-                    "parent_doc_enabled": True,
-                },
-            )
+            try:
+                b64_image = base64.b64encode(contents).decode("utf-8")
+                with timing_stage("image_description_generation"):
+                    description = await self.image_description_chain.ainvoke({
+                        "image_b64": b64_image,
+                    })
 
-            # 增量更新 BM25 索引
-            self._bm25_add_document(image_id, description)
+                record.generated_description = description
+                record.status = "Completed"
+                db.commit()
+                db.refresh(record)
 
-            return record, description
+                with timing_stage("image_vector_upsert"):
+                    self.vector_store.upsert_image_description(
+                        doc_id=image_id,
+                        text=description,
+                        metadata={
+                            "id": image_id,
+                            "file_path": storage_path,
+                            "filename": filename,
+                            "split": split,
+                            "source_dataset": source_dataset,
+                            "title": os.path.splitext(filename)[0],
+                            "tags": [],
+                            "enabled": True,
+                            "parent_doc_enabled": True,
+                        },
+                    )
 
-        except Exception as e:
-            # 更新状态为失败
-            record.status = "Failed"
-            db.commit()
-            raise e
+                with timing_stage("bm25_incremental_update"):
+                    self._bm25_add_document(image_id, description)
+
+                return record, description
+
+            except Exception as e:
+                record.status = "Failed"
+                db.commit()
+                raise e
 
     async def process_image_uploads(
         self,
@@ -212,16 +213,17 @@ class LangChainAdapter:
         Returns:
             List[Tuple[ImageRecord, str]]: (图像记录, 描述) 列表
         """
-        results = []
-        for file in files:
-            result = await self.process_image_upload(
-                db=db,
-                file=file,
-                split=split,
-                source_dataset=source_dataset,
-            )
-            results.append(result)
-        return results
+        with timing_stage("process_image_uploads", meta={"file_count": len(files), "split": split}):
+            results = []
+            for file in files:
+                result = await self.process_image_upload(
+                    db=db,
+                    file=file,
+                    split=split,
+                    source_dataset=source_dataset,
+                )
+                results.append(result)
+            return results
 
     async def text_to_image_search(
         self,
@@ -241,7 +243,8 @@ class LangChainAdapter:
         Returns:
             List[Dict[str, Any]]: 检索结果列表
         """
-        documents = await self.retriever.text_to_image_search(query, top_k=top_k, fast=fast)
+        with timing_stage("adapter_text_to_image_search", meta={"top_k": top_k, "fast_path": fast}):
+            documents = await self.retriever.text_to_image_search(query, top_k=top_k, fast=fast)
 
         # 转换为字典格式
         results = []
@@ -273,7 +276,8 @@ class LangChainAdapter:
         Returns:
             Tuple[List[Dict], str]: (检索结果列表, 生成的描述)
         """
-        documents, description = await self.retriever.image_to_image_search(file, top_k=top_k, fast=fast)
+        with timing_stage("adapter_image_to_image_search", meta={"top_k": top_k, "fast_path": fast}):
+            documents, description = await self.retriever.image_to_image_search(file, top_k=top_k, fast=fast)
 
         # 转换为字典格式
         results = []
@@ -297,22 +301,38 @@ class LangChainAdapter:
         """
         RAG 问答（支持多轮对话历史 + Agentic RAG）
         """
-        # 如果启用 Agentic RAG，使用 LangGraph 流程
-        from app.core.config import settings
-        if settings.AGENTIC_RAG_ENABLED:
-            return await self._run_agentic_chat(
-                query=query,
-                top_k=top_k,
-                image=image,
-                chat_history=chat_history,
-            )
+        with timing_stage("adapter_rag_chat", meta={"top_k": top_k, "has_uploaded_image": image is not None}):
+            from app.core.config import settings
+            if settings.AGENTIC_RAG_ENABLED:
+                return await self._run_agentic_chat(
+                    query=query,
+                    top_k=top_k,
+                    image=image,
+                    chat_history=chat_history,
+                )
 
-        if image is not None:
-            answer, documents = await self.rag_chain.ainvoke_with_image(
-                query,
-                image,
-                top_k=top_k,
-                chat_history=chat_history,
+            if image is not None:
+                answer, documents = await self.rag_chain.ainvoke_with_image(
+                    query,
+                    image,
+                    top_k=top_k,
+                    chat_history=chat_history,
+                )
+                intent = self._build_default_intent(image is not None)
+                intent["retrieval_steps"] = self._build_retrieval_steps(
+                    query=query,
+                    top_k=top_k,
+                    execution_mode=intent["execution_mode"],
+                    presentation_mode=intent["presentation_mode"],
+                    use_rag=bool(intent["use_rag"]),
+                    documents=documents,
+                    has_uploaded_image=True,
+                    classifier_reason=str(intent.get("reason", "")),
+                )
+                return answer, documents, intent
+
+            answer, documents = await self.rag_chain.ainvoke(
+                {"query": query, "chat_history": chat_history or []}
             )
             intent = self._build_default_intent(image is not None)
             intent["retrieval_steps"] = self._build_retrieval_steps(
@@ -322,27 +342,10 @@ class LangChainAdapter:
                 presentation_mode=intent["presentation_mode"],
                 use_rag=bool(intent["use_rag"]),
                 documents=documents,
-                has_uploaded_image=True,
+                has_uploaded_image=False,
                 classifier_reason=str(intent.get("reason", "")),
             )
             return answer, documents, intent
-
-        # 否则使用标准 RAG
-        answer, documents = await self.rag_chain.ainvoke(
-            {"query": query, "chat_history": chat_history or []}
-        )
-        intent = self._build_default_intent(image is not None)
-        intent["retrieval_steps"] = self._build_retrieval_steps(
-            query=query,
-            top_k=top_k,
-            execution_mode=intent["execution_mode"],
-            presentation_mode=intent["presentation_mode"],
-            use_rag=bool(intent["use_rag"]),
-            documents=documents,
-            has_uploaded_image=False,
-            classifier_reason=str(intent.get("reason", "")),
-        )
-        return answer, documents, intent
 
     async def rag_chat_stream(
         self,
@@ -391,6 +394,12 @@ class LangChainAdapter:
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """执行带智能意图识别的 Agentic Chat 核心流程。"""
         intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
+        collector = get_current_timing_collector()
+        if collector is not None:
+            collector.set_metadata(
+                execution_mode=intent["execution_mode"],
+                presentation_mode=intent["presentation_mode"],
+            )
         execution_mode = intent["execution_mode"]
 
         if execution_mode == "direct_llm":
@@ -671,7 +680,7 @@ class LangChainAdapter:
 
 用户问题：{query}
 """
-        model = get_chat_model()
+        model = get_primary_text_chat_model()
         result = await model._agenerate([HumanMessage(content=prompt)])
         return result.generations[0].message.content
 
@@ -698,7 +707,7 @@ class LangChainAdapter:
                 {"type": "image_url", "image_url": {"url": build_image_data_url(image_b64, mime_type)}},
             ]
         )
-        model = get_chat_model()
+        model = get_multimodal_chat_model()
         result = await model._agenerate([message])
         return result.generations[0].message.content
 

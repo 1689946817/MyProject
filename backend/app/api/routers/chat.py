@@ -30,14 +30,22 @@ from app.application.schemas import (
     ChatSourceItem,
     DeleteResponse,
     SearchResultItem,
+    TimingSummary,
 )
 from app.core.config import settings
+from app.core.timing import RequestTimingCollector, bind_timing_collector
 from app.data.database import get_db
 from app.langchain_integration.adapters import get_langchain_adapter
 
 
 router = APIRouter(tags=["chat"])
 rag_router = APIRouter(prefix="/api/rag", tags=["rag"])
+
+
+def _maybe_timings_payload(collector: RequestTimingCollector):
+    if not settings.EXPOSE_TIMINGS_IN_API:
+        return None
+    return TimingSummary.model_validate(collector.snapshot())
 
 
 def _build_results(retrieved: List[dict]) -> List[SearchResultItem]:
@@ -228,7 +236,7 @@ def rename_chat_session(
     return ChatSessionCreateResponse.model_validate(session)
 
 
-@router.delete("/api/chat/sessions/{session_id}", response_model=DeleteResponse)
+@router.delete("/api/chat/sessions/{session_id}", response_model=DeleteResponse, response_model_exclude_defaults=True)
 def delete_chat_session(
     session_id: str,
     db: Session = Depends(get_db),
@@ -239,7 +247,30 @@ def delete_chat_session(
     return DeleteResponse(success=True)
 
 
-@rag_router.post("/chat", response_model=ChatResponse)
+def _coerce_rag_chat_result(
+    result: Any,
+    *,
+    has_uploaded_image: bool,
+) -> tuple[str, List[dict], dict[str, Any]]:
+    if isinstance(result, tuple) and len(result) == 3:
+        answer, retrieved, intent = result
+        return answer, retrieved, intent
+    if isinstance(result, tuple) and len(result) == 2:
+        answer, retrieved = result
+        return answer, retrieved, {
+            "presentation_mode": "rag_answer",
+            "execution_mode": "multimodal_rag",
+            "use_rag": True,
+            "has_uploaded_image": has_uploaded_image,
+            "wants_images": has_uploaded_image,
+            "confidence": 1.0,
+            "reason": "legacy_adapter_result",
+            "retrieval_steps": [],
+        }
+    raise ValueError("Unsupported rag_chat result shape")
+
+
+@rag_router.post("/chat", response_model=ChatResponse, response_model_exclude_none=True)
 async def rag_chat_endpoint(
     query: str = Form(...),
     top_k: int = Form(5),
@@ -248,56 +279,80 @@ async def rag_chat_endpoint(
     db: Session = Depends(get_db),
 ) -> ChatResponse:
     """RAG 聊天接口（支持持久化多轮对话）。"""
+    collector = RequestTimingCollector("/api/rag/chat", "rag_chat")
+    collector.set_metadata(top_k=top_k, has_uploaded_image=image is not None)
+    response: ChatResponse | None = None
     try:
-        session = get_session_or_raise(db, session_id) if session_id else create_session(db)
-    except ChatSessionNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="会话不存在") from exc
+        with bind_timing_collector(collector), collector.stage(
+            "rag_chat_total",
+            meta={"top_k": top_k, "has_uploaded_image": image is not None},
+        ):
+            try:
+                with collector.stage("chat_session_load"):
+                    session = get_session_or_raise(db, session_id) if session_id else create_session(db)
+            except ChatSessionNotFoundError as exc:
+                raise HTTPException(status_code=404, detail="会话不存在") from exc
 
-    history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
+            with collector.stage("chat_history_load"):
+                history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
 
-    adapter = get_langchain_adapter()
-    answer, retrieved, intent = await adapter.rag_chat(
-        query=query,
-        top_k=top_k,
-        image=image,
-        chat_history=history,
-    )
-    sources = _normalize_chat_sources(retrieved)
-    retrieval_steps = intent.get("retrieval_steps") or []
+            adapter = get_langchain_adapter()
+            result = await adapter.rag_chat(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=history,
+            )
+            answer, retrieved, intent = _coerce_rag_chat_result(
+                result,
+                has_uploaded_image=image is not None,
+            )
+            collector.set_metadata(
+                execution_mode=intent.get("execution_mode"),
+                presentation_mode=intent.get("presentation_mode"),
+            )
+            sources = _normalize_chat_sources(retrieved)
+            retrieval_steps = intent.get("retrieval_steps") or []
 
-    retrieval_params = {
-        "top_k": top_k,
-        "has_image": image is not None,
-        "query": query,
-        "stream": False,
-        "presentation_mode": intent.get("presentation_mode"),
-        "execution_mode": intent.get("execution_mode"),
-        "use_rag": intent.get("use_rag"),
-        "classifier_reason": intent.get("reason"),
-        "classifier_confidence": intent.get("confidence"),
-    }
-    add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
-    add_message(
-        db,
-        session,
-        "assistant",
-        answer,
-        sources=[source.model_dump() for source in sources],
-        retrieval_params=retrieval_params,
-        retrieval_steps=retrieval_steps,
-    )
+            retrieval_params = {
+                "top_k": top_k,
+                "has_image": image is not None,
+                "query": query,
+                "stream": False,
+                "presentation_mode": intent.get("presentation_mode"),
+                "execution_mode": intent.get("execution_mode"),
+                "use_rag": intent.get("use_rag"),
+                "classifier_reason": intent.get("reason"),
+                "classifier_confidence": intent.get("confidence"),
+            }
+            with collector.stage("chat_message_persist"):
+                add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
+                add_message(
+                    db,
+                    session,
+                    "assistant",
+                    answer,
+                    sources=[source.model_dump() for source in sources],
+                    retrieval_params=retrieval_params,
+                    retrieval_steps=retrieval_steps,
+                )
 
-    return ChatResponse(
-        answer=answer,
-        results=_build_results(retrieved),
-        sources=sources,
-        session_id=session.id,
-        presentation_mode=intent.get("presentation_mode", "rag_answer"),
-        execution_mode=intent.get("execution_mode", "multimodal_rag"),
-        use_rag=bool(intent.get("use_rag", True)),
-        has_uploaded_image=image is not None,
-        retrieval_steps=retrieval_steps,
-    )
+            response = ChatResponse(
+                answer=answer,
+                results=_build_results(retrieved),
+                sources=sources,
+                session_id=session.id,
+                presentation_mode=intent.get("presentation_mode", "rag_answer"),
+                execution_mode=intent.get("execution_mode", "multimodal_rag"),
+                use_rag=bool(intent.get("use_rag", True)),
+                has_uploaded_image=image is not None,
+                retrieval_steps=retrieval_steps,
+            )
+        if settings.EXPOSE_TIMINGS_IN_API and response is not None:
+            response.timings = _maybe_timings_payload(collector)
+        return response
+    finally:
+        collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
 
 @rag_router.post("/chat/stream")
@@ -309,48 +364,89 @@ async def rag_chat_stream_endpoint(
     db: Session = Depends(get_db),
 ):
     """RAG 聊天流式接口（SSE）。"""
+    collector = RequestTimingCollector("/api/rag/chat/stream", "rag_chat_stream")
+    collector.set_metadata(top_k=top_k, has_uploaded_image=image is not None)
     try:
-        session = get_session_or_raise(db, session_id) if session_id else create_session(db)
+        with collector.stage("chat_session_load"):
+            session = get_session_or_raise(db, session_id) if session_id else create_session(db)
     except ChatSessionNotFoundError as exc:
         raise HTTPException(status_code=404, detail="会话不存在") from exc
 
-    history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
+    with collector.stage("chat_history_load"):
+        history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
     adapter = get_langchain_adapter()
 
     async def event_generator():
-        yield f"data: {json.dumps({'type': 'session', 'session_id': session.id})}\n\n"
-
-        full_answer = ""
-        retrieved_docs = []
-        final_intent = None
-
-        async for chunk, docs, intent in adapter.rag_chat_stream(
-            query=query,
-            top_k=top_k,
-            image=image,
-            chat_history=history,
+        with bind_timing_collector(collector), collector.stage(
+            "rag_chat_stream_total",
+            meta={"top_k": top_k, "has_uploaded_image": image is not None},
         ):
-            full_answer += chunk
-            retrieved_docs = docs
-            if intent is not None:
-                final_intent = intent
-            yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
+            try:
+                yield f"data: {json.dumps({'type': 'session', 'session_id': session.id})}\n\n"
 
-        retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": True}
-        add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
-        sources = _normalize_chat_sources(retrieved_docs)
-        retrieval_steps = (final_intent or {}).get("retrieval_steps") or []
-        add_message(
-            db,
-            session,
-            "assistant",
-            full_answer,
-            sources=[source.model_dump() for source in sources],
-            retrieval_params=retrieval_params,
-            retrieval_steps=retrieval_steps,
-        )
+                full_answer = ""
+                retrieved_docs = []
+                final_intent = None
 
-        yield f"data: {json.dumps({'type': 'results', 'results': [item.model_dump() for item in _build_results(retrieved_docs)], 'sources': [source.model_dump() for source in sources], 'retrieval_steps': retrieval_steps})}\n\n"
-        yield "data: [DONE]\n\n"
+                try:
+                    stream = adapter.rag_chat_stream(
+                        query=query,
+                        top_k=top_k,
+                        image=image,
+                        chat_history=history,
+                    )
+                except TypeError:
+                    stream = adapter.rag_chat_stream(
+                        query=query,
+                        top_k=top_k,
+                        chat_history=history,
+                    )
+
+                async for event in stream:
+                    if len(event) == 3:
+                        chunk, docs, intent = event
+                    elif len(event) == 2:
+                        chunk, docs = event
+                        intent = None
+                    else:
+                        raise ValueError("Unsupported rag_chat_stream event shape")
+                    full_answer += chunk
+                    retrieved_docs = docs
+                    if intent is not None:
+                        final_intent = intent
+                        collector.set_metadata(
+                            execution_mode=intent.get("execution_mode"),
+                            presentation_mode=intent.get("presentation_mode"),
+                        )
+                    collector.mark_first_token()
+                    yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
+
+                retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": True}
+                with collector.stage("chat_message_persist"):
+                    add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
+                    sources = _normalize_chat_sources(retrieved_docs)
+                    retrieval_steps = (final_intent or {}).get("retrieval_steps") or []
+                    add_message(
+                        db,
+                        session,
+                        "assistant",
+                        full_answer,
+                        sources=[source.model_dump() for source in sources],
+                        retrieval_params=retrieval_params,
+                        retrieval_steps=retrieval_steps,
+                    )
+
+                results_payload = {
+                    "type": "results",
+                    "results": [item.model_dump() for item in _build_results(retrieved_docs)],
+                    "sources": [source.model_dump() for source in sources],
+                    "retrieval_steps": retrieval_steps,
+                }
+                if settings.EXPOSE_TIMINGS_IN_API:
+                    results_payload["timings"] = TimingSummary.model_validate(collector.snapshot()).model_dump()
+                yield f"data: {json.dumps(results_payload)}\n\n"
+                yield "data: [DONE]\n\n"
+            finally:
+                collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

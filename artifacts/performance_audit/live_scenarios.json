@@ -1,0 +1,66 @@
+{
+  "scenarios": [
+    {
+      "name": "rag_table_non_stream",
+      "kind": "rag_chat",
+      "query": "告诉我华为NetEngine AR6000系列路由器的技术规格与功能特性对照表",
+      "top_k": 5,
+      "repeats": 2
+    },
+    {
+      "name": "rag_table_stream",
+      "kind": "rag_chat_stream",
+      "query": "告诉我华为NetEngine AR6000系列路由器的技术规格与功能特性对照表",
+      "top_k": 5,
+      "repeats": 2
+    },
+    {
+      "name": "text_search_specs",
+      "kind": "text_to_image",
+      "query": "华为 NetEngine AR6000 技术规格表",
+      "top_k": 5,
+      "repeats": 2
+    },
+    {
+      "name": "image_search_sample",
+      "kind": "image_to_image",
+      "file_path": "E:/BiShe/Code2/MyProject/backend/storage/images/custom/02b1bdae-446e-4bec-a8aa-07c19729e072.jpg",
+      "top_k": 5,
+      "repeats": 1
+    },
+    {
+      "name": "image_upload_sample",
+      "kind": "image_upload",
+      "file_path": "E:/BiShe/Code2/MyProject/backend/storage/images/custom/02b1bdae-446e-4bec-a8aa-07c19729e072.jpg",
+      "split": "custom",
+      "repeats": 1
+    },
+    {
+      "name": "document_upload_sample",
+      "kind": "document_upload",
+      "file_path": "E:/BiShe/Code2/MyProject/backend/storage/docs/dc2fb2e7-e4ca-4769-8dba-35c97d792659.pdf",
+      "repeats": 1,
+      "capture": {
+        "latest_doc_id": "document.id"
+      }
+    },
+    {
+      "name": "document_progress_once",
+      "kind": "document_progress",
+      "refs": {
+        "doc_id": "latest_doc_id"
+      },
+      "wait_seconds_before": 3.0,
+      "repeats": 1
+    },
+    {
+      "name": "document_result_once",
+      "kind": "document_result",
+      "refs": {
+        "doc_id": "latest_doc_id"
+      },
+      "wait_seconds_before": 3.0,
+      "repeats": 1
+    }
+  ]
+}

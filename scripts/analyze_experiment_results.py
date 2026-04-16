@@ -216,6 +216,11 @@ def latest_file(files: Iterable[Path]) -> Optional[Path]:
     return items[-1] if items else None
 
 
+def latest_mtime_file(files: Iterable[Path]) -> Optional[Path]:
+    items = sorted(files, key=lambda p: (p.stat().st_mtime, p.name))
+    return items[-1] if items else None
+
+
 def percent_formatter(value: float) -> str:
     if math.isnan(value):
         return "N/A"
@@ -803,8 +808,16 @@ def parse_training_log(path: Path) -> pd.DataFrame:
     return df
 
 
+def resolve_finetune_judge_csv() -> Path:
+    candidates = list(FINETUNE_DIR.glob("evaluation_report_qwen3.5-plus*.csv"))
+    path = latest_mtime_file(candidates)
+    if path is None:
+        raise FileNotFoundError(f"No fine-tune judge CSV found under {FINETUNE_DIR}")
+    return path
+
+
 def build_finetune_frames() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    judge_df = pd.read_csv(FINETUNE_DIR / "evaluation_report_qwen3.5-plus.csv").rename(
+    judge_df = pd.read_csv(resolve_finetune_judge_csv()).rename(
         columns={"Base_Avg": "base", "Ckpt75_Avg": "ckpt75", "Ckpt140_Avg": "ckpt140"}
     )
     long_df = judge_df.melt(id_vars=["ID"], value_vars=["base", "ckpt75", "ckpt140"], var_name="model", value_name="score")
@@ -903,7 +916,13 @@ def draw_training_curve(training_df: pd.DataFrame, locale: str, output_dir: Path
     save_figure(fig, output_dir, basename)
 
 
-def write_finetune_report(judge_wide_df: pd.DataFrame, training_df: pd.DataFrame, output_dirs: OutputDirs) -> None:
+def write_finetune_report(
+    judge_wide_df: pd.DataFrame,
+    training_df: pd.DataFrame,
+    output_dirs: OutputDirs,
+    base_dir: Optional[Path] = None,
+    report_suffix: Optional[str] = None,
+) -> None:
     means = {"base": judge_wide_df["base"].mean(), "ckpt75": judge_wide_df["ckpt75"].mean(), "ckpt140": judge_wide_df["ckpt140"].mean()}
     best_name = max(means, key=means.get)
     delta_75 = (judge_wide_df["ckpt75"] - judge_wide_df["base"]).mean()
@@ -933,6 +952,8 @@ def write_finetune_report(judge_wide_df: pd.DataFrame, training_df: pd.DataFrame
 - `finetune_learning_curves`
 """
     (output_dirs.report / "finetune_analysis.md").write_text(text, encoding="utf-8")
+    if base_dir is not None:
+        (base_dir / resolve_legacy_report_name(report_suffix)).write_text(text, encoding="utf-8")
 
 
 def export_failure_cases(judge_wide_df: pd.DataFrame, output_dirs: OutputDirs) -> None:
@@ -990,7 +1011,7 @@ def run_generation_analysis(analysis_dirname: str = ANALYSIS_DIRNAME, report_suf
     write_generation_report(summary_df, output_dirs, base_dir=GENERATION_DIR, report_suffix=report_suffix)
 
 
-def run_finetune_analysis(analysis_dirname: str = ANALYSIS_DIRNAME) -> None:
+def run_finetune_analysis(analysis_dirname: str = ANALYSIS_DIRNAME, report_suffix: Optional[str] = None) -> None:
     output_dirs = ensure_output_dirs(FINETUNE_DIR, analysis_dirname=analysis_dirname)
     long_df, training_df = build_finetune_frames()
     judge_wide_df = long_df.pivot(index="ID", columns="model", values="score").reset_index()
@@ -1007,7 +1028,7 @@ def run_finetune_analysis(analysis_dirname: str = ANALYSIS_DIRNAME) -> None:
         draw_training_curve(training_df, locale, fig_dir, "finetune_learning_curves_v3")
 
     export_failure_cases(judge_wide_df, output_dirs)
-    write_finetune_report(judge_wide_df, training_df, output_dirs)
+    write_finetune_report(judge_wide_df, training_df, output_dirs, base_dir=FINETUNE_DIR, report_suffix=report_suffix)
 
 
 def parse_args() -> argparse.Namespace:
@@ -1035,7 +1056,7 @@ def main() -> None:
     if "generation" in args.targets:
         run_generation_analysis(analysis_dirname=analysis_dirname, report_suffix=args.analysis_dir_suffix)
     if "finetune" in args.targets:
-        run_finetune_analysis(analysis_dirname=analysis_dirname)
+        run_finetune_analysis(analysis_dirname=analysis_dirname, report_suffix=args.analysis_dir_suffix)
     print(f"Analysis complete. Outputs saved under each experiment directory's {analysis_dirname}/ folder.")
 
 

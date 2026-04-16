@@ -85,3 +85,13 @@
 - 前端代理配置在 `frontend/vite.config.ts`。
 - 敏感配置（如数据库 URL、LLM API Key）应通过环境变量注入，不要硬编码。
 - 国际化文件位于 `frontend/src/locales/`，新增文本需同步更新 `zh-CN.ts` 和 `en-US.ts`。
+
+
+必读路径：docs/、实验数据/、evaluation/
+事实优先级：代码/实验数据 > 系统设计/分析报告 > 开题/中期报告
+禁止编造实验结果、功能模块、性能指标
+先产出 facts_inventory.md / terminology_table.md / compliance_checklist.md / thesis_outline.md
+先 /plan 再写正文
+最终必须输出基于模板的 docx
+语言风格约束：自然、克制、减少“AI味”
+术语统一与格式审校要求

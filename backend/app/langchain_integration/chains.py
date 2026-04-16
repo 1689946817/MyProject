@@ -10,6 +10,7 @@ LangChain Chain 集成模块
 import base64
 import logging
 import os
+from contextlib import nullcontext
 from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import UploadFile
@@ -20,10 +21,11 @@ from langchain_core.runnables import RunnableLambda, RunnableSequence
 
 from app.langchain_integration.models import (
     build_image_data_url,
-    get_chat_model,
+    get_multimodal_chat_model,
     guess_image_mime_type,
     MultimodalChatModel,
 )
+from app.core.timing import get_current_timing_collector, timing_stage
 from app.langchain_integration.retrievers import MultimodalRetriever, get_multimodal_retriever
 from app.langchain_integration.vectorstores import DocumentVectorStore, get_document_vector_store
 from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
@@ -53,7 +55,7 @@ class ImageDescriptionChain:
             chat_model: 聊天模型实例，默认使用全局实例
             prompt: 提示词模板，默认使用 IMAGE_DESCRIPTION_PROMPT
         """
-        self.chat_model = chat_model or get_chat_model()
+        self.chat_model = chat_model or get_multimodal_chat_model()
         self.prompt = prompt or IMAGE_DESCRIPTION_PROMPT
 
         # 构建 LCEL Chain
@@ -172,7 +174,7 @@ class RAGChain:
             top_k: 图像检索结果数量
             text_top_k: 文本片段检索数量
         """
-        self.chat_model = chat_model or get_chat_model()
+        self.chat_model = chat_model or get_multimodal_chat_model()
         self.retriever = retriever or get_multimodal_retriever(top_k=top_k)
         self.doc_vector_store = doc_vector_store or get_document_vector_store()
         self.top_k = top_k
@@ -219,27 +221,34 @@ class RAGChain:
                 )
                 content.append({"type": "text", "text": f"相关文档文本：\n{text_context}\n\n"})
 
-            for idx, doc in enumerate(documents, start=1):
-                meta = doc.get("metadata") or {}
-                file_path = meta.get("file_path", "")
+            collector = get_current_timing_collector()
+            stage_cm = (
+                collector.stage("image_context_prepare", meta={"document_count": len(documents)})
+                if collector is not None
+                else nullcontext()
+            )
+            with stage_cm:
+                for idx, doc in enumerate(documents, start=1):
+                    meta = doc.get("metadata") or {}
+                    file_path = meta.get("file_path", "")
 
-                if file_path and os.path.exists(file_path):
-                    try:
-                        with open(file_path, "rb") as f:
-                            image_data = f.read()
-                            image_b64 = base64.b64encode(image_data).decode("utf-8")
+                    if file_path and os.path.exists(file_path):
+                        try:
+                            with open(file_path, "rb") as f:
+                                image_data = f.read()
+                                image_b64 = base64.b64encode(image_data).decode("utf-8")
 
-                        mime_type = guess_image_mime_type(file_path)
-                        content.append({
-                            "type": "image_url",
-                            "image_url": {"url": build_image_data_url(image_b64, mime_type)},
-                        })
-                        content.append({
-                            "type": "text",
-                            "text": f"\n[图像 {idx}]",
-                        })
-                    except Exception as e:
-                        logging.getLogger(__name__).warning(f"无法读取图像文件 {file_path}: {e}")
+                            mime_type = guess_image_mime_type(file_path)
+                            content.append({
+                                "type": "image_url",
+                                "image_url": {"url": build_image_data_url(image_b64, mime_type)},
+                            })
+                            content.append({
+                                "type": "text",
+                                "text": f"\n[图像 {idx}]",
+                            })
+                        except Exception as e:
+                            logging.getLogger(__name__).warning(f"无法读取图像文件 {file_path}: {e}")
 
             return [HumanMessage(content=content)]
 
@@ -280,8 +289,10 @@ class RAGChain:
         chat_history = inputs.get("chat_history") or []
 
         # 异步检索（走完整 Multi-Query 管线）
-        documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
-        text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
+        with timing_stage("rag_retrieval", meta={"top_k": self.top_k}):
+            documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
+        with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
+            text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
         # 上下文压缩：过滤无关文档
         from app.langchain_integration.context_compression import compress_context
@@ -304,8 +315,10 @@ class RAGChain:
         chat_history = inputs.get("chat_history") or []
 
         # 异步检索
-        documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
-        text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
+        with timing_stage("rag_retrieval", meta={"top_k": self.top_k}):
+            documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
+        with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
+            text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
         # 上下文压缩
         from app.langchain_integration.context_compression import compress_context
@@ -341,7 +354,8 @@ class RAGChain:
         k = top_k or self.top_k
 
         # 执行图像到图像检索
-        documents, description = await self.retriever.image_to_image_search(image, top_k=k)
+        with timing_stage("image_retrieval", meta={"top_k": k}):
+            documents, description = await self.retriever.image_to_image_search(image, top_k=k)
 
         # 将 Document 转换为字典格式
         dict_documents = []
@@ -353,7 +367,8 @@ class RAGChain:
                 "score": doc.metadata.get("score", 0.0),
             })
 
-        text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
+        with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
+            text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
 
         # 使用生成的描述作为查询执行 RAG，并保留历史和检索上下文
         answer = await self.agenerate_from_context(
@@ -376,7 +391,8 @@ class RAGChain:
         使用图像查询流式执行 RAG Chain。
         """
         k = top_k or self.top_k
-        documents, description = await self.retriever.image_to_image_search(image, top_k=k)
+        with timing_stage("image_retrieval", meta={"top_k": k}):
+            documents, description = await self.retriever.image_to_image_search(image, top_k=k)
 
         dict_documents = []
         for doc in documents:
@@ -387,7 +403,8 @@ class RAGChain:
                 "score": doc.metadata.get("score", 0.0),
             })
 
-        text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
+        with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
+            text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
         async for chunk in self.astream_from_context(
             query=description,
             documents=dict_documents,
@@ -410,7 +427,11 @@ class RAGChain:
             "text_chunks": text_chunks or [],
             "chat_history": chat_history or [],
         }
-        return await self._chain.ainvoke(inputs)
+        with timing_stage(
+            "final_answer_generation",
+            meta={"document_count": len(documents), "text_chunk_count": len(text_chunks or [])},
+        ):
+            return await self._chain.ainvoke(inputs)
 
     async def astream_from_context(
         self,

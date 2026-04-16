@@ -15,7 +15,8 @@ from langchain_core.messages import HumanMessage
 from langgraph.graph import END, StateGraph
 
 from app.core.config import settings
-from app.langchain_integration.models import get_chat_model
+from app.core.timing import get_current_timing_collector, timing_stage
+from app.langchain_integration.models import get_primary_text_chat_model, get_task_text_chat_model
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,40 @@ _COMMON_FACT_PATTERNS = [
     "谁发明",
     "位于哪里",
     "在哪个国家",
+]
+_PRODUCT_VENDOR_HINTS = [
+    "华为",
+    "huawei",
+    "思科",
+    "cisco",
+    "h3c",
+    "新华三",
+    "锐捷",
+    "ruijie",
+    "juniper",
+    "瞻博",
+    "路由器",
+    "交换机",
+    "防火墙",
+    "网关",
+    "netengine",
+]
+_PRODUCT_DOC_HINTS = [
+    "技术规格",
+    "规格",
+    "参数",
+    "配置",
+    "功能特性",
+    "特性",
+    "型号",
+    "系列",
+]
+_TABULAR_DOC_HINTS = [
+    "对照表",
+    "表格",
+    "列表",
+    "比较",
+    "对比",
 ]
 _INTERNAL_KNOWLEDGE_HINTS = [
     "公司",
@@ -119,6 +154,20 @@ _ANSWER_HINTS = [
 ]
 
 
+def _has_model_pattern(normalized: str) -> bool:
+    return bool(re.search(r"(?=.*[a-z])(?=.*\d)[a-z\d-]{4,}", normalized))
+
+
+def _has_product_doc_intent(normalized: str) -> bool:
+    has_doc_hint = any(token in normalized for token in _PRODUCT_DOC_HINTS)
+    has_tabular_hint = any(token in normalized for token in _TABULAR_DOC_HINTS)
+    has_vendor_or_product = any(token in normalized for token in _PRODUCT_VENDOR_HINTS)
+    has_model_pattern = _has_model_pattern(normalized)
+    return (has_model_pattern and (has_doc_hint or has_tabular_hint)) or (
+        has_vendor_or_product and has_doc_hint
+    )
+
+
 def _default_intent(
     *,
     presentation_mode: Literal["direct_answer", "rag_answer", "image_only", "image_plus_answer"],
@@ -149,6 +198,8 @@ def _default_intent(
 
 def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentClassification]:
     normalized = re.sub(r"\s+", "", query or "").lower()
+    has_model_pattern = _has_model_pattern(normalized)
+    has_product_doc_intent = _has_product_doc_intent(normalized)
     wants_images = any(token in normalized for token in _IMAGE_LOOKUP_HINTS)
     asks_answer = any(token in normalized for token in _ANSWER_HINTS)
     asks_similarity = any(token in normalized for token in ["相似", "类似"])
@@ -238,6 +289,17 @@ def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentC
             reason="image_lookup",
         )
 
+    if has_product_doc_intent:
+        return _default_intent(
+            presentation_mode=_RAG_ANSWER,
+            execution_mode="multimodal_rag",
+            use_rag=True,
+            has_uploaded_image=False,
+            wants_images=False,
+            confidence=0.92,
+            reason="product_spec_lookup",
+        )
+
     if internal_knowledge:
         return _default_intent(
             presentation_mode=_RAG_ANSWER,
@@ -249,7 +311,7 @@ def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentC
             reason="internal_knowledge",
         )
 
-    if common_fact:
+    if common_fact and not has_model_pattern and not has_product_doc_intent:
         return _default_intent(
             presentation_mode=_DIRECT_ANSWER,
             execution_mode="direct_llm",
@@ -312,12 +374,19 @@ async def classify_chat_intent(
     chat_model=None,
 ) -> IntentClassification:
     """两层输出的聊天意图分类。"""
-    rule_intent = _rule_based_intent(query, has_uploaded_image)
-    if rule_intent is not None:
-        return rule_intent
+    with timing_stage("intent_classification", meta={"has_uploaded_image": has_uploaded_image}):
+        rule_intent = _rule_based_intent(query, has_uploaded_image)
+        if rule_intent is not None:
+            collector = get_current_timing_collector()
+            if collector is not None:
+                collector.set_metadata(
+                    execution_mode=rule_intent["execution_mode"],
+                    presentation_mode=rule_intent["presentation_mode"],
+                )
+            return rule_intent
 
-    model = chat_model or get_chat_model()
-    prompt = f"""你是一个聊天路由分类器。请根据用户问题判断回答方式，并只返回 JSON。
+        model = chat_model or get_task_text_chat_model()
+        prompt = f"""你是一个聊天路由分类器。请根据用户问题判断回答方式，并只返回 JSON。
 
 返回字段：
 - presentation_mode: direct_answer | rag_answer | image_only | image_plus_answer
@@ -340,26 +409,39 @@ async def classify_chat_intent(
 用户是否上传图片：{str(has_uploaded_image).lower()}
 用户问题：{query}
 """
-    try:
-        result = await model._agenerate([HumanMessage(content=prompt)])
-        raw = result.generations[0].message.content
-        parsed = _extract_json_object(raw)
-        if isinstance(parsed, dict):
-            intent = _coerce_classifier_output(parsed, has_uploaded_image)
-            if intent is not None:
-                return intent
-    except Exception as exc:  # pragma: no cover - network/model failures are best-effort fallback
-        logger.warning("[IntentClassifier] LLM classifier failed, fallback to conservative routing: %s", exc)
+        try:
+            result = await model._agenerate([HumanMessage(content=prompt)])
+            raw = result.generations[0].message.content
+            parsed = _extract_json_object(raw)
+            if isinstance(parsed, dict):
+                intent = _coerce_classifier_output(parsed, has_uploaded_image)
+                if intent is not None:
+                    collector = get_current_timing_collector()
+                    if collector is not None:
+                        collector.set_metadata(
+                            execution_mode=intent["execution_mode"],
+                            presentation_mode=intent["presentation_mode"],
+                        )
+                    return intent
+        except Exception as exc:  # pragma: no cover - network/model failures are best-effort fallback
+            logger.warning("[IntentClassifier] LLM classifier failed, fallback to conservative routing: %s", exc)
 
-    return _default_intent(
-        presentation_mode=_RAG_ANSWER,
-        execution_mode="multimodal_rag",
-        use_rag=True,
-        has_uploaded_image=has_uploaded_image,
-        wants_images=has_uploaded_image,
-        confidence=0.35,
-        reason="fallback_to_retrieval",
-    )
+        intent = _default_intent(
+            presentation_mode=_RAG_ANSWER,
+            execution_mode="multimodal_rag",
+            use_rag=True,
+            has_uploaded_image=has_uploaded_image,
+            wants_images=has_uploaded_image,
+            confidence=0.35,
+            reason="fallback_to_retrieval",
+        )
+        collector = get_current_timing_collector()
+        if collector is not None:
+            collector.set_metadata(
+                execution_mode=intent["execution_mode"],
+                presentation_mode=intent["presentation_mode"],
+            )
+        return intent
 
 
 async def route_query(state: AgenticRAGState) -> AgenticRAGState:
@@ -446,7 +528,7 @@ async def generate_answer(state: AgenticRAGState) -> AgenticRAGState:
 
 请基于上述信息回答用户问题。如果文档不足以回答，请明确说明。"""
 
-    model = get_chat_model()
+    model = get_primary_text_chat_model()
     from langchain_core.messages import HumanMessage
     result = await model._agenerate([HumanMessage(content=prompt)])
     answer = result.generations[0].message.content
