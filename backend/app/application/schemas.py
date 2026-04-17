@@ -138,7 +138,9 @@ class SearchResultItem(BaseModel):
     id: str  # 图像唯一标识符
     file_path: Optional[str] = None  # 图像文件路径，可为空
     description: Optional[str] = None  # 图像描述，可为空
-    score: float  # 相似度分数，值越小相似度越高
+    score: float  # 原始检索分数，保留兼容用途
+    relevance_score: Optional[float] = None  # 统一相关性分数，值越大越相关
+    score_source: Optional[str] = None  # 相关性分数来源：rerank / rrf / vector
     asset_type: Optional[str] = None
     page_number: Optional[int] = None
     table_group_id: Optional[str] = None
@@ -152,7 +154,9 @@ class TextSearchRequest(BaseModel):
     用于接收文本搜索的请求参数。
     """
     query: str  # 搜索查询文本
-    top_k: int = 10  # 返回的结果数量，默认为 10
+    top_k: Optional[int] = None  # 返回的结果数量，未提供时使用系统默认值
+    enable_score_filter: Optional[bool] = None
+    min_relevance_score: Optional[float] = None
 
 
 class TextSearchResponse(BaseModel):
@@ -202,6 +206,8 @@ class ChatSourceItem(BaseModel):
     content: Optional[str] = None
     score: Optional[float] = None
     rerank_score: Optional[float] = None
+    relevance_score: Optional[float] = None
+    score_source: Optional[str] = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

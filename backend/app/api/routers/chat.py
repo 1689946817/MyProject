@@ -36,6 +36,7 @@ from app.core.config import settings
 from app.core.timing import RequestTimingCollector, bind_timing_collector
 from app.data.database import get_db
 from app.langchain_integration.adapters import get_langchain_adapter
+from app.retrieval.relevance import annotate_relevance
 
 
 router = APIRouter(tags=["chat"])
@@ -53,6 +54,7 @@ def _build_results(retrieved: List[dict]) -> List[SearchResultItem]:
     for item in retrieved:
         if not isinstance(item, dict):
             continue
+        annotate_relevance(item)
         meta = item.get("metadata") or {}
         result_id = item.get("id") or meta.get("id") or item.get("doc_id") or meta.get("doc_id")
         if result_id is None:
@@ -64,6 +66,8 @@ def _build_results(retrieved: List[dict]) -> List[SearchResultItem]:
                 file_path=meta.get("file_path"),
                 description=description,
                 score=float(item.get("score", 0.0)),
+                relevance_score=_safe_score(item.get("relevance_score") or meta.get("relevance_score")),
+                score_source=item.get("score_source") or meta.get("score_source"),
             )
         )
     return results
@@ -103,6 +107,8 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
         if not isinstance(item, dict):
             continue
 
+        annotate_relevance(item)
+
         raw_metadata = item.get("metadata")
         metadata = dict(raw_metadata) if isinstance(raw_metadata, dict) else {}
         is_document_chunk = item.get("doc_id") is not None or item.get("chunk_index") is not None or "content" in item
@@ -138,6 +144,8 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
                     content=item.get("content"),
                     score=_safe_score(item.get("score")),
                     rerank_score=_safe_score(item.get("rerank_score") or metadata.get("rerank_score")),
+                    relevance_score=_safe_score(item.get("relevance_score") or metadata.get("relevance_score")),
+                    score_source=item.get("score_source") or metadata.get("score_source"),
                     metadata=metadata,
                 )
             )
@@ -160,6 +168,8 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
                 content=item.get("document"),
                 score=_safe_score(item.get("score")),
                 rerank_score=_safe_score(item.get("rerank_score") or metadata.get("rerank_score")),
+                relevance_score=_safe_score(item.get("relevance_score") or metadata.get("relevance_score")),
+                score_source=item.get("score_source") or metadata.get("score_source"),
                 metadata=metadata,
             )
         )
@@ -273,19 +283,42 @@ def _coerce_rag_chat_result(
 @rag_router.post("/chat", response_model=ChatResponse, response_model_exclude_none=True)
 async def rag_chat_endpoint(
     query: str = Form(...),
-    top_k: int = Form(5),
+    top_k: Optional[int] = Form(None),
+    enable_score_filter: Optional[bool] = Form(None),
+    min_relevance_score: Optional[float] = Form(None),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
 ) -> ChatResponse:
     """RAG 聊天接口（支持持久化多轮对话）。"""
+    resolved_top_k = top_k or settings.CHAT_DEFAULT_TOP_K
+    resolved_enable_score_filter = (
+        enable_score_filter
+        if enable_score_filter is not None
+        else settings.CHAT_ENABLE_SCORE_FILTER
+    )
+    resolved_min_relevance_score = (
+        min_relevance_score
+        if min_relevance_score is not None
+        else settings.CHAT_MIN_RELEVANCE_SCORE
+    )
     collector = RequestTimingCollector("/api/rag/chat", "rag_chat")
-    collector.set_metadata(top_k=top_k, has_uploaded_image=image is not None)
+    collector.set_metadata(
+        top_k=resolved_top_k,
+        has_uploaded_image=image is not None,
+        enable_score_filter=resolved_enable_score_filter,
+        min_relevance_score=resolved_min_relevance_score,
+    )
     response: ChatResponse | None = None
     try:
         with bind_timing_collector(collector), collector.stage(
             "rag_chat_total",
-            meta={"top_k": top_k, "has_uploaded_image": image is not None},
+            meta={
+                "top_k": resolved_top_k,
+                "has_uploaded_image": image is not None,
+                "enable_score_filter": resolved_enable_score_filter,
+                "min_relevance_score": resolved_min_relevance_score,
+            },
         ):
             try:
                 with collector.stage("chat_session_load"):
@@ -299,9 +332,11 @@ async def rag_chat_endpoint(
             adapter = get_langchain_adapter()
             result = await adapter.rag_chat(
                 query=query,
-                top_k=top_k,
+                top_k=resolved_top_k,
                 image=image,
                 chat_history=history,
+                enable_score_filter=resolved_enable_score_filter,
+                min_relevance_score=resolved_min_relevance_score,
             )
             answer, retrieved, intent = _coerce_rag_chat_result(
                 result,
@@ -315,10 +350,12 @@ async def rag_chat_endpoint(
             retrieval_steps = intent.get("retrieval_steps") or []
 
             retrieval_params = {
-                "top_k": top_k,
+                "top_k": resolved_top_k,
                 "has_image": image is not None,
                 "query": query,
                 "stream": False,
+                "enable_score_filter": resolved_enable_score_filter,
+                "min_relevance_score": resolved_min_relevance_score,
                 "presentation_mode": intent.get("presentation_mode"),
                 "execution_mode": intent.get("execution_mode"),
                 "use_rag": intent.get("use_rag"),
@@ -358,14 +395,32 @@ async def rag_chat_endpoint(
 @rag_router.post("/chat/stream")
 async def rag_chat_stream_endpoint(
     query: str = Form(...),
-    top_k: int = Form(5),
+    top_k: Optional[int] = Form(None),
+    enable_score_filter: Optional[bool] = Form(None),
+    min_relevance_score: Optional[float] = Form(None),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
 ):
     """RAG 聊天流式接口（SSE）。"""
+    resolved_top_k = top_k or settings.CHAT_DEFAULT_TOP_K
+    resolved_enable_score_filter = (
+        enable_score_filter
+        if enable_score_filter is not None
+        else settings.CHAT_ENABLE_SCORE_FILTER
+    )
+    resolved_min_relevance_score = (
+        min_relevance_score
+        if min_relevance_score is not None
+        else settings.CHAT_MIN_RELEVANCE_SCORE
+    )
     collector = RequestTimingCollector("/api/rag/chat/stream", "rag_chat_stream")
-    collector.set_metadata(top_k=top_k, has_uploaded_image=image is not None)
+    collector.set_metadata(
+        top_k=resolved_top_k,
+        has_uploaded_image=image is not None,
+        enable_score_filter=resolved_enable_score_filter,
+        min_relevance_score=resolved_min_relevance_score,
+    )
     try:
         with collector.stage("chat_session_load"):
             session = get_session_or_raise(db, session_id) if session_id else create_session(db)
@@ -379,7 +434,12 @@ async def rag_chat_stream_endpoint(
     async def event_generator():
         with bind_timing_collector(collector), collector.stage(
             "rag_chat_stream_total",
-            meta={"top_k": top_k, "has_uploaded_image": image is not None},
+            meta={
+                "top_k": resolved_top_k,
+                "has_uploaded_image": image is not None,
+                "enable_score_filter": resolved_enable_score_filter,
+                "min_relevance_score": resolved_min_relevance_score,
+            },
         ):
             try:
                 yield f"data: {json.dumps({'type': 'session', 'session_id': session.id})}\n\n"
@@ -391,15 +451,19 @@ async def rag_chat_stream_endpoint(
                 try:
                     stream = adapter.rag_chat_stream(
                         query=query,
-                        top_k=top_k,
+                        top_k=resolved_top_k,
                         image=image,
                         chat_history=history,
+                        enable_score_filter=resolved_enable_score_filter,
+                        min_relevance_score=resolved_min_relevance_score,
                     )
                 except TypeError:
                     stream = adapter.rag_chat_stream(
                         query=query,
-                        top_k=top_k,
+                        top_k=resolved_top_k,
                         chat_history=history,
+                        enable_score_filter=resolved_enable_score_filter,
+                        min_relevance_score=resolved_min_relevance_score,
                     )
 
                 async for event in stream:
@@ -421,7 +485,14 @@ async def rag_chat_stream_endpoint(
                     collector.mark_first_token()
                     yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
 
-                retrieval_params = {"top_k": top_k, "has_image": image is not None, "query": query, "stream": True}
+                retrieval_params = {
+                    "top_k": resolved_top_k,
+                    "has_image": image is not None,
+                    "query": query,
+                    "stream": True,
+                    "enable_score_filter": resolved_enable_score_filter,
+                    "min_relevance_score": resolved_min_relevance_score,
+                }
                 with collector.stage("chat_message_persist"):
                     add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
                     sources = _normalize_chat_sources(retrieved_docs)

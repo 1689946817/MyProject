@@ -32,7 +32,12 @@
               <p>{{ formatDate(uploadTime) }}</p>
             </div>
 
-            <div v-if="score !== undefined" class="info-item">
+            <div v-if="scoreLabel" class="info-item">
+              <label>{{ t('search.similarity') }}:</label>
+              <p>{{ scoreLabel }}</p>
+            </div>
+
+            <div v-else-if="score !== undefined" class="info-item">
               <label>{{ t('search.similarity') }}:</label>
               <div class="score-visual">
                 <div class="score-bar-large">
@@ -63,6 +68,7 @@ const props = defineProps<{
   id?: string
   uploadTime?: string
   score?: number
+  scoreLabel?: string
 }>()
 
 const emit = defineEmits<{

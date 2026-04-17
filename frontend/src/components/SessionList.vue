@@ -1,13 +1,23 @@
 <template>
-  <div class="session-list">
+  <div class="session-list" :class="{ compact: collapsed }">
+    <div class="session-toolbar">
+      <button
+        class="toolbar-btn history-toggle-btn"
+        :title="collapsed ? t('chat.openHistory') : t('chat.closeHistory')"
+        @click="$emit('toggleCollapse')"
+      >
+        <i :class="collapsed ? 'i-ep-right' : 'i-ep-back'"></i>
+      </button>
+    </div>
+
     <!-- 新建会话按钮 -->
-    <button class="new-session-btn btn-gradient" @click="$emit('create')">
+    <button v-if="!collapsed" class="new-session-btn btn-gradient" @click="$emit('create')">
       <i class="i-ep-plus mr-2"></i>
       {{ t('chat.newSession') }}
     </button>
 
     <!-- 会话列表 -->
-    <div v-if="sessions.length > 0" class="sessions">
+    <div v-if="sessions.length > 0 && !collapsed" class="sessions">
       <div
         v-for="session in sessions"
         :key="session.id"
@@ -29,7 +39,7 @@
         </div>
       </div>
     </div>
-    <el-empty v-else :description="t('chat.noSessions')" />
+    <el-empty v-else-if="!collapsed" :description="t('chat.noSessions')" />
 
     <!-- 重命名对话框 -->
     <el-dialog v-model="renameDialogVisible" :title="t('common.rename')" width="400px">
@@ -54,6 +64,7 @@ const { t } = useI18n()
 defineProps<{
   sessions: ChatSession[]
   activeId?: string
+  collapsed?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -62,6 +73,7 @@ const emit = defineEmits<{
   rename: [string]
   updateTitle: [string, string]
   delete: [string]
+  toggleCollapse: []
 }>()
 
 const renameDialogVisible = ref(false)
@@ -103,6 +115,44 @@ defineExpose({
   flex-direction: column;
   height: 100%;
   gap: 12px;
+}
+
+.session-list.compact {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+.session-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.session-list.compact .session-toolbar {
+  flex-direction: column;
+  width: 100%;
+}
+
+.toolbar-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+.toolbar-btn:hover {
+  color: var(--accent-primary);
+  background: var(--bg-accent-soft);
+  border-color: var(--border-strong);
 }
 
 .new-session-btn {

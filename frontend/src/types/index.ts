@@ -34,6 +34,8 @@ export interface SearchResultItem {
   file_path?: string
   description?: string
   score: number
+  relevance_score?: number | null
+  score_source?: string | null
   asset_type?: string | null
   page_number?: number | null
   table_group_id?: string | null
@@ -49,6 +51,8 @@ export interface ChatSourceItem {
   content?: string
   score?: number
   rerank_score?: number
+  relevance_score?: number | null
+  score_source?: string | null
   metadata?: Record<string, any>
 }
 

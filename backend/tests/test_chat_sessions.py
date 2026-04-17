@@ -19,7 +19,17 @@ from app.main import create_app
 
 
 class FakeAdapter:
-    async def rag_chat(self, query, top_k=5, image=None, chat_history=None):
+    def __init__(self):
+        self.last_rag_chat_kwargs = None
+
+    async def rag_chat(self, query, top_k=5, image=None, chat_history=None, **kwargs):
+        self.last_rag_chat_kwargs = {
+            "query": query,
+            "top_k": top_k,
+            "image": image,
+            "chat_history": chat_history,
+            **kwargs,
+        }
         if query == "doc-hit":
             return (
                 "answer for doc-hit",
@@ -33,6 +43,8 @@ class FakeAdapter:
                             "file_path": "/tmp/report.pdf",
                         },
                         "score": 0.34,
+                        "relevance_score": 0.61,
+                        "score_source": "vector",
                     }
                 ],
             )
@@ -48,6 +60,8 @@ class FakeAdapter:
                             "filename": "mixed.jpg",
                         },
                         "score": 0.22,
+                        "relevance_score": 0.92,
+                        "score_source": "rerank",
                     },
                     {
                         "doc_id": "doc-9",
@@ -55,9 +69,13 @@ class FakeAdapter:
                         "content": "chunk zero",
                         "metadata": {"file_path": "/tmp/doc9.pdf"},
                         "score": 0.55,
+                        "relevance_score": 0.55,
+                        "score_source": "vector",
                     },
                 ],
             )
+        if query == "no-source":
+            return ("answer for no-source", [])
         return (
             f"answer for {query}",
             [
@@ -66,11 +84,13 @@ class FakeAdapter:
                     "document": "retrieved doc",
                     "metadata": {"file_path": "/tmp/example.jpg", "filename": "example.jpg"},
                     "score": 0.12,
+                    "relevance_score": 0.88,
+                    "score_source": "rerank",
                 }
             ],
         )
 
-    async def rag_chat_stream(self, query, top_k=5, chat_history=None):
+    async def rag_chat_stream(self, query, top_k=5, chat_history=None, **kwargs):
         yield (
             "stream part 1 ",
             [
@@ -79,6 +99,8 @@ class FakeAdapter:
                     "document": "streamed retrieved doc",
                     "metadata": {"file_path": "/tmp/stream.jpg", "filename": "stream.jpg"},
                     "score": 0.44,
+                    "relevance_score": 0.71,
+                    "score_source": "rerank",
                 }
             ],
         )
@@ -91,6 +113,8 @@ class FakeAdapter:
                     "content": "stream chunk",
                     "metadata": {"file_name": "stream.pdf", "file_path": "/tmp/stream.pdf"},
                     "score": 0.66,
+                    "relevance_score": 0.66,
+                    "score_source": "vector",
                 }
             ],
         )
@@ -117,7 +141,8 @@ class TestChatSessions(unittest.TestCase):
                 db.close()
 
         self.app.dependency_overrides[get_db] = override_get_db
-        self.adapter_patch = patch("app.api.routers.chat.get_langchain_adapter", return_value=FakeAdapter())
+        self.fake_adapter = FakeAdapter()
+        self.adapter_patch = patch("app.api.routers.chat.get_langchain_adapter", return_value=self.fake_adapter)
         self.adapter_patch.start()
         self.client = TestClient(self.app)
 
@@ -140,8 +165,12 @@ class TestChatSessions(unittest.TestCase):
         self.assertEqual(payload["answer"], "answer for hello")
         self.assertEqual(len(payload["results"]), 1)
         self.assertEqual(len(payload["sources"]), 1)
+        self.assertEqual(payload["results"][0]["relevance_score"], 0.88)
+        self.assertEqual(payload["results"][0]["score_source"], "rerank")
         self.assertEqual(payload["sources"][0]["source_type"], "image")
         self.assertEqual(payload["sources"][0]["source_id"], "img-1")
+        self.assertEqual(payload["sources"][0]["relevance_score"], 0.88)
+        self.assertEqual(payload["sources"][0]["score_source"], "rerank")
 
         db = self.SessionTesting()
         try:
@@ -278,6 +307,25 @@ class TestChatSessions(unittest.TestCase):
         payload = response.json()
         self.assertEqual([item["source_type"] for item in payload["sources"]], ["image", "document_chunk"])
         self.assertEqual(payload["sources"][1]["source_id"], "doc-9#chunk-0")
+
+    def test_rag_chat_forwards_filter_params_and_supports_empty_sources(self):
+        response = self.client.post(
+            "/api/rag/chat",
+            data={
+                "query": "no-source",
+                "top_k": "3",
+                "enable_score_filter": "true",
+                "min_relevance_score": "0.75",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["answer"], "answer for no-source")
+        self.assertEqual(payload["results"], [])
+        self.assertEqual(payload["sources"], [])
+        self.assertEqual(self.fake_adapter.last_rag_chat_kwargs["top_k"], 3)
+        self.assertTrue(self.fake_adapter.last_rag_chat_kwargs["enable_score_filter"])
+        self.assertEqual(self.fake_adapter.last_rag_chat_kwargs["min_relevance_score"], 0.75)
 
     def test_rag_chat_stream_returns_and_persists_sources(self):
         response = self.client.post("/api/rag/chat/stream", data={"query": "stream me"})

@@ -26,6 +26,7 @@ from app.core.timing import timing_stage
 from app.langchain_integration.models import get_multimodal_chat_model, MultimodalChatModel
 from app.langchain_integration.vectorstores import ChromaVectorStore, get_vector_store
 from app.retrieval.rerank import cross_encoder_rerank, simple_rerank
+from app.retrieval.relevance import annotate_relevance, filter_by_relevance
 from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
 
 logger = logging.getLogger(__name__)
@@ -162,6 +163,8 @@ class MultimodalRetriever:
         query: str,
         top_k: Optional[int] = None,
         fast: bool = False,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> List[Document]:
         """
         文本到图像检索（完整 P0 流程）
@@ -187,18 +190,24 @@ class MultimodalRetriever:
             candidates = filter_enabled_image_hit_dicts(candidates)
 
             with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
-                reranked = cross_encoder_rerank(query, candidates, top_k=k)
+                reranked = cross_encoder_rerank(query, candidates, top_k=len(candidates))
                 reranked = _prefer_table_crops(reranked)
+            reranked = filter_by_relevance(
+                reranked,
+                enabled=enable_score_filter,
+                min_score=min_relevance_score,
+            )[:k]
 
             documents = []
             for hit in reranked:
+                annotate_relevance(hit)
                 doc = Document(
                     page_content=hit.get("document", ""),
                     metadata=hit.get("metadata", {}),
                 )
-                doc.metadata["score"] = hit.get(
-                    "rerank_score", hit.get("rrf_score", hit.get("score", 0.0))
-                )
+                doc.metadata["score"] = hit.get("score", 0.0)
+                doc.metadata["relevance_score"] = hit.get("relevance_score")
+                doc.metadata["score_source"] = hit.get("score_source")
                 documents.append(doc)
 
             return filter_enabled_image_documents(documents)
@@ -208,6 +217,8 @@ class MultimodalRetriever:
         file: UploadFile,
         top_k: Optional[int] = None,
         fast: bool = False,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> Tuple[List[Document], str]:
         """图像到图像检索：先生成描述，再走文本检索路径。"""
         k = top_k or self.top_k
@@ -222,13 +233,21 @@ class MultimodalRetriever:
                     prompt=IMAGE_DESCRIPTION_PROMPT,
                 )
 
-            documents = await self.text_to_image_search(description, top_k=k, fast=fast)
+            documents = await self.text_to_image_search(
+                description,
+                top_k=k,
+                fast=fast,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
             return documents, description
 
     def search_with_dict_output(
         self,
         query: str,
         top_k: Optional[int] = None,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """
         同步检索并返回字典格式结果（兼容旧接口）。
@@ -241,13 +260,20 @@ class MultimodalRetriever:
 
         candidates = _hybrid_search_sync(query, self.vector_store, candidate_k)
         candidates = filter_enabled_image_hit_dicts(candidates)
-        return _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=k))
+        reranked = _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=len(candidates)))
+        return filter_by_relevance(
+            reranked,
+            enabled=enable_score_filter,
+            min_score=min_relevance_score,
+        )[:k]
 
     async def async_search_with_dict_output(
         self,
         query: str,
         top_k: Optional[int] = None,
         fast: bool = False,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """
         异步检索并返回字典格式结果（完整 P0 管线：Multi-Query + 混合检索 + 精排）。
@@ -270,7 +296,12 @@ class MultimodalRetriever:
             )
             candidates = filter_enabled_image_hit_dicts(candidates)
             with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
-                return _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=k))
+                reranked = _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=len(candidates)))
+            return filter_by_relevance(
+                reranked,
+                enabled=enable_score_filter,
+                min_score=min_relevance_score,
+            )[:k]
 
 
 # 全局检索器实例缓存

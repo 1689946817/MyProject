@@ -132,6 +132,12 @@ class Settings(BaseSettings):
     IMAGE_GROUNDED_TEXT_TOP_K: int = 2
     IMAGE_GROUNDED_MAX_IMAGES: int = 2
     IMAGE_GROUNDED_MAX_HISTORY_TURNS: int = 2
+    SEARCH_DEFAULT_TOP_K: int = 10
+    SEARCH_ENABLE_SCORE_FILTER: bool = False
+    SEARCH_MIN_RELEVANCE_SCORE: float = 0.0
+    CHAT_DEFAULT_TOP_K: int = 5
+    CHAT_ENABLE_SCORE_FILTER: bool = False
+    CHAT_MIN_RELEVANCE_SCORE: float = 0.0
 
     # P0 升级：混合检索
     BM25_INDEX_PATH: str = "storage/bm25_index.pkl"

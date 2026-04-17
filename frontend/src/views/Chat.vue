@@ -10,52 +10,97 @@
         <span>{{ loading ? t("chat.thinking") : t("app.connectionOk") }}</span>
       </div>
     </div>
-    <el-row :gutter="20">
-      <!-- 左侧会话列表 -->
-      <el-col :span="6">
-        <el-card class="session-panel glass-card">
+
+    <div class="chat-shell" :class="{ compact: !isMobile && !historyPanelOpen }">
+      <aside v-if="!isMobile" class="history-panel" :class="{ collapsed: !historyPanelOpen }">
+        <div v-if="historyPanelOpen" class="history-panel-card glass-card">
+          <div class="history-panel-head">
+            <div>
+              <div class="history-title">{{ t("chat.history") }}</div>
+              <div class="history-subtitle">{{ sessions.length }} {{ t("chat.history") }}</div>
+            </div>
+          </div>
           <SessionList
+            ref="sessionListRef"
             :sessions="sessions"
             :active-id="currentSessionId"
+            :collapsed="false"
             @select="selectSession"
             @create="handleCreateSession"
             @rename="handleRenameSession"
             @update-title="updateSessionTitle"
             @delete="handleDeleteSession"
-            ref="sessionListRef"
+            @toggle-collapse="historyPanelOpen = false"
           />
-        </el-card>
-      </el-col>
+        </div>
+        <div v-else class="history-rail glass-card">
+          <SessionList
+            :sessions="sessions"
+            :active-id="currentSessionId"
+            :collapsed="true"
+            @create="handleCreateSession"
+            @toggle-collapse="historyPanelOpen = true"
+          />
+        </div>
+      </aside>
 
-      <!-- 右侧聊天区域 -->
-      <el-col :span="18">
+      <el-drawer v-model="mobileHistoryOpen" direction="ltr" size="320px" :with-header="false" class="history-drawer">
+        <div class="history-drawer-body">
+          <div class="history-panel-head drawer-head">
+            <div>
+              <div class="history-title">{{ t("chat.history") }}</div>
+              <div class="history-subtitle">{{ sessions.length }} {{ t("chat.history") }}</div>
+            </div>
+          </div>
+          <SessionList
+            ref="mobileSessionListRef"
+            :sessions="sessions"
+            :active-id="currentSessionId"
+            :collapsed="false"
+            @select="selectSessionFromDrawer"
+            @create="handleCreateSession"
+            @rename="handleRenameSession"
+            @update-title="updateSessionTitle"
+            @delete="handleDeleteSession"
+            @toggle-collapse="mobileHistoryOpen = false"
+          />
+        </div>
+      </el-drawer>
+
+      <div v-if="isMobile" class="mobile-history-rail">
+        <SessionList
+          :sessions="sessions"
+          :active-id="currentSessionId"
+          :collapsed="true"
+          @create="handleCreateSession"
+          @toggle-collapse="mobileHistoryOpen = true"
+        />
+      </div>
+
+      <section class="chat-main">
         <el-card class="chat-panel glass-card">
           <template #header>
             <div class="chat-header">
-              <span class="chat-title">{{ currentSessionTitle || t('chat.title') }}</span>
+              <div class="chat-header-main">
+                <span class="chat-title">{{ currentSessionTitle || t("chat.title") }}</span>
+              </div>
             </div>
           </template>
 
-          <!-- 消息区域 -->
-          <div class="messages-container" ref="messagesContainer">
+          <div ref="messagesContainer" class="messages-container">
             <div v-if="messages.length === 0" class="empty-chat">
-              <div class="empty-icon">
-                <i class="i-ep-chat-dot-round"></i>
-              </div>
+              <div class="empty-icon"><i class="i-ep-chat-dot-round"></i></div>
               <h3>{{ t("chat.emptyTitle") }}</h3>
               <p>{{ t("chat.emptySubtitle") }}</p>
               <div class="empty-actions">
                 <el-button type="primary" class="empty-action-btn" @click="router.push('/search')">
-                  <i class="i-ep-search mr-1"></i>
-                  {{ t("chat.quickSearch") }}
+                  <i class="i-ep-search mr-1"></i>{{ t("chat.quickSearch") }}
                 </el-button>
                 <el-button class="empty-action-btn" @click="router.push('/kb')">
-                  <i class="i-ep-picture mr-1"></i>
-                  {{ t("chat.quickKnowledgeBase") }}
+                  <i class="i-ep-picture mr-1"></i>{{ t("chat.quickKnowledgeBase") }}
                 </el-button>
                 <el-button class="empty-action-btn" @click="router.push('/docs')">
-                  <i class="i-ep-document mr-1"></i>
-                  {{ t("chat.quickDocs") }}
+                  <i class="i-ep-document mr-1"></i>{{ t("chat.quickDocs") }}
                 </el-button>
               </div>
             </div>
@@ -73,48 +118,23 @@
                 </div>
                 <div class="message-content">
                   <div class="message-bubble">
-                    <div
-                      v-if="msg.role === 'assistant'"
-                      class="assistant-meta"
-                    >
-                      <span class="assistant-mode-badge">
-                        {{ getModeLabel(msg) }}
-                      </span>
+                    <div v-if="msg.role === 'assistant'" class="assistant-meta">
+                      <span class="assistant-mode-badge">{{ getModeLabel(msg) }}</span>
                     </div>
-                    <div
-                      v-if="msg.role === 'user' && (msg.local_image_url || msg.has_image)"
-                      class="user-attachment-card"
-                    >
+                    <div v-if="msg.role === 'user' && (msg.local_image_url || msg.has_image)" class="user-attachment-card">
                       <img v-if="msg.local_image_url" :src="msg.local_image_url" class="user-attachment-image" />
                       <div class="user-attachment-meta">
                         <span class="user-attachment-label">{{ t("chat.attachedImage") }}</span>
                         <span class="user-attachment-hint">{{ t("chat.attachedImageHint") }}</span>
                       </div>
                     </div>
-                    <div
-                      v-if="shouldShowImagesFirst(msg)"
-                      class="referenced-images"
-                      :class="{ prominent: isImageFocusedMode(msg) }"
-                    >
-                      <div
-                        v-for="source in getImageSources(msg)"
-                        :key="source.source_id"
-                        class="ref-image-item"
-                        @click="showPreview(source)"
-                      >
+                    <div v-if="shouldShowImagesFirst(msg)" class="referenced-images" :class="{ prominent: isImageFocusedMode(msg) }">
+                      <div v-for="source in getImageSources(msg)" :key="source.source_id" class="ref-image-item" @click="showPreview(source)">
                         <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source) || getSourceScoreLabel(source)" class="ref-image-badges">
-                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">
-                            {{ getSourceAssetLabel(source) }}
-                          </span>
-                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">
-                            {{ getSourcePageLabel(source) }}
-                          </span>
-                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">
-                            {{ getSourceScoreLabel(source) }}
-                          </span>
-                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">
-                            {{ t("docs.crossPageContinued") }}
-                          </span>
+                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">{{ getSourceAssetLabel(source) }}</span>
+                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">{{ getSourcePageLabel(source) }}</span>
+                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">{{ getSourceScoreLabel(source) }}</span>
+                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">{{ t("docs.crossPageContinued") }}</span>
                         </div>
                         <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
@@ -122,36 +142,26 @@
                     <p
                       v-if="msg.content"
                       class="message-text"
-                      :class="[
-                        { 'typing': msg.role === 'assistant' && String(msg.id) === streamingId },
-                        msg.role === 'assistant' ? `mode-text-${getPresentationMode(msg)}` : ''
-                      ]"
-                    >
-                      {{ msg.content }}
-                    </p>
+                      :class="[{ typing: msg.role === 'assistant' && String(msg.id) === streamingId }, msg.role === 'assistant' ? `mode-text-${getPresentationMode(msg)}` : '']"
+                    >{{ msg.content }}</p>
+                    <el-alert
+                      v-if="shouldShowRerankFilterNotice(msg)"
+                      :title="t('chat.rerankFilterUnsupported')"
+                      type="info"
+                      :closable="false"
+                      show-icon
+                      class="message-notice"
+                    />
                     <details v-if="hasRetrievalSteps(msg)" class="trace-panel">
-                      <summary class="trace-summary">
-                        {{ t('chat.ragTrace') }}
-                      </summary>
+                      <summary class="trace-summary">{{ t("chat.ragTrace") }}</summary>
                       <div class="trace-list">
-                        <div
-                          v-for="step in msg.retrieval_steps"
-                          :key="`${msg.id}-${step.key}`"
-                          class="trace-step"
-                        >
+                        <div v-for="step in msg.retrieval_steps" :key="`${msg.id}-${step.key}`" class="trace-step">
                           <div class="trace-step-header">
                             <span class="trace-step-label">{{ step.label }}</span>
                             <span v-if="step.summary" class="trace-step-summary">{{ step.summary }}</span>
                           </div>
-                          <div
-                            v-if="step.details && Object.keys(step.details).length > 0"
-                            class="trace-step-details"
-                          >
-                            <div
-                              v-for="(value, key) in step.details"
-                              :key="`${msg.id}-${step.key}-${String(key)}`"
-                              class="trace-detail-row"
-                            >
+                          <div v-if="step.details && Object.keys(step.details).length > 0" class="trace-step-details">
+                            <div v-for="(value, key) in step.details" :key="`${msg.id}-${step.key}-${String(key)}`" class="trace-detail-row">
                               <span class="trace-detail-key">{{ key }}</span>
                               <span class="trace-detail-value">{{ formatTraceDetailValue(value) }}</span>
                             </div>
@@ -159,31 +169,14 @@
                         </div>
                       </div>
                     </details>
-                    <div
-                      v-if="shouldShowImagesAfterText(msg)"
-                      class="referenced-images"
-                      :class="{ prominent: isImageFocusedMode(msg) }"
-                    >
+                    <div v-if="shouldShowImagesAfterText(msg)" class="referenced-images" :class="{ prominent: isImageFocusedMode(msg) }">
                       <div class="sources-heading">{{ t("chat.sourceImages") }}</div>
-                      <div
-                        v-for="source in getImageSources(msg)"
-                        :key="source.source_id"
-                        class="ref-image-item"
-                        @click="showPreview(source)"
-                      >
+                      <div v-for="source in getImageSources(msg)" :key="source.source_id" class="ref-image-item" @click="showPreview(source)">
                         <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source) || getSourceScoreLabel(source)" class="ref-image-badges">
-                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">
-                            {{ getSourceAssetLabel(source) }}
-                          </span>
-                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">
-                            {{ getSourcePageLabel(source) }}
-                          </span>
-                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">
-                            {{ getSourceScoreLabel(source) }}
-                          </span>
-                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">
-                            {{ t("docs.crossPageContinued") }}
-                          </span>
+                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">{{ getSourceAssetLabel(source) }}</span>
+                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">{{ getSourcePageLabel(source) }}</span>
+                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">{{ getSourceScoreLabel(source) }}</span>
+                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">{{ t("docs.crossPageContinued") }}</span>
                         </div>
                         <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
@@ -195,21 +188,14 @@
             </div>
           </div>
 
-          <!-- 输入区域 -->
           <div class="input-area">
             <div v-if="loading && currentSessionId && sessionDrafts[currentSessionId]" class="pending-banner">
               <i class="i-ep-loading"></i>
               <span>{{ t("chat.pendingSession") }}</span>
             </div>
             <div class="input-row">
-              <el-upload
-                :auto-upload="false"
-                :show-file-list="false"
-                :on-change="onImageChange"
-              >
-                <el-button text class="attach-btn">
-                  <i class="i-ep-plus"></i>
-                </el-button>
+              <el-upload :auto-upload="false" :show-file-list="false" :on-change="onImageChange">
+                <el-button text class="attach-btn"><i class="i-ep-plus"></i></el-button>
               </el-upload>
               <el-input
                 v-model="query"
@@ -218,217 +204,264 @@
                 type="textarea"
                 :autosize="{ minRows: 1, maxRows: 5 }"
                 resize="none"
-                @keydown.enter.exact.prevent="doChat"
                 :disabled="loading"
+                @keydown.enter.exact.prevent="doChat"
               />
-              <el-button
-                type="primary"
-                class="send-btn"
-                :loading="loading"
-                @click="doChat"
-              >
+              <el-button type="primary" class="send-btn" :loading="loading" @click="doChat">
                 <i class="i-ep-send"></i>
               </el-button>
             </div>
             <div class="input-hint">{{ t("chat.inputHint") }}</div>
+            <div class="settings-toggle-row">
+              <el-button text class="settings-toggle" @click="settingsPanelOpen = !settingsPanelOpen">
+                <i :class="settingsPanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
+                <span>{{ t("chat.retrievalSettings") }}</span>
+                <span class="settings-summary">{{ settingsSummary }}</span>
+              </el-button>
+            </div>
+            <el-collapse-transition>
+              <div v-show="settingsPanelOpen" class="settings-panel">
+                <div class="settings-grid">
+                  <div class="settings-item">
+                    <span class="settings-label">{{ t("chat.topK") }}</span>
+                    <el-input-number v-model="chatTopK" :min="1" :max="20" />
+                  </div>
+                  <div class="settings-item switch-item">
+                    <span class="settings-label">{{ t("chat.enableScoreFilter") }}</span>
+                    <el-switch v-model="chatEnableScoreFilter" />
+                  </div>
+                  <div class="settings-item">
+                    <span class="settings-label">{{ t("chat.minRelevanceScore") }}</span>
+                    <el-input-number v-model="chatMinRelevanceScore" :step="0.1" :precision="3" :disabled="!chatEnableScoreFilter" />
+                  </div>
+                </div>
+              </div>
+            </el-collapse-transition>
             <div v-if="attachedImage" class="attached-preview">
               <img :src="attachedImagePreview" />
               <div class="attached-copy">
                 <span class="attached-title">{{ t("chat.attachedImage") }}</span>
                 <span class="attached-desc">{{ attachedImage?.name }}</span>
               </div>
-              <button class="remove-attached" @click="removeAttached">
-                <i class="i-ep-close"></i>
-              </button>
+              <button class="remove-attached" @click="removeAttached"><i class="i-ep-close"></i></button>
             </div>
           </div>
         </el-card>
-      </el-col>
-    </el-row>
+      </section>
+    </div>
 
-    <!-- 引用图片预览 -->
-    <ImagePreviewModal
-      v-model:visible="previewVisible"
-      :src="previewSrc"
-      :title="previewTitle"
-      :description="previewDescription"
-    />
+    <ImagePreviewModal v-model:visible="previewVisible" :src="previewSrc" :title="previewTitle" :description="previewDescription" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import type { UploadFile } from 'element-plus'
-import { useRouter } from 'vue-router'
-import {
-  getSessions,
-  createSession,
-  renameSession,
-  deleteSession,
-  getSessionMessages,
-  ragChat,
-  type ChatSession
-} from '@/api/chat'
-import { imgSrc } from '@/utils/image'
-import SessionList from '@/components/SessionList.vue'
-import ImagePreviewModal from '@/components/ImagePreviewModal.vue'
-import type { ChatMessage, ChatSourceItem } from '@/types'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import type { UploadFile } from "element-plus";
+import { useRouter } from "vue-router";
+import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChat, type ChatSession } from "@/api/chat";
+import { getSystemConfig } from "@/api/settings";
+import { imgSrc } from "@/utils/image";
+import SessionList from "@/components/SessionList.vue";
+import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
+import type { ChatMessage, ChatSourceItem } from "@/types";
 
-const { t } = useI18n()
-const router = useRouter()
+const { t } = useI18n();
+const router = useRouter();
 
-type SourceItem = ChatSourceItem
-type Message = ChatMessage
+type SourceItem = ChatSourceItem;
+type Message = ChatMessage;
 
-const sessions = ref<ChatSession[]>([])
-const currentSessionId = ref<string | undefined>()
-const currentSessionTitle = ref('')
-const messages = ref<Message[]>([])
-const query = ref('')
-const loading = ref(false)
-const attachedImage = ref<File | null>(null)
-const attachedImagePreview = ref('')
-const streamingId = ref('')
-const sessionListRef = ref<InstanceType<typeof SessionList>>()
-const sessionDrafts = ref<Record<string, { messages: Message[]; title: string }>>({})
-const objectUrls = new Set<string>()
-let loadSessionToken = 0
+const sessions = ref<ChatSession[]>([]);
+const currentSessionId = ref<string | undefined>();
+const currentSessionTitle = ref("");
+const messages = ref<Message[]>([]);
+const query = ref("");
+const loading = ref(false);
+const attachedImage = ref<File | null>(null);
+const attachedImagePreview = ref("");
+const streamingId = ref("");
+const chatTopK = ref(5);
+const chatEnableScoreFilter = ref(false);
+const chatMinRelevanceScore = ref(0);
+const chatDefaultTopK = ref(5);
+const chatDefaultEnableScoreFilter = ref(false);
+const chatDefaultMinRelevanceScore = ref(0);
+const settingsPanelOpen = ref(false);
+const historyPanelOpen = ref(true);
+const mobileHistoryOpen = ref(false);
+const isMobile = ref(false);
+const sessionListRef = ref<InstanceType<typeof SessionList>>();
+const mobileSessionListRef = ref<InstanceType<typeof SessionList>>();
+const sessionDrafts = ref<Record<string, { messages: Message[]; title: string }>>({});
+const objectUrls = new Set<string>();
+const previewVisible = ref(false);
+const previewSrc = ref("");
+const previewTitle = ref("");
+const previewDescription = ref("");
+const messagesContainer = ref<HTMLElement>();
+let loadSessionToken = 0;
 
-// 预览
-const previewVisible = ref(false)
-const previewSrc = ref('')
-const previewTitle = ref('')
-const previewDescription = ref('')
+const settingsSummary = computed(() => {
+  const parts: string[] = [];
+  if (chatTopK.value !== chatDefaultTopK.value) {
+    parts.push(t("chat.activeTopK", { count: chatTopK.value }));
+  }
+  if (chatEnableScoreFilter.value && (chatEnableScoreFilter.value !== chatDefaultEnableScoreFilter.value || chatMinRelevanceScore.value !== chatDefaultMinRelevanceScore.value)) {
+    parts.push(`${t("chat.activeRerankFilter")} ≥ ${formatNumeric(chatMinRelevanceScore.value)}`);
+  }
+  return parts.length > 0 ? parts.join(" / ") : t("chat.defaultSettings");
+});
 
-const messagesContainer = ref<HTMLElement>()
+watch([chatTopK, chatEnableScoreFilter, chatMinRelevanceScore], () => {
+  settingsPanelOpen.value =
+    chatTopK.value !== chatDefaultTopK.value ||
+    chatEnableScoreFilter.value !== chatDefaultEnableScoreFilter.value ||
+    (chatEnableScoreFilter.value && chatMinRelevanceScore.value !== chatDefaultMinRelevanceScore.value);
+});
+
+function updateViewportState() {
+  isMobile.value = window.innerWidth < 1100;
+  if (isMobile.value) {
+    historyPanelOpen.value = false;
+  }
+}
 
 async function loadSessions() {
   try {
-    sessions.value = await getSessions()
+    sessions.value = await getSessions();
   } catch (e) {
-    console.error('加载会话列表失败:', e)
+    console.error("加载会话列表失败:", e);
   }
 }
 
 async function loadSession(id: string) {
-  const token = ++loadSessionToken
-  const draft = sessionDrafts.value[id]
-  messages.value = draft?.messages ? draft.messages.map(cloneMessage) : []
-  currentSessionTitle.value = draft?.title || sessions.value.find(s => s.id === id)?.title || ''
+  const token = ++loadSessionToken;
+  const draft = sessionDrafts.value[id];
+  messages.value = draft?.messages ? draft.messages.map(cloneMessage) : [];
+  currentSessionTitle.value = draft?.title || sessions.value.find((s) => s.id === id)?.title || "";
   try {
-    const msgs = await getSessionMessages(id)
+    const msgs = await getSessionMessages(id);
     if (token !== loadSessionToken || currentSessionId.value !== id) {
-      return
+      return;
     }
     if (msgs.length > 0 || !draft?.messages?.length) {
-      messages.value = msgs.map(cloneMessage)
+      messages.value = msgs.map(cloneMessage);
     }
-    const session = sessions.value.find(s => s.id === id)
-    currentSessionTitle.value = session?.title || draft?.title || ''
+    const session = sessions.value.find((s) => s.id === id);
+    currentSessionTitle.value = session?.title || draft?.title || "";
     if (draft?.messages?.length && msgs.length >= draft.messages.length) {
-      clearSessionDraft(id)
+      clearSessionDraft(id);
     }
   } catch (e) {
-    console.error('加载会话消息失败:', e)
+    console.error("加载会话消息失败:", e);
     if (!draft?.messages?.length) {
-      messages.value = []
+      messages.value = [];
     }
   }
 }
 
 function selectSession(id: string) {
-  currentSessionId.value = id
+  currentSessionId.value = id;
+}
+
+function selectSessionFromDrawer(id: string) {
+  mobileHistoryOpen.value = false;
+  selectSession(id);
 }
 
 watch(currentSessionId, (newId, oldId) => {
   if (oldId) {
-    saveSessionDraft(oldId)
+    saveSessionDraft(oldId);
   }
   if (newId) {
-    loadSession(newId)
+    loadSession(newId);
   } else {
-    messages.value = []
-    currentSessionTitle.value = ''
+    messages.value = [];
+    currentSessionTitle.value = "";
   }
-})
+});
 
 async function handleCreateSession() {
   try {
-    const session = await createSession()
-    sessions.value.unshift(session)
-    currentSessionTitle.value = session.title || t('chat.newSession')
-    currentSessionId.value = session.id
+    const session = await createSession();
+    sessions.value.unshift(session);
+    currentSessionTitle.value = session.title || t("chat.newSession");
+    currentSessionId.value = session.id;
+    if (!isMobile.value) {
+      historyPanelOpen.value = true;
+    }
   } catch (e) {
-    console.error('创建会话失败:', e)
-    ElMessage.error('创建会话失败')
+    console.error("创建会话失败:", e);
+    ElMessage.error("创建会话失败");
   }
 }
 
 function handleRenameSession(id: string) {
-  const session = sessions.value.find(s => s.id === id)
+  const session = sessions.value.find((s) => s.id === id);
   if (session) {
-    sessionListRef.value?.openRenameDialog(id, session.title || '')
+    sessionListRef.value?.openRenameDialog(id, session.title || "");
+    mobileSessionListRef.value?.openRenameDialog(id, session.title || "");
   }
 }
 
 async function updateSessionTitle(id: string, title: string) {
   try {
-    await renameSession(id, title)
-    const session = sessions.value.find(s => s.id === id)
+    await renameSession(id, title);
+    const session = sessions.value.find((s) => s.id === id);
     if (session) {
-      session.title = title
+      session.title = title;
     }
     if (sessionDrafts.value[id]) {
-      sessionDrafts.value[id].title = title
+      sessionDrafts.value[id].title = title;
     }
     if (currentSessionId.value === id) {
-      currentSessionTitle.value = title
+      currentSessionTitle.value = title;
     }
   } catch (e) {
-    console.error('重命名会话失败:', e)
+    console.error("重命名会话失败:", e);
   }
 }
 
 async function handleDeleteSession(id: string) {
   try {
-    await deleteSession(id)
-    sessions.value = sessions.value.filter(s => s.id !== id)
-    clearSessionDraft(id)
+    await deleteSession(id);
+    sessions.value = sessions.value.filter((s) => s.id !== id);
+    clearSessionDraft(id);
     if (currentSessionId.value === id) {
-      currentSessionId.value = undefined
-      messages.value = []
-      currentSessionTitle.value = ''
+      currentSessionId.value = undefined;
+      messages.value = [];
+      currentSessionTitle.value = "";
     }
   } catch (e) {
-    console.error('删除会话失败:', e)
+    console.error("删除会话失败:", e);
   }
 }
 
 function onImageChange(file: UploadFile) {
-  revokeAttachedPreview()
-  attachedImage.value = file.raw || null
+  revokeAttachedPreview();
+  attachedImage.value = file.raw || null;
   if (file.raw) {
-    attachedImagePreview.value = URL.createObjectURL(file.raw)
+    attachedImagePreview.value = URL.createObjectURL(file.raw);
   }
 }
 
 function revokeAttachedPreview() {
   if (attachedImagePreview.value) {
-    URL.revokeObjectURL(attachedImagePreview.value)
-    attachedImagePreview.value = ''
+    URL.revokeObjectURL(attachedImagePreview.value);
+    attachedImagePreview.value = "";
   }
 }
 
 function removeAttached() {
-  attachedImage.value = null
-  revokeAttachedPreview()
+  attachedImage.value = null;
+  revokeAttachedPreview();
 }
 
 function trackObjectUrl(url: string) {
-  objectUrls.add(url)
-  return url
+  objectUrls.add(url);
+  return url;
 }
 
 function cloneMessage(message: Message): Message {
@@ -436,208 +469,211 @@ function cloneMessage(message: Message): Message {
     ...message,
     sources: message.sources ? [...message.sources] : [],
     retrieval_steps: message.retrieval_steps ? [...message.retrieval_steps] : [],
-  }
+    retrieval_params: message.retrieval_params ? { ...message.retrieval_params } : null,
+  };
 }
 
 function revokeMessageUrls(list: Message[]) {
   list.forEach((message) => {
     if (message.local_image_url && objectUrls.has(message.local_image_url)) {
-      URL.revokeObjectURL(message.local_image_url)
-      objectUrls.delete(message.local_image_url)
+      URL.revokeObjectURL(message.local_image_url);
+      objectUrls.delete(message.local_image_url);
     }
-  })
+  });
 }
 
 function saveSessionDraft(sessionId: string) {
-  if (!sessionId) return
+  if (!sessionId) return;
   sessionDrafts.value[sessionId] = {
     messages: messages.value.map(cloneMessage),
-    title: currentSessionTitle.value || sessions.value.find(session => session.id === sessionId)?.title || '',
-  }
+    title: currentSessionTitle.value || sessions.value.find((session) => session.id === sessionId)?.title || "",
+  };
 }
 
 function clearSessionDraft(sessionId: string) {
-  const draft = sessionDrafts.value[sessionId]
+  const draft = sessionDrafts.value[sessionId];
   if (draft?.messages?.length) {
-    revokeMessageUrls(draft.messages)
+    revokeMessageUrls(draft.messages);
   }
-  delete sessionDrafts.value[sessionId]
+  delete sessionDrafts.value[sessionId];
 }
 
 function appendMessageToDraft(sessionId: string, message: Message) {
-  if (!sessionId) return
-  const existing = sessionDrafts.value[sessionId]
-  const draftMessages = existing?.messages ? existing.messages.map(cloneMessage) : []
-  draftMessages.push(cloneMessage(message))
+  if (!sessionId) return;
+  const existing = sessionDrafts.value[sessionId];
+  const draftMessages = existing?.messages ? existing.messages.map(cloneMessage) : [];
+  draftMessages.push(cloneMessage(message));
   sessionDrafts.value[sessionId] = {
     messages: draftMessages,
-    title: existing?.title || sessions.value.find(session => session.id === sessionId)?.title || '',
-  }
+    title: existing?.title || sessions.value.find((session) => session.id === sessionId)?.title || "",
+  };
 }
 
 function getSessionDisplayTitle(sessionId: string, fallback?: string) {
-  return sessionDrafts.value[sessionId]?.title || fallback || t('chat.newSession')
+  return sessionDrafts.value[sessionId]?.title || fallback || t("chat.newSession");
 }
 
 function generateSessionTitle(rawQuery: string): string {
-  const normalized = rawQuery.replace(/\s+/g, ' ').trim()
-  if (!normalized) return t('chat.newSession')
-  const sentence = normalized.split(/[。！？!?；;\n]/)[0] || normalized
-  const compact = sentence.replace(/^[,，。！？!?、\s]+/, '').trim()
-  if (compact.length <= 18) return compact
-  return `${compact.slice(0, 18)}…`
+  const normalized = rawQuery.replace(/\s+/g, " ").trim();
+  if (!normalized) return t("chat.newSession");
+  const sentence = normalized.split(/[。！？!?；;\n]/)[0] || normalized;
+  const compact = sentence.replace(/^[,，。！？!?、\s]+/, "").trim();
+  if (compact.length <= 18) return compact;
+  return `${compact.slice(0, 18)}…`;
 }
 
 function getPresentationMode(msg: Message): string {
-  return msg.presentation_mode || msg.retrieval_params?.presentation_mode || 'rag_answer'
+  return msg.presentation_mode || msg.retrieval_params?.presentation_mode || "rag_answer";
 }
 
 function getImageSources(msg: Message): SourceItem[] {
-  return (msg.sources || []).filter(source => source.source_type === 'image')
+  return (msg.sources || []).filter((source) => source.source_type === "image");
 }
 
 function isImageFocusedMode(msg: Message): boolean {
-  const mode = getPresentationMode(msg)
-  return mode === 'image_only' || mode === 'image_plus_answer'
+  const mode = getPresentationMode(msg);
+  return mode === "image_only" || mode === "image_plus_answer";
 }
 
 function shouldShowImagesFirst(msg: Message): boolean {
-  if (msg.role !== 'assistant') {
-    return false
-  }
-  return isImageFocusedMode(msg) && getImageSources(msg).length > 0
+  return msg.role === "assistant" && isImageFocusedMode(msg) && getImageSources(msg).length > 0;
 }
 
 function shouldShowImagesAfterText(msg: Message): boolean {
-  if (msg.role !== 'assistant') {
-    return false
-  }
-  return !isImageFocusedMode(msg) && getImageSources(msg).length > 0
+  return msg.role === "assistant" && !isImageFocusedMode(msg) && getImageSources(msg).length > 0;
 }
 
 function getModeLabel(msg: Message): string {
-  if (msg.execution_mode === 'save_uploaded_image') {
-    return '已存入知识库'
+  if (msg.execution_mode === "save_uploaded_image") {
+    return "已存入知识库";
   }
   switch (getPresentationMode(msg)) {
-    case 'direct_answer':
-      return '直接回答'
-    case 'image_only':
-      return '图片结果'
-    case 'image_plus_answer':
-      return '图文回答'
-    case 'rag_answer':
+    case "direct_answer":
+      return "直接回答";
+    case "image_only":
+      return "图片结果";
+    case "image_plus_answer":
+      return "图文回答";
     default:
-      return '知识库回答'
+      return "知识库回答";
   }
 }
 
 function getSourceAssetLabel(source: SourceItem): string {
-  const assetType = String(source.metadata?.asset_type || '').trim()
-  if (assetType === 'table_crop') return t('docs.tableCrop')
-  if (assetType === 'table_page_render') return t('docs.tablePageRender')
-  if (assetType === 'page_render') return t('docs.pageRender')
-  return ''
+  const assetType = String(source.metadata?.asset_type || "").trim();
+  if (assetType === "table_crop") return t("docs.tableCrop");
+  if (assetType === "table_page_render") return t("docs.tablePageRender");
+  if (assetType === "page_render") return t("docs.pageRender");
+  return "";
 }
 
 function getSourcePageLabel(source: SourceItem): string {
-  const pageNumber = source.metadata?.page_number
-  if (typeof pageNumber === 'number') {
-    return t('docs.pageLabel', { page: pageNumber })
+  const pageNumber = source.metadata?.page_number;
+  if (typeof pageNumber === "number") {
+    return t("docs.pageLabel", { page: pageNumber });
   }
-  return ''
+  return "";
 }
 
 function isCrossPageSource(source: SourceItem): boolean {
-  return Boolean(
-    source.metadata?.continued_from_previous_page ||
-    source.metadata?.continued_to_next_page
-  )
+  return Boolean(source.metadata?.continued_from_previous_page || source.metadata?.continued_to_next_page);
+}
+
+function formatNumeric(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) {
+    return "-";
+  }
+  return Number(value).toFixed(3);
 }
 
 function getSourceScoreLabel(source: SourceItem): string {
-  const rerankScore = Number(source.rerank_score)
-  if (!Number.isNaN(rerankScore)) {
-    return `R ${rerankScore.toFixed(3)}`
+  const relevanceScore = Number(source.relevance_score);
+  if (!Number.isNaN(relevanceScore)) {
+    return `${String(source.score_source || "rel").toUpperCase()} ${formatNumeric(relevanceScore)}`;
   }
-  return ''
+  return "";
+}
+
+function shouldShowRerankFilterNotice(msg: Message): boolean {
+  if (msg.role !== "assistant" || !msg.retrieval_params?.enable_score_filter) {
+    return false;
+  }
+  const imageSources = getImageSources(msg);
+  return imageSources.length > 0 && imageSources.some((source) => source.score_source !== "rerank");
 }
 
 function hasRetrievalSteps(msg: Message): boolean {
-  return Array.isArray(msg.retrieval_steps) && msg.retrieval_steps.length > 0
+  return Array.isArray(msg.retrieval_steps) && msg.retrieval_steps.length > 0;
 }
 
 function formatTraceDetailValue(value: unknown): string {
-  if (Array.isArray(value)) {
-    return value.join(', ')
-  }
-  if (value === null || value === undefined) {
-    return '-'
-  }
-  if (typeof value === 'object') {
+  if (Array.isArray(value)) return value.join(", ");
+  if (value === null || value === undefined) return "-";
+  if (typeof value === "object") {
     try {
-      return JSON.stringify(value)
+      return JSON.stringify(value);
     } catch (_err) {
-      return String(value)
+      return String(value);
     }
   }
-  return String(value)
+  return String(value);
 }
 
 async function doChat() {
   if (!query.value.trim() && !attachedImage.value) {
-    ElMessage.warning(t('chat.enterQuestion'))
-    return
+    ElMessage.warning(t("chat.enterQuestion"));
+    return;
   }
 
-  // 如果没有会话，先创建一个
   if (!currentSessionId.value) {
-    await handleCreateSession()
+    await handleCreateSession();
     if (!currentSessionId.value) {
-      ElMessage.error('会话创建失败')
-      return
+      ElMessage.error("会话创建失败");
+      return;
     }
   }
 
-  const sessionId = currentSessionId.value
-  const sentImageUrl = attachedImage.value ? trackObjectUrl(URL.createObjectURL(attachedImage.value)) : ''
+  const sessionId = currentSessionId.value;
+  const sentImageUrl = attachedImage.value ? trackObjectUrl(URL.createObjectURL(attachedImage.value)) : "";
   const userMessage: Message = {
     id: Date.now().toString(),
     session_id: sessionId,
-    role: 'user',
+    role: "user",
     content: query.value,
     created_at: new Date().toISOString(),
     has_image: Boolean(attachedImage.value),
     local_image_url: sentImageUrl || undefined,
     sources: [],
-    retrieval_params: null
-  }
+    retrieval_params: null,
+  };
 
-  messages.value.push(userMessage)
-  currentSessionTitle.value = getSessionDisplayTitle(sessionId, currentSessionTitle.value)
-  saveSessionDraft(sessionId)
-  const userQuery = query.value
-  query.value = ''
+  messages.value.push(userMessage);
+  currentSessionTitle.value = getSessionDisplayTitle(sessionId, currentSessionTitle.value);
+  saveSessionDraft(sessionId);
+  const userQuery = query.value;
+  query.value = "";
 
-  await nextTick()
-  scrollToBottom()
+  await nextTick();
+  scrollToBottom();
 
   try {
-    loading.value = true
+    loading.value = true;
     const response = await ragChat({
       query: userQuery,
       sessionId,
-      topK: 5,
-      image: attachedImage.value
-    })
+      topK: chatTopK.value,
+      enableScoreFilter: chatEnableScoreFilter.value,
+      minRelevanceScore: chatMinRelevanceScore.value,
+      image: attachedImage.value,
+    });
 
-    const effectiveSessionId = response.session_id || sessionId
-    currentSessionId.value = effectiveSessionId
+    const effectiveSessionId = response.session_id || sessionId;
+    currentSessionId.value = effectiveSessionId;
 
     const assistantMessage: Message = {
       id: (Date.now() + 1).toString(),
       session_id: effectiveSessionId,
-      role: 'assistant',
+      role: "assistant",
       content: response.answer,
       created_at: new Date().toISOString(),
       has_image: false,
@@ -650,83 +686,98 @@ async function doChat() {
         presentation_mode: response.presentation_mode,
         execution_mode: response.execution_mode,
         use_rag: response.use_rag,
-      }
-    }
+        top_k: chatTopK.value,
+        enable_score_filter: chatEnableScoreFilter.value,
+        min_relevance_score: chatMinRelevanceScore.value,
+      },
+    };
+
     if (currentSessionId.value === effectiveSessionId) {
-      messages.value.push(assistantMessage)
-      saveSessionDraft(effectiveSessionId)
+      messages.value.push(assistantMessage);
+      saveSessionDraft(effectiveSessionId);
     } else {
-      appendMessageToDraft(effectiveSessionId, assistantMessage)
+      appendMessageToDraft(effectiveSessionId, assistantMessage);
     }
 
-    // 更新会话标题（如果是第一条用户消息）
-    const userMsgCount = messages.value.filter(m => m.role === 'user').length
+    const userMsgCount = messages.value.filter((m) => m.role === "user").length;
     if (userMsgCount === 1) {
-      const title = generateSessionTitle(userQuery)
-      await updateSessionTitle(effectiveSessionId, title)
-      currentSessionTitle.value = title
-      saveSessionDraft(effectiveSessionId)
+      const title = generateSessionTitle(userQuery);
+      await updateSessionTitle(effectiveSessionId, title);
+      currentSessionTitle.value = title;
+      saveSessionDraft(effectiveSessionId);
     }
 
-    await nextTick()
-    scrollToBottom()
+    await nextTick();
+    scrollToBottom();
   } catch (e) {
-    console.error('RAG 问答失败:', e)
-    ElMessage.error(t('chat.chatFailed'))
+    console.error("RAG 问答失败:", e);
+    ElMessage.error(t("chat.chatFailed"));
   } finally {
-    loading.value = false
-    streamingId.value = ''
-    removeAttached()
+    loading.value = false;
+    streamingId.value = "";
+    removeAttached();
   }
 }
 
 function scrollToBottom() {
   if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
 }
 
 function getSourceImageSrc(source: SourceItem): string {
-  if (source.file_path) {
-    return imgSrc(source.file_path)
-  }
-  // 如果没有 file_path，尝试使用 source_id
-  if (source.source_id) {
-    return imgSrc(`storage/${source.source_id}`)
-  }
-  return ''
+  if (source.file_path) return imgSrc(source.file_path);
+  if (source.source_id) return imgSrc(`storage/${source.source_id}`);
+  return "";
 }
 
 function showPreview(source: SourceItem) {
-  previewTitle.value = source.title || source.source_id
-  previewDescription.value = source.content || ''
-  previewSrc.value = getSourceImageSrc(source)
-  previewVisible.value = true
+  previewTitle.value = source.title || source.source_id;
+  previewDescription.value = source.content || "";
+  previewSrc.value = getSourceImageSrc(source);
+  previewVisible.value = true;
 }
 
 function formatTime(isoString: string): string {
-  const date = new Date(isoString)
-  return date.toLocaleTimeString()
+  return new Date(isoString).toLocaleTimeString();
 }
 
 function onImgError(e: Event) {
-  (e.target as HTMLImageElement).style.display = 'none'
+  (e.target as HTMLImageElement).style.display = "none";
+}
+
+async function loadChatDefaults() {
+  try {
+    const payload = await getSystemConfig();
+    const itemMap = Object.fromEntries(payload.items.map((item) => [item.key, item.value]));
+    chatDefaultTopK.value = Number(itemMap.CHAT_DEFAULT_TOP_K ?? 5);
+    chatDefaultEnableScoreFilter.value = Boolean(itemMap.CHAT_ENABLE_SCORE_FILTER ?? false);
+    chatDefaultMinRelevanceScore.value = Number(itemMap.CHAT_MIN_RELEVANCE_SCORE ?? 0);
+    chatTopK.value = chatDefaultTopK.value;
+    chatEnableScoreFilter.value = chatDefaultEnableScoreFilter.value;
+    chatMinRelevanceScore.value = chatDefaultMinRelevanceScore.value;
+  } catch (error) {
+    console.error("加载聊天默认参数失败:", error);
+  }
 }
 
 onMounted(async () => {
-  await loadSessions()
-  // 如果有会话但当前未选中，自动选中第一个
+  updateViewportState();
+  window.addEventListener("resize", updateViewportState);
+  await loadChatDefaults();
+  await loadSessions();
   if (!currentSessionId.value && sessions.value.length > 0) {
-    currentSessionId.value = sessions.value[0].id
+    currentSessionId.value = sessions.value[0].id;
   }
-})
+});
 
 onBeforeUnmount(() => {
-  saveSessionDraft(currentSessionId.value || '')
-  revokeAttachedPreview()
-  objectUrls.forEach((url) => URL.revokeObjectURL(url))
-  objectUrls.clear()
-})
+  window.removeEventListener("resize", updateViewportState);
+  saveSessionDraft(currentSessionId.value || "");
+  revokeAttachedPreview();
+  objectUrls.forEach((url) => URL.revokeObjectURL(url));
+  objectUrls.clear();
+});
 </script>
 
 <style scoped>
@@ -734,33 +785,69 @@ onBeforeUnmount(() => {
   min-height: calc(100vh - 120px);
 }
 
-.session-panel {
+.chat-shell {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.chat-shell.compact {
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+
+.history-panel,
+.history-panel-card,
+.history-rail,
+.chat-panel {
   height: calc(100vh - 182px);
+}
+
+.history-panel-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
-.chat-panel {
-  height: calc(100vh - 182px);
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-header {
+.history-panel-head {
   display: flex;
   align-items: center;
-  min-height: 30px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.chat-title {
-  font-size: 18px;
+.history-title {
+  font-size: 15px;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
-.messages-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.4) 100%);
+.history-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.history-rail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 16px;
+}
+
+.mobile-history-rail {
+  display: none;
+}
+
+.chat-main {
+  min-width: 0;
+}
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-panel :deep(.el-card__header) {
@@ -773,6 +860,35 @@ onBeforeUnmount(() => {
   flex: 1;
   flex-direction: column;
   padding: 0;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+}
+
+.chat-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.chat-title {
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.4) 100%);
 }
 
 .empty-chat {
@@ -838,14 +954,8 @@ onBeforeUnmount(() => {
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .message-item.user {
@@ -922,7 +1032,6 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.2px;
   background: var(--bg-accent-soft);
   color: var(--accent-primary);
 }
@@ -942,6 +1051,16 @@ onBeforeUnmount(() => {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.message-text.typing::after {
+  content: "|";
+  animation: typing-cursor 0.8s ease-in-out infinite;
+  color: var(--accent-primary);
+}
+
+.message-notice {
+  margin-top: 12px;
 }
 
 .user-attachment-card {
@@ -990,14 +1109,6 @@ onBeforeUnmount(() => {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border-color);
-}
-
-.mode-text-rag_answer {
-  color: var(--text-primary);
-}
-
-.mode-text-direct_answer {
-  color: var(--text-primary);
 }
 
 .referenced-images {
@@ -1150,18 +1261,6 @@ onBeforeUnmount(() => {
   word-break: break-word;
 }
 
-.message-text {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.message-text.typing::after {
-  content: '|';
-  animation: typing-cursor 0.8s ease-in-out infinite;
-  color: var(--accent-primary);
-}
-
 .message-time {
   font-size: 11px;
   color: var(--text-tertiary);
@@ -1244,6 +1343,61 @@ onBeforeUnmount(() => {
   color: var(--text-tertiary);
 }
 
+.settings-toggle-row {
+  padding-left: 54px;
+}
+
+.settings-toggle {
+  width: 100%;
+  justify-content: space-between;
+  border-radius: 14px;
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.settings-toggle:hover {
+  color: var(--accent-primary);
+  background: var(--bg-accent-soft);
+}
+
+.settings-summary {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  text-align: right;
+}
+
+.settings-panel {
+  margin-left: 54px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.settings-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-item.switch-item {
+  justify-content: space-between;
+}
+
+.settings-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
 .pending-banner {
   display: inline-flex;
   align-items: center;
@@ -1316,14 +1470,74 @@ onBeforeUnmount(() => {
   font-size: 12px;
 }
 
+.history-drawer-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  background: var(--bg-secondary);
+}
+
+.drawer-head {
+  margin-bottom: 18px;
+}
+
 @keyframes typing-cursor {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1240px) {
   .message-content {
     max-width: 82%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .chat-shell {
+    display: block;
+  }
+
+  .mobile-history-rail {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-panel,
+  .settings-toggle-row,
+  .input-hint {
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+  .message-content {
+    max-width: 92%;
+  }
+
+  .chat-header-main {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 640px) {
+  .messages-container {
+    padding: 18px 14px;
+  }
+
+  .input-area {
+    padding: 14px;
+  }
+
+  .input-row {
+    align-items: stretch;
   }
 }
 </style>

@@ -287,10 +287,18 @@ class RAGChain:
         """
         query = inputs["query"]
         chat_history = inputs.get("chat_history") or []
+        retrieval_top_k = inputs.get("top_k") or self.top_k
+        enable_score_filter = bool(inputs.get("enable_score_filter", False))
+        min_relevance_score = inputs.get("min_relevance_score")
 
         # 异步检索（走完整 Multi-Query 管线）
-        with timing_stage("rag_retrieval", meta={"top_k": self.top_k}):
-            documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
+        with timing_stage("rag_retrieval", meta={"top_k": retrieval_top_k}):
+            documents = await self.retriever.async_search_with_dict_output(
+                query,
+                top_k=retrieval_top_k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
         with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
             text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
@@ -313,10 +321,18 @@ class RAGChain:
         """
         query = inputs["query"]
         chat_history = inputs.get("chat_history") or []
+        retrieval_top_k = inputs.get("top_k") or self.top_k
+        enable_score_filter = bool(inputs.get("enable_score_filter", False))
+        min_relevance_score = inputs.get("min_relevance_score")
 
         # 异步检索
-        with timing_stage("rag_retrieval", meta={"top_k": self.top_k}):
-            documents = await self.retriever.async_search_with_dict_output(query, top_k=self.top_k)
+        with timing_stage("rag_retrieval", meta={"top_k": retrieval_top_k}):
+            documents = await self.retriever.async_search_with_dict_output(
+                query,
+                top_k=retrieval_top_k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
         with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
             text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
 
@@ -339,6 +355,8 @@ class RAGChain:
         image: UploadFile,
         top_k: Optional[int] = None,
         chat_history: Optional[List[Tuple[str, str]]] = None,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> Tuple[str, List[Dict[str, Any]]]:
         """
         使用图像查询执行 RAG Chain
@@ -355,7 +373,12 @@ class RAGChain:
 
         # 执行图像到图像检索
         with timing_stage("image_retrieval", meta={"top_k": k}):
-            documents, description = await self.retriever.image_to_image_search(image, top_k=k)
+            documents, description = await self.retriever.image_to_image_search(
+                image,
+                top_k=k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
 
         # 将 Document 转换为字典格式
         dict_documents = []
@@ -386,13 +409,20 @@ class RAGChain:
         image: UploadFile,
         top_k: Optional[int] = None,
         chat_history: Optional[List[Tuple[str, str]]] = None,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ):
         """
         使用图像查询流式执行 RAG Chain。
         """
         k = top_k or self.top_k
         with timing_stage("image_retrieval", meta={"top_k": k}):
-            documents, description = await self.retriever.image_to_image_search(image, top_k=k)
+            documents, description = await self.retriever.image_to_image_search(
+                image,
+                top_k=k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
 
         dict_documents = []
         for doc in documents:

@@ -22,6 +22,12 @@ export interface TextSearchResponse {
   results: SearchResultItem[]; // 搜索结果列表
 }
 
+export interface SearchControlOptions {
+  topK?: number;
+  enableScoreFilter?: boolean;
+  minRelevanceScore?: number;
+}
+
 /**
  * 图像搜索响应接口
  * 
@@ -41,10 +47,15 @@ export interface ImageSearchResponse {
  * @param topK 返回的结果数量，默认为 10
  * @returns 搜索结果，包含查询文本和相关图像列表
  */
-export async function textToImageSearch(query: string, topK = 10): Promise<TextSearchResponse> {
+export async function textToImageSearch(
+  query: string,
+  options: SearchControlOptions = {},
+): Promise<TextSearchResponse> {
   const { data } = await http.post<TextSearchResponse>('/api/search/text-to-image', {
     query,
-    top_k: topK
+    top_k: options.topK,
+    enable_score_filter: options.enableScoreFilter,
+    min_relevance_score: options.minRelevanceScore,
   });
   return data;
 }
@@ -58,12 +69,23 @@ export async function textToImageSearch(query: string, topK = 10): Promise<TextS
  * @param topK 返回的结果数量，默认为 10
  * @returns 搜索结果，包含生成的查询描述和相似图像列表
  */
-export async function imageToImageSearch(file: File, topK = 10): Promise<ImageSearchResponse> {
+export async function imageToImageSearch(
+  file: File,
+  options: SearchControlOptions = {},
+): Promise<ImageSearchResponse> {
   const form = new FormData();
   // 添加文件到表单
   form.append('file', file);
   // 设置返回结果数量
-  form.append('top_k', String(topK));
+  if (options.topK !== undefined) {
+    form.append('top_k', String(options.topK));
+  }
+  if (options.enableScoreFilter !== undefined) {
+    form.append('enable_score_filter', String(options.enableScoreFilter));
+  }
+  if (options.minRelevanceScore !== undefined) {
+    form.append('min_relevance_score', String(options.minRelevanceScore));
+  }
   
   const { data } = await http.post<ImageSearchResponse>('/api/search/image-to-image', form, {
     headers: { 'Content-Type': 'multipart/form-data' }

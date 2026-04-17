@@ -107,11 +107,21 @@ export async function ragChat(params: {
   query: string;
   sessionId?: string;
   topK?: number;
+  enableScoreFilter?: boolean;
+  minRelevanceScore?: number;
   image?: File | null;
 }): Promise<ChatResponse> {
   const form = new FormData();
   form.append("query", params.query);
-  form.append("top_k", String(params.topK ?? 5));
+  if (params.topK !== undefined) {
+    form.append("top_k", String(params.topK));
+  }
+  if (params.enableScoreFilter !== undefined) {
+    form.append("enable_score_filter", String(params.enableScoreFilter));
+  }
+  if (params.minRelevanceScore !== undefined) {
+    form.append("min_relevance_score", String(params.minRelevanceScore));
+  }
   if (params.sessionId) {
     form.append("session_id", params.sessionId);
   }

@@ -16,7 +16,10 @@
         {{ statusText }}
       </div>
       <!-- 相似度 -->
-      <div v-if="score !== undefined" class="score-badge">
+      <div v-if="scoreLabel" class="score-badge compact">
+        <span class="score-text">{{ scoreLabel }}</span>
+      </div>
+      <div v-else-if="score !== undefined" class="score-badge">
         <div class="score-bar">
           <div class="score-fill" :style="{ width: `${score * 100}%` }"></div>
         </div>
@@ -40,6 +43,7 @@ const props = defineProps<{
   title?: string
   description?: string
   score?: number
+  scoreLabel?: string
   status?: 'Processing' | 'Completed' | 'Failed'
 }>()
 
@@ -172,6 +176,11 @@ function onImgError(e: Event) {
   gap: 8px;
 }
 
+.score-badge.compact {
+  justify-content: flex-start;
+  right: auto;
+}
+
 .score-bar {
   flex: 1;
   height: 4px;
@@ -191,9 +200,10 @@ function onImgError(e: Event) {
   font-size: 10px;
   color: #fff;
   font-weight: 600;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 6px;
-  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.58);
+  padding: 4px 8px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
 }
 
 .card-info {

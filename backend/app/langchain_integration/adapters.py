@@ -230,6 +230,8 @@ class LangChainAdapter:
         query: str,
         top_k: int = 10,
         fast: bool = False,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """
         文本到图像检索
@@ -243,8 +245,22 @@ class LangChainAdapter:
         Returns:
             List[Dict[str, Any]]: 检索结果列表
         """
-        with timing_stage("adapter_text_to_image_search", meta={"top_k": top_k, "fast_path": fast}):
-            documents = await self.retriever.text_to_image_search(query, top_k=top_k, fast=fast)
+        with timing_stage(
+            "adapter_text_to_image_search",
+            meta={
+                "top_k": top_k,
+                "fast_path": fast,
+                "enable_score_filter": enable_score_filter,
+                "min_relevance_score": min_relevance_score,
+            },
+        ):
+            documents = await self.retriever.text_to_image_search(
+                query,
+                top_k=top_k,
+                fast=fast,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
 
         # 转换为字典格式
         results = []
@@ -254,6 +270,8 @@ class LangChainAdapter:
                 "document": doc.page_content,
                 "metadata": doc.metadata,
                 "score": doc.metadata.get("score", 0.0),
+                "relevance_score": doc.metadata.get("relevance_score"),
+                "score_source": doc.metadata.get("score_source"),
             })
 
         return results
@@ -263,6 +281,8 @@ class LangChainAdapter:
         file: UploadFile,
         top_k: int = 10,
         fast: bool = False,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> Tuple[List[Dict[str, Any]], str]:
         """
         图像到图像检索
@@ -276,8 +296,22 @@ class LangChainAdapter:
         Returns:
             Tuple[List[Dict], str]: (检索结果列表, 生成的描述)
         """
-        with timing_stage("adapter_image_to_image_search", meta={"top_k": top_k, "fast_path": fast}):
-            documents, description = await self.retriever.image_to_image_search(file, top_k=top_k, fast=fast)
+        with timing_stage(
+            "adapter_image_to_image_search",
+            meta={
+                "top_k": top_k,
+                "fast_path": fast,
+                "enable_score_filter": enable_score_filter,
+                "min_relevance_score": min_relevance_score,
+            },
+        ):
+            documents, description = await self.retriever.image_to_image_search(
+                file,
+                top_k=top_k,
+                fast=fast,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
 
         # 转换为字典格式
         results = []
@@ -287,6 +321,8 @@ class LangChainAdapter:
                 "document": doc.page_content,
                 "metadata": doc.metadata,
                 "score": doc.metadata.get("score", 0.0),
+                "relevance_score": doc.metadata.get("relevance_score"),
+                "score_source": doc.metadata.get("score_source"),
             })
 
         return results, description
@@ -297,6 +333,8 @@ class LangChainAdapter:
         top_k: int = 5,
         image: Optional[UploadFile] = None,
         chat_history: Optional[List[Tuple[str, str]]] = None,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """
         RAG 问答（支持多轮对话历史 + Agentic RAG）
@@ -309,6 +347,8 @@ class LangChainAdapter:
                     top_k=top_k,
                     image=image,
                     chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
                 )
 
             if image is not None:
@@ -317,6 +357,8 @@ class LangChainAdapter:
                     image,
                     top_k=top_k,
                     chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
                 )
                 intent = self._build_default_intent(image is not None)
                 intent["retrieval_steps"] = self._build_retrieval_steps(
@@ -332,7 +374,13 @@ class LangChainAdapter:
                 return answer, documents, intent
 
             answer, documents = await self.rag_chain.ainvoke(
-                {"query": query, "chat_history": chat_history or []}
+                {
+                    "query": query,
+                    "chat_history": chat_history or [],
+                    "top_k": top_k,
+                    "enable_score_filter": enable_score_filter,
+                    "min_relevance_score": min_relevance_score,
+                }
             )
             intent = self._build_default_intent(image is not None)
             intent["retrieval_steps"] = self._build_retrieval_steps(
@@ -353,6 +401,8 @@ class LangChainAdapter:
         top_k: int = 5,
         image: Optional[UploadFile] = None,
         chat_history: Optional[List[Tuple[str, str]]] = None,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ):
         """
         RAG 问答流式版本。
@@ -365,6 +415,8 @@ class LangChainAdapter:
                 top_k=top_k,
                 image=image,
                 chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
             )
             for ch in self._iter_answer_chunks(answer):
                 yield ch, docs, _intent
@@ -376,12 +428,20 @@ class LangChainAdapter:
                 image=image,
                 top_k=top_k,
                 chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
             ):
                 yield chunk, docs, None
             return
 
         async for chunk, docs in self.rag_chain.astream(
-            {"query": query, "chat_history": chat_history or []}
+            {
+                "query": query,
+                "chat_history": chat_history or [],
+                "top_k": top_k,
+                "enable_score_filter": enable_score_filter,
+                "min_relevance_score": min_relevance_score,
+            }
         ):
             yield chunk, docs, None
 
@@ -391,6 +451,8 @@ class LangChainAdapter:
         top_k: int,
         image: Optional[UploadFile],
         chat_history: Optional[List[Tuple[str, str]]],
+        enable_score_filter: bool,
+        min_relevance_score: Optional[float],
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """执行带智能意图识别的 Agentic Chat 核心流程。"""
         intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
@@ -485,7 +547,13 @@ class LangChainAdapter:
             return answer, documents, intent
 
         if execution_mode == "image_similarity":
-            documents = await self._retrieve_images_for_query(query=query, image=image, top_k=top_k)
+            documents = await self._retrieve_images_for_query(
+                query=query,
+                image=image,
+                top_k=top_k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
             answer = self._build_image_only_answer(documents)
             intent["retrieval_steps"] = self._build_retrieval_steps(
                 query=query,
@@ -500,7 +568,13 @@ class LangChainAdapter:
             return answer, documents, intent
 
         if execution_mode == "image_grounded_answer":
-            documents = await self._retrieve_images_for_query(query=query, image=image, top_k=top_k)
+            documents = await self._retrieve_images_for_query(
+                query=query,
+                image=image,
+                top_k=top_k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
             answer = await self._answer_with_retrieved_images(
                 query=query,
                 documents=documents,
@@ -525,10 +599,18 @@ class LangChainAdapter:
                     image=image,
                     top_k=top_k,
                     chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
                 )
             else:
                 answer, documents = await self.rag_chain.ainvoke(
-                    {"query": query, "chat_history": chat_history or []}
+                    {
+                        "query": query,
+                        "chat_history": chat_history or [],
+                        "top_k": top_k,
+                        "enable_score_filter": enable_score_filter,
+                        "min_relevance_score": min_relevance_score,
+                    }
                 )
             intent["retrieval_steps"] = self._build_retrieval_steps(
                 query=query,
@@ -716,12 +798,26 @@ class LangChainAdapter:
         query: str,
         image: Optional[UploadFile],
         top_k: int,
+        enable_score_filter: bool = False,
+        min_relevance_score: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """根据文本或上传图片检索知识库图片。"""
         if image is not None:
-            documents, _description = await self.image_to_image_search(image, top_k=top_k, fast=True)
+            documents, _description = await self.image_to_image_search(
+                image,
+                top_k=top_k,
+                fast=True,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
             return documents
-        return await self.text_to_image_search(query, top_k=top_k, fast=True)
+        return await self.text_to_image_search(
+            query,
+            top_k=top_k,
+            fast=True,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+        )
 
     def _build_image_only_answer(self, documents: List[Dict[str, Any]]) -> str:
         """为纯找图请求生成简短说明。"""

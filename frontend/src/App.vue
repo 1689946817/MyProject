@@ -1,78 +1,118 @@
 <template>
-  <div class="app-container" :class="{ 'is-dark': isDark }">
-    <!-- 侧边栏 -->
-    <el-aside width="240px" class="sidebar">
+  <div class="app-container" :class="{ 'is-dark': isDark, 'sidebar-collapsed': sidebarCollapsed && !isMobile }">
+    <el-aside
+      v-if="!isMobile"
+      :width="sidebarCollapsed ? '88px' : '240px'"
+      class="sidebar"
+    >
       <div class="sidebar-header">
         <div class="logo-area">
           <div class="logo-icon">
             <i class="i-ep-grid"></i>
           </div>
-          <div class="logo-copy">
-            <span class="logo-text">{{ t('app.title') }}</span>
-            <span class="logo-subtitle">{{ t('app.subtitle') }}</span>
-          </div>
+          <transition name="fade-slide">
+            <div v-if="!sidebarCollapsed" class="logo-copy">
+              <span class="logo-text">{{ t("app.title") }}</span>
+              <span class="logo-subtitle">{{ t("app.subtitle") }}</span>
+            </div>
+          </transition>
         </div>
       </div>
 
       <el-menu
         router
+        :collapse="sidebarCollapsed"
         :default-active="activeMenu"
         class="sidebar-menu"
         :background-color="'transparent'"
         :text-color="isDark ? '#a0a0b0' : '#606266'"
         :active-text-color="'var(--accent-primary)'"
       >
-        <el-menu-item index="/chat" class="primary-nav-item">
+        <el-menu-item
+          v-for="item in navItems"
+          :key="item.path"
+          :index="item.path"
+          :class="{ 'primary-nav-item': item.path === '/chat' }"
+        >
+          <el-icon>
+            <component :is="item.icon" />
+          </el-icon>
           <template #title>
-            <i class="i-ep-chat-dot-round mr-2"></i>
-            <span>{{ t('nav.chat') }}</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="/search">
-          <template #title>
-            <i class="i-ep-search mr-2"></i>
-            <span>{{ t('nav.search') }}</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="/kb">
-          <template #title>
-            <i class="i-ep-picture mr-2"></i>
-            <span>{{ t('nav.knowledgeBase') }}</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="/docs">
-          <template #title>
-            <i class="i-ep-document mr-2"></i>
-            <span>{{ t('nav.documents') }}</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="/settings">
-          <template #title>
-            <i class="i-ep-setting mr-2"></i>
-            <span>{{ t('nav.settings') }}</span>
+            <span>{{ item.label }}</span>
           </template>
         </el-menu-item>
       </el-menu>
 
       <div class="sidebar-footer">
-        <!-- 连接状态 -->
         <div class="connection-status">
           <span class="status-dot" :class="backendConnected ? 'connected' : 'disconnected'"></span>
-          <span class="status-text">{{ backendConnected ? t('app.connectionOk') : t('app.connectionError') }}</span>
+          <span v-if="!sidebarCollapsed" class="status-text">
+            {{ backendConnected ? t("app.connectionOk") : t("app.connectionError") }}
+          </span>
         </div>
       </div>
     </el-aside>
 
-    <!-- 主内容区 -->
+    <el-drawer
+      v-model="mobileNavOpen"
+      direction="ltr"
+      size="280px"
+      :with-header="false"
+      class="mobile-nav-drawer"
+    >
+      <div class="drawer-header">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <i class="i-ep-grid"></i>
+          </div>
+          <div class="logo-copy">
+            <span class="logo-text">{{ t("app.title") }}</span>
+            <span class="logo-subtitle">{{ t("app.subtitle") }}</span>
+          </div>
+        </div>
+      </div>
+
+      <el-menu
+        :default-active="activeMenu"
+        class="sidebar-menu mobile-menu"
+        :background-color="'transparent'"
+        :text-color="isDark ? '#a0a0b0' : '#606266'"
+        :active-text-color="'var(--accent-primary)'"
+        @select="handleMobileNavigate"
+      >
+        <el-menu-item
+          v-for="item in navItems"
+          :key="item.path"
+          :index="item.path"
+          :class="{ 'primary-nav-item': item.path === '/chat' }"
+        >
+          <el-icon>
+            <component :is="item.icon" />
+          </el-icon>
+          <template #title>
+            <span>{{ item.label }}</span>
+          </template>
+        </el-menu-item>
+      </el-menu>
+    </el-drawer>
+
     <el-container class="main-container">
-      <!-- Header -->
       <el-header class="main-header">
+        <div class="header-left">
+          <el-button
+            text
+            class="header-btn nav-trigger"
+            :title="isMobile ? t('nav.openDrawer') : sidebarCollapsed ? t('nav.expand') : t('nav.collapse')"
+            @click="toggleNavigation"
+          >
+            <i :class="isMobile ? 'i-ep-operation' : sidebarCollapsed ? 'i-ep-expand' : 'i-ep-fold'"></i>
+          </el-button>
+        </div>
         <div class="header-right">
-          <!-- 语言切换 -->
           <el-dropdown @command="handleLocaleChange" trigger="click">
             <el-button text class="header-btn">
               <i class="i-ep-global mr-1"></i>
-              {{ currentLocale === 'zh-CN' ? '中文' : 'English' }}
+              {{ currentLocale === "zh-CN" ? "中文" : "English" }}
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
@@ -86,7 +126,6 @@
             </template>
           </el-dropdown>
 
-          <!-- 主题切换 -->
           <el-button text class="header-btn" @click="toggleTheme" :title="isDark ? t('theme.light') : t('theme.dark')">
             <i v-if="isDark" class="i-ep-sunny"></i>
             <i v-else class="i-ep-moon"></i>
@@ -94,7 +133,6 @@
         </div>
       </el-header>
 
-      <!-- Main Content -->
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
           <transition name="fade-slide" mode="out-in">
@@ -107,47 +145,83 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useTheme } from '@/composables/useTheme'
-import { setLocale, getLocale } from '@/locales'
-import { http } from '@/api/http'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { ChatDotRound, Search, Picture, Document, Setting } from "@element-plus/icons-vue";
+import { useTheme } from "@/composables/useTheme";
+import { setLocale, getLocale } from "@/locales";
+import { http } from "@/api/http";
+import { useRoute, useRouter } from "vue-router";
 
-const { t } = useI18n()
-const { isDark, toggleTheme } = useTheme()
-const route = useRoute()
+const { t } = useI18n();
+const { isDark, toggleTheme } = useTheme();
+const route = useRoute();
+const router = useRouter();
 
-const backendConnected = ref(false)
-const currentLocale = ref(getLocale())
-const activeMenu = computed(() => route.path)
+const backendConnected = ref(false);
+const currentLocale = ref(getLocale());
+const activeMenu = computed(() => route.path);
+const sidebarCollapsed = ref(false);
+const mobileNavOpen = ref(false);
+const isMobile = ref(false);
 
-let checkInterval: number | undefined
+const navItems = computed(() => [
+  { path: "/chat", icon: ChatDotRound, label: t("nav.chat") },
+  { path: "/search", icon: Search, label: t("nav.search") },
+  { path: "/kb", icon: Picture, label: t("nav.knowledgeBase") },
+  { path: "/docs", icon: Document, label: t("nav.documents") },
+  { path: "/settings", icon: Setting, label: t("nav.settings") },
+]);
+
+let checkInterval: number | undefined;
 
 async function checkBackendConnection() {
   try {
-    await http.get('/api/knowledge-base/list', { params: { skip: 0, limit: 1 } })
-    backendConnected.value = true
+    await http.get("/api/knowledge-base/list", { params: { skip: 0, limit: 1 } });
+    backendConnected.value = true;
   } catch {
-    backendConnected.value = false
+    backendConnected.value = false;
   }
 }
 
-function handleLocaleChange(locale: 'zh-CN' | 'en-US') {
-  currentLocale.value = locale
-  setLocale(locale)
+function handleLocaleChange(locale: "zh-CN" | "en-US") {
+  currentLocale.value = locale;
+  setLocale(locale);
+}
+
+function updateViewportState() {
+  isMobile.value = window.innerWidth < 960;
+  if (isMobile.value) {
+    mobileNavOpen.value = false;
+  }
+}
+
+function toggleNavigation() {
+  if (isMobile.value) {
+    mobileNavOpen.value = true;
+    return;
+  }
+  sidebarCollapsed.value = !sidebarCollapsed.value;
+}
+
+function handleMobileNavigate(path: string) {
+  mobileNavOpen.value = false;
+  router.push(path);
 }
 
 onMounted(() => {
-  checkBackendConnection()
-  checkInterval = window.setInterval(checkBackendConnection, 30000)
-})
+  updateViewportState();
+  window.addEventListener("resize", updateViewportState);
+  checkBackendConnection();
+  checkInterval = window.setInterval(checkBackendConnection, 30000);
+});
 
 onUnmounted(() => {
+  window.removeEventListener("resize", updateViewportState);
   if (checkInterval) {
-    clearInterval(checkInterval)
+    clearInterval(checkInterval);
   }
-})
+});
 </script>
 
 <style scoped>
@@ -163,10 +237,11 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   box-shadow: 12px 0 32px rgba(15, 23, 42, 0.04);
+  transition: width 0.24s ease;
 }
 
 .sidebar-header {
-  padding: 24px 20px 18px;
+  padding: 20px 18px 16px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -174,6 +249,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .logo-icon {
@@ -187,12 +263,14 @@ onUnmounted(() => {
   background: var(--bg-accent-soft);
   border-radius: 14px;
   border: 1px solid rgba(37, 99, 235, 0.12);
+  flex-shrink: 0;
 }
 
 .logo-copy {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .logo-text {
@@ -239,6 +317,38 @@ onUnmounted(() => {
   font-weight: 600;
 }
 
+.sidebar-menu :deep(.el-menu--collapse .el-menu-item) {
+  width: 56px;
+  height: 56px;
+  line-height: 56px;
+  padding: 0 !important;
+  min-width: 56px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  text-align: center;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.sidebar-menu :deep(.el-menu--collapse .el-menu-item .el-icon) {
+  margin: auto !important;
+  width: 18px;
+  height: 18px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  position: absolute;
+  inset: 0;
+  line-height: 18px;
+}
+
+.sidebar-menu :deep(.el-menu--collapse .el-menu-item .el-icon svg) {
+  width: 18px;
+  height: 18px;
+}
+
 .sidebar-footer {
   padding: 16px 20px 20px;
   border-top: 1px solid var(--border-color);
@@ -250,6 +360,10 @@ onUnmounted(() => {
   gap: 8px;
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+.status-text {
+  white-space: nowrap;
 }
 
 .main-container {
@@ -265,7 +379,7 @@ onUnmounted(() => {
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0 24px;
   backdrop-filter: blur(16px);
 }
@@ -274,6 +388,7 @@ onUnmounted(() => {
   background: rgba(17, 28, 51, 0.78);
 }
 
+.header-left,
 .header-right {
   display: flex;
   align-items: center;
@@ -293,6 +408,10 @@ onUnmounted(() => {
   background: var(--bg-tertiary);
 }
 
+.nav-trigger {
+  width: 42px;
+}
+
 .main-content {
   flex: 1;
   padding: 28px;
@@ -300,20 +419,32 @@ onUnmounted(() => {
   background: var(--bg-primary);
 }
 
+.drawer-header {
+  padding: 8px 8px 16px;
+}
+
+.mobile-menu {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 :deep(.el-dropdown-menu__item.is-active) {
   color: var(--accent-primary);
   background: var(--bg-accent-soft);
 }
 
-@media (max-width: 1200px) {
-  .sidebar {
-    width: 220px;
-  }
+:deep(.mobile-nav-drawer .el-drawer__body) {
+  padding: 18px;
+  background: var(--bg-secondary);
 }
 
 @media (max-width: 960px) {
+  .main-header {
+    padding: 0 16px;
+  }
+
   .main-content {
-    padding: 20px;
+    padding: 18px;
   }
 }
 </style>
