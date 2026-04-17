@@ -13,6 +13,7 @@ CHECK_COPY_PATH = ROOT / "docs" / "张琪-本科毕业论文-检查副本.docx"
 REFERENCE_SOURCE = ROOT / "references.md"
 CHAPTER_FILES = sorted(ROOT.glob("chapter_*.md"))
 EXPECTED_REFERENCE_COUNT = 40
+EXPECTED_FIGURE_COUNT = 18
 MARKERS = [
     "基于语义描述桥接的多模态RAG系统设计与实现",
     "摘  要",
@@ -23,6 +24,12 @@ MARKERS = [
     "7 总结与展望",
     "参考文献",
     "致谢",
+]
+FIGURE_MARKERS = [
+    "图2-1 语义描述桥接原理图",
+    "图4-1 系统总体架构图",
+    "图5-4 聊天页面与来源回溯截图",
+    "图6-7 微调学习曲线图",
 ]
 POINTS_PER_CM = 28.3464567
 WD_GO_TO_PAGE = 1
@@ -69,6 +76,15 @@ def count_reference_entries(doc) -> int:
         if text == "致谢":
             break
         if in_reference_section and REFERENCE_RE.match(text):
+            count += 1
+    return count
+
+
+def count_figure_captions(doc) -> int:
+    count = 0
+    for para in doc.Paragraphs:
+        text = clean(str(para.Range.Text))
+        if re.match(r"^图\d+-\d+\s+", text):
             count += 1
     return count
 
@@ -136,11 +152,16 @@ def main() -> None:
         print(f"keywords_label_present: {'yes' if 'Keywords:' in full_text else 'no'}")
         print(f"old_key_words_label_present: {'yes' if 'Key Words:' in full_text or 'Key Words：' in full_text else 'no'}")
         print(f"reference_entries_doc: {count_reference_entries(doc)}")
+        print(f"inline_shapes: {doc.InlineShapes.Count}")
+        print(f"figure_captions: {count_figure_captions(doc)}")
+        print(f"figure_entries_expected_18: {'yes' if count_figure_captions(doc) == EXPECTED_FIGURE_COUNT else 'no'}")
         cited_count, reference_count, citation_ok = citation_summary()
         print(f"reference_entries_source: {reference_count}")
         print(f"reference_entries_expected_40: {'yes' if reference_count == EXPECTED_REFERENCE_COUNT else 'no'}")
         print(f"cited_reference_count: {cited_count}")
         print(f"citations_cover_all_references: {'yes' if citation_ok else 'no'}")
+        for marker in FIGURE_MARKERS:
+            print(f"{marker}: {'yes' if marker in full_text else 'no'}")
         abstract_section_index = None
         body_start_index = None
         abstract_number_style = None

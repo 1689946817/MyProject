@@ -58,3 +58,23 @@
 - 修复 `build_thesis_docx.py` 中前置部分页码与关键词标签逻辑，并将正式构建改为“临时文件生成后再覆盖最终文件”，绕开最终输出路径上的 Word 阻塞问题。
 - 修复 `check_final_docx.py` 中直接打开最终成品文件时的 Word 阻塞问题，改为“复制检查副本后再打开”。
 - 新增 `advisor_revision_report.md`，汇总学校规范问题、导师式修改意见、实际修改动作和最终处理结果。
+
+## 第8轮：图表补充与可视化增强
+
+- 新增 `scripts/generate_thesis_figures.py`，根据当前系统实现自动生成 7 张非实验图，覆盖语义描述桥接原理、混合检索原理、业务任务链、总体架构、图片入库流程、文档解析入库流程和检索问答流程。
+- 在 `thesis_assets/figures/system/` 下生成系统图资源，并按论文章节编号插入第2章、第3章和第4章对应位置。
+- 使用真实运行中的前端页面补充 4 张界面截图，覆盖图片知识库、文档知识库、知识检索和智能问答页面，资源位于 `thesis_assets/figures/ui/`。
+- 在第5章保留“真实界面截图”定位，不把设计图与界面图混放。
+- 在第6章插入 7 张实验图，全部来自 `实验数据/*/analysis_2/figures_zh/` 下的最新版中文图，其中检索与生成图均采用带 OCR 基线的 `with_ocr_v2` 版本。
+- 更新 `chapter_2_related_tech.md`、`chapter_3_analysis.md`、`chapter_4_design.md`、`chapter_5_implementation.md` 和 `chapter_6_experiments.md`，为每张图补入正文引用和简洁分析，避免图片孤立堆放。
+- 扩展 `scripts/build_thesis_docx.py`，新增 Markdown 图片识别与 DOCX 图片插入能力，插图默认居中并随文档一并嵌入。
+- 扩展 `scripts/check_final_docx.py`，新增内嵌图片数量、图题数量和关键图题锚点检查。
+- 修复 Word COM 在重建正文和插图阶段的忙碌重入问题，引入重试包装，最终成功生成包含 18 张图片的 `docs/张琪-本科毕业论文-定稿.docx`。
+
+## 第9轮：系统图论文对照风美化
+
+- 将 `thesis_assets/figures/system/` 下 7 张系统示意图统一改为更接近学术论文插图的“对照风”样式。
+- 去除系统图左上角的大标题、副标题和右下角来源说明，图片只保留主体结构，图名继续由正文图题承担。
+- 在 `scripts/generate_thesis_figures.py` 中重构绘图原语，统一外框、分区容器、标题胶囊、节点卡片、数据库圆柱和折线箭头样式。
+- 重新整理语义描述桥接图、混合检索图、业务任务链图、总体架构图、图片入库图、文档异步解析图和检索问答图的布局，减少重叠并提升 Word 缩放后的可读性。
+- 重新生成系统图资源，并将其嵌回 `docs/张琪-本科毕业论文-定稿.docx`。

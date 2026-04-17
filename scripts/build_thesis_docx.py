@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import re
 import shutil
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+import pywintypes
 import win32com.client
 from win32com.client import constants
 
@@ -75,6 +77,7 @@ WD_INFO_PAGE_NUMBER = 3
 POINTS_PER_CM = 28.3464567
 HEADER_TEXT = "东北大学本科生毕业设计（论文）"
 CITATION_RE = re.compile(r"\[(\d+(?:[-,]\d+)*)\]")
+IMAGE_RE = re.compile(r"^!\[(.*?)\]\((.+)\)$")
 
 
 @dataclass
@@ -82,6 +85,7 @@ class Block:
     kind: str
     text: str = ""
     rows: list[list[str]] | None = None
+    path: str = ""
 
 
 def clean_line(text: str) -> str:
@@ -98,6 +102,22 @@ def sanitize_inline(text: str) -> str:
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def retry_word_call(func, attempts: int = 20, delay: float = 0.3):
+    last_error = None
+    for _ in range(attempts):
+        try:
+            return func()
+        except pywintypes.com_error as exc:
+            if exc.args and exc.args[0] == -2147418111:
+                last_error = exc
+                time.sleep(delay)
+                continue
+            raise
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("Word automation call failed without an exception object")
 
 
 def extract_section(text: str, start_heading: str, end_heading: str | None = None) -> str:
@@ -134,6 +154,12 @@ def parse_markdown(text: str) -> list[Block]:
     while i < len(lines):
         line = lines[i].strip()
         if not line:
+            i += 1
+            continue
+
+        image_match = IMAGE_RE.match(line)
+        if image_match:
+            blocks.append(Block(kind="image", text=image_match.group(1).strip(), path=image_match.group(2).strip()))
             i += 1
             continue
 
@@ -322,6 +348,49 @@ def render_caption(doc, text: str) -> None:
     para.Range.ParagraphFormat.FirstLineIndent = 0
 
 
+def resolve_image_path(raw_path: str) -> Path:
+    path_text = raw_path.strip()
+    if path_text.startswith("<") and path_text.endswith(">"):
+        path_text = path_text[1:-1]
+    path = Path(path_text)
+    if not path.is_absolute():
+        path = ROOT / path
+    return path
+
+
+def render_image(doc, raw_path: str) -> None:
+    image_path = resolve_image_path(raw_path)
+    if not image_path.exists():
+        raise FileNotFoundError(f"未找到图片文件: {image_path}")
+    print(f"inserting image: {image_path.name}", flush=True)
+
+    para = insert_paragraph(doc, "")
+    para.Range.Style = WD_STYLE_NORMAL
+    para.Range.ParagraphFormat.Alignment = WD_ALIGN_CENTER
+    para.Range.ParagraphFormat.FirstLineIndent = 0
+    para.Range.ParagraphFormat.SpaceBefore = 6
+    para.Range.ParagraphFormat.SpaceAfter = 6
+
+    inline = para.Range.InlineShapes.AddPicture(
+        FileName=str(image_path),
+        LinkToFile=False,
+        SaveWithDocument=True,
+    )
+    try:
+        inline.LockAspectRatio = True
+    except Exception:
+        pass
+
+    page_setup = doc.Sections(doc.Sections.Count).PageSetup
+    max_width = page_setup.PageWidth - page_setup.LeftMargin - page_setup.RightMargin - 10
+    if inline.Width > max_width:
+        inline.Width = max_width
+    inline.Range.ParagraphFormat.Alignment = WD_ALIGN_CENTER
+    inline.Range.ParagraphFormat.FirstLineIndent = 0
+    inline.Range.ParagraphFormat.SpaceBefore = 6
+    inline.Range.ParagraphFormat.SpaceAfter = 6
+
+
 def render_numbered(doc, text: str) -> None:
     clean_text = sanitize_inline(text)
     para = insert_paragraph(doc, clean_text)
@@ -391,6 +460,8 @@ def render_blocks(doc, blocks: Iterable[Block]) -> None:
                 render_caption(doc, block.text)
             else:
                 render_body_paragraph(doc, block.text)
+        elif block.kind == "image":
+            render_image(doc, block.path)
         elif block.kind == "numbered":
             render_numbered(doc, block.text)
         elif block.kind == "bullet":
@@ -441,12 +512,14 @@ def rebuild_after_statement(doc) -> None:
     abstract_marker = find_paragraph(doc, "摘  要")
     delete_rng = doc.Range(abstract_marker.Range.Start, doc.Content.End - 1)
     delete_rng.Delete()
+    time.sleep(0.5)
 
     abstract_cn, keywords_cn, abstract_en, keywords_en, _ = split_front_matter()
 
     # Reuse an already-empty tail section from the template when present,
     # otherwise create a new section for the front matter.
-    if first_nonempty_paragraph_text(doc.Sections(doc.Sections.Count)):
+    tail_section = retry_word_call(lambda: doc.Sections(doc.Sections.Count))
+    if retry_word_call(lambda: first_nonempty_paragraph_text(tail_section)):
         end_range(doc).InsertBreak(WD_SECTION_BREAK_NEXT_PAGE)
     abs_cn_para = insert_paragraph(doc, "摘  要")
     format_range_font(abs_cn_para.Range, "黑体", 18, bold=True, alignment=WD_ALIGN_CENTER)
@@ -642,18 +715,24 @@ def main() -> None:
     word.DisplayAlerts = 0
     doc = word.Documents.Open(str(TEMP_OUTPUT_PATH))
     try:
+        print("step: replace_cover", flush=True)
         replace_cover(doc)
+        print("step: rebuild_after_statement", flush=True)
         rebuild_after_statement(doc)
+        print("step: update_toc", flush=True)
         for toc in doc.TablesOfContents:
             toc.Update()
         if delete_blank_page_before_marker(doc, "目  录"):
             for toc in doc.TablesOfContents:
                 toc.Update()
+        print("step: save", flush=True)
         doc.Save()
     finally:
+        print("step: close", flush=True)
         doc.Close(True)
         word.Quit()
 
+    print("step: copy_output", flush=True)
     shutil.copyfile(TEMP_OUTPUT_PATH, OUTPUT_PATH)
     try:
         TEMP_OUTPUT_PATH.unlink()
