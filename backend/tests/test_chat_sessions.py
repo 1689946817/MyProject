@@ -327,6 +327,33 @@ class TestChatSessions(unittest.TestCase):
         self.assertTrue(self.fake_adapter.last_rag_chat_kwargs["enable_score_filter"])
         self.assertEqual(self.fake_adapter.last_rag_chat_kwargs["min_relevance_score"], 0.75)
 
+    def test_rag_chat_forwards_execution_hint_and_source_scope(self):
+        response = self.client.post(
+            "/api/rag/chat",
+            data={
+                "query": "hello",
+                "execution_hint": "image_similarity",
+                "source_scope_json": '{"doc_ids":["doc-1"],"image_ids":["img-1"]}',
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.fake_adapter.last_rag_chat_kwargs["execution_hint"], "image_similarity")
+        self.assertEqual(
+            self.fake_adapter.last_rag_chat_kwargs["source_scope"],
+            {"doc_ids": ["doc-1"], "image_ids": ["img-1"]},
+        )
+
+    def test_rag_chat_rejects_invalid_source_scope_json(self):
+        response = self.client.post(
+            "/api/rag/chat",
+            data={
+                "query": "hello",
+                "source_scope_json": '{"doc_ids":"bad"}',
+            },
+        )
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("source_scope_json", response.json()["detail"])
+
     def test_rag_chat_stream_returns_and_persists_sources(self):
         response = self.client.post("/api/rag/chat/stream", data={"query": "stream me"})
         self.assertEqual(response.status_code, 200)

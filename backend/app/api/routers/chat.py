@@ -42,11 +42,55 @@ from app.retrieval.relevance import annotate_relevance
 router = APIRouter(tags=["chat"])
 rag_router = APIRouter(prefix="/api/rag", tags=["rag"])
 
+VALID_EXECUTION_HINTS = {
+    "auto",
+    "direct_llm",
+    "multimodal_rag",
+    "image_similarity",
+    "image_grounded_answer",
+    "uploaded_image_qa",
+    "save_uploaded_image",
+}
+
 
 def _maybe_timings_payload(collector: RequestTimingCollector):
     if not settings.EXPOSE_TIMINGS_IN_API:
         return None
     return TimingSummary.model_validate(collector.snapshot())
+
+
+def _parse_source_scope_json(raw_scope: Optional[str]) -> Optional[dict[str, list[str]]]:
+    if not raw_scope:
+        return None
+    try:
+        payload = json.loads(raw_scope)
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=422, detail="source_scope_json 必须是合法 JSON") from exc
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=422, detail="source_scope_json 必须是对象")
+
+    scope: dict[str, list[str]] = {}
+    for key in ("doc_ids", "image_ids"):
+        value = payload.get(key, [])
+        if value is None:
+            value = []
+        if not isinstance(value, list):
+            raise HTTPException(status_code=422, detail=f"source_scope_json.{key} 必须是字符串数组")
+        normalized = [str(item).strip() for item in value if str(item).strip()]
+        if normalized:
+            scope[key] = normalized
+    return scope or None
+
+
+def _normalize_execution_hint(execution_hint: Optional[str]) -> Optional[str]:
+    if not execution_hint:
+        return None
+    normalized = execution_hint.strip()
+    if not normalized or normalized == "auto":
+        return None
+    if normalized not in VALID_EXECUTION_HINTS:
+        raise HTTPException(status_code=422, detail=f"不支持的 execution_hint: {normalized}")
+    return normalized
 
 
 def _build_results(retrieved: List[dict]) -> List[SearchResultItem]:
@@ -286,11 +330,15 @@ async def rag_chat_endpoint(
     top_k: Optional[int] = Form(None),
     enable_score_filter: Optional[bool] = Form(None),
     min_relevance_score: Optional[float] = Form(None),
+    execution_hint: Optional[str] = Form(None),
+    source_scope_json: Optional[str] = Form(None),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
 ) -> ChatResponse:
     """RAG 聊天接口（支持持久化多轮对话）。"""
+    resolved_execution_hint = _normalize_execution_hint(execution_hint)
+    source_scope = _parse_source_scope_json(source_scope_json)
     resolved_top_k = top_k or settings.CHAT_DEFAULT_TOP_K
     resolved_enable_score_filter = (
         enable_score_filter
@@ -308,6 +356,8 @@ async def rag_chat_endpoint(
         has_uploaded_image=image is not None,
         enable_score_filter=resolved_enable_score_filter,
         min_relevance_score=resolved_min_relevance_score,
+        execution_hint=resolved_execution_hint,
+        source_scope=source_scope,
     )
     response: ChatResponse | None = None
     try:
@@ -318,6 +368,8 @@ async def rag_chat_endpoint(
                 "has_uploaded_image": image is not None,
                 "enable_score_filter": resolved_enable_score_filter,
                 "min_relevance_score": resolved_min_relevance_score,
+                "execution_hint": resolved_execution_hint,
+                "source_scope": source_scope,
             },
         ):
             try:
@@ -337,6 +389,8 @@ async def rag_chat_endpoint(
                 chat_history=history,
                 enable_score_filter=resolved_enable_score_filter,
                 min_relevance_score=resolved_min_relevance_score,
+                execution_hint=resolved_execution_hint,
+                source_scope=source_scope,
             )
             answer, retrieved, intent = _coerce_rag_chat_result(
                 result,
@@ -356,6 +410,8 @@ async def rag_chat_endpoint(
                 "stream": False,
                 "enable_score_filter": resolved_enable_score_filter,
                 "min_relevance_score": resolved_min_relevance_score,
+                "execution_hint": resolved_execution_hint,
+                "source_scope": source_scope,
                 "presentation_mode": intent.get("presentation_mode"),
                 "execution_mode": intent.get("execution_mode"),
                 "use_rag": intent.get("use_rag"),
@@ -398,11 +454,15 @@ async def rag_chat_stream_endpoint(
     top_k: Optional[int] = Form(None),
     enable_score_filter: Optional[bool] = Form(None),
     min_relevance_score: Optional[float] = Form(None),
+    execution_hint: Optional[str] = Form(None),
+    source_scope_json: Optional[str] = Form(None),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
 ):
     """RAG 聊天流式接口（SSE）。"""
+    resolved_execution_hint = _normalize_execution_hint(execution_hint)
+    source_scope = _parse_source_scope_json(source_scope_json)
     resolved_top_k = top_k or settings.CHAT_DEFAULT_TOP_K
     resolved_enable_score_filter = (
         enable_score_filter
@@ -420,6 +480,8 @@ async def rag_chat_stream_endpoint(
         has_uploaded_image=image is not None,
         enable_score_filter=resolved_enable_score_filter,
         min_relevance_score=resolved_min_relevance_score,
+        execution_hint=resolved_execution_hint,
+        source_scope=source_scope,
     )
     try:
         with collector.stage("chat_session_load"):
@@ -439,6 +501,8 @@ async def rag_chat_stream_endpoint(
                 "has_uploaded_image": image is not None,
                 "enable_score_filter": resolved_enable_score_filter,
                 "min_relevance_score": resolved_min_relevance_score,
+                "execution_hint": resolved_execution_hint,
+                "source_scope": source_scope,
             },
         ):
             try:
@@ -456,6 +520,8 @@ async def rag_chat_stream_endpoint(
                         chat_history=history,
                         enable_score_filter=resolved_enable_score_filter,
                         min_relevance_score=resolved_min_relevance_score,
+                        execution_hint=resolved_execution_hint,
+                        source_scope=source_scope,
                     )
                 except TypeError:
                     stream = adapter.rag_chat_stream(
@@ -492,6 +558,8 @@ async def rag_chat_stream_endpoint(
                     "stream": True,
                     "enable_score_filter": resolved_enable_score_filter,
                     "min_relevance_score": resolved_min_relevance_score,
+                    "execution_hint": resolved_execution_hint,
+                    "source_scope": source_scope,
                 }
                 with collector.stage("chat_message_persist"):
                     add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)

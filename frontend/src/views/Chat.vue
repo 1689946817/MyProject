@@ -197,19 +197,101 @@
               <el-upload :auto-upload="false" :show-file-list="false" :on-change="onImageChange">
                 <el-button text class="attach-btn"><i class="i-ep-plus"></i></el-button>
               </el-upload>
+              <el-popover v-model:visible="sourcePanelOpen" placement="top-start" width="360" trigger="manual" popper-class="source-popover">
+                <template #reference>
+                  <el-button text class="attach-btn" @click="openSourcePanel"><i class="i-ep-collection-tag"></i></el-button>
+                </template>
+                <div class="source-picker">
+                  <el-input
+                    v-model="sourceQuery"
+                    :placeholder="t('chat.sourceSearchPlaceholder')"
+                    clearable
+                    @input="loadSourceCandidates(sourceQuery)"
+                  />
+                  <div v-loading="sourceLoading" class="source-list">
+                    <div class="source-group-head">
+                      <div class="source-group-title">{{ t("chat.sourceDocs") }}</div>
+                      <div class="source-group-meta">{{ documentCandidates.length }} / {{ sourceDocLimit }}</div>
+                    </div>
+                    <button
+                      v-for="doc in documentCandidates"
+                      :key="doc.id"
+                      class="source-option"
+                      type="button"
+                      @click="addSourceChip('doc', doc.id, doc.title || doc.file_name)"
+                    >
+                      <i class="i-ep-document"></i>
+                      <span>{{ doc.title || doc.file_name }}</span>
+                    </button>
+                    <button type="button" class="source-more-btn" @click="loadMoreSources('doc')">{{ t("chat.sourceLoadMore") }}</button>
+                    <div class="source-group-head">
+                      <div class="source-group-title">{{ t("chat.sourceImages") }}</div>
+                      <div class="source-group-meta">{{ imageCandidates.length }} / {{ sourceImageLimit }}</div>
+                    </div>
+                    <button
+                      v-for="image in imageCandidates"
+                      :key="image.id"
+                      class="source-option"
+                      type="button"
+                      @click="addSourceChip('image', image.id, image.title || image.id)"
+                    >
+                      <i class="i-ep-picture"></i>
+                      <span>{{ image.title || image.id }}</span>
+                    </button>
+                    <button type="button" class="source-more-btn" @click="loadMoreSources('image')">{{ t("chat.sourceLoadMore") }}</button>
+                  </div>
+                </div>
+              </el-popover>
               <el-input
                 v-model="query"
                 :placeholder="t('chat.inputPlaceholder')"
                 class="chat-input"
+                :class="{ 'slash-active': isSlashMode, 'slash-invalid': hasInvalidSlashCommand }"
                 type="textarea"
                 :autosize="{ minRows: 1, maxRows: 5 }"
                 resize="none"
                 :disabled="loading"
-                @keydown.enter.exact.prevent="doChat"
+                @keydown="handleInputKeydown"
               />
               <el-button type="primary" class="send-btn" :loading="loading" @click="doChat">
                 <i class="i-ep-send"></i>
               </el-button>
+            </div>
+            <div v-if="selectedSources.length > 0 || effectiveExecutionHint" class="input-context-row">
+              <el-tag
+                v-if="effectiveExecutionHint"
+                type="warning"
+                effect="plain"
+                round
+              >
+                {{ t("chat.activeMode") }}：{{ effectiveExecutionHint }}
+              </el-tag>
+              <el-tag
+                v-for="(source, index) in selectedSources"
+                :key="`${source.type}-${source.id}`"
+                closable
+                effect="plain"
+                round
+                @close="removeSourceChip(index)"
+              >
+                {{ source.type === "doc" ? t("chat.sourceDoc") : t("chat.sourceImage") }}：{{ source.title }}
+              </el-tag>
+            </div>
+            <div v-if="visibleSlashCommands.length > 0" class="slash-panel">
+              <button
+                v-for="command in visibleSlashCommands"
+                :key="command.command"
+                class="slash-option"
+                type="button"
+                @click="applySlashCommand(command)"
+              >
+                <span class="slash-command">{{ command.command }}</span>
+                <span class="slash-desc">{{ command.description }}</span>
+              </button>
+            </div>
+            <div v-else-if="isSlashMode" class="slash-status" :class="{ invalid: hasInvalidSlashCommand }">
+              <span v-if="activeSlashCommand">{{ t("chat.commandPreview", { command: activeSlashCommand.command }) }} {{ activeSlashCommand.description }}</span>
+              <span v-else>{{ t("chat.commandInvalidHint") }}</span>
             </div>
             <div class="input-hint">{{ t("chat.inputHint") }}</div>
             <div class="settings-toggle-row">
@@ -242,6 +324,14 @@
               <div class="attached-copy">
                 <span class="attached-title">{{ t("chat.attachedImage") }}</span>
                 <span class="attached-desc">{{ attachedImage?.name }}</span>
+                <el-select v-model="attachmentMode" size="small" class="attachment-mode-select">
+                  <el-option
+                    v-for="option in attachmentModeOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
               </div>
               <button class="remove-attached" @click="removeAttached"><i class="i-ep-close"></i></button>
             </div>
@@ -261,17 +351,37 @@ import { ElMessage } from "element-plus";
 import type { UploadFile } from "element-plus";
 import { useRouter } from "vue-router";
 import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChat, type ChatSession } from "@/api/chat";
+import { listDocuments } from "@/api/docs";
+import { listImages } from "@/api/kb";
 import { getSystemConfig } from "@/api/settings";
 import { imgSrc } from "@/utils/image";
 import SessionList from "@/components/SessionList.vue";
 import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
-import type { ChatMessage, ChatSourceItem } from "@/types";
+import type { ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
 
 const { t } = useI18n();
 const router = useRouter();
 
 type SourceItem = ChatSourceItem;
 type Message = ChatMessage;
+type ExecutionHint =
+  | "direct_llm"
+  | "multimodal_rag"
+  | "image_similarity"
+  | "image_grounded_answer"
+  | "uploaded_image_qa"
+  | "save_uploaded_image";
+type SourceScopeChip = {
+  type: "doc" | "image";
+  id: string;
+  title: string;
+};
+type SlashCommand = {
+  command: string;
+  label: string;
+  description: string;
+  apply: () => void;
+};
 
 const sessions = ref<ChatSession[]>([]);
 const currentSessionId = ref<string | undefined>();
@@ -281,6 +391,16 @@ const query = ref("");
 const loading = ref(false);
 const attachedImage = ref<File | null>(null);
 const attachedImagePreview = ref("");
+const attachmentMode = ref<"auto" | "uploaded_image_qa" | "image_similarity" | "save_uploaded_image">("auto");
+const selectedExecutionHint = ref<ExecutionHint | "auto">("auto");
+const selectedSources = ref<SourceScopeChip[]>([]);
+const sourceQuery = ref("");
+const sourcePanelOpen = ref(false);
+const sourceLoading = ref(false);
+const sourceDocLimit = ref(8);
+const sourceImageLimit = ref(8);
+const documentCandidates = ref<DocumentRecord[]>([]);
+const imageCandidates = ref<ImageRecord[]>([]);
 const streamingId = ref("");
 const chatTopK = ref(5);
 const chatEnableScoreFilter = ref(false);
@@ -303,6 +423,223 @@ const previewDescription = ref("");
 const messagesContainer = ref<HTMLElement>();
 let loadSessionToken = 0;
 
+const effectiveExecutionHint = computed<ExecutionHint | undefined>(() => {
+  if (attachedImage.value && attachmentMode.value !== "auto") {
+    return attachmentMode.value;
+  }
+  if (selectedExecutionHint.value !== "auto") {
+    return selectedExecutionHint.value;
+  }
+  return undefined;
+});
+
+const sourceScope = computed(() => {
+  const docIds = selectedSources.value.filter((item) => item.type === "doc").map((item) => item.id);
+  const imageIds = selectedSources.value.filter((item) => item.type === "image").map((item) => item.id);
+  if (docIds.length === 0 && imageIds.length === 0) {
+    return null;
+  }
+  return {
+    doc_ids: docIds,
+    image_ids: imageIds,
+  };
+});
+
+const attachmentModeOptions = computed(() => [
+  { label: t("chat.attachmentModeAuto"), value: "auto" },
+  { label: t("chat.attachmentModeAskImage"), value: "uploaded_image_qa" },
+  { label: t("chat.attachmentModeFindSimilar"), value: "image_similarity" },
+  { label: t("chat.attachmentModeSave"), value: "save_uploaded_image" },
+]);
+
+const slashCommands = computed<SlashCommand[]>(() => [
+  {
+    command: "/mode kb",
+    label: t("chat.commandModeKb"),
+    description: t("chat.commandModeKbDesc"),
+    apply: () => {
+      selectedExecutionHint.value = "multimodal_rag";
+      query.value = "";
+    },
+  },
+  {
+    command: "/mode direct",
+    label: t("chat.commandModeDirect"),
+    description: t("chat.commandModeDirectDesc"),
+    apply: () => {
+      selectedExecutionHint.value = "direct_llm";
+      query.value = "";
+    },
+  },
+  {
+    command: "/mode image",
+    label: t("chat.commandModeImage"),
+    description: t("chat.commandModeImageDesc"),
+    apply: () => {
+      selectedExecutionHint.value = "image_similarity";
+      query.value = "";
+    },
+  },
+  {
+    command: "/topk 8",
+    label: t("chat.commandTopK"),
+    description: t("chat.commandTopKDesc"),
+    apply: () => {
+      chatTopK.value = 8;
+      query.value = "";
+    },
+  },
+  {
+    command: "/score 0.45",
+    label: t("chat.commandScore"),
+    description: t("chat.commandScoreDesc"),
+    apply: () => {
+      chatEnableScoreFilter.value = true;
+      chatMinRelevanceScore.value = 0.45;
+      query.value = "";
+    },
+  },
+  {
+    command: "/trace on",
+    label: t("chat.commandTraceOn"),
+    description: t("chat.commandTraceOnDesc"),
+    apply: () => {
+      settingsPanelOpen.value = true;
+      query.value = "";
+    },
+  },
+  {
+    command: "/clear_scope",
+    label: t("chat.commandClearScope"),
+    description: t("chat.commandClearScopeDesc"),
+    apply: () => {
+      selectedSources.value = [];
+      query.value = "";
+    },
+  },
+  {
+    command: "/reset",
+    label: t("chat.commandReset"),
+    description: t("chat.commandResetDesc"),
+    apply: () => {
+      selectedExecutionHint.value = "auto";
+      selectedSources.value = [];
+      chatTopK.value = chatDefaultTopK.value;
+      chatEnableScoreFilter.value = chatDefaultEnableScoreFilter.value;
+      chatMinRelevanceScore.value = chatDefaultMinRelevanceScore.value;
+      query.value = "";
+    },
+  },
+]);
+
+type ParsedSlashResult = {
+  applied: boolean;
+  valid: boolean;
+  remainder: string;
+  previewCommand: string | null;
+};
+
+function parseLeadingSlashCommands(input: string, apply = false): ParsedSlashResult {
+  let rest = input.trim();
+  let applied = false;
+  let previewCommand: string | null = null;
+
+  while (rest.startsWith("/")) {
+    if (rest.startsWith("/mode ")) {
+      const match = rest.match(/^\/mode\s+(kb|direct|image|auto)(?:\s+|$)/);
+      if (!match) return { applied, valid: false, remainder: rest, previewCommand: "/mode" };
+      previewCommand = `/mode ${match[1]}`;
+      if (apply) {
+        selectedExecutionHint.value =
+          match[1] === "kb" ? "multimodal_rag" :
+          match[1] === "direct" ? "direct_llm" :
+          match[1] === "image" ? "image_similarity" :
+          "auto";
+        ElMessage.success(t("chat.commandApplied", { command: previewCommand }));
+      }
+      applied = true;
+      rest = rest.slice(match[0].length).trim();
+      continue;
+    }
+
+    if (rest.startsWith("/topk ")) {
+      const match = rest.match(/^\/topk\s+(\d+)(?:\s+|$)/);
+      if (!match) return { applied, valid: false, remainder: rest, previewCommand: "/topk" };
+      previewCommand = `/topk ${match[1]}`;
+      if (apply) {
+        chatTopK.value = Math.max(1, Math.min(20, Number(match[1])));
+        ElMessage.success(t("chat.commandApplied", { command: `/topk ${chatTopK.value}` }));
+      }
+      applied = true;
+      rest = rest.slice(match[0].length).trim();
+      continue;
+    }
+
+    if (rest.startsWith("/score ")) {
+      const match = rest.match(/^\/score\s+([0-9]*\.?[0-9]+)(?:\s+|$)/);
+      if (!match) return { applied, valid: false, remainder: rest, previewCommand: "/score" };
+      previewCommand = `/score ${match[1]}`;
+      if (apply) {
+        chatEnableScoreFilter.value = true;
+        chatMinRelevanceScore.value = Number(match[1]);
+        ElMessage.success(t("chat.commandApplied", { command: `/score ${chatMinRelevanceScore.value}` }));
+      }
+      applied = true;
+      rest = rest.slice(match[0].length).trim();
+      continue;
+    }
+
+    if (rest === "/clear_scope" || rest.startsWith("/clear_scope ")) {
+      previewCommand = "/clear_scope";
+      if (apply) {
+        selectedSources.value = [];
+        ElMessage.success(t("chat.commandApplied", { command: previewCommand }));
+      }
+      applied = true;
+      rest = rest.slice("/clear_scope".length).trim();
+      continue;
+    }
+
+    if (rest === "/reset" || rest.startsWith("/reset ")) {
+      previewCommand = "/reset";
+      if (apply) {
+        selectedExecutionHint.value = "auto";
+        selectedSources.value = [];
+        chatTopK.value = chatDefaultTopK.value;
+        chatEnableScoreFilter.value = chatDefaultEnableScoreFilter.value;
+        chatMinRelevanceScore.value = chatDefaultMinRelevanceScore.value;
+        attachmentMode.value = "auto";
+        ElMessage.success(t("chat.commandApplied", { command: previewCommand }));
+      }
+      applied = true;
+      rest = rest.slice("/reset".length).trim();
+      continue;
+    }
+
+    return { applied, valid: false, remainder: rest, previewCommand: previewCommand || rest.split(/\s+/)[0] || null };
+  }
+
+  return { applied, valid: true, remainder: rest, previewCommand };
+}
+
+const visibleSlashCommands = computed(() => {
+  const normalized = query.value.trim().toLowerCase();
+  if (!normalized.startsWith("/")) return [];
+  const firstToken = normalized.split(/\s+/).slice(0, 2).join(" ");
+  return slashCommands.value.filter((item) => item.command.startsWith(firstToken) || item.command.startsWith(normalized) || item.label.toLowerCase().includes(normalized.slice(1)));
+});
+
+const isSlashMode = computed(() => query.value.trim().startsWith("/"));
+const slashParseResult = computed(() => parseLeadingSlashCommands(query.value, false));
+const activeSlashCommand = computed(() => {
+  if (visibleSlashCommands.value.length > 0) return visibleSlashCommands.value[0];
+  if (slashParseResult.value.previewCommand) {
+    return slashCommands.value.find((item) => item.command.startsWith(slashParseResult.value.previewCommand || ""));
+  }
+  return null;
+});
+const hasInvalidSlashCommand = computed(() => isSlashMode.value && !slashParseResult.value.valid);
+
 const settingsSummary = computed(() => {
   const parts: string[] = [];
   if (chatTopK.value !== chatDefaultTopK.value) {
@@ -321,10 +658,106 @@ watch([chatTopK, chatEnableScoreFilter, chatMinRelevanceScore], () => {
     (chatEnableScoreFilter.value && chatMinRelevanceScore.value !== chatDefaultMinRelevanceScore.value);
 });
 
+watch(query, (value, oldValue) => {
+  if (value.endsWith("@")) {
+    sourceQuery.value = "";
+    sourceDocLimit.value = 8;
+    sourceImageLimit.value = 8;
+    openSourcePanel();
+  }
+  if (value !== oldValue && isSlashMode.value) {
+    sourcePanelOpen.value = false;
+  }
+});
+
 function updateViewportState() {
   isMobile.value = window.innerWidth < 1100;
   if (isMobile.value) {
     historyPanelOpen.value = false;
+  }
+}
+
+async function loadSourceCandidates(keyword = "") {
+  sourceLoading.value = true;
+  try {
+    const [docs, images] = await Promise.all([
+      listDocuments({ limit: sourceDocLimit.value, keyword: keyword || undefined, enabled: true }),
+      listImages({ limit: sourceImageLimit.value, keyword: keyword || undefined, enabled: true }),
+    ]);
+    documentCandidates.value = docs;
+    imageCandidates.value = images;
+  } catch (error) {
+    console.error("加载引用来源失败:", error);
+    ElMessage.error(t("chat.sourceLoadFailed"));
+  } finally {
+    sourceLoading.value = false;
+  }
+}
+
+function openSourcePanel() {
+  sourcePanelOpen.value = true;
+  loadSourceCandidates(sourceQuery.value);
+}
+
+function loadMoreSources(type: "doc" | "image") {
+  if (type === "doc") {
+    sourceDocLimit.value += 8;
+  } else {
+    sourceImageLimit.value += 8;
+  }
+  loadSourceCandidates(sourceQuery.value);
+}
+
+function addSourceChip(type: "doc" | "image", id: string, title?: string | null) {
+  if (selectedSources.value.some((source) => source.type === type && source.id === id)) {
+    sourcePanelOpen.value = false;
+    return;
+  }
+  selectedSources.value.push({
+    type,
+    id,
+    title: title || id,
+  });
+  if (query.value.endsWith("@")) {
+    query.value = query.value.slice(0, -1);
+  }
+  sourcePanelOpen.value = false;
+  sourceQuery.value = "";
+}
+
+function removeSourceChip(index: number) {
+  selectedSources.value.splice(index, 1);
+}
+
+function applySlashCommand(command: SlashCommand) {
+  command.apply();
+  ElMessage.success(t("chat.commandApplied", { command: command.command }));
+}
+
+function handleInputKeydown(event: KeyboardEvent) {
+  if (event.key === "Enter" && !event.shiftKey && query.value.trim().startsWith("/") && query.value.trim() === "/" && visibleSlashCommands.value.length > 0) {
+    event.preventDefault();
+    applySlashCommand(visibleSlashCommands.value[0]);
+    return;
+  }
+  if (event.key === "Enter" && !event.shiftKey && query.value.trim().startsWith("/")) {
+    event.preventDefault();
+    const parsed = parseLeadingSlashCommands(query.value, false);
+    if (!parsed.valid) {
+      ElMessage.warning(t("chat.commandInvalid"));
+      return;
+    }
+    const applied = parseLeadingSlashCommands(query.value, true);
+    query.value = applied.remainder;
+    if (!applied.remainder) {
+      return;
+    }
+    doChat();
+    return;
+  }
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    doChat();
   }
 }
 
@@ -456,6 +889,7 @@ function revokeAttachedPreview() {
 
 function removeAttached() {
   attachedImage.value = null;
+  attachmentMode.value = "auto";
   revokeAttachedPreview();
 }
 
@@ -664,6 +1098,8 @@ async function doChat() {
       topK: chatTopK.value,
       enableScoreFilter: chatEnableScoreFilter.value,
       minRelevanceScore: chatMinRelevanceScore.value,
+      executionHint: effectiveExecutionHint.value,
+      sourceScope: sourceScope.value,
       image: attachedImage.value,
     });
 
@@ -689,6 +1125,8 @@ async function doChat() {
         top_k: chatTopK.value,
         enable_score_filter: chatEnableScoreFilter.value,
         min_relevance_score: chatMinRelevanceScore.value,
+        execution_hint: effectiveExecutionHint.value,
+        source_scope: sourceScope.value,
       },
     };
 
@@ -1288,6 +1726,98 @@ onBeforeUnmount(() => {
   align-items: flex-end;
 }
 
+.input-context-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-left: 54px;
+}
+
+.slash-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 54px;
+}
+
+.slash-status {
+  padding-left: 54px;
+  font-size: 12px;
+  color: var(--accent-primary);
+}
+
+.slash-status.invalid {
+  color: var(--danger-color);
+}
+
+.slash-option,
+.source-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.slash-command {
+  font-family: "Consolas", monospace;
+  font-size: 12px;
+  color: var(--accent-primary);
+}
+
+.slash-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.source-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.source-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+
+.source-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.source-group-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.source-more-btn {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: var(--accent-primary);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 0 6px;
+}
+
 .attach-btn {
   color: var(--text-secondary);
   width: 42px;
@@ -1317,6 +1847,16 @@ onBeforeUnmount(() => {
 .chat-input :deep(.el-input__wrapper:focus-within) {
   border-color: var(--accent-primary);
   box-shadow: var(--shadow-focus);
+}
+
+.chat-input.slash-active :deep(.el-input__wrapper) {
+  border-color: rgba(37, 99, 235, 0.45);
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.chat-input.slash-invalid :deep(.el-input__wrapper) {
+  border-color: rgba(220, 38, 38, 0.45);
+  background: rgba(220, 38, 38, 0.04);
 }
 
 .chat-input :deep(textarea.el-textarea__inner) {
@@ -1439,6 +1979,11 @@ onBeforeUnmount(() => {
   padding-right: 28px;
 }
 
+.attachment-mode-select {
+  margin-top: 6px;
+  width: 180px;
+}
+
 .attached-title {
   font-size: 13px;
   font-weight: 600;
@@ -1512,7 +2057,10 @@ onBeforeUnmount(() => {
 
   .settings-panel,
   .settings-toggle-row,
-  .input-hint {
+  .input-hint,
+  .input-context-row,
+  .slash-panel,
+  .slash-status {
     padding-left: 0;
     margin-left: 0;
   }

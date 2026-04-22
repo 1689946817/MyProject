@@ -338,6 +338,8 @@ class LangChainAdapter:
         chat_history: Optional[List[Tuple[str, str]]] = None,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        execution_hint: Optional[str] = None,
+        source_scope: Optional[Dict[str, List[str]]] = None,
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """
         RAG 问答（支持多轮对话历史 + Agentic RAG）
@@ -352,6 +354,20 @@ class LangChainAdapter:
                     chat_history=chat_history,
                     enable_score_filter=enable_score_filter,
                     min_relevance_score=min_relevance_score,
+                    execution_hint=execution_hint,
+                    source_scope=source_scope,
+                )
+
+            if source_scope or execution_hint:
+                return await self._run_scoped_chat(
+                    query=query,
+                    top_k=top_k,
+                    image=image,
+                    chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    execution_hint=execution_hint or "multimodal_rag",
+                    source_scope=source_scope,
                 )
 
             if image is not None:
@@ -406,11 +422,28 @@ class LangChainAdapter:
         chat_history: Optional[List[Tuple[str, str]]] = None,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        execution_hint: Optional[str] = None,
+        source_scope: Optional[Dict[str, List[str]]] = None,
     ):
         """
         RAG 问答流式版本。
         """
         from app.core.config import settings
+
+        if source_scope or execution_hint:
+            answer, docs, intent = await self._run_scoped_chat(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                execution_hint=execution_hint or "multimodal_rag",
+                source_scope=source_scope,
+            )
+            for ch in self._iter_answer_chunks(answer):
+                yield ch, docs, intent
+            return
 
         if settings.AGENTIC_RAG_ENABLED:
             answer, docs, _intent = await self._run_agentic_chat(
@@ -420,6 +453,8 @@ class LangChainAdapter:
                 chat_history=chat_history,
                 enable_score_filter=enable_score_filter,
                 min_relevance_score=min_relevance_score,
+                execution_hint=execution_hint,
+                source_scope=source_scope,
             )
             for ch in self._iter_answer_chunks(answer):
                 yield ch, docs, _intent
@@ -456,8 +491,22 @@ class LangChainAdapter:
         chat_history: Optional[List[Tuple[str, str]]],
         enable_score_filter: bool,
         min_relevance_score: Optional[float],
+        execution_hint: Optional[str] = None,
+        source_scope: Optional[Dict[str, List[str]]] = None,
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """执行带智能意图识别的 Agentic Chat 核心流程。"""
+        if source_scope or execution_hint:
+            return await self._run_scoped_chat(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                execution_hint=execution_hint or "multimodal_rag",
+                source_scope=source_scope,
+            )
+
         intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
         collector = get_current_timing_collector()
         if collector is not None:
@@ -670,6 +719,145 @@ class LangChainAdapter:
             "confidence": 1.0,
             "reason": "legacy_rag_path",
         }
+
+    def _build_forced_intent(self, execution_hint: str, has_uploaded_image: bool) -> Dict[str, Any]:
+        mapping = {
+            "direct_llm": ("direct_answer", False, False),
+            "multimodal_rag": ("rag_answer", True, has_uploaded_image),
+            "image_similarity": ("image_only", False, True),
+            "image_grounded_answer": ("image_plus_answer", True, True),
+            "uploaded_image_qa": ("direct_answer", False, False),
+            "save_uploaded_image": ("direct_answer", False, False),
+        }
+        presentation_mode, use_rag, wants_images = mapping.get(
+            execution_hint,
+            ("rag_answer", True, has_uploaded_image),
+        )
+        return {
+            "presentation_mode": presentation_mode,
+            "execution_mode": execution_hint,
+            "use_rag": use_rag,
+            "has_uploaded_image": has_uploaded_image,
+            "wants_images": wants_images,
+            "confidence": 1.0,
+            "reason": "manual_execution_hint",
+        }
+
+    async def _run_scoped_chat(
+        self,
+        *,
+        query: str,
+        top_k: int,
+        image: Optional[UploadFile],
+        chat_history: Optional[List[Tuple[str, str]]],
+        enable_score_filter: bool,
+        min_relevance_score: Optional[float],
+        execution_hint: str,
+        source_scope: Optional[Dict[str, List[str]]],
+    ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
+        intent = self._build_forced_intent(execution_hint, image is not None)
+        scope = source_scope or {}
+        scoped_query = query
+
+        if image is not None and execution_hint in {"multimodal_rag", "image_similarity", "image_grounded_answer"}:
+            scoped_query = await self.image_description_chain.ainvoke_from_uploadfile(image)
+            await image.seek(0)
+
+        documents: List[Dict[str, Any]] = []
+        text_chunks: List[Dict[str, Any]] = []
+
+        if execution_hint in {"multimodal_rag", "image_similarity", "image_grounded_answer"}:
+            documents = await self._retrieve_images_for_query(
+                query=scoped_query,
+                image=image if execution_hint == "image_similarity" else None,
+                top_k=max(top_k * 4, top_k),
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
+            documents = self._filter_documents_by_source_scope(documents, scope)
+            text_chunks = self.document_vector_store.similarity_search(
+                scoped_query,
+                k=max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
+            )
+            text_chunks = self._filter_text_chunks_by_source_scope(text_chunks, scope)
+
+        if execution_hint == "direct_llm":
+            answer = await self._answer_directly(query=query, chat_history=chat_history)
+            documents = []
+            text_chunks = []
+            intent["use_rag"] = False
+        elif execution_hint == "uploaded_image_qa":
+            if image is None:
+                answer = await self._answer_directly(query=query, chat_history=chat_history)
+            else:
+                answer = await self._answer_with_uploaded_image(query=query, image=image, chat_history=chat_history)
+            documents = []
+            text_chunks = []
+            intent["use_rag"] = False
+        elif execution_hint == "save_uploaded_image":
+            if image is None:
+                answer = await self._answer_directly(query=query, chat_history=chat_history)
+                documents = []
+            else:
+                answer, documents = await self._save_uploaded_image_to_kb(image)
+            text_chunks = []
+            intent["use_rag"] = False
+        elif execution_hint == "image_similarity":
+            answer = self._build_image_only_answer(documents)
+            intent["use_rag"] = False
+        else:
+            answer = await self.rag_chain.agenerate_from_context(
+                query=scoped_query,
+                documents=documents,
+                text_chunks=text_chunks,
+                chat_history=chat_history,
+            )
+            intent["use_rag"] = True
+
+        combined_documents = documents + text_chunks
+        intent["retrieval_steps"] = self._build_retrieval_steps(
+            query=scoped_query,
+            top_k=top_k,
+            execution_mode=intent["execution_mode"],
+            presentation_mode=intent["presentation_mode"],
+            use_rag=bool(intent["use_rag"]),
+            documents=combined_documents,
+            has_uploaded_image=image is not None,
+            classifier_reason=str(intent.get("reason", "")),
+        )
+        return answer, combined_documents, intent
+
+    def _filter_documents_by_source_scope(
+        self,
+        documents: List[Dict[str, Any]],
+        source_scope: Dict[str, List[str]],
+    ) -> List[Dict[str, Any]]:
+        doc_ids = set(source_scope.get("doc_ids") or [])
+        image_ids = set(source_scope.get("image_ids") or [])
+        if not doc_ids and not image_ids:
+            return documents
+
+        filtered: List[Dict[str, Any]] = []
+        for item in documents:
+            metadata = item.get("metadata") or {}
+            item_id = str(item.get("id") or metadata.get("id") or "").strip()
+            doc_id = str(item.get("doc_id") or metadata.get("doc_id") or "").strip()
+            if item_id and item_id in image_ids:
+                filtered.append(item)
+                continue
+            if doc_id and doc_id in doc_ids:
+                filtered.append(item)
+        return filtered
+
+    def _filter_text_chunks_by_source_scope(
+        self,
+        text_chunks: List[Dict[str, Any]],
+        source_scope: Dict[str, List[str]],
+    ) -> List[Dict[str, Any]]:
+        doc_ids = set(source_scope.get("doc_ids") or [])
+        if not doc_ids:
+            return text_chunks
+        return [item for item in text_chunks if str(item.get("doc_id") or "").strip() in doc_ids]
 
     def _build_retrieval_steps(
         self,
