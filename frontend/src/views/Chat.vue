@@ -6,8 +6,8 @@
         <p class="page-subtitle">{{ t("chat.emptySubtitle") }}</p>
       </div>
       <div class="status-inline">
-        <span class="status-dot" :class="loading ? 'warning' : 'success'"></span>
-        <span>{{ loading ? t("chat.thinking") : t("app.connectionOk") }}</span>
+        <span class="status-dot" :class="hasPendingSessions ? 'warning' : 'success'"></span>
+        <span>{{ hasPendingSessions ? t("chat.thinking") : t("app.connectionOk") }}</span>
       </div>
     </div>
 
@@ -189,7 +189,7 @@
           </div>
 
           <div class="input-area">
-            <div v-if="loading && currentSessionId && sessionDrafts[currentSessionId]" class="pending-banner">
+            <div v-if="isCurrentSessionPending && currentSessionId && sessionDrafts[currentSessionId]" class="pending-banner">
               <i class="i-ep-loading"></i>
               <span>{{ t("chat.pendingSession") }}</span>
             </div>
@@ -250,11 +250,11 @@
                 type="textarea"
                 :autosize="{ minRows: 1, maxRows: 5 }"
                 resize="none"
-                :disabled="loading"
+                :disabled="isCurrentSessionPending"
                 @keydown="handleInputKeydown"
               />
-              <el-button type="primary" class="send-btn" :loading="loading" @click="doChat">
-                <i class="i-ep-send"></i>
+              <el-button type="primary" class="send-btn" :loading="isCurrentSessionPending" @click="doChat">
+                <el-icon v-if="!isCurrentSessionPending"><Promotion /></el-icon>
               </el-button>
             </div>
             <div v-if="selectedSources.length > 0 || effectiveExecutionHint" class="input-context-row">
@@ -348,6 +348,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
+import { Promotion } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus";
 import { useRouter } from "vue-router";
 import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChat, type ChatSession } from "@/api/chat";
@@ -388,7 +389,7 @@ const currentSessionId = ref<string | undefined>();
 const currentSessionTitle = ref("");
 const messages = ref<Message[]>([]);
 const query = ref("");
-const loading = ref(false);
+const pendingSessions = ref<Record<string, boolean>>({});
 const attachedImage = ref<File | null>(null);
 const attachedImagePreview = ref("");
 const attachmentMode = ref<"auto" | "uploaded_image_qa" | "image_similarity" | "save_uploaded_image">("auto");
@@ -422,6 +423,12 @@ const previewTitle = ref("");
 const previewDescription = ref("");
 const messagesContainer = ref<HTMLElement>();
 let loadSessionToken = 0;
+
+const hasPendingSessions = computed(() => Object.keys(pendingSessions.value).length > 0);
+const isCurrentSessionPending = computed(() => {
+  if (!currentSessionId.value) return false;
+  return Boolean(pendingSessions.value[currentSessionId.value]);
+});
 
 const effectiveExecutionHint = computed<ExecutionHint | undefined>(() => {
   if (attachedImage.value && attachmentMode.value !== "auto") {
@@ -1068,6 +1075,10 @@ async function doChat() {
   }
 
   const sessionId = currentSessionId.value;
+  if (pendingSessions.value[sessionId]) {
+    ElMessage.warning(t("chat.pendingSession"));
+    return;
+  }
   const sentImageUrl = attachedImage.value ? trackObjectUrl(URL.createObjectURL(attachedImage.value)) : "";
   const userMessage: Message = {
     id: Date.now().toString(),
@@ -1091,7 +1102,10 @@ async function doChat() {
   scrollToBottom();
 
   try {
-    loading.value = true;
+    pendingSessions.value = {
+      ...pendingSessions.value,
+      [sessionId]: true,
+    };
     const response = await ragChat({
       query: userQuery,
       sessionId,
@@ -1151,7 +1165,8 @@ async function doChat() {
     console.error("RAG 问答失败:", e);
     ElMessage.error(t("chat.chatFailed"));
   } finally {
-    loading.value = false;
+    const { [sessionId]: _completed, ...restPending } = pendingSessions.value;
+    pendingSessions.value = restPending;
     streamingId.value = "";
     removeAttached();
   }
