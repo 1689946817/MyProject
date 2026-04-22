@@ -36,7 +36,10 @@ from app.application.knowledge_management import (
 )
 from app.core.config import settings
 from app.core.timing import get_current_timing_collector, timing_stage
-from app.langchain_integration.agentic_rag import classify_chat_intent
+from app.langchain_integration.agentic_rag import (
+    classify_chat_intent,
+    run_agentic_multimodal_rag,
+)
 from app.langchain_integration.chains import (
     get_image_description_chain,
     get_rag_chain,
@@ -602,26 +605,32 @@ class LangChainAdapter:
                     enable_score_filter=enable_score_filter,
                     min_relevance_score=min_relevance_score,
                 )
-            else:
-                answer, documents = await self.rag_chain.ainvoke(
-                    {
-                        "query": query,
-                        "chat_history": chat_history or [],
-                        "top_k": top_k,
-                        "enable_score_filter": enable_score_filter,
-                        "min_relevance_score": min_relevance_score,
-                    }
+                intent["retrieval_steps"] = self._build_retrieval_steps(
+                    query=query,
+                    top_k=top_k,
+                    execution_mode=execution_mode,
+                    presentation_mode=intent["presentation_mode"],
+                    use_rag=True,
+                    documents=documents,
+                    has_uploaded_image=True,
+                    classifier_reason=str(intent.get("reason", "")),
                 )
-            intent["retrieval_steps"] = self._build_retrieval_steps(
-                query=query,
-                top_k=top_k,
-                execution_mode=execution_mode,
-                presentation_mode=intent["presentation_mode"],
-                use_rag=True,
-                documents=documents,
-                has_uploaded_image=image is not None,
-                classifier_reason=str(intent.get("reason", "")),
-            )
+            else:
+                answer, documents, retrieval_steps = await run_agentic_multimodal_rag(
+                    query=query,
+                    top_k=top_k,
+                    chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    rag_chain=self.rag_chain,
+                    retriever=self.retriever,
+                    doc_vector_store=self.document_vector_store,
+                    execution_mode=execution_mode,
+                    presentation_mode=intent["presentation_mode"],
+                    classifier_reason=str(intent.get("reason", "")),
+                    has_uploaded_image=False,
+                )
+                intent["retrieval_steps"] = retrieval_steps
             return answer, documents, intent
 
         answer = await self._answer_directly(query=query, chat_history=chat_history)

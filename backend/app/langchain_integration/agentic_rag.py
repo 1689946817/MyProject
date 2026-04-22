@@ -9,7 +9,7 @@ Agentic RAG 模块（基于 LangGraph）
 import json
 import logging
 import re
-from typing import Any, Dict, List, Literal, Optional, TypedDict
+from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict
 
 from langchain_core.messages import HumanMessage
 from langgraph.graph import END, StateGraph
@@ -19,6 +19,7 @@ from app.core.timing import get_current_timing_collector, timing_stage
 from app.langchain_integration.models import get_primary_text_chat_model, get_task_text_chat_model
 
 logger = logging.getLogger(__name__)
+get_chat_model = get_primary_text_chat_model
 
 
 class IntentClassification(TypedDict):
@@ -44,12 +45,16 @@ class AgenticRAGState(TypedDict):
     """Agentic RAG 状态"""
     query: str
     chat_history: List[tuple]
+    top_k: int
+    enable_score_filter: bool
+    min_relevance_score: Optional[float]
     documents: List[Dict[str, Any]]
+    text_chunks: List[Any]
     answer: str
-    route: str  # "vectorstore" | "web_search"
-    relevance_score: float  # 0-1
+    retrieval_attempt: int
+    relevance_score: float
     needs_retry: bool
-    intent: Optional[IntentClassification]
+    retrieval_meta: Dict[str, Any]
 
 
 _DIRECT_ANSWER = "direct_answer"
@@ -444,173 +449,368 @@ async def classify_chat_intent(
         return intent
 
 
-async def route_query(state: AgenticRAGState) -> AgenticRAGState:
-    """查询路由：判断是否需要检索知识库"""
+async def retrieve_documents(
+    state: AgenticRAGState,
+    *,
+    retriever=None,
+    doc_vector_store=None,
+    text_top_k: int = 5,
+) -> AgenticRAGState:
+    """执行首次检索，复用现有图片来源检索与文档文本块检索。"""
+    if retriever is None:
+        from app.langchain_integration.retrievers import get_multimodal_retriever
+
+        retriever = get_multimodal_retriever()
+    if doc_vector_store is None:
+        from app.langchain_integration.vectorstores import get_document_vector_store
+
+        doc_vector_store = get_document_vector_store()
+
     query = state["query"]
+    top_k = int(state.get("top_k", 5) or 5)
+    attempt = int(state.get("retrieval_attempt", 1) or 1)
+    enable_score_filter = bool(state.get("enable_score_filter", False))
+    min_relevance_score = state.get("min_relevance_score")
+    stage_name = "agentic_retrieve_initial" if attempt <= 1 else "agentic_retrieve_retry"
 
-    # 简单规则：包含"最新"、"今天"等时间词 → web_search
-    if any(kw in query for kw in ["最新", "今天", "昨天", "新闻"]):
-        state["route"] = "web_search"
-        logger.info(f"[Route] 查询路由到 web_search: {query}")
-    else:
-        state["route"] = "vectorstore"
-        logger.info(f"[Route] 查询路由到 vectorstore: {query}")
+    with timing_stage(
+        stage_name,
+        meta={
+            "attempt": attempt,
+            "top_k": top_k,
+            "enable_score_filter": enable_score_filter,
+            "retry": attempt > 1,
+        },
+    ):
+        documents = await retriever.async_search_with_dict_output(
+            query,
+            top_k=top_k,
+            fast=False,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+        )
+        text_chunks = doc_vector_store.similarity_search(query, k=text_top_k)
 
+    state["documents"] = documents
+    state["text_chunks"] = text_chunks
+    state["retrieval_meta"] = {
+        **dict(state.get("retrieval_meta", {})),
+        "document_count": len(documents),
+        "text_chunk_count": len(text_chunks),
+        "last_retrieval_attempt": attempt,
+    }
+    logger.info("[AgenticGraph] attempt=%s retrieved %s docs", attempt, len(documents))
     return state
 
 
-async def retrieve_documents(state: AgenticRAGState) -> AgenticRAGState:
-    """从向量库检索文档"""
-    from app.langchain_integration.retrievers import get_multimodal_retriever
-
-    query = state["query"]
-    retriever = get_multimodal_retriever()
-
-    # 使用完整检索管线
-    docs = await retriever.async_search_with_dict_output(query, top_k=5)
-    state["documents"] = docs
-
-    logger.info(f"[Retrieve] 检索到 {len(docs)} 篇文档")
-    return state
+async def retry_retrieve_documents(
+    state: AgenticRAGState,
+    *,
+    retriever=None,
+    doc_vector_store=None,
+    text_top_k: int = 5,
+) -> AgenticRAGState:
+    """执行一次固定策略的重试检索。"""
+    state["retrieval_attempt"] = 2
+    return await retrieve_documents(
+        state,
+        retriever=retriever,
+        doc_vector_store=doc_vector_store,
+        text_top_k=text_top_k,
+    )
 
 
 async def grade_documents(state: AgenticRAGState) -> AgenticRAGState:
-    """CRAG：评估检索文档的相关性"""
-    query = state["query"]
+    """评估检索结果质量，决定是否需要单次 retry。"""
     documents = state["documents"]
 
-    if not documents:
-        state["relevance_score"] = 0.0
-        return state
+    with timing_stage("agentic_grade", meta={"document_count": len(documents)}):
+        top_documents = documents[: min(3, len(documents))]
+        rerank_scores = [
+            float(doc["rerank_score"])
+            for doc in top_documents
+            if isinstance(doc, dict) and doc.get("rerank_score") is not None
+        ]
+        if rerank_scores:
+            relevance_score = sum(rerank_scores) / len(rerank_scores)
+        else:
+            rrf_scores = [
+                float(doc["rrf_score"])
+                for doc in top_documents
+                if isinstance(doc, dict) and doc.get("rrf_score") is not None
+            ]
+            relevance_score = (sum(rrf_scores) / len(rrf_scores)) if rrf_scores else 0.0
 
-    # 简化版：用 rerank_score 作为相关性
-    avg_score = sum(d.get("rerank_score", d.get("rrf_score", 0.5)) for d in documents) / len(documents)
-    state["relevance_score"] = avg_score
+        has_rerank_score = bool(rerank_scores)
+        top_source_ids = [
+            str(doc.get("id") or (doc.get("metadata") or {}).get("id"))
+            for doc in top_documents
+            if isinstance(doc, dict)
+        ]
+        asset_types = sorted(
+            {
+                str((doc.get("metadata") or {}).get("asset_type") or "image")
+                for doc in documents
+                if isinstance(doc, dict)
+            }
+        )
+        retrieval_attempt = int(state.get("retrieval_attempt", 1) or 1)
 
-    logger.info(f"[Grade] 文档相关性评分: {avg_score:.2f}")
+        state["relevance_score"] = relevance_score
+        state["needs_retry"] = len(documents) == 0 or (
+            has_rerank_score and relevance_score < 0.35 and retrieval_attempt < 2
+        )
+        state["retrieval_meta"] = {
+            **dict(state.get("retrieval_meta", {})),
+            "document_count": len(documents),
+            "has_rerank_score": has_rerank_score,
+            "top_source_ids": top_source_ids,
+            "asset_types": asset_types,
+        }
+
+    logger.info(
+        "[AgenticGraph] grade score=%.3f retry=%s docs=%s",
+        state["relevance_score"],
+        state["needs_retry"],
+        len(documents),
+    )
     return state
 
 
-async def decide_next(state: AgenticRAGState) -> Literal["generate", "web_search"]:
-    """决策：相关性低则转 web_search，否则生成"""
-    if state["relevance_score"] < 0.3:
-        logger.info("[Decide] 相关性过低，转 web_search")
-        return "web_search"
+def decide_next_after_grade(state: AgenticRAGState) -> Literal["retry", "generate"]:
+    """根据评分结果决定是否做一次 retry。"""
+    if state.get("needs_retry"):
+        return "retry"
     return "generate"
 
 
-async def web_search_fallback(state: AgenticRAGState) -> AgenticRAGState:
-    """Web 搜索兜底（占位符）"""
-    logger.warning("[WebSearch] Web 搜索未实现，返回空文档")
-    state["documents"] = []
-    return state
+async def generate_answer(state: AgenticRAGState, *, rag_chain=None) -> AgenticRAGState:
+    """复用现有 RAGChain.agenerate_from_context 生成答案。"""
+    if rag_chain is None:
+        from app.langchain_integration.chains import get_rag_chain
 
+        rag_chain = get_rag_chain()
 
-async def generate_answer(state: AgenticRAGState) -> AgenticRAGState:
-    """生成答案"""
-    query = state["query"]
-    documents = state["documents"]
-    chat_history = state.get("chat_history", [])
-
-    # 构建 prompt
-    context = "\n".join(d.get("document", "")[:500] for d in documents[:3])
-    history_text = "\n".join(f"用户：{q}\n助手：{a}" for q, a in chat_history[-3:])
-
-    prompt = f"""你是一个知识库问答助手。
-
-对话历史：
-{history_text}
-
-相关文档：
-{context}
-
-用户问题：{query}
-
-请基于上述信息回答用户问题。如果文档不足以回答，请明确说明。"""
-
-    model = get_primary_text_chat_model()
-    from langchain_core.messages import HumanMessage
-    result = await model._agenerate([HumanMessage(content=prompt)])
-    answer = result.generations[0].message.content
+    with timing_stage(
+        "agentic_generate",
+        meta={
+            "document_count": len(state.get("documents", [])),
+            "text_chunk_count": len(state.get("text_chunks", [])),
+        },
+    ):
+        answer = await rag_chain.agenerate_from_context(
+            query=state["query"],
+            documents=state.get("documents", []),
+            text_chunks=state.get("text_chunks", []),
+            chat_history=state.get("chat_history", []),
+        )
 
     state["answer"] = answer
-    logger.info(f"[Generate] 生成答案: {answer[:50]}...")
+    logger.info("[AgenticGraph] generated answer with %s docs", len(state.get("documents", [])))
     return state
 
 
-async def self_reflect(state: AgenticRAGState) -> AgenticRAGState:
-    """Self-RAG：评估答案质量"""
-    answer = state["answer"]
-
-    # 简化版：检查是否包含"不确定"、"无法回答"等
-    if any(kw in answer for kw in ["不确定", "无法回答", "不知道", "没有相关信息"]):
-        state["needs_retry"] = True
-        logger.info("[Reflect] 答案质量不足，需要重试")
-    else:
-        state["needs_retry"] = False
-        logger.info("[Reflect] 答案质量合格")
-
-    return state
-
-
-def build_agentic_rag_graph() -> StateGraph:
-    """构建 Agentic RAG 状态图"""
+def build_agentic_rag_graph(*, retriever=None, doc_vector_store=None, rag_chain=None):
+    """构建最小可用的 Agentic RAG 图。"""
+    text_top_k = int(getattr(rag_chain, "text_top_k", 5) or 5) if rag_chain is not None else 5
     workflow = StateGraph(AgenticRAGState)
 
-    # 添加节点
-    workflow.add_node("route", route_query)
-    workflow.add_node("retrieve", retrieve_documents)
+    async def _retrieve_node(state: AgenticRAGState) -> AgenticRAGState:
+        return await retrieve_documents(
+            state,
+            retriever=retriever,
+            doc_vector_store=doc_vector_store,
+            text_top_k=text_top_k,
+        )
+
+    async def _retry_retrieve_node(state: AgenticRAGState) -> AgenticRAGState:
+        return await retry_retrieve_documents(
+            state,
+            retriever=retriever,
+            doc_vector_store=doc_vector_store,
+            text_top_k=text_top_k,
+        )
+
+    async def _generate_node(state: AgenticRAGState) -> AgenticRAGState:
+        return await generate_answer(state, rag_chain=rag_chain)
+
+    workflow.add_node("retrieve", _retrieve_node)
     workflow.add_node("grade", grade_documents)
-    workflow.add_node("web_search", web_search_fallback)
-    workflow.add_node("generate", generate_answer)
-    workflow.add_node("reflect", self_reflect)
+    workflow.add_node("retry_retrieve", _retry_retrieve_node)
+    workflow.add_node("generate", _generate_node)
 
-    # 设置入口
-    workflow.set_entry_point("route")
-
-    # 路由逻辑
-    workflow.add_conditional_edges(
-        "route",
-        lambda s: s["route"],
-        {
-            "vectorstore": "retrieve",
-            "web_search": "web_search",
-        }
-    )
-
+    workflow.set_entry_point("retrieve")
     workflow.add_edge("retrieve", "grade")
-
     workflow.add_conditional_edges(
         "grade",
-        decide_next,
+        decide_next_after_grade,
         {
+            "retry": "retry_retrieve",
             "generate": "generate",
-            "web_search": "web_search",
-        }
+        },
     )
-
-    workflow.add_edge("web_search", "generate")
-    workflow.add_edge("generate", "reflect")
-
-    workflow.add_conditional_edges(
-        "reflect",
-        lambda s: "retrieve" if s["needs_retry"] and len(s["documents"]) < 10 else "end",
-        {
-            "retrieve": "retrieve",
-            "end": END,
-        }
-    )
-
+    workflow.add_edge("retry_retrieve", "grade")
+    workflow.add_edge("generate", END)
     return workflow.compile()
 
 
-# 全局图实例
 _agentic_graph = None
 
 
-def get_agentic_rag_graph():
-    """获取 Agentic RAG 图实例（单例）"""
+def get_agentic_rag_graph(*, retriever=None, doc_vector_store=None, rag_chain=None):
+    """获取 Agentic RAG 图实例；显式传入依赖时返回隔离图实例。"""
+    if retriever is not None or doc_vector_store is not None or rag_chain is not None:
+        return build_agentic_rag_graph(
+            retriever=retriever,
+            doc_vector_store=doc_vector_store,
+            rag_chain=rag_chain,
+        )
+
     global _agentic_graph
     if _agentic_graph is None:
         _agentic_graph = build_agentic_rag_graph()
     return _agentic_graph
+
+
+def _build_agentic_retrieval_steps(
+    *,
+    query: str,
+    top_k: int,
+    execution_mode: str,
+    presentation_mode: str,
+    classifier_reason: str,
+    has_uploaded_image: bool,
+    documents: List[Dict[str, Any]],
+    final_state: AgenticRAGState,
+) -> List[Dict[str, Any]]:
+    retrieval_meta = dict(final_state.get("retrieval_meta", {}))
+    relevance_score = float(final_state.get("relevance_score", 0.0) or 0.0)
+    steps: List[Dict[str, Any]] = [
+        {
+            "key": "intent",
+            "label": "意图",
+            "summary": f"{execution_mode} / {presentation_mode}",
+            "details": {
+                "execution_mode": execution_mode,
+                "presentation_mode": presentation_mode,
+                "use_rag": True,
+                "has_uploaded_image": has_uploaded_image,
+                "reason": classifier_reason,
+            },
+        },
+        {
+            "key": "query",
+            "label": "查询",
+            "summary": query[:120],
+            "details": {"query": query, "top_k": top_k},
+        },
+        {
+            "key": "retrieve",
+            "label": "首次检索",
+            "summary": f"召回 {len(documents)} 条结果",
+            "details": {
+                "count": len(documents),
+                "attempt": 1,
+                "top_source_ids": retrieval_meta.get("top_source_ids", []),
+                "asset_types": retrieval_meta.get("asset_types", []),
+            },
+        },
+        {
+            "key": "grade",
+            "label": "评分",
+            "summary": f"相关性 {relevance_score:.3f}",
+            "details": {
+                "relevance_score": round(relevance_score, 6),
+                "document_count": retrieval_meta.get("document_count", len(documents)),
+                "has_rerank_score": bool(retrieval_meta.get("has_rerank_score", False)),
+            },
+        },
+    ]
+
+    if int(final_state.get("retrieval_attempt", 1) or 1) > 1:
+        steps.append(
+            {
+                "key": "retry",
+                "label": "重试检索",
+                "summary": "首次检索质量不足，已执行一次重试",
+                "details": {
+                    "attempt": int(final_state.get("retrieval_attempt", 1) or 1),
+                    "top_source_ids": retrieval_meta.get("top_source_ids", []),
+                    "asset_types": retrieval_meta.get("asset_types", []),
+                },
+            }
+        )
+
+    steps.append(
+        {
+            "key": "generate",
+            "label": "生成",
+            "summary": "已基于检索上下文生成回答",
+            "details": {
+                "document_count": len(documents),
+                "text_chunk_count": retrieval_meta.get("text_chunk_count", len(final_state.get("text_chunks", []))),
+            },
+        }
+    )
+    return steps
+
+
+async def run_agentic_multimodal_rag(
+    *,
+    query: str,
+    top_k: int,
+    chat_history: Optional[List[Tuple[str, str]]],
+    enable_score_filter: bool,
+    min_relevance_score: Optional[float],
+    rag_chain,
+    retriever,
+    doc_vector_store,
+    execution_mode: str,
+    presentation_mode: str,
+    classifier_reason: str,
+    has_uploaded_image: bool,
+) -> Tuple[str, List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """运行最小 LangGraph 主链路，并返回兼容现有 adapter 的结果。"""
+    initial_state: AgenticRAGState = {
+        "query": query,
+        "chat_history": chat_history or [],
+        "top_k": top_k,
+        "enable_score_filter": enable_score_filter,
+        "min_relevance_score": min_relevance_score,
+        "documents": [],
+        "text_chunks": [],
+        "answer": "",
+        "retrieval_attempt": 1,
+        "relevance_score": 0.0,
+        "needs_retry": False,
+        "retrieval_meta": {},
+    }
+
+    with timing_stage("agentic_graph_total", meta={"top_k": top_k, "execution_mode": execution_mode}):
+        graph = get_agentic_rag_graph(
+            retriever=retriever,
+            doc_vector_store=doc_vector_store,
+            rag_chain=rag_chain,
+        )
+        final_state = await graph.ainvoke(initial_state)
+
+    collector = get_current_timing_collector()
+    if collector is not None:
+        collector.set_metadata(
+            agentic_graph_enabled=True,
+            agentic_retry_used=bool(int(final_state.get("retrieval_attempt", 1) or 1) > 1),
+            agentic_relevance_score=final_state.get("relevance_score"),
+        )
+
+    documents = list(final_state.get("documents", []))
+    retrieval_steps = _build_agentic_retrieval_steps(
+        query=query,
+        top_k=top_k,
+        execution_mode=execution_mode,
+        presentation_mode=presentation_mode,
+        classifier_reason=classifier_reason,
+        has_uploaded_image=has_uploaded_image,
+        documents=documents,
+        final_state=final_state,
+    )
+    return final_state.get("answer", ""), documents, retrieval_steps
