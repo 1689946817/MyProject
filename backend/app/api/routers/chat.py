@@ -420,13 +420,17 @@ async def rag_chat_endpoint(
             }
             with collector.stage("chat_message_persist"):
                 add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
+                assistant_retrieval_params = {
+                    **retrieval_params,
+                    "timings": _maybe_timings_payload(collector).model_dump() if settings.EXPOSE_TIMINGS_IN_API else None,
+                }
                 add_message(
                     db,
                     session,
                     "assistant",
                     answer,
                     sources=[source.model_dump() for source in sources],
-                    retrieval_params=retrieval_params,
+                    retrieval_params=assistant_retrieval_params,
                     retrieval_steps=retrieval_steps,
                 )
 
@@ -565,13 +569,17 @@ async def rag_chat_stream_endpoint(
                     add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
                     sources = _normalize_chat_sources(retrieved_docs)
                     retrieval_steps = (final_intent or {}).get("retrieval_steps") or []
+                    assistant_retrieval_params = {
+                        **retrieval_params,
+                        "timings": TimingSummary.model_validate(collector.snapshot()).model_dump() if settings.EXPOSE_TIMINGS_IN_API else None,
+                    }
                     add_message(
                         db,
                         session,
                         "assistant",
                         full_answer,
                         sources=[source.model_dump() for source in sources],
-                        retrieval_params=retrieval_params,
+                        retrieval_params=assistant_retrieval_params,
                         retrieval_steps=retrieval_steps,
                     )
 

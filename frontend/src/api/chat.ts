@@ -16,6 +16,7 @@ import type {
   ExecutionMode,
   PresentationMode,
   SearchResultItem,
+  TimingSummary,
 } from "@/types";
 
 export type { ChatMessage, ChatSession } from "@/types";
@@ -37,6 +38,7 @@ export interface ChatResponse {
   use_rag: boolean;
   has_uploaded_image: boolean;
   retrieval_steps: RetrievalStepItem[];
+  timings?: TimingSummary | null;
 }
 
 /**

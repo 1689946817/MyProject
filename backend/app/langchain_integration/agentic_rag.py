@@ -711,6 +711,8 @@ def _build_agentic_retrieval_steps(
             "details": {
                 "count": len(documents),
                 "attempt": 1,
+                "document_count": retrieval_meta.get("document_count", len(documents)),
+                "text_chunk_count": retrieval_meta.get("text_chunk_count", len(final_state.get("text_chunks", []))),
                 "top_source_ids": retrieval_meta.get("top_source_ids", []),
                 "asset_types": retrieval_meta.get("asset_types", []),
             },
@@ -720,9 +722,11 @@ def _build_agentic_retrieval_steps(
             "label": "评分",
             "summary": f"相关性 {relevance_score:.3f}",
             "details": {
+                "attempt": min(int(final_state.get("retrieval_attempt", 1) or 1), 1),
                 "relevance_score": round(relevance_score, 6),
                 "document_count": retrieval_meta.get("document_count", len(documents)),
                 "has_rerank_score": bool(retrieval_meta.get("has_rerank_score", False)),
+                "needs_retry": bool(int(final_state.get("retrieval_attempt", 1) or 1) > 1),
             },
         },
     ]
@@ -735,6 +739,9 @@ def _build_agentic_retrieval_steps(
                 "summary": "首次检索质量不足，已执行一次重试",
                 "details": {
                     "attempt": int(final_state.get("retrieval_attempt", 1) or 1),
+                    "count": len(documents),
+                    "document_count": retrieval_meta.get("document_count", len(documents)),
+                    "text_chunk_count": retrieval_meta.get("text_chunk_count", len(final_state.get("text_chunks", []))),
                     "top_source_ids": retrieval_meta.get("top_source_ids", []),
                     "asset_types": retrieval_meta.get("asset_types", []),
                 },
@@ -747,8 +754,10 @@ def _build_agentic_retrieval_steps(
             "label": "生成",
             "summary": "已基于检索上下文生成回答",
             "details": {
+                "attempt": int(final_state.get("retrieval_attempt", 1) or 1),
                 "document_count": len(documents),
                 "text_chunk_count": retrieval_meta.get("text_chunk_count", len(final_state.get("text_chunks", []))),
+                "relevance_score": round(relevance_score, 6),
             },
         }
     )

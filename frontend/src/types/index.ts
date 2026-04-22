@@ -63,6 +63,43 @@ export interface RetrievalStepItem {
   details?: Record<string, any>
 }
 
+export interface TimingStage {
+  name: string
+  elapsed_ms: number
+  status?: string
+  meta?: Record<string, any>
+}
+
+export interface TimingSummary {
+  trace_id: string
+  request_path: string
+  request_kind: string
+  total_ms: number
+  first_token_ms?: number | null
+  metadata?: Record<string, any>
+  stages: TimingStage[]
+}
+
+export interface QaProcessStepViewModel {
+  key: string
+  label: string
+  summary?: string
+  durationMs?: number | null
+  details: Array<{
+    key: string
+    label: string
+    value: string
+  }>
+}
+
+export interface QaProcessSummaryViewModel {
+  executionMode: string
+  presentationMode: string
+  useRag: boolean
+  totalMs?: number | null
+  retryUsed: boolean
+}
+
 export type PresentationMode = "direct_answer" | "rag_answer" | "image_only" | "image_plus_answer"
 export type ExecutionMode =
   | "direct_llm"
@@ -98,6 +135,7 @@ export interface ChatMessage {
   use_rag?: boolean
   retrieval_steps?: RetrievalStepItem[]
   retrieval_params?: Record<string, any> | null
+  timings?: TimingSummary | null
   created_at: string
 }
 

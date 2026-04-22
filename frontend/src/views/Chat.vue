@@ -152,23 +152,7 @@
                       show-icon
                       class="message-notice"
                     />
-                    <details v-if="hasRetrievalSteps(msg)" class="trace-panel">
-                      <summary class="trace-summary">{{ t("chat.ragTrace") }}</summary>
-                      <div class="trace-list">
-                        <div v-for="step in msg.retrieval_steps" :key="`${msg.id}-${step.key}`" class="trace-step">
-                          <div class="trace-step-header">
-                            <span class="trace-step-label">{{ step.label }}</span>
-                            <span v-if="step.summary" class="trace-step-summary">{{ step.summary }}</span>
-                          </div>
-                          <div v-if="step.details && Object.keys(step.details).length > 0" class="trace-step-details">
-                            <div v-for="(value, key) in step.details" :key="`${msg.id}-${step.key}-${String(key)}`" class="trace-detail-row">
-                              <span class="trace-detail-key">{{ key }}</span>
-                              <span class="trace-detail-value">{{ formatTraceDetailValue(value) }}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </details>
+                    <QaProcessCard v-if="shouldShowProcessCard(msg)" :message="msg" />
                     <div v-if="shouldShowImagesAfterText(msg)" class="referenced-images" :class="{ prominent: isImageFocusedMode(msg) }">
                       <div class="sources-heading">{{ t("chat.sourceImages") }}</div>
                       <div v-for="source in getImageSources(msg)" :key="source.source_id" class="ref-image-item" @click="showPreview(source)">
@@ -358,6 +342,7 @@ import { getSystemConfig } from "@/api/settings";
 import { imgSrc } from "@/utils/image";
 import SessionList from "@/components/SessionList.vue";
 import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
+import QaProcessCard from "@/components/QaProcessCard.vue";
 import type { ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
 
 const { t } = useI18n();
@@ -911,6 +896,7 @@ function cloneMessage(message: Message): Message {
     sources: message.sources ? [...message.sources] : [],
     retrieval_steps: message.retrieval_steps ? [...message.retrieval_steps] : [],
     retrieval_params: message.retrieval_params ? { ...message.retrieval_params } : null,
+    timings: message.timings ? { ...message.timings, stages: [...message.timings.stages] } : null,
   };
 }
 
@@ -1043,21 +1029,11 @@ function shouldShowRerankFilterNotice(msg: Message): boolean {
   return imageSources.length > 0 && imageSources.some((source) => source.score_source !== "rerank");
 }
 
-function hasRetrievalSteps(msg: Message): boolean {
-  return Array.isArray(msg.retrieval_steps) && msg.retrieval_steps.length > 0;
-}
-
-function formatTraceDetailValue(value: unknown): string {
-  if (Array.isArray(value)) return value.join(", ");
-  if (value === null || value === undefined) return "-";
-  if (typeof value === "object") {
-    try {
-      return JSON.stringify(value);
-    } catch (_err) {
-      return String(value);
-    }
+function shouldShowProcessCard(msg: Message): boolean {
+  if (msg.role !== "assistant") {
+    return false;
   }
-  return String(value);
+  return Boolean((msg.retrieval_steps && msg.retrieval_steps.length > 0) || msg.timings || msg.retrieval_params?.timings);
 }
 
 async function doChat() {
@@ -1141,7 +1117,9 @@ async function doChat() {
         min_relevance_score: chatMinRelevanceScore.value,
         execution_hint: effectiveExecutionHint.value,
         source_scope: sourceScope.value,
+        timings: response.timings || null,
       },
+      timings: response.timings || null,
     };
 
     if (currentSessionId.value === effectiveSessionId) {

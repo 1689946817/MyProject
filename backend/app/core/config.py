@@ -95,7 +95,7 @@ class Settings(BaseSettings):
     MLLM_MODEL_NAME: Optional[str] = None  # 多模态模型名称
     CHAT_COMPLETION_TIMEOUT_SECONDS: int = 180  # 聊天模型非流式请求超时时间（秒）
     ENABLE_TIMING_LOGS: bool = True
-    EXPOSE_TIMINGS_IN_API: bool = False
+    EXPOSE_TIMINGS_IN_API: bool = True
 
     # 嵌入模型配置（文本向量，用于主流程）
     EMBEDDING_BASE_URL: Optional[str] = None  # 嵌入模型 API 基础 URL
