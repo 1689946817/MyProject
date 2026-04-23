@@ -48,6 +48,83 @@ export interface ChatSessionDetail extends ChatSession {
   messages: ChatMessage[];
 }
 
+export interface ChatStreamSessionEvent {
+  type: "session";
+  session_id: string;
+}
+
+export interface ChatStreamContentEvent {
+  type: "content";
+  content: string;
+}
+
+export interface ChatStreamResultsEvent {
+  type: "results";
+  results: SearchResultItem[];
+  sources: ChatSourceItem[];
+  retrieval_steps: RetrievalStepItem[];
+  presentation_mode: PresentationMode;
+  execution_mode: ExecutionMode;
+  use_rag: boolean;
+  has_uploaded_image: boolean;
+  timings?: TimingSummary | null;
+}
+
+export interface ChatStreamErrorEvent {
+  type: "error";
+  detail: string;
+}
+
+export type ChatStreamEvent =
+  | ChatStreamSessionEvent
+  | ChatStreamContentEvent
+  | ChatStreamResultsEvent
+  | ChatStreamErrorEvent;
+
+export interface RagChatParams {
+  query: string;
+  sessionId?: string;
+  topK?: number;
+  enableScoreFilter?: boolean;
+  minRelevanceScore?: number;
+  executionHint?: string;
+  sourceScope?: {
+    doc_ids?: string[];
+    image_ids?: string[];
+  } | null;
+  image?: File | null;
+}
+
+function buildChatFormData(params: RagChatParams, stream = false): FormData {
+  const form = new FormData();
+  form.append("query", params.query);
+  if (params.topK !== undefined) {
+    form.append("top_k", String(params.topK));
+  }
+  if (params.enableScoreFilter !== undefined) {
+    form.append("enable_score_filter", String(params.enableScoreFilter));
+  }
+  if (params.minRelevanceScore !== undefined) {
+    form.append("min_relevance_score", String(params.minRelevanceScore));
+  }
+  if (params.executionHint) {
+    form.append("execution_hint", params.executionHint);
+  }
+  if (params.sourceScope && ((params.sourceScope.doc_ids?.length || 0) > 0 || (params.sourceScope.image_ids?.length || 0) > 0)) {
+    form.append("source_scope_json", JSON.stringify(params.sourceScope));
+  }
+  if (params.sessionId) {
+    form.append("session_id", params.sessionId);
+  }
+  if (params.image) {
+    form.append("image", params.image);
+  }
+  if (stream) {
+    form.append("stream", "true");
+  }
+  return form;
+}
+
 /**
  * 获取会话列表
  *
@@ -105,46 +182,105 @@ export async function getSessionMessages(id: string): Promise<ChatMessage[]> {
  * @param params 聊天参数
  * @returns 聊天响应
  */
-export async function ragChat(params: {
-  query: string;
-  sessionId?: string;
-  topK?: number;
-  enableScoreFilter?: boolean;
-  minRelevanceScore?: number;
-  executionHint?: string;
-  sourceScope?: {
-    doc_ids?: string[];
-    image_ids?: string[];
-  } | null;
-  image?: File | null;
-}): Promise<ChatResponse> {
-  const form = new FormData();
-  form.append("query", params.query);
-  if (params.topK !== undefined) {
-    form.append("top_k", String(params.topK));
-  }
-  if (params.enableScoreFilter !== undefined) {
-    form.append("enable_score_filter", String(params.enableScoreFilter));
-  }
-  if (params.minRelevanceScore !== undefined) {
-    form.append("min_relevance_score", String(params.minRelevanceScore));
-  }
-  if (params.executionHint) {
-    form.append("execution_hint", params.executionHint);
-  }
-  if (params.sourceScope && ((params.sourceScope.doc_ids?.length || 0) > 0 || (params.sourceScope.image_ids?.length || 0) > 0)) {
-    form.append("source_scope_json", JSON.stringify(params.sourceScope));
-  }
-  if (params.sessionId) {
-    form.append("session_id", params.sessionId);
-  }
-  if (params.image) {
-    form.append("image", params.image);
-  }
-
+export async function ragChat(params: RagChatParams): Promise<ChatResponse> {
+  const form = buildChatFormData(params);
   const { data } = await http.post<ChatResponse>("/api/rag/chat", form, {
     headers: { "Content-Type": "multipart/form-data" },
     timeout: CHAT_REQUEST_TIMEOUT_MS,
   });
   return data;
+}
+
+export async function ragChatStream(
+  params: RagChatParams,
+  handlers: {
+    onSession?: (event: ChatStreamSessionEvent) => void;
+    onContent?: (event: ChatStreamContentEvent) => void;
+    onResults?: (event: ChatStreamResultsEvent) => void;
+    onDone?: () => void;
+    onError?: (event: ChatStreamErrorEvent) => void;
+  },
+): Promise<void> {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), CHAT_REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch("/api/rag/chat", {
+      method: "POST",
+      body: buildChatFormData(params, true),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || `请求失败: ${response.status}`);
+    }
+    if (!response.body) {
+      throw new Error("浏览器不支持流式响应");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    let done = false;
+
+    const dispatchData = (rawData: string) => {
+      if (!rawData) {
+        return;
+      }
+      if (rawData === "[DONE]") {
+        done = true;
+        handlers.onDone?.();
+        return;
+      }
+      const parsed = JSON.parse(rawData) as ChatStreamEvent;
+      if (parsed.type === "session") {
+        handlers.onSession?.(parsed);
+        return;
+      }
+      if (parsed.type === "content") {
+        handlers.onContent?.(parsed);
+        return;
+      }
+      if (parsed.type === "results") {
+        handlers.onResults?.(parsed);
+        return;
+      }
+      if (parsed.type === "error") {
+        console.error("ragChatStream server error:", parsed);
+        handlers.onError?.(parsed);
+        throw new Error(parsed.detail || "流式响应失败");
+      }
+    };
+
+    const processBuffer = () => {
+      let boundary = buffer.indexOf("\n\n");
+      while (boundary !== -1) {
+        const rawEvent = buffer.slice(0, boundary);
+        buffer = buffer.slice(boundary + 2);
+        const dataLines = rawEvent
+          .split(/\r?\n/)
+          .filter((line) => line.startsWith("data:"))
+          .map((line) => line.slice(5).trimStart());
+        if (dataLines.length > 0) {
+          dispatchData(dataLines.join("\n"));
+        }
+        boundary = buffer.indexOf("\n\n");
+      }
+    };
+
+    while (!done) {
+      const { value, done: readerDone } = await reader.read();
+      if (readerDone) {
+        break;
+      }
+      buffer += decoder.decode(value, { stream: true });
+      processBuffer();
+    }
+    buffer += decoder.decode();
+    processBuffer();
+    if (!done) {
+      handlers.onDone?.();
+    }
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 }

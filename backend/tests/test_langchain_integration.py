@@ -98,7 +98,9 @@ if "fitz" not in sys.modules:
     sys.modules["fitz"] = ModuleType("fitz")
 
 from langchain_core.documents import Document
+from langchain_core.messages import AIMessageChunk
 from langchain_core.messages import HumanMessage
+from langchain_core.outputs import ChatGenerationChunk
 
 from app.langchain_integration.chains import ImageDescriptionChain, RAGChain
 from app.langchain_integration.doc_parser import (
@@ -116,6 +118,7 @@ from app.langchain_integration.agentic_rag import (
     classify_chat_intent,
     generate_answer,
     grade_documents,
+    prepare_agentic_multimodal_rag_context,
 )
 from app.langchain_integration.context_compression import compress_context
 from app.langchain_integration.mineru_client import MinerUClient, MinerUParseResult
@@ -239,6 +242,46 @@ class TestModelClientsDisableEnvProxy(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(embeddings, [[0.1, 0.2, 0.3]])
         self.assertFalse(mock_async_client_cls.call_args.kwargs["trust_env"])
+
+    @patch("httpx.AsyncClient")
+    async def test_chat_model_astream_yields_chat_generation_chunks(self, mock_async_client_cls):
+        """流式聊天请求应产出 LangChain 兼容的 chunk，并透传 token 回调。"""
+        mock_response = AsyncMock()
+        mock_response.raise_for_status = MagicMock()
+
+        async def iter_lines():
+            yield 'data: {"choices":[{"delta":{"content":"你"}}]}'
+            yield 'data: {"choices":[{"delta":{"content":"好"}}]}'
+            yield "data: [DONE]"
+
+        mock_response.aiter_lines = iter_lines
+
+        mock_stream_cm = AsyncMock()
+        mock_stream_cm.__aenter__.return_value = mock_response
+        mock_stream_cm.__aexit__.return_value = False
+
+        mock_client = AsyncMock()
+        mock_client.stream = MagicMock(return_value=mock_stream_cm)
+
+        mock_client_cm = AsyncMock()
+        mock_client_cm.__aenter__.return_value = mock_client
+        mock_client_cm.__aexit__.return_value = False
+        mock_async_client_cls.return_value = mock_client_cm
+
+        model = MultimodalChatModel(
+            base_url="https://example.com",
+            api_key="test-key",
+            model_name="test-model",
+        )
+        run_manager = AsyncMock()
+
+        chunks = [chunk async for chunk in model._astream([HumanMessage(content="hello")], run_manager=run_manager)]
+
+        self.assertEqual(len(chunks), 2)
+        self.assertTrue(all(isinstance(chunk, ChatGenerationChunk) for chunk in chunks))
+        self.assertEqual("".join(chunk.message.content for chunk in chunks), "你好")
+        run_manager.on_llm_new_token.assert_any_await("你")
+        run_manager.on_llm_new_token.assert_any_await("好")
 
 
 class TestImageDescriptionChain(unittest.TestCase):
@@ -1428,16 +1471,12 @@ class TestLangChainAdapter(unittest.TestCase):
         self.adapter.rag_chain.ainvoke_with_image.assert_awaited_once()
 
     def test_rag_chat_stream_text_uses_agentic_core_when_enabled(self):
-        """测试启用 Agentic RAG 时文本流式也复用 Agentic 核心路径"""
-        async def ordinary_stream(_inputs):
-            yield "ordinary", [{"id": "img-ordinary"}]
+        """测试启用 Agentic RAG 时文本流式会先准备上下文，再走真实 astream_from_context。"""
+        async def stream_from_context(**_kwargs):
+            yield "Age"
+            yield "ntic"
 
-        self.adapter.rag_chain.astream = ordinary_stream
-        self.adapter.retriever.async_search_with_dict_output = AsyncMock(
-            return_value=[{"id": "img-1", "rerank_score": 0.76, "metadata": {"asset_type": "image"}}]
-        )
-        self.adapter.document_vector_store.similarity_search = MagicMock(return_value=[{"document": "chunk"}])
-        self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="Agentic")
+        self.adapter.rag_chain.astream_from_context = stream_from_context
 
         async def collect():
             items = []
@@ -1464,11 +1503,86 @@ class TestLangChainAdapter(unittest.TestCase):
                     }
                 ),
             ):
-                streamed = asyncio.run(collect())
+                with patch(
+                    "app.langchain_integration.adapters.prepare_agentic_multimodal_rag_context",
+                    AsyncMock(
+                        return_value=(
+                            {"query": "What is this?", "chat_history": [("上一问", "上一答")]},
+                            [{"id": "img-1", "rerank_score": 0.76, "metadata": {"asset_type": "image"}}],
+                            [{"document": "chunk"}],
+                            [{"key": "generate", "label": "生成", "summary": "done", "details": {}}],
+                        )
+                    ),
+                ) as mock_prepare:
+                    streamed = asyncio.run(collect())
 
         self.assertEqual("".join(chunk for chunk, _ in streamed), "Agentic")
         self.assertTrue(all(docs[0]["id"] == "img-1" for _, docs in streamed))
-        self.adapter.rag_chain.agenerate_from_context.assert_awaited_once()
+        mock_prepare.assert_awaited_once()
+
+    def test_rag_chat_stream_scoped_multimodal_rag_uses_astream_from_context(self):
+        """测试 scoped multimodal_rag 流式会直接复用准备好的上下文做真实流式输出。"""
+        self.adapter = _build_isolated_adapter()
+        self.adapter._retrieve_images_for_query = AsyncMock(return_value=[{"id": "img-scoped", "metadata": {"id": "img-scoped"}}])
+        self.adapter.document_vector_store.similarity_search = MagicMock(return_value=[{"doc_id": "doc-1", "content": "chunk"}])
+
+        async def stream_from_context(**_kwargs):
+            yield "Scoped"
+            yield " stream"
+
+        self.adapter.rag_chain.astream_from_context = stream_from_context
+        self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="fallback")
+
+        async def collect():
+            items = []
+            async for chunk, docs, intent in self.adapter.rag_chat_stream(
+                query="公司的工资发放流程是什么？",
+                top_k=1,
+                execution_hint="multimodal_rag",
+                source_scope={"doc_ids": ["doc-1"], "image_ids": ["img-scoped"]},
+            ):
+                items.append((chunk, docs, intent))
+            return items
+
+        streamed = asyncio.run(collect())
+
+        self.assertEqual("".join(chunk for chunk, _, _ in streamed), "Scoped stream")
+        self.assertEqual(streamed[0][2]["execution_mode"], "multimodal_rag")
+        self.assertEqual(streamed[0][1][0]["id"], "img-scoped")
+        self.adapter.rag_chain.agenerate_from_context.assert_not_called()
+
+    def test_rag_chat_stream_scoped_image_grounded_answer_uses_astream_from_context(self):
+        """测试 scoped image_grounded_answer 会基于准备好的图文上下文做真实流式。"""
+        self.adapter = _build_isolated_adapter()
+        self.adapter._retrieve_images_for_query = AsyncMock(
+            return_value=[
+                {"id": "img-grounded", "metadata": {"id": "img-grounded", "asset_type": "image"}},
+                {"id": "img-grounded-2", "metadata": {"id": "img-grounded-2", "asset_type": "image"}},
+            ]
+        )
+        self.adapter.document_vector_store.similarity_search = MagicMock(return_value=[{"doc_id": "doc-2", "content": "augment"}])
+
+        async def stream_from_context(**_kwargs):
+            yield "Grounded"
+            yield " answer"
+
+        self.adapter.rag_chain.astream_from_context = stream_from_context
+
+        async def collect():
+            items = []
+            async for chunk, docs, intent in self.adapter.rag_chat_stream(
+                query="这张图表达了什么？",
+                top_k=1,
+                execution_hint="image_grounded_answer",
+            ):
+                items.append((chunk, docs, intent))
+            return items
+
+        streamed = asyncio.run(collect())
+
+        self.assertEqual("".join(chunk for chunk, _, _ in streamed), "Grounded answer")
+        self.assertEqual(streamed[0][2]["execution_mode"], "image_grounded_answer")
+        self.assertEqual(streamed[0][1][0]["id"], "img-grounded")
 
     def test_build_retrieval_steps_includes_rerank_summary(self):
         """测试 retrieval_steps 会汇总 rerank_score，供前端展示和调试。"""
@@ -1524,6 +1638,41 @@ class TestRemediationRegressions(unittest.TestCase):
             text_chunks=[{"document": "文本块"}],
             chat_history=[("前一个问题", "前一个回答")],
         )
+
+    def test_prepare_agentic_multimodal_rag_context_returns_generation_inputs(self):
+        """测试 Agentic prepare 阶段只返回上下文与步骤，不提前生成答案。"""
+        retriever = MagicMock()
+        retriever.async_search_with_dict_output = AsyncMock(
+            return_value=[{"id": "img-prepare", "rerank_score": 0.83, "metadata": {"asset_type": "image"}}]
+        )
+        doc_vector_store = MagicMock()
+        doc_vector_store.similarity_search = MagicMock(return_value=[{"document": "chunk"}])
+        rag_chain = MagicMock()
+        rag_chain.text_top_k = 3
+        rag_chain.agenerate_from_context = AsyncMock(return_value="should-not-run")
+
+        final_state, documents, text_chunks, retrieval_steps = asyncio.run(
+            prepare_agentic_multimodal_rag_context(
+                query="公司的工资发放流程是什么？",
+                top_k=1,
+                chat_history=[("上一问", "上一答")],
+                enable_score_filter=False,
+                min_relevance_score=None,
+                rag_chain=rag_chain,
+                retriever=retriever,
+                doc_vector_store=doc_vector_store,
+                execution_mode="multimodal_rag",
+                presentation_mode="rag_answer",
+                classifier_reason="internal_knowledge",
+                has_uploaded_image=False,
+            )
+        )
+
+        self.assertEqual(documents[0]["id"], "img-prepare")
+        self.assertEqual(text_chunks[0]["document"], "chunk")
+        self.assertEqual(final_state["answer"], "")
+        self.assertEqual(retrieval_steps[-1]["key"], "generate")
+        rag_chain.agenerate_from_context.assert_not_called()
 
     def test_compress_context_uses_flat_message_list_and_rewrites_document(self):
         """测试上下文压缩使用单层消息列表并返回压缩后的文本"""
@@ -1635,6 +1784,52 @@ class TestRemediationRegressions(unittest.TestCase):
         self.assertEqual(intent["execution_mode"], "direct_llm")
         self.adapter._answer_directly.assert_awaited_once()
         self.adapter.rag_chain.ainvoke.assert_not_called()
+
+    def test_rag_chat_stream_uses_true_streaming_for_agentic_direct_llm(self):
+        """测试 Agentic direct_llm 流式分支直接走模型流式而非答案回放。"""
+        self.adapter = _build_isolated_adapter()
+
+        async def direct_stream(**_kwargs):
+            yield "Dir"
+            yield "ect"
+
+        self.adapter._astream_direct_answer = MagicMock(side_effect=direct_stream)
+        self.adapter._run_agentic_chat = AsyncMock(return_value=("fallback", [], {}))
+
+        async def collect():
+            items = []
+            async for chunk, docs, intent in self.adapter.rag_chat_stream(
+                query="长城在中国哪个城市附近？",
+                top_k=1,
+            ):
+                items.append((chunk, docs, intent))
+            return items
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "direct_answer",
+                        "execution_mode": "direct_llm",
+                        "use_rag": False,
+                        "has_uploaded_image": False,
+                        "wants_images": False,
+                        "confidence": 0.95,
+                        "reason": "common_fact",
+                    }
+                ),
+            ):
+                streamed = asyncio.run(collect())
+
+        self.assertEqual("".join(chunk for chunk, _, _ in streamed), "Direct")
+        self.assertTrue(all(docs == [] for _, docs, _ in streamed))
+        self.assertEqual(streamed[0][2]["execution_mode"], "direct_llm")
+        self.adapter._astream_direct_answer.assert_called_once_with(
+            query="长城在中国哪个城市附近？",
+            chat_history=None,
+        )
+        self.adapter._run_agentic_chat.assert_not_awaited()
 
     def test_rag_chat_text_uses_multimodal_rag_for_grounded_questions(self):
         """测试知识库问题统一走 multimodal_rag"""
@@ -1909,6 +2104,41 @@ class TestRemediationRegressions(unittest.TestCase):
         self.assertEqual(documents, [])
         self.assertEqual(intent["execution_mode"], "uploaded_image_qa")
         self.adapter._answer_with_uploaded_image.assert_awaited_once()
+
+    def test_rag_chat_stream_uses_true_streaming_for_uploaded_image_qa(self):
+        """测试 uploaded_image_qa 强制模式下直接走模型真流式。"""
+        self.adapter = _build_isolated_adapter()
+        mock_file = MagicMock()
+
+        async def uploaded_stream(**_kwargs):
+            yield "Image"
+            yield " answer"
+
+        self.adapter._astream_uploaded_image_answer = MagicMock(side_effect=uploaded_stream)
+        self.adapter._run_scoped_chat = AsyncMock(return_value=("fallback", [], {}))
+
+        async def collect():
+            items = []
+            async for chunk, docs, intent in self.adapter.rag_chat_stream(
+                query="这张图片里第2步应该做什么？",
+                top_k=1,
+                image=mock_file,
+                execution_hint="uploaded_image_qa",
+            ):
+                items.append((chunk, docs, intent))
+            return items
+
+        streamed = asyncio.run(collect())
+
+        self.assertEqual("".join(chunk for chunk, _, _ in streamed), "Image answer")
+        self.assertTrue(all(docs == [] for _, docs, _ in streamed))
+        self.assertEqual(streamed[0][2]["execution_mode"], "uploaded_image_qa")
+        self.adapter._astream_uploaded_image_answer.assert_called_once_with(
+            query="这张图片里第2步应该做什么？",
+            image=mock_file,
+            chat_history=None,
+        )
+        self.adapter._run_scoped_chat.assert_not_awaited()
 
     def test_rag_chat_saves_uploaded_image_for_explicit_save_request(self):
         """测试带图且明确要求存图时走 save_uploaded_image。"""

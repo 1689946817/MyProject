@@ -324,19 +324,116 @@ def _coerce_rag_chat_result(
     raise ValueError("Unsupported rag_chat result shape")
 
 
-@rag_router.post("/chat", response_model=ChatResponse, response_model_exclude_none=True)
-async def rag_chat_endpoint(
-    query: str = Form(...),
-    top_k: Optional[int] = Form(None),
-    enable_score_filter: Optional[bool] = Form(None),
-    min_relevance_score: Optional[float] = Form(None),
-    execution_hint: Optional[str] = Form(None),
-    source_scope_json: Optional[str] = Form(None),
-    session_id: Optional[str] = Form(None),
-    image: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db),
+def _build_default_stream_intent(*, has_uploaded_image: bool) -> dict[str, Any]:
+    return {
+        "presentation_mode": "rag_answer",
+        "execution_mode": "multimodal_rag",
+        "use_rag": True,
+        "has_uploaded_image": has_uploaded_image,
+        "wants_images": has_uploaded_image,
+        "confidence": 1.0,
+        "reason": "stream_default_intent",
+        "retrieval_steps": [],
+    }
+
+
+def _build_retrieval_params(
+    *,
+    query: str,
+    resolved_top_k: int,
+    image: Optional[UploadFile],
+    resolved_enable_score_filter: bool,
+    resolved_min_relevance_score: Optional[float],
+    resolved_execution_hint: Optional[str],
+    source_scope: Optional[dict[str, list[str]]],
+    intent: dict[str, Any],
+    stream: bool,
+) -> dict[str, Any]:
+    return {
+        "top_k": resolved_top_k,
+        "has_image": image is not None,
+        "query": query,
+        "stream": stream,
+        "enable_score_filter": resolved_enable_score_filter,
+        "min_relevance_score": resolved_min_relevance_score,
+        "execution_hint": resolved_execution_hint,
+        "source_scope": source_scope,
+        "presentation_mode": intent.get("presentation_mode"),
+        "execution_mode": intent.get("execution_mode"),
+        "use_rag": intent.get("use_rag"),
+        "classifier_reason": intent.get("reason"),
+        "classifier_confidence": intent.get("confidence"),
+    }
+
+
+def _build_chat_response(
+    *,
+    answer: str,
+    retrieved: List[dict],
+    session_id: str,
+    intent: dict[str, Any],
+    collector: RequestTimingCollector,
 ) -> ChatResponse:
-    """RAG 聊天接口（支持持久化多轮对话）。"""
+    response = ChatResponse(
+        answer=answer,
+        results=_build_results(retrieved),
+        sources=_normalize_chat_sources(retrieved),
+        session_id=session_id,
+        presentation_mode=intent.get("presentation_mode", "rag_answer"),
+        execution_mode=intent.get("execution_mode", "multimodal_rag"),
+        use_rag=bool(intent.get("use_rag", True)),
+        has_uploaded_image=bool(intent.get("has_uploaded_image", False)),
+        retrieval_steps=intent.get("retrieval_steps") or [],
+    )
+    if settings.EXPOSE_TIMINGS_IN_API:
+        response.timings = _maybe_timings_payload(collector)
+    return response
+
+
+def _build_results_payload(
+    *,
+    retrieved: List[dict],
+    intent: dict[str, Any],
+    collector: RequestTimingCollector,
+) -> dict[str, Any]:
+    payload = {
+        "type": "results",
+        "results": [item.model_dump() for item in _build_results(retrieved)],
+        "sources": [source.model_dump() for source in _normalize_chat_sources(retrieved)],
+        "retrieval_steps": intent.get("retrieval_steps") or [],
+        "presentation_mode": intent.get("presentation_mode", "rag_answer"),
+        "execution_mode": intent.get("execution_mode", "multimodal_rag"),
+        "use_rag": bool(intent.get("use_rag", True)),
+        "has_uploaded_image": bool(intent.get("has_uploaded_image", False)),
+    }
+    if settings.EXPOSE_TIMINGS_IN_API:
+        payload["timings"] = TimingSummary.model_validate(collector.snapshot()).model_dump()
+    return payload
+
+
+async def _prepare_rag_chat_context(
+    *,
+    query: str,
+    top_k: Optional[int],
+    enable_score_filter: Optional[bool],
+    min_relevance_score: Optional[float],
+    execution_hint: Optional[str],
+    source_scope_json: Optional[str],
+    session_id: Optional[str],
+    image: Optional[UploadFile],
+    db: Session,
+    request_path: str,
+    request_kind: str,
+) -> tuple[
+    RequestTimingCollector,
+    Any,
+    list[tuple[str, str]],
+    Optional[str],
+    Optional[dict[str, list[str]]],
+    int,
+    bool,
+    Optional[float],
+]:
     resolved_execution_hint = _normalize_execution_hint(execution_hint)
     source_scope = _parse_source_scope_json(source_scope_json)
     resolved_top_k = top_k or settings.CHAT_DEFAULT_TOP_K
@@ -350,7 +447,7 @@ async def rag_chat_endpoint(
         if min_relevance_score is not None
         else settings.CHAT_MIN_RELEVANCE_SCORE
     )
-    collector = RequestTimingCollector("/api/rag/chat", "rag_chat")
+    collector = RequestTimingCollector(request_path, request_kind)
     collector.set_metadata(
         top_k=resolved_top_k,
         has_uploaded_image=image is not None,
@@ -359,6 +456,237 @@ async def rag_chat_endpoint(
         execution_hint=resolved_execution_hint,
         source_scope=source_scope,
     )
+    try:
+        with collector.stage("chat_session_load"):
+            session = get_session_or_raise(db, session_id) if session_id else create_session(db)
+    except ChatSessionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="会话不存在") from exc
+
+    with collector.stage("chat_history_load"):
+        history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
+
+    return (
+        collector,
+        session,
+        history,
+        resolved_execution_hint,
+        source_scope,
+        resolved_top_k,
+        resolved_enable_score_filter,
+        resolved_min_relevance_score,
+    )
+
+
+def _build_sse_chunk(payload: Any) -> str:
+    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+def _normalize_stream_text_chunk(chunk: Any) -> str:
+    if chunk is None:
+        return ""
+    if isinstance(chunk, str):
+        return chunk
+
+    content = getattr(chunk, "content", None)
+    if isinstance(content, str):
+        return content
+
+    message = getattr(chunk, "message", None)
+    if message is not None:
+        message_content = getattr(message, "content", None)
+        if isinstance(message_content, str):
+            return message_content
+
+    raise TypeError(f"Unsupported streaming chunk type: {type(chunk).__name__}")
+
+
+def _build_rag_streaming_response(
+    *,
+    query: str,
+    image: Optional[UploadFile],
+    db: Session,
+    collector: RequestTimingCollector,
+    session: Any,
+    history: list[tuple[str, str]],
+    resolved_execution_hint: Optional[str],
+    source_scope: Optional[dict[str, list[str]]],
+    resolved_top_k: int,
+    resolved_enable_score_filter: bool,
+    resolved_min_relevance_score: Optional[float],
+    request_stage_name: str,
+) -> StreamingResponse:
+    adapter = get_langchain_adapter()
+
+    async def event_generator():
+        with bind_timing_collector(collector), collector.stage(
+            request_stage_name,
+            meta={
+                "top_k": resolved_top_k,
+                "has_uploaded_image": image is not None,
+                "enable_score_filter": resolved_enable_score_filter,
+                "min_relevance_score": resolved_min_relevance_score,
+                "execution_hint": resolved_execution_hint,
+                "source_scope": source_scope,
+            },
+        ):
+            try:
+                yield _build_sse_chunk({"type": "session", "session_id": session.id})
+
+                full_answer = ""
+                retrieved_docs: List[dict] = []
+                final_intent: Optional[dict[str, Any]] = None
+
+                try:
+                    stream = adapter.rag_chat_stream(
+                        query=query,
+                        top_k=resolved_top_k,
+                        image=image,
+                        chat_history=history,
+                        enable_score_filter=resolved_enable_score_filter,
+                        min_relevance_score=resolved_min_relevance_score,
+                        execution_hint=resolved_execution_hint,
+                        source_scope=source_scope,
+                    )
+                except TypeError:
+                    stream = adapter.rag_chat_stream(
+                        query=query,
+                        top_k=resolved_top_k,
+                        chat_history=history,
+                        enable_score_filter=resolved_enable_score_filter,
+                        min_relevance_score=resolved_min_relevance_score,
+                    )
+
+                first_chunk_sent = False
+                async for event in stream:
+                    if len(event) == 3:
+                        chunk, docs, intent = event
+                    elif len(event) == 2:
+                        chunk, docs = event
+                        intent = None
+                    else:
+                        raise ValueError("Unsupported rag_chat_stream event shape")
+
+                    chunk = _normalize_stream_text_chunk(chunk)
+                    full_answer += chunk
+                    retrieved_docs = docs
+                    if intent is not None:
+                        final_intent = intent
+                        collector.set_metadata(
+                            execution_mode=intent.get("execution_mode"),
+                            presentation_mode=intent.get("presentation_mode"),
+                        )
+                    if chunk:
+                        if not first_chunk_sent:
+                            collector.mark_first_token()
+                            first_chunk_sent = True
+                        yield _build_sse_chunk({"type": "content", "content": chunk})
+
+                final_intent = final_intent or _build_default_stream_intent(has_uploaded_image=image is not None)
+                collector.set_metadata(
+                    execution_mode=final_intent.get("execution_mode"),
+                    presentation_mode=final_intent.get("presentation_mode"),
+                )
+                retrieval_params = _build_retrieval_params(
+                    query=query,
+                    resolved_top_k=resolved_top_k,
+                    image=image,
+                    resolved_enable_score_filter=resolved_enable_score_filter,
+                    resolved_min_relevance_score=resolved_min_relevance_score,
+                    resolved_execution_hint=resolved_execution_hint,
+                    source_scope=source_scope,
+                    intent=final_intent,
+                    stream=True,
+                )
+                sources = _normalize_chat_sources(retrieved_docs)
+                retrieval_steps = final_intent.get("retrieval_steps") or []
+                with collector.stage("chat_message_persist"):
+                    add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
+                    assistant_retrieval_params = {
+                        **retrieval_params,
+                        "timings": TimingSummary.model_validate(collector.snapshot()).model_dump() if settings.EXPOSE_TIMINGS_IN_API else None,
+                    }
+                    add_message(
+                        db,
+                        session,
+                        "assistant",
+                        full_answer,
+                        sources=[source.model_dump() for source in sources],
+                        retrieval_params=assistant_retrieval_params,
+                        retrieval_steps=retrieval_steps,
+                    )
+
+                yield _build_sse_chunk(
+                    _build_results_payload(
+                        retrieved=retrieved_docs,
+                        intent={
+                            **final_intent,
+                            "retrieval_steps": retrieval_steps,
+                            "has_uploaded_image": image is not None,
+                        },
+                        collector=collector,
+                    )
+                )
+            except Exception as exc:
+                yield _build_sse_chunk({"type": "error", "detail": str(exc)})
+            finally:
+                yield "data: [DONE]\n\n"
+                collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@rag_router.post("/chat", response_model=ChatResponse, response_model_exclude_none=True)
+async def rag_chat_endpoint(
+    query: str = Form(...),
+    top_k: Optional[int] = Form(None),
+    enable_score_filter: Optional[bool] = Form(None),
+    min_relevance_score: Optional[float] = Form(None),
+    execution_hint: Optional[str] = Form(None),
+    source_scope_json: Optional[str] = Form(None),
+    session_id: Optional[str] = Form(None),
+    stream: bool = Form(False),
+    image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
+) -> Any:
+    """RAG 聊天接口（支持 JSON 与 SSE 双模式）。"""
+    (
+        collector,
+        session,
+        history,
+        resolved_execution_hint,
+        source_scope,
+        resolved_top_k,
+        resolved_enable_score_filter,
+        resolved_min_relevance_score,
+    ) = await _prepare_rag_chat_context(
+        query=query,
+        top_k=top_k,
+        enable_score_filter=enable_score_filter,
+        min_relevance_score=min_relevance_score,
+        execution_hint=execution_hint,
+        source_scope_json=source_scope_json,
+        session_id=session_id,
+        image=image,
+        db=db,
+        request_path="/api/rag/chat",
+        request_kind="rag_chat_stream" if stream else "rag_chat",
+    )
+    if stream:
+        return _build_rag_streaming_response(
+            query=query,
+            image=image,
+            db=db,
+            collector=collector,
+            session=session,
+            history=history,
+            resolved_execution_hint=resolved_execution_hint,
+            source_scope=source_scope,
+            resolved_top_k=resolved_top_k,
+            resolved_enable_score_filter=resolved_enable_score_filter,
+            resolved_min_relevance_score=resolved_min_relevance_score,
+            request_stage_name="rag_chat_stream_total",
+        )
+
     response: ChatResponse | None = None
     try:
         with bind_timing_collector(collector), collector.stage(
@@ -372,15 +700,6 @@ async def rag_chat_endpoint(
                 "source_scope": source_scope,
             },
         ):
-            try:
-                with collector.stage("chat_session_load"):
-                    session = get_session_or_raise(db, session_id) if session_id else create_session(db)
-            except ChatSessionNotFoundError as exc:
-                raise HTTPException(status_code=404, detail="会话不存在") from exc
-
-            with collector.stage("chat_history_load"):
-                history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
-
             adapter = get_langchain_adapter()
             result = await adapter.rag_chat(
                 query=query,
@@ -402,22 +721,17 @@ async def rag_chat_endpoint(
             )
             sources = _normalize_chat_sources(retrieved)
             retrieval_steps = intent.get("retrieval_steps") or []
-
-            retrieval_params = {
-                "top_k": resolved_top_k,
-                "has_image": image is not None,
-                "query": query,
-                "stream": False,
-                "enable_score_filter": resolved_enable_score_filter,
-                "min_relevance_score": resolved_min_relevance_score,
-                "execution_hint": resolved_execution_hint,
-                "source_scope": source_scope,
-                "presentation_mode": intent.get("presentation_mode"),
-                "execution_mode": intent.get("execution_mode"),
-                "use_rag": intent.get("use_rag"),
-                "classifier_reason": intent.get("reason"),
-                "classifier_confidence": intent.get("confidence"),
-            }
+            retrieval_params = _build_retrieval_params(
+                query=query,
+                resolved_top_k=resolved_top_k,
+                image=image,
+                resolved_enable_score_filter=resolved_enable_score_filter,
+                resolved_min_relevance_score=resolved_min_relevance_score,
+                resolved_execution_hint=resolved_execution_hint,
+                source_scope=source_scope,
+                intent=intent,
+                stream=False,
+            )
             with collector.stage("chat_message_persist"):
                 add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
                 assistant_retrieval_params = {
@@ -465,135 +779,39 @@ async def rag_chat_stream_endpoint(
     db: Session = Depends(get_db),
 ):
     """RAG 聊天流式接口（SSE）。"""
-    resolved_execution_hint = _normalize_execution_hint(execution_hint)
-    source_scope = _parse_source_scope_json(source_scope_json)
-    resolved_top_k = top_k or settings.CHAT_DEFAULT_TOP_K
-    resolved_enable_score_filter = (
-        enable_score_filter
-        if enable_score_filter is not None
-        else settings.CHAT_ENABLE_SCORE_FILTER
+    (
+        collector,
+        session,
+        history,
+        resolved_execution_hint,
+        source_scope,
+        resolved_top_k,
+        resolved_enable_score_filter,
+        resolved_min_relevance_score,
+    ) = await _prepare_rag_chat_context(
+        query=query,
+        top_k=top_k,
+        enable_score_filter=enable_score_filter,
+        min_relevance_score=min_relevance_score,
+        execution_hint=execution_hint,
+        source_scope_json=source_scope_json,
+        session_id=session_id,
+        image=image,
+        db=db,
+        request_path="/api/rag/chat/stream",
+        request_kind="rag_chat_stream",
     )
-    resolved_min_relevance_score = (
-        min_relevance_score
-        if min_relevance_score is not None
-        else settings.CHAT_MIN_RELEVANCE_SCORE
-    )
-    collector = RequestTimingCollector("/api/rag/chat/stream", "rag_chat_stream")
-    collector.set_metadata(
-        top_k=resolved_top_k,
-        has_uploaded_image=image is not None,
-        enable_score_filter=resolved_enable_score_filter,
-        min_relevance_score=resolved_min_relevance_score,
-        execution_hint=resolved_execution_hint,
+    return _build_rag_streaming_response(
+        query=query,
+        image=image,
+        db=db,
+        collector=collector,
+        session=session,
+        history=history,
+        resolved_execution_hint=resolved_execution_hint,
         source_scope=source_scope,
+        resolved_top_k=resolved_top_k,
+        resolved_enable_score_filter=resolved_enable_score_filter,
+        resolved_min_relevance_score=resolved_min_relevance_score,
+        request_stage_name="rag_chat_stream_total",
     )
-    try:
-        with collector.stage("chat_session_load"):
-            session = get_session_or_raise(db, session_id) if session_id else create_session(db)
-    except ChatSessionNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="会话不存在") from exc
-
-    with collector.stage("chat_history_load"):
-        history = get_recent_history(db, session.id, settings.CHAT_HISTORY_MAX_TURNS)
-    adapter = get_langchain_adapter()
-
-    async def event_generator():
-        with bind_timing_collector(collector), collector.stage(
-            "rag_chat_stream_total",
-            meta={
-                "top_k": resolved_top_k,
-                "has_uploaded_image": image is not None,
-                "enable_score_filter": resolved_enable_score_filter,
-                "min_relevance_score": resolved_min_relevance_score,
-                "execution_hint": resolved_execution_hint,
-                "source_scope": source_scope,
-            },
-        ):
-            try:
-                yield f"data: {json.dumps({'type': 'session', 'session_id': session.id})}\n\n"
-
-                full_answer = ""
-                retrieved_docs = []
-                final_intent = None
-
-                try:
-                    stream = adapter.rag_chat_stream(
-                        query=query,
-                        top_k=resolved_top_k,
-                        image=image,
-                        chat_history=history,
-                        enable_score_filter=resolved_enable_score_filter,
-                        min_relevance_score=resolved_min_relevance_score,
-                        execution_hint=resolved_execution_hint,
-                        source_scope=source_scope,
-                    )
-                except TypeError:
-                    stream = adapter.rag_chat_stream(
-                        query=query,
-                        top_k=resolved_top_k,
-                        chat_history=history,
-                        enable_score_filter=resolved_enable_score_filter,
-                        min_relevance_score=resolved_min_relevance_score,
-                    )
-
-                async for event in stream:
-                    if len(event) == 3:
-                        chunk, docs, intent = event
-                    elif len(event) == 2:
-                        chunk, docs = event
-                        intent = None
-                    else:
-                        raise ValueError("Unsupported rag_chat_stream event shape")
-                    full_answer += chunk
-                    retrieved_docs = docs
-                    if intent is not None:
-                        final_intent = intent
-                        collector.set_metadata(
-                            execution_mode=intent.get("execution_mode"),
-                            presentation_mode=intent.get("presentation_mode"),
-                        )
-                    collector.mark_first_token()
-                    yield f"data: {json.dumps({'type': 'content', 'content': chunk})}\n\n"
-
-                retrieval_params = {
-                    "top_k": resolved_top_k,
-                    "has_image": image is not None,
-                    "query": query,
-                    "stream": True,
-                    "enable_score_filter": resolved_enable_score_filter,
-                    "min_relevance_score": resolved_min_relevance_score,
-                    "execution_hint": resolved_execution_hint,
-                    "source_scope": source_scope,
-                }
-                with collector.stage("chat_message_persist"):
-                    add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
-                    sources = _normalize_chat_sources(retrieved_docs)
-                    retrieval_steps = (final_intent or {}).get("retrieval_steps") or []
-                    assistant_retrieval_params = {
-                        **retrieval_params,
-                        "timings": TimingSummary.model_validate(collector.snapshot()).model_dump() if settings.EXPOSE_TIMINGS_IN_API else None,
-                    }
-                    add_message(
-                        db,
-                        session,
-                        "assistant",
-                        full_answer,
-                        sources=[source.model_dump() for source in sources],
-                        retrieval_params=assistant_retrieval_params,
-                        retrieval_steps=retrieval_steps,
-                    )
-
-                results_payload = {
-                    "type": "results",
-                    "results": [item.model_dump() for item in _build_results(retrieved_docs)],
-                    "sources": [source.model_dump() for source in sources],
-                    "retrieval_steps": retrieval_steps,
-                }
-                if settings.EXPOSE_TIMINGS_IN_API:
-                    results_payload["timings"] = TimingSummary.model_validate(collector.snapshot()).model_dump()
-                yield f"data: {json.dumps(results_payload)}\n\n"
-                yield "data: [DONE]\n\n"
-            finally:
-                collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
-
-    return StreamingResponse(event_generator(), media_type="text/event-stream")

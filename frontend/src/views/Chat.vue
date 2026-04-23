@@ -328,7 +328,7 @@ import { ElMessage } from "element-plus";
 import { Promotion } from "@element-plus/icons-vue";
 import type { InputInstance, UploadFile } from "element-plus";
 import { useRouter } from "vue-router";
-import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChat, type ChatSession } from "@/api/chat";
+import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChatStream, type ChatSession } from "@/api/chat";
 import { listDocuments } from "@/api/docs";
 import { listImages } from "@/api/kb";
 import { getSystemConfig } from "@/api/settings";
@@ -400,6 +400,7 @@ const previewTitle = ref("");
 const previewDescription = ref("");
 const messagesEndRef = ref<HTMLElement>();
 let loadSessionToken = 0;
+let scrollToBottomRaf = 0;
 
 const hasPendingSessions = computed(() => Object.keys(pendingSessions.value).length > 0);
 const isCurrentSessionPending = computed(() => {
@@ -1007,6 +1008,45 @@ function appendMessageToDraft(sessionId: string, message: Message) {
   };
 }
 
+function updateDraftMessage(sessionId: string, messageId: string | number, updater: (message: Message) => void) {
+  if (!sessionId) return;
+  const existing = sessionDrafts.value[sessionId];
+  if (!existing?.messages?.length) return;
+  const draftMessages = existing.messages.map(cloneMessage);
+  const target = draftMessages.find((message) => String(message.id) === String(messageId));
+  if (!target) return;
+  updater(target);
+  sessionDrafts.value[sessionId] = {
+    messages: draftMessages,
+    title: existing.title,
+  };
+}
+
+function removeDraftMessage(sessionId: string, messageId: string | number) {
+  if (!sessionId) return;
+  const existing = sessionDrafts.value[sessionId];
+  if (!existing?.messages?.length) return;
+  sessionDrafts.value[sessionId] = {
+    messages: existing.messages.filter((message) => String(message.id) !== String(messageId)).map(cloneMessage),
+    title: existing.title,
+  };
+}
+
+function renamePendingSessionKey(fromId: string, toId: string) {
+  if (!fromId || !toId || fromId === toId || !pendingSessions.value[fromId]) return;
+  const { [fromId]: pendingValue, ...restPending } = pendingSessions.value;
+  pendingSessions.value = {
+    ...restPending,
+    [toId]: pendingValue,
+  };
+}
+
+function moveSessionDraft(fromId: string, toId: string) {
+  if (!fromId || !toId || fromId === toId || !sessionDrafts.value[fromId]) return;
+  sessionDrafts.value[toId] = sessionDrafts.value[fromId];
+  delete sessionDrafts.value[fromId];
+}
+
 function getSessionDisplayTitle(sessionId: string, fallback?: string) {
   return sessionDrafts.value[sessionId]?.title || fallback || t("chat.newSession");
 }
@@ -1143,6 +1183,24 @@ async function doChat() {
   currentSessionTitle.value = getSessionDisplayTitle(sessionId, currentSessionTitle.value);
   saveSessionDraft(sessionId);
   const userQuery = query.value;
+  const requestImage = attachedImage.value;
+  const requestExecutionHint = effectiveExecutionHint.value;
+  const requestSourceScope = sourceScope.value;
+  const assistantMessageId = (Date.now() + 1).toString();
+  const assistantMessage: Message = {
+    id: assistantMessageId,
+    session_id: sessionId,
+    role: "assistant",
+    content: "",
+    created_at: new Date().toISOString(),
+    has_image: false,
+    sources: [],
+    retrieval_steps: [],
+    retrieval_params: null,
+    timings: null,
+  };
+  let effectiveSessionId = sessionId;
+  let streamCompleted = false;
   query.value = "";
 
   await nextTick();
@@ -1153,52 +1211,111 @@ async function doChat() {
       ...pendingSessions.value,
       [sessionId]: true,
     };
-    const response = await ragChat({
-      query: userQuery,
-      sessionId,
-      topK: chatTopK.value,
-      enableScoreFilter: chatEnableScoreFilter.value,
-      minRelevanceScore: chatMinRelevanceScore.value,
-      executionHint: effectiveExecutionHint.value,
-      sourceScope: sourceScope.value,
-      image: attachedImage.value,
-    });
+    messages.value.push(assistantMessage);
+    saveSessionDraft(sessionId);
+    streamingId.value = assistantMessageId;
 
-    const effectiveSessionId = response.session_id || sessionId;
-    currentSessionId.value = effectiveSessionId;
-
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      session_id: effectiveSessionId,
-      role: "assistant",
-      content: response.answer,
-      created_at: new Date().toISOString(),
-      has_image: false,
-      sources: response.sources || [],
-      presentation_mode: response.presentation_mode,
-      execution_mode: response.execution_mode,
-      use_rag: response.use_rag,
-      retrieval_steps: response.retrieval_steps || [],
-      retrieval_params: {
-        presentation_mode: response.presentation_mode,
-        execution_mode: response.execution_mode,
-        use_rag: response.use_rag,
-        top_k: chatTopK.value,
-        enable_score_filter: chatEnableScoreFilter.value,
-        min_relevance_score: chatMinRelevanceScore.value,
-        execution_hint: effectiveExecutionHint.value,
-        source_scope: sourceScope.value,
-        timings: response.timings || null,
-      },
-      timings: response.timings || null,
+    const appendAssistantContent = (targetSessionId: string, chunk: string) => {
+      if (!chunk) return;
+      if (currentSessionId.value === targetSessionId) {
+        const target = messages.value.find((message) => String(message.id) === assistantMessageId);
+        if (target) {
+          target.content += chunk;
+        }
+      } else {
+        updateDraftMessage(targetSessionId, assistantMessageId, (message) => {
+          message.content += chunk;
+        });
+      }
+      scheduleScrollToBottom();
     };
 
-    if (currentSessionId.value === effectiveSessionId) {
-      messages.value.push(assistantMessage);
-      saveSessionDraft(effectiveSessionId);
-    } else {
-      appendMessageToDraft(effectiveSessionId, assistantMessage);
-    }
+    const finalizeAssistantMessage = (targetSessionId: string, payload: {
+      sources: Message["sources"];
+      presentation_mode?: Message["presentation_mode"];
+      execution_mode?: Message["execution_mode"];
+      use_rag?: Message["use_rag"];
+      retrieval_steps?: Message["retrieval_steps"];
+      timings?: Message["timings"];
+    }) => {
+      const assignPayload = (message: Message) => {
+        message.session_id = targetSessionId;
+        message.sources = payload.sources || [];
+        message.presentation_mode = payload.presentation_mode;
+        message.execution_mode = payload.execution_mode;
+        message.use_rag = payload.use_rag;
+        message.retrieval_steps = payload.retrieval_steps || [];
+        message.retrieval_params = {
+          presentation_mode: payload.presentation_mode,
+          execution_mode: payload.execution_mode,
+          use_rag: payload.use_rag,
+          top_k: chatTopK.value,
+          enable_score_filter: chatEnableScoreFilter.value,
+          min_relevance_score: chatMinRelevanceScore.value,
+          execution_hint: requestExecutionHint,
+          source_scope: requestSourceScope,
+          timings: payload.timings || null,
+        };
+        message.timings = payload.timings || null;
+      };
+
+      if (currentSessionId.value === targetSessionId) {
+        const target = messages.value.find((message) => String(message.id) === assistantMessageId);
+        if (target) {
+          assignPayload(target);
+          saveSessionDraft(targetSessionId);
+        }
+      } else {
+        updateDraftMessage(targetSessionId, assistantMessageId, assignPayload);
+      }
+    };
+
+    await ragChatStream(
+      {
+        query: userQuery,
+        sessionId,
+        topK: chatTopK.value,
+        enableScoreFilter: chatEnableScoreFilter.value,
+        minRelevanceScore: chatMinRelevanceScore.value,
+        executionHint: requestExecutionHint,
+        sourceScope: requestSourceScope,
+        image: requestImage,
+      },
+      {
+        onSession: (event) => {
+          effectiveSessionId = event.session_id || sessionId;
+          if (effectiveSessionId !== sessionId) {
+            renamePendingSessionKey(sessionId, effectiveSessionId);
+            moveSessionDraft(sessionId, effectiveSessionId);
+          }
+          assistantMessage.session_id = effectiveSessionId;
+          if (currentSessionId.value === sessionId || !currentSessionId.value) {
+            currentSessionId.value = effectiveSessionId;
+          }
+          saveSessionDraft(effectiveSessionId);
+        },
+        onContent: (event) => {
+          appendAssistantContent(effectiveSessionId, event.content);
+        },
+        onResults: (event) => {
+          finalizeAssistantMessage(effectiveSessionId, {
+            sources: event.sources || [],
+            presentation_mode: event.presentation_mode,
+            execution_mode: event.execution_mode,
+            use_rag: event.use_rag,
+            retrieval_steps: event.retrieval_steps || [],
+            timings: event.timings || null,
+          });
+        },
+        onDone: () => {
+          streamCompleted = true;
+        },
+        onError: (event) => {
+          console.error("RAG 流式响应错误事件:", event);
+          throw new Error(event.detail || "流式响应失败");
+        },
+      },
+    );
 
     const userMsgCount = messages.value.filter((m) => m.role === "user").length;
     if (userMsgCount === 1) {
@@ -1212,17 +1329,36 @@ async function doChat() {
     scrollToBottom();
   } catch (e) {
     console.error("RAG 问答失败:", e);
+    const activeAssistant = messages.value.find((message) => String(message.id) === assistantMessageId);
+    const hasPartialContent = Boolean(activeAssistant && String(activeAssistant.content || "").trim());
+    if (activeAssistant && !hasPartialContent) {
+      messages.value = messages.value.filter((message) => String(message.id) !== assistantMessageId);
+      removeDraftMessage(effectiveSessionId, assistantMessageId);
+    } else if (effectiveSessionId && currentSessionId.value === effectiveSessionId) {
+      saveSessionDraft(effectiveSessionId);
+    }
     ElMessage.error(t("chat.chatFailed"));
   } finally {
-    const { [sessionId]: _completed, ...restPending } = pendingSessions.value;
+    const pendingKey = effectiveSessionId || sessionId;
+    const { [pendingKey]: _completed, [sessionId]: _legacyCompleted, ...restPending } = pendingSessions.value;
     pendingSessions.value = restPending;
-    streamingId.value = "";
+    if (streamCompleted || streamingId.value === assistantMessageId) {
+      streamingId.value = "";
+    }
     removeAttached();
   }
 }
 
 function scrollToBottom() {
   messagesEndRef.value?.scrollIntoView({ block: "end" });
+}
+
+function scheduleScrollToBottom() {
+  if (scrollToBottomRaf) return;
+  scrollToBottomRaf = window.requestAnimationFrame(() => {
+    scrollToBottomRaf = 0;
+    scrollToBottom();
+  });
 }
 
 function getSourceImageSrc(source: SourceItem): string {
@@ -1273,6 +1409,10 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("resize", updateViewportState);
+  if (scrollToBottomRaf) {
+    window.cancelAnimationFrame(scrollToBottomRaf);
+    scrollToBottomRaf = 0;
+  }
   saveSessionDraft(currentSessionId.value || "");
   revokeAttachedPreview();
   objectUrls.forEach((url) => URL.revokeObjectURL(url));

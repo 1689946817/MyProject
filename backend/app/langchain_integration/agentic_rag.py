@@ -780,6 +780,41 @@ async def run_agentic_multimodal_rag(
     has_uploaded_image: bool,
 ) -> Tuple[str, List[Dict[str, Any]], List[Dict[str, Any]]]:
     """运行最小 LangGraph 主链路，并返回兼容现有 adapter 的结果。"""
+    final_state, documents, _text_chunks, retrieval_steps = await prepare_agentic_multimodal_rag_context(
+        query=query,
+        top_k=top_k,
+        chat_history=chat_history,
+        enable_score_filter=enable_score_filter,
+        min_relevance_score=min_relevance_score,
+        rag_chain=rag_chain,
+        retriever=retriever,
+        doc_vector_store=doc_vector_store,
+        execution_mode=execution_mode,
+        presentation_mode=presentation_mode,
+        classifier_reason=classifier_reason,
+        has_uploaded_image=has_uploaded_image,
+    )
+
+    generated_state = await generate_answer(final_state, rag_chain=rag_chain)
+    return generated_state.get("answer", ""), documents, retrieval_steps
+
+
+async def prepare_agentic_multimodal_rag_context(
+    *,
+    query: str,
+    top_k: int,
+    chat_history: Optional[List[Tuple[str, str]]],
+    enable_score_filter: bool,
+    min_relevance_score: Optional[float],
+    rag_chain,
+    retriever,
+    doc_vector_store,
+    execution_mode: str,
+    presentation_mode: str,
+    classifier_reason: str,
+    has_uploaded_image: bool,
+) -> Tuple[AgenticRAGState, List[Dict[str, Any]], List[Any], List[Dict[str, Any]]]:
+    """运行检索/评分/纠错阶段，返回最终生成前的上下文。"""
     initial_state: AgenticRAGState = {
         "query": query,
         "chat_history": chat_history or [],
@@ -801,7 +836,7 @@ async def run_agentic_multimodal_rag(
             doc_vector_store=doc_vector_store,
             rag_chain=rag_chain,
         )
-        final_state = await graph.ainvoke(initial_state)
+        final_state = await graph.ainvoke(initial_state, interrupt_before=["generate"])
 
     collector = get_current_timing_collector()
     if collector is not None:
@@ -812,6 +847,7 @@ async def run_agentic_multimodal_rag(
         )
 
     documents = list(final_state.get("documents", []))
+    text_chunks = list(final_state.get("text_chunks", []))
     retrieval_steps = _build_agentic_retrieval_steps(
         query=query,
         top_k=top_k,
@@ -822,4 +858,4 @@ async def run_agentic_multimodal_rag(
         documents=documents,
         final_state=final_state,
     )
-    return final_state.get("answer", ""), documents, retrieval_steps
+    return final_state, documents, text_chunks, retrieval_steps
