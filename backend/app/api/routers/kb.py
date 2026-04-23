@@ -25,6 +25,7 @@ from app.langchain_integration.adapters import get_langchain_adapter
 
 
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
+SEARCH_KEYWORD_MAX_LENGTH = 4000
 
 
 @router.get("/list", response_model=List[ImageRecordOut])
@@ -32,7 +33,7 @@ async def list_images(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = Query(default=100, le=200),
-    keyword: Optional[str] = Query(default=None, max_length=100),
+    keyword: Optional[str] = Query(default=None, max_length=SEARCH_KEYWORD_MAX_LENGTH),
     status: Optional[str] = Query(default=None, max_length=30),
     enabled: Optional[bool] = None,
     source_dataset: Optional[str] = Query(default=None, max_length=100),

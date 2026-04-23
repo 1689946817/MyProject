@@ -30,6 +30,7 @@ from app.data.doc_models import DocumentRecord
 from app.langchain_integration.adapters import get_langchain_adapter
 
 router = APIRouter(prefix="/api/docs", tags=["documents"])
+SEARCH_KEYWORD_MAX_LENGTH = 4000
 
 
 @router.post("/upload", response_model=UploadDocumentResponse, response_model_exclude_none=True)
@@ -64,7 +65,7 @@ async def upload_document(
 def list_documents(
     skip: int = 0,
     limit: int = Query(default=50, le=200),
-    keyword: Optional[str] = Query(default=None, max_length=100),
+    keyword: Optional[str] = Query(default=None, max_length=SEARCH_KEYWORD_MAX_LENGTH),
     status: Optional[str] = Query(default=None, max_length=30),
     enabled: Optional[bool] = None,
     document_type: Optional[str] = Query(default=None, max_length=50),
