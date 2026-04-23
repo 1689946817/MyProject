@@ -2,7 +2,7 @@
   <div class="app-container" :class="{ 'is-dark': isDark, 'sidebar-collapsed': sidebarCollapsed && !isMobile }">
     <el-aside
       v-if="!isMobile"
-      :width="sidebarCollapsed ? '88px' : '240px'"
+      :width="sidebarCollapsed ? '56px' : '156px'"
       class="sidebar"
     >
       <div class="sidebar-header">
@@ -133,7 +133,7 @@
         </div>
       </el-header>
 
-      <el-main class="main-content">
+      <el-main class="main-content" :class="{ 'chat-mode': route.path === '/chat' }">
         <router-view v-slot="{ Component }">
           <transition name="fade-slide" mode="out-in">
             <component :is="Component" />
@@ -229,40 +229,44 @@ onUnmounted(() => {
   display: flex;
   height: 100vh;
   background: var(--bg-primary);
+  overflow: hidden;
 }
 
 .sidebar {
-  background: var(--bg-secondary);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.68)),
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 24%);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  box-shadow: 12px 0 32px rgba(15, 23, 42, 0.04);
+  box-shadow: 18px 0 52px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(20px);
   transition: width 0.24s ease;
 }
 
 .sidebar-header {
-  padding: 20px 18px 16px;
+  padding: 12px 8px 10px;
   border-bottom: 1px solid var(--border-color);
 }
 
 .logo-area {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
 }
 
 .logo-icon {
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 16px;
   color: var(--accent-primary);
-  background: var(--bg-accent-soft);
-  border-radius: 14px;
-  border: 1px solid rgba(37, 99, 235, 0.12);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(96, 165, 250, 0.07));
+  border-radius: 16px;
+  border: 1px solid rgba(37, 99, 235, 0.14);
   flex-shrink: 0;
 }
 
@@ -274,14 +278,15 @@ onUnmounted(() => {
 }
 
 .logo-text {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   white-space: nowrap;
   color: var(--text-primary);
 }
 
 .logo-subtitle {
-  font-size: 12px;
+  display: none;
   color: var(--text-tertiary);
 }
 
@@ -289,28 +294,30 @@ onUnmounted(() => {
   flex: 1;
   border-right: none;
   background: transparent;
-  padding: 14px 12px;
+  padding: 10px 6px;
 }
 
 .sidebar-menu :deep(.el-menu-item) {
-  height: 46px;
-  line-height: 46px;
-  margin: 6px 0;
-  border-radius: 12px;
+  height: 38px;
+  line-height: 38px;
+  margin: 4px 0;
+  border-radius: 10px;
   position: relative;
-  font-weight: 500;
-  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+  font-weight: 600;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .sidebar-menu :deep(.el-menu-item:hover) {
-  background: var(--bg-tertiary);
+  background: rgba(255, 255, 255, 0.7);
   transform: translateX(2px);
 }
 
 .sidebar-menu :deep(.el-menu-item.is-active) {
-  background: var(--bg-accent-soft);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(96, 165, 250, 0.06));
   color: var(--accent-primary);
-  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(37, 99, 235, 0.1),
+    0 12px 30px rgba(37, 99, 235, 0.08);
 }
 
 .sidebar-menu :deep(.el-menu-item.primary-nav-item) {
@@ -318,11 +325,11 @@ onUnmounted(() => {
 }
 
 .sidebar-menu :deep(.el-menu--collapse .el-menu-item) {
-  width: 56px;
-  height: 56px;
-  line-height: 56px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
   padding: 0 !important;
-  min-width: 56px;
+  min-width: 40px;
   margin-left: auto;
   margin-right: auto;
   display: block;
@@ -350,7 +357,7 @@ onUnmounted(() => {
 }
 
 .sidebar-footer {
-  padding: 16px 20px 20px;
+  padding: 10px 6px 10px;
   border-top: 1px solid var(--border-color);
 }
 
@@ -358,8 +365,12 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid var(--border-color);
 }
 
 .status-text {
@@ -371,17 +382,19 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
+  min-width: 0;
 }
 
 .main-header {
-  height: 68px;
-  background: rgba(255, 255, 255, 0.72);
+  height: 54px;
+  background: rgba(255, 255, 255, 0.62);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  backdrop-filter: blur(16px);
+  padding: 0 12px;
+  backdrop-filter: blur(18px);
+  flex-shrink: 0;
 }
 
 .is-dark .main-header {
@@ -396,27 +409,38 @@ onUnmounted(() => {
 }
 
 .header-btn {
-  min-height: 38px;
-  padding: 0 12px;
+  min-height: 32px;
+  padding: 0 10px;
   color: var(--text-secondary);
-  font-size: 14px;
-  border-radius: 12px;
+  font-size: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid transparent;
 }
 
 .header-btn:hover {
   color: var(--accent-primary);
-  background: var(--bg-tertiary);
+  background: rgba(255, 255, 255, 0.76);
+  border-color: var(--border-color);
 }
 
 .nav-trigger {
-  width: 42px;
+  width: 32px;
 }
 
 .main-content {
   flex: 1;
-  padding: 28px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 12px;
   overflow-y: auto;
   background: var(--bg-primary);
+  min-width: 0;
+}
+
+.main-content.chat-mode {
+  overflow-y: auto;
 }
 
 .drawer-header {
@@ -440,11 +464,11 @@ onUnmounted(() => {
 
 @media (max-width: 960px) {
   .main-header {
-    padding: 0 16px;
+    padding: 0 12px;
   }
 
   .main-content {
-    padding: 18px;
+    padding: 12px;
   }
 }
 </style>

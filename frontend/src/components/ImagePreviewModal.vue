@@ -116,8 +116,8 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(8px);
+  background: rgba(7, 12, 24, 0.78);
+  backdrop-filter: blur(14px);
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -131,10 +131,11 @@ onUnmounted(() => {
   max-height: 90vh;
   display: flex;
   gap: 24px;
-  background: var(--bg-secondary);
-  border-radius: 12px;
+  background: var(--accent-surface);
+  border-radius: 24px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.42);
+  backdrop-filter: blur(18px);
   overflow: hidden;
 }
 
@@ -159,7 +160,7 @@ onUnmounted(() => {
 
 .close-btn:hover {
   background: var(--accent-primary);
-  color: #000;
+  color: #fff;
 }
 
 .image-container {
@@ -177,8 +178,8 @@ onUnmounted(() => {
   max-width: 100%;
   max-height: 70vh;
   object-fit: contain;
-  border-radius: 4px;
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
 }
 
 .info-panel {
@@ -191,7 +192,8 @@ onUnmounted(() => {
 }
 
 .info-title {
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--text-primary);
   margin: 0 0 8px;
   word-break: break-all;

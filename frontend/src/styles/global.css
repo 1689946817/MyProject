@@ -33,7 +33,7 @@ body,
 }
 
 body {
-  font-family: "Inter", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   margin: 0;
@@ -41,6 +41,9 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.06), transparent 22%);
 }
 
 a {
@@ -62,10 +65,11 @@ select {
 }
 
 .glass-card {
-  background: var(--bg-elevated);
+  background: var(--accent-surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(18px);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -93,35 +97,48 @@ select {
 .page-shell {
   max-width: var(--page-max-width);
   margin: 0 auto;
+  width: 100%;
 }
 
 .page-intro {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(12px);
 }
 
 .page-intro-main {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
 }
 
 .page-title {
   margin: 0;
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .page-subtitle {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--text-secondary);
+  max-width: 680px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .surface-muted {
@@ -156,6 +173,7 @@ select {
   gap: 8px;
   font-size: 12px;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .status-dot {
@@ -205,4 +223,110 @@ select {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.workspace-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.workspace-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.6fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.workspace-hero-card {
+  padding: 22px 24px;
+}
+
+.workspace-hero-card .page-intro {
+  margin-bottom: 0;
+}
+
+.workspace-hero-metric {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+}
+
+.metric-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.metric-value {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.metric-caption {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.workspace-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.toolbar-surface {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.56);
+  backdrop-filter: blur(14px);
+}
+
+.field-surface :where(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-input-number__wrapper) {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 1100px) {
+  .workspace-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .page-intro-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .page-title {
+    font-size: 15px;
+  }
+
+  .page-subtitle {
+    white-space: normal;
+  }
+
+  .workspace-hero-card,
+  .workspace-hero-metric {
+    padding: 18px;
+  }
 }

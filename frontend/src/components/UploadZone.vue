@@ -131,13 +131,16 @@ defineExpose({
 
 <style scoped>
 .upload-zone {
-  border: 2px dashed var(--border-color);
-  border-radius: 16px;
-  padding: 32px;
+  border: 1.5px dashed rgba(37, 99, 235, 0.24);
+  border-radius: 22px;
+  padding: 34px 28px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
-  background: var(--bg-secondary);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 24%),
+    rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
 }
 
 .upload-zone:hover {
@@ -155,19 +158,19 @@ defineExpose({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .upload-icon {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
   color: var(--accent-primary);
   background: var(--bg-accent-soft);
-  border-radius: 16px;
+  border-radius: 18px;
   border: 1px solid rgba(37, 99, 235, 0.12);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -179,7 +182,8 @@ defineExpose({
 }
 
 .upload-text {
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
@@ -200,9 +204,9 @@ defineExpose({
 .file-item {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  background: var(--bg-tertiary);
-  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 14px;
   border: 1px solid var(--border-color);
   font-size: 13px;
   color: var(--text-primary);

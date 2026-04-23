@@ -7,23 +7,28 @@
       </div>
     </div>
 
-    <el-row :gutter="20" class="search-layout">
-      <el-col :xs="24" :lg="12">
-        <el-card class="search-card glass-card">
-          <template #header>
-            <div class="card-header">
-              <i class="i-ep-search mr-2 accent-icon"></i>
+    <div class="search-layout">
+      <el-card class="search-card workspace-card glass-card">
+        <template #header>
+          <div class="card-header">
+            <div class="card-header-main">
+              <i class="i-ep-search accent-icon"></i>
               <span>{{ t("search.textToImage") }}</span>
             </div>
-          </template>
+            <span class="card-header-note">{{ t("search.searchBtn") }}</span>
+          </div>
+        </template>
 
-          <el-input
-            v-model="textQuery"
-            :placeholder="t('search.textQueryPlaceholder')"
-            type="textarea"
-            :rows="3"
-            class="dark-input"
-          />
+        <div class="workspace-body">
+          <div class="workspace-surface text-surface">
+            <el-input
+              v-model="textQuery"
+              :placeholder="t('search.textQueryPlaceholder')"
+              type="textarea"
+              :rows="6"
+              class="dark-input workspace-input"
+            />
+          </div>
 
           <div class="advanced-toggle-row">
             <el-button text class="advanced-toggle" @click="textPanelOpen = !textPanelOpen">
@@ -56,7 +61,9 @@
               </div>
             </div>
           </el-collapse-transition>
+        </div>
 
+        <div class="workspace-footer">
           <el-button
             type="primary"
             class="search-btn"
@@ -66,66 +73,29 @@
             <i class="i-ep-search mr-2"></i>
             {{ t("search.searchBtn") }}
           </el-button>
+        </div>
+      </el-card>
 
-          <el-divider />
-
-          <div class="results-section">
-            <div class="results-head">
-              <h4 class="section-title">
-                <span v-if="textResults.length > 0">{{ t("search.similarity") }} ({{ textResults.length }})</span>
-                <span v-else>{{ t("search.noResults") }}</span>
-              </h4>
-              <el-alert
-                v-if="textFilterNotice"
-                :title="textFilterNotice"
-                type="info"
-                :closable="false"
-                show-icon
-                class="inline-alert"
-              />
-            </div>
-            <div v-if="textResults.length > 0" class="result-grid">
-              <div v-for="item in textResults" :key="item.id" class="search-image-item">
-                <div v-if="resultBadgeVisible(item)" class="search-image-badges">
-                  <el-tag v-if="assetTypeLabel(item)" size="small" type="primary" effect="dark">
-                    {{ assetTypeLabel(item) }}
-                  </el-tag>
-                  <el-tag v-if="pageLabel(item)" size="small" effect="plain">
-                    {{ pageLabel(item) }}
-                  </el-tag>
-                  <el-tag v-if="isCrossPageResult(item)" size="small" type="warning" effect="plain">
-                    {{ t("docs.crossPageContinued") }}
-                  </el-tag>
-                </div>
-                <ImageCard
-                  :src="getImageSrc(item.file_path || '')"
-                  :title="item.id"
-                  :description="item.description"
-                  :score-label="getScoreLabel(item)"
-                  @click="openPreview(item)"
-                />
-              </div>
-            </div>
-            <el-empty v-else-if="!loadingText" :description="t('search.noResults')" />
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :lg="12">
-        <el-card class="search-card glass-card">
-          <template #header>
-            <div class="card-header">
-              <i class="i-ep-picture mr-2 accent-icon"></i>
+      <el-card class="search-card workspace-card glass-card">
+        <template #header>
+          <div class="card-header">
+            <div class="card-header-main">
+              <i class="i-ep-picture accent-icon"></i>
               <span>{{ t("search.imageToImage") }}</span>
             </div>
-          </template>
+            <span class="card-header-note">{{ t("search.imageSearchBtn") }}</span>
+          </div>
+        </template>
 
-          <UploadZone
-            v-model:files="imageFiles"
-            :text="t('search.imageQueryPlaceholder')"
-            :accept="'image/*'"
-            :multiple="false"
-          />
+        <div class="workspace-body">
+          <div class="workspace-surface upload-surface">
+            <UploadZone
+              v-model:files="imageFiles"
+              :text="t('search.imageQueryPlaceholder')"
+              :accept="'image/*'"
+              :multiple="false"
+            />
+          </div>
 
           <div class="advanced-toggle-row">
             <el-button text class="advanced-toggle" @click="imagePanelOpen = !imagePanelOpen">
@@ -158,7 +128,9 @@
               </div>
             </div>
           </el-collapse-transition>
+        </div>
 
+        <div class="workspace-footer">
           <el-button
             type="primary"
             class="search-btn"
@@ -168,59 +140,102 @@
             <i class="i-ep-picture mr-2"></i>
             {{ t("search.imageSearchBtn") }}
           </el-button>
+        </div>
+      </el-card>
+    </div>
 
-          <div v-if="imageQueryDescription" class="query-desc-card">
-            <div class="query-desc-header">
-              <i class="i-ep-bot mr-2"></i>
-              <span>{{ t("search.queryDescription") }}</span>
-            </div>
-            <p class="query-desc-text">{{ imageQueryDescription }}</p>
+    <el-card class="results-card glass-card">
+      <template #header>
+        <div class="results-toolbar">
+          <div class="results-toolbar-main">
+            <div class="results-toolbar-title">{{ t("search.similarity") }}</div>
+            <div class="results-toolbar-subtitle">{{ activeResultLabel }}</div>
           </div>
-
-          <el-divider />
-
-          <div class="results-section">
-            <div class="results-head">
-              <h4 class="section-title">
-                <span v-if="imageResults.length > 0">{{ t("search.similarity") }} ({{ imageResults.length }})</span>
-                <span v-else>{{ t("search.noResults") }}</span>
-              </h4>
-              <el-alert
-                v-if="imageFilterNotice"
-                :title="imageFilterNotice"
-                type="info"
-                :closable="false"
-                show-icon
-                class="inline-alert"
-              />
-            </div>
-            <div v-if="imageResults.length > 0" class="result-grid">
-              <div v-for="item in imageResults" :key="item.id" class="search-image-item">
-                <div v-if="resultBadgeVisible(item)" class="search-image-badges">
-                  <el-tag v-if="assetTypeLabel(item)" size="small" type="primary" effect="dark">
-                    {{ assetTypeLabel(item) }}
-                  </el-tag>
-                  <el-tag v-if="pageLabel(item)" size="small" effect="plain">
-                    {{ pageLabel(item) }}
-                  </el-tag>
-                  <el-tag v-if="isCrossPageResult(item)" size="small" type="warning" effect="plain">
-                    {{ t("docs.crossPageContinued") }}
-                  </el-tag>
-                </div>
-                <ImageCard
-                  :src="getImageSrc(item.file_path || '')"
-                  :title="item.id"
-                  :description="item.description"
-                  :score-label="getScoreLabel(item)"
-                  @click="openPreview(item)"
-                />
-              </div>
-            </div>
-            <el-empty v-else-if="!loadingImage" :description="t('search.noResults')" />
+          <div class="results-mode-switch">
+            <button
+              type="button"
+              class="results-mode-btn"
+              :class="{ active: activeResultMode === 'text' }"
+              @click="activeResultMode = 'text'"
+            >
+              <i class="i-ep-search"></i>
+              <span>{{ t("search.textToImage") }}</span>
+              <span class="mode-count">{{ textResults.length }}</span>
+            </button>
+            <button
+              type="button"
+              class="results-mode-btn"
+              :class="{ active: activeResultMode === 'image' }"
+              @click="activeResultMode = 'image'"
+            >
+              <i class="i-ep-picture"></i>
+              <span>{{ t("search.imageToImage") }}</span>
+              <span class="mode-count">{{ imageResults.length }}</span>
+            </button>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </template>
+
+      <div class="results-section unified-results">
+        <div v-if="activeResultMode === 'image' && imageQueryDescription" class="query-desc-card">
+          <div class="query-desc-header">
+            <i class="i-ep-bot mr-2"></i>
+            <span>{{ t("search.queryDescription") }}</span>
+          </div>
+          <p class="query-desc-text">{{ imageQueryDescription }}</p>
+        </div>
+
+        <div class="results-head">
+          <h4 class="section-title">
+            <span v-if="activeResults.length > 0">{{ t("search.similarity") }} ({{ activeResults.length }})</span>
+            <span v-else-if="hasAnySearch">{{ t("search.noResults") }}</span>
+            <span v-else>{{ activeResultLabel }}</span>
+          </h4>
+          <el-alert
+            v-if="activeFilterNotice"
+            :title="activeFilterNotice"
+            type="info"
+            :closable="false"
+            show-icon
+            class="inline-alert"
+          />
+        </div>
+
+        <div v-if="activeResults.length > 0" class="result-grid">
+          <div v-for="item in activeResults" :key="item.id" class="search-image-item">
+            <div v-if="resultBadgeVisible(item)" class="search-image-badges">
+              <el-tag v-if="assetTypeLabel(item)" size="small" type="primary" effect="dark">
+                {{ assetTypeLabel(item) }}
+              </el-tag>
+              <el-tag v-if="pageLabel(item)" size="small" effect="plain">
+                {{ pageLabel(item) }}
+              </el-tag>
+              <el-tag v-if="isCrossPageResult(item)" size="small" type="warning" effect="plain">
+                {{ t("docs.crossPageContinued") }}
+              </el-tag>
+            </div>
+            <ImageCard
+              :src="getImageSrc(item.file_path || '')"
+              :title="item.id"
+              :description="item.description"
+              :score-label="getScoreLabel(item)"
+              @click="openPreview(item)"
+            />
+          </div>
+        </div>
+        <div v-else-if="activeLoading" class="results-loading">
+          <i class="i-ep-loading"></i>
+          <span>{{ activeResultLabel }}</span>
+        </div>
+        <div v-else-if="hasAnySearch" class="results-empty-state">
+          <el-empty :description="t('search.noResults')" />
+        </div>
+        <div v-else class="results-placeholder">
+          <div class="results-placeholder-title">{{ activeResultLabel }}</div>
+          <p>{{ activeResultMode === "text" ? t("search.textQueryPlaceholder") : t("search.imageQueryPlaceholder") }}</p>
+        </div>
+      </div>
+    </el-card>
 
     <ImagePreviewModal
       v-model:visible="previewVisible"
@@ -260,6 +275,7 @@ const textDefaultTopK = ref(10);
 const textDefaultEnableScoreFilter = ref(false);
 const textDefaultMinRelevanceScore = ref(0);
 const textPanelOpen = ref(false);
+const textSearched = ref(false);
 
 const imageFiles = ref<File[]>([]);
 const imageResults = ref<SearchResultItem[]>([]);
@@ -269,6 +285,8 @@ const imageTopK = ref(10);
 const imageEnableScoreFilter = ref(false);
 const imageMinRelevanceScore = ref(0);
 const imagePanelOpen = ref(false);
+const imageSearched = ref(false);
+const activeResultMode = ref<"text" | "image">("text");
 
 const previewVisible = ref(false);
 const previewItem = ref<SearchResultItem | null>(null);
@@ -300,6 +318,21 @@ const textFilterNotice = computed(() =>
 );
 const imageFilterNotice = computed(() =>
   buildFilterNotice(imageResults.value, imageEnableScoreFilter.value),
+);
+const activeResults = computed(() =>
+  activeResultMode.value === "text" ? textResults.value : imageResults.value,
+);
+const activeLoading = computed(() =>
+  activeResultMode.value === "text" ? loadingText.value : loadingImage.value,
+);
+const activeFilterNotice = computed(() =>
+  activeResultMode.value === "text" ? textFilterNotice.value : imageFilterNotice.value,
+);
+const activeResultLabel = computed(() =>
+  activeResultMode.value === "text" ? t("search.textToImage") : t("search.imageToImage"),
+);
+const hasAnySearch = computed(() =>
+  textSearched.value || imageSearched.value,
 );
 
 watch([textTopK, textEnableScoreFilter, textMinRelevanceScore], () => {
@@ -424,6 +457,8 @@ async function doTextSearch() {
     return;
   }
   try {
+    activeResultMode.value = "text";
+    textSearched.value = true;
     loadingText.value = true;
     const resp = await textToImageSearch(textQuery.value, {
       topK: textTopK.value,
@@ -446,6 +481,8 @@ async function doImageSearch() {
     return;
   }
   try {
+    activeResultMode.value = "image";
+    imageSearched.value = true;
     loadingImage.value = true;
     const resp = await imageToImageSearch(file, {
       topK: imageTopK.value,
@@ -490,29 +527,53 @@ onMounted(() => {
 
 <style scoped>
 .search-page {
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .search-layout {
-  row-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
 }
 
 .search-card {
-  height: calc(100vh - 220px);
+  min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.workspace-card {
+  min-height: 0;
 }
 
 .search-card :deep(.el-card__body) {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
+  padding: 22px;
 }
 
 .card-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-header-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header-note {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
 }
 
 .accent-icon {
@@ -520,27 +581,70 @@ onMounted(() => {
   font-size: 18px;
 }
 
+.workspace-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.workspace-surface {
+  min-height: 232px;
+  padding: 14px;
+  border-radius: 22px;
+  border: 1px solid var(--border-color);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 32%),
+    rgba(255, 255, 255, 0.8);
+}
+
+.text-surface {
+  display: flex;
+}
+
+.upload-surface {
+  display: flex;
+  align-items: stretch;
+}
+
+.upload-surface :deep(.upload-zone) {
+  width: 100%;
+  min-height: 100%;
+}
+
+.workspace-footer {
+  margin-top: 14px;
+}
+
 .dark-input :deep(.el-textarea__inner) {
   background: var(--bg-tertiary);
   border-color: var(--border-color);
   color: var(--text-primary);
+  min-height: 200px !important;
+  box-shadow: none;
+  padding: 16px 18px;
+  border-radius: 18px;
 }
 
 .dark-input :deep(.el-textarea__inner:focus) {
   border-color: var(--accent-primary);
 }
 
+.workspace-input {
+  flex: 1;
+}
+
 .advanced-toggle-row {
-  margin-top: 14px;
+  margin-top: auto;
 }
 
 .advanced-toggle {
   width: 100%;
   justify-content: space-between;
-  border-radius: 14px;
-  padding: 10px 12px;
+  border-radius: 16px;
+  padding: 12px 14px;
   color: var(--text-secondary);
-  background: var(--bg-tertiary);
+  background: rgba(255, 255, 255, 0.74);
   border: 1px solid var(--border-color);
 }
 
@@ -558,9 +662,9 @@ onMounted(() => {
 
 .advanced-panel {
   margin-top: 12px;
-  padding: 14px;
-  border-radius: 16px;
-  background: var(--bg-tertiary);
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--border-color);
 }
 
@@ -586,13 +690,86 @@ onMounted(() => {
 }
 
 .search-btn {
-  margin-top: 16px;
   width: 100%;
+  min-height: 44px;
+  border-radius: 14px;
+}
+
+.results-card :deep(.el-card__body) {
+  padding: 20px 22px 22px;
+}
+
+.results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.results-toolbar-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.results-toolbar-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.results-toolbar-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.results-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.results-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.results-mode-btn.active {
+  border-color: rgba(37, 99, 235, 0.18);
+  background: var(--bg-accent-soft);
+  color: var(--accent-primary);
+}
+
+.mode-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  font-size: 11px;
+  color: inherit;
 }
 
 .results-section {
-  flex: 1;
-  overflow-y: auto;
+  padding-top: 4px;
+}
+
+.unified-results {
+  min-height: 340px;
 }
 
 .results-head {
@@ -632,10 +809,10 @@ onMounted(() => {
 }
 
 .query-desc-card {
-  margin-top: 16px;
-  padding: 12px;
-  background: var(--bg-tertiary);
-  border-radius: 14px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.74);
+  border-radius: 16px;
   border: 1px solid var(--border-color);
 }
 
@@ -654,7 +831,47 @@ onMounted(() => {
   line-height: 1.5;
 }
 
+.results-loading,
+.results-placeholder {
+  min-height: 260px;
+  border: 1px dashed var(--border-color);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 24px;
+}
+
+.results-loading {
+  color: var(--accent-primary);
+}
+
+.results-placeholder-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.results-placeholder p {
+  max-width: 520px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.results-empty-state {
+  padding-top: 18px;
+}
+
 @media (max-width: 1100px) {
+  .search-layout {
+    grid-template-columns: 1fr;
+  }
+
   .advanced-grid {
     grid-template-columns: 1fr;
   }
@@ -662,8 +879,7 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .search-card {
-    height: auto;
-    min-height: 540px;
+    min-height: 0;
   }
 
   .advanced-toggle {
@@ -673,6 +889,19 @@ onMounted(() => {
 
   .advanced-summary {
     white-space: normal;
+  }
+
+  .results-toolbar {
+    align-items: flex-start;
+  }
+
+  .results-mode-switch {
+    width: 100%;
+  }
+
+  .results-mode-btn {
+    flex: 1 1 calc(50% - 4px);
+    justify-content: center;
   }
 }
 </style>

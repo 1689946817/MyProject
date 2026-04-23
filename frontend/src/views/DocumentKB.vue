@@ -558,8 +558,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .doc-kb {
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .card-header {
@@ -575,14 +576,16 @@ onBeforeUnmount(() => {
 .upload-btn {
   margin-top: 16px;
   width: 100%;
+  min-height: 44px;
+  border-radius: 14px;
 }
 
 .upload-progress-panel {
   margin-top: 16px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: var(--bg-secondary);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.76);
 }
 
 .progress-header {

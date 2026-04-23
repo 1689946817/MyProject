@@ -114,7 +114,7 @@ defineExpose({
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 12px;
+  gap: 10px;
 }
 
 .session-list.compact {
@@ -135,12 +135,12 @@ defineExpose({
 }
 
 .toolbar-btn {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--border-color);
-  background: var(--bg-tertiary);
+  background: rgba(255, 255, 255, 0.68);
   color: var(--text-secondary);
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -157,9 +157,10 @@ defineExpose({
 
 .new-session-btn {
   width: 100%;
-  padding: 12px 16px;
+  padding: 13px 16px;
   font-size: 14px;
   font-weight: 600;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.18);
 }
 
 .sessions {
@@ -172,26 +173,26 @@ defineExpose({
 }
 
 .session-item {
-  padding: 14px;
-  border-radius: 14px;
+  padding: 14px 14px 14px 16px;
+  border-radius: 18px;
   cursor: pointer;
   position: relative;
   transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--border-color);
-  box-shadow: none;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
 }
 
 .session-item:hover {
-  background: var(--bg-tertiary);
+  background: rgba(255, 255, 255, 0.92);
   border-color: var(--border-strong);
   transform: translateY(-1px);
 }
 
 .session-item.is-active {
-  background: var(--bg-accent-soft);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.05));
   border-color: rgba(37, 99, 235, 0.2);
-  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.12);
 }
 
 .session-content {
@@ -200,7 +201,7 @@ defineExpose({
 
 .session-title {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 6px;
   overflow: hidden;
@@ -233,7 +234,7 @@ defineExpose({
   width: 30px;
   height: 30px;
   border: none;
-  background: var(--bg-elevated);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--text-secondary);
   border-radius: 10px;
   cursor: pointer;

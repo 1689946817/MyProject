@@ -185,18 +185,19 @@ function formatDuration(value: number): string {
 <style scoped>
 .qa-process-card {
   margin-top: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 20px;
   background:
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 34%),
-    linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(241, 245, 249, 0.96));
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.96));
   overflow: hidden;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
 }
 
 .qa-process-summary {
   list-style: none;
   cursor: pointer;
-  padding: 14px 16px;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -247,7 +248,7 @@ function formatDuration(value: number): string {
 }
 
 .qa-process-content {
-  padding: 0 16px 16px;
+  padding: 0 18px 18px;
 }
 
 .qa-process-overview {

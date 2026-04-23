@@ -342,21 +342,24 @@ function statusLabel(status: string) {
 
 <style scoped>
 .kb-page {
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .upload-card {
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .upload-btn {
   margin-top: 16px;
   width: 100%;
+  min-height: 44px;
+  border-radius: 14px;
 }
 
 .images-card {
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .card-header,
@@ -376,8 +379,8 @@ function statusLabel(status: string) {
 
 .image-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .grid-item {

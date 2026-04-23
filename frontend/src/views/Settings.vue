@@ -273,23 +273,29 @@ onBeforeUnmount(() => {
 .settings-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .page-intro-actions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
 }
 
+.page-intro-actions :deep(.el-button) {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+}
+
 .save-alert {
-  border-radius: 16px;
+  border-radius: 18px;
 }
 
 .settings-groups {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .group-card {
@@ -299,14 +305,15 @@ onBeforeUnmount(() => {
 .config-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .config-row {
   display: grid;
   grid-template-columns: minmax(240px, 1.4fr) minmax(240px, 1fr);
-  gap: 20px;
+  gap: 18px;
   padding: 18px;
+  border-radius: 18px;
 }
 
 .config-copy {

@@ -71,7 +71,7 @@ function onImgError(e: Event) {
 .image-card {
   overflow: hidden;
   cursor: pointer;
-  border-radius: 16px;
+  border-radius: 20px;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -84,9 +84,9 @@ function onImgError(e: Event) {
 .card-image-wrapper {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 196px;
   overflow: hidden;
-  background: var(--bg-tertiary);
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(15,23,42,0.06));
 }
 
 .card-image {
@@ -207,12 +207,12 @@ function onImgError(e: Event) {
 }
 
 .card-info {
-  padding: 14px;
+  padding: 14px 15px 16px;
 }
 
 .card-title {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--text-primary);
   margin: 0;
   white-space: nowrap;

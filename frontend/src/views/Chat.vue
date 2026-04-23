@@ -1,20 +1,9 @@
 <template>
   <div class="chat-page page-shell">
-    <div class="page-intro">
-      <div class="page-intro-main">
-        <h1 class="page-title">{{ t("chat.title") }}</h1>
-        <p class="page-subtitle">{{ t("chat.emptySubtitle") }}</p>
-      </div>
-      <div class="status-inline">
-        <span class="status-dot" :class="hasPendingSessions ? 'warning' : 'success'"></span>
-        <span>{{ hasPendingSessions ? t("chat.thinking") : t("app.connectionOk") }}</span>
-      </div>
-    </div>
-
-    <div class="chat-shell" :class="{ compact: !isMobile && !historyPanelOpen }">
-      <aside v-if="!isMobile" class="history-panel" :class="{ collapsed: !historyPanelOpen }">
-        <div v-if="historyPanelOpen" class="history-panel-card glass-card">
-          <div class="history-panel-head">
+    <div class="chat-shell">
+      <el-drawer v-model="historyDrawerOpen" direction="rtl" size="340px" :with-header="false" class="history-drawer">
+        <div class="history-drawer-body">
+          <div class="history-panel-head drawer-head">
             <div>
               <div class="history-title">{{ t("chat.history") }}</div>
               <div class="history-subtitle">{{ sessions.length }} {{ t("chat.history") }}</div>
@@ -25,57 +14,15 @@
             :sessions="sessions"
             :active-id="currentSessionId"
             :collapsed="false"
-            @select="selectSession"
-            @create="handleCreateSession"
-            @rename="handleRenameSession"
-            @update-title="updateSessionTitle"
-            @delete="handleDeleteSession"
-            @toggle-collapse="historyPanelOpen = false"
-          />
-        </div>
-        <div v-else class="history-rail glass-card">
-          <SessionList
-            :sessions="sessions"
-            :active-id="currentSessionId"
-            :collapsed="true"
-            @create="handleCreateSession"
-            @toggle-collapse="historyPanelOpen = true"
-          />
-        </div>
-      </aside>
-
-      <el-drawer v-model="mobileHistoryOpen" direction="ltr" size="320px" :with-header="false" class="history-drawer">
-        <div class="history-drawer-body">
-          <div class="history-panel-head drawer-head">
-            <div>
-              <div class="history-title">{{ t("chat.history") }}</div>
-              <div class="history-subtitle">{{ sessions.length }} {{ t("chat.history") }}</div>
-            </div>
-          </div>
-          <SessionList
-            ref="mobileSessionListRef"
-            :sessions="sessions"
-            :active-id="currentSessionId"
-            :collapsed="false"
             @select="selectSessionFromDrawer"
             @create="handleCreateSession"
             @rename="handleRenameSession"
             @update-title="updateSessionTitle"
             @delete="handleDeleteSession"
-            @toggle-collapse="mobileHistoryOpen = false"
+            @toggle-collapse="historyDrawerOpen = false"
           />
         </div>
       </el-drawer>
-
-      <div v-if="isMobile" class="mobile-history-rail">
-        <SessionList
-          :sessions="sessions"
-          :active-id="currentSessionId"
-          :collapsed="true"
-          @create="handleCreateSession"
-          @toggle-collapse="mobileHistoryOpen = true"
-        />
-      </div>
 
       <section class="chat-main">
         <el-card class="chat-panel glass-card">
@@ -84,16 +31,22 @@
               <div class="chat-header-main">
                 <span class="chat-title">{{ currentSessionTitle || t("chat.title") }}</span>
               </div>
+              <div class="chat-header-tools">
+                <el-button text class="history-trigger-btn" @click="historyDrawerOpen = true">
+                  <i class="i-ep-chat-line-square"></i>
+                  <span>{{ t("chat.history") }}</span>
+                </el-button>
+              </div>
             </div>
           </template>
 
-          <div ref="messagesContainer" class="messages-container">
+          <div class="messages-container">
             <div v-if="messages.length === 0" class="empty-chat">
               <div class="empty-icon"><i class="i-ep-chat-dot-round"></i></div>
               <h3>{{ t("chat.emptyTitle") }}</h3>
               <p>{{ t("chat.emptySubtitle") }}</p>
               <div class="empty-actions">
-                <el-button type="primary" class="empty-action-btn" @click="router.push('/search')">
+                <el-button class="empty-action-btn" @click="router.push('/search')">
                   <i class="i-ep-search mr-1"></i>{{ t("chat.quickSearch") }}
                 </el-button>
                 <el-button class="empty-action-btn" @click="router.push('/kb')">
@@ -107,18 +60,29 @@
 
             <div v-else class="messages-list">
               <div
-                v-for="msg in messages"
+                v-for="(msg, index) in messages"
                 :key="msg.id"
                 class="message-item"
                 :class="[msg.role, msg.role === 'assistant' ? `mode-${getPresentationMode(msg)}` : '']"
               >
                 <div class="message-avatar">
-                  <i v-if="msg.role === 'user'" class="i-ep-user"></i>
-                  <i v-else class="i-ep-bot"></i>
+                  <template v-if="msg.role === 'user'">
+                    <span class="avatar-ring"></span>
+                    <i class="i-ep-user"></i>
+                  </template>
+                  <template v-else>
+                    <span class="avatar-ring"></span>
+                    <span class="assistant-avatar-mark">KB</span>
+                  </template>
                 </div>
                 <div class="message-content">
+                  <div class="message-head">
+                    <span class="message-author">{{ getMessageAuthor(msg) }}</span>
+                    <span v-if="msg.role === 'assistant'" class="message-role-note">{{ t("chat.assistantRoleNote") }}</span>
+                  </div>
                   <div class="message-bubble">
                     <div v-if="msg.role === 'assistant'" class="assistant-meta">
+                      <span class="assistant-name">{{ t("chat.assistantName") }}</span>
                       <span class="assistant-mode-badge">{{ getModeLabel(msg) }}</span>
                     </div>
                     <div v-if="msg.role === 'user' && (msg.local_image_url || msg.has_image)" class="user-attachment-card">
@@ -135,6 +99,10 @@
                           <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">{{ getSourcePageLabel(source) }}</span>
                           <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">{{ getSourceScoreLabel(source) }}</span>
                           <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">{{ t("docs.crossPageContinued") }}</span>
+                        </div>
+                        <div class="ref-image-overlay">
+                          <i class="i-ep-zoom-in"></i>
+                          <span>{{ t("chat.previewImage") }}</span>
                         </div>
                         <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
@@ -162,14 +130,35 @@
                           <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">{{ getSourceScoreLabel(source) }}</span>
                           <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">{{ t("docs.crossPageContinued") }}</span>
                         </div>
+                        <div class="ref-image-overlay">
+                          <i class="i-ep-zoom-in"></i>
+                          <span>{{ t("chat.previewImage") }}</span>
+                        </div>
                         <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
                     </div>
                   </div>
-                  <span class="message-time">{{ formatTime(msg.created_at) }}</span>
+                  <div class="message-footer">
+                    <div class="message-actions">
+                      <button type="button" class="message-action-btn" @click="copyMessage(msg)">
+                        <i class="i-ep-document-copy"></i>
+                        <span>{{ t("chat.copyMessage") }}</span>
+                      </button>
+                      <button type="button" class="message-action-btn" @click="quoteMessage(msg)">
+                        <i class="i-ep-chat-line-round"></i>
+                        <span>{{ t("chat.quoteMessage") }}</span>
+                      </button>
+                      <button type="button" class="message-action-btn" @click="resendMessage(msg, index)">
+                        <i class="i-ep-refresh-right"></i>
+                        <span>{{ msg.role === "assistant" ? t("chat.resendQuestion") : t("chat.resendMessage") }}</span>
+                      </button>
+                    </div>
+                    <span class="message-time">{{ formatTime(msg.created_at) }}</span>
+                  </div>
                 </div>
               </div>
             </div>
+            <div ref="messagesEndRef" class="messages-end-anchor"></div>
           </div>
 
           <div class="input-area">
@@ -227,6 +216,7 @@
                 </div>
               </el-popover>
               <el-input
+                ref="composerInputRef"
                 v-model="query"
                 :placeholder="t('chat.inputPlaceholder')"
                 class="chat-input"
@@ -241,41 +231,44 @@
                 <el-icon v-if="!isCurrentSessionPending"><Promotion /></el-icon>
               </el-button>
             </div>
-            <div v-if="selectedSources.length > 0 || effectiveExecutionHint" class="input-context-row">
-              <el-tag
-                v-if="effectiveExecutionHint"
-                type="warning"
-                effect="plain"
-                round
-              >
-                {{ t("chat.activeMode") }}：{{ effectiveExecutionHint }}
-              </el-tag>
-              <el-tag
-                v-for="(source, index) in selectedSources"
-                :key="`${source.type}-${source.id}`"
-                closable
-                effect="plain"
-                round
-                @close="removeSourceChip(index)"
-              >
-                {{ source.type === "doc" ? t("chat.sourceDoc") : t("chat.sourceImage") }}：{{ source.title }}
-              </el-tag>
-            </div>
-            <div v-if="visibleSlashCommands.length > 0" class="slash-panel">
-              <button
-                v-for="command in visibleSlashCommands"
-                :key="command.command"
-                class="slash-option"
-                type="button"
-                @click="applySlashCommand(command)"
-              >
-                <span class="slash-command">{{ command.command }}</span>
-                <span class="slash-desc">{{ command.description }}</span>
-              </button>
-            </div>
-            <div v-else-if="isSlashMode" class="slash-status" :class="{ invalid: hasInvalidSlashCommand }">
-              <span v-if="activeSlashCommand">{{ t("chat.commandPreview", { command: activeSlashCommand.command }) }} {{ activeSlashCommand.description }}</span>
-              <span v-else>{{ t("chat.commandInvalidHint") }}</span>
+            <div v-if="selectedSources.length > 0 || effectiveExecutionHint || visibleSlashCommands.length > 0 || isSlashMode" class="composer-tools">
+              <div class="composer-tools-head">{{ t("chat.composerTools") }}</div>
+              <div v-if="selectedSources.length > 0 || effectiveExecutionHint" class="input-context-row">
+                <el-tag
+                  v-if="effectiveExecutionHint"
+                  type="warning"
+                  effect="plain"
+                  round
+                >
+                  {{ t("chat.activeMode") }}：{{ effectiveExecutionHint }}
+                </el-tag>
+                <el-tag
+                  v-for="(source, index) in selectedSources"
+                  :key="`${source.type}-${source.id}`"
+                  closable
+                  effect="plain"
+                  round
+                  @close="removeSourceChip(index)"
+                >
+                  {{ source.type === "doc" ? t("chat.sourceDoc") : t("chat.sourceImage") }}：{{ source.title }}
+                </el-tag>
+              </div>
+              <div v-if="visibleSlashCommands.length > 0" class="slash-panel">
+                <button
+                  v-for="command in visibleSlashCommands"
+                  :key="command.command"
+                  class="slash-option"
+                  type="button"
+                  @click="applySlashCommand(command)"
+                >
+                  <span class="slash-command">{{ command.command }}</span>
+                  <span class="slash-desc">{{ command.description }}</span>
+                </button>
+              </div>
+              <div v-else-if="isSlashMode" class="slash-status" :class="{ invalid: hasInvalidSlashCommand }">
+                <span v-if="activeSlashCommand">{{ t("chat.commandPreview", { command: activeSlashCommand.command }) }} {{ activeSlashCommand.description }}</span>
+                <span v-else>{{ t("chat.commandInvalidHint") }}</span>
+              </div>
             </div>
             <div class="input-hint">{{ t("chat.inputHint") }}</div>
             <div class="settings-toggle-row">
@@ -333,7 +326,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { Promotion } from "@element-plus/icons-vue";
-import type { UploadFile } from "element-plus";
+import type { InputInstance, UploadFile } from "element-plus";
 import { useRouter } from "vue-router";
 import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChat, type ChatSession } from "@/api/chat";
 import { listDocuments } from "@/api/docs";
@@ -395,18 +388,17 @@ const chatDefaultTopK = ref(5);
 const chatDefaultEnableScoreFilter = ref(false);
 const chatDefaultMinRelevanceScore = ref(0);
 const settingsPanelOpen = ref(false);
-const historyPanelOpen = ref(true);
-const mobileHistoryOpen = ref(false);
+const historyDrawerOpen = ref(false);
 const isMobile = ref(false);
 const sessionListRef = ref<InstanceType<typeof SessionList>>();
-const mobileSessionListRef = ref<InstanceType<typeof SessionList>>();
+const composerInputRef = ref<InputInstance>();
 const sessionDrafts = ref<Record<string, { messages: Message[]; title: string }>>({});
 const objectUrls = new Set<string>();
 const previewVisible = ref(false);
 const previewSrc = ref("");
 const previewTitle = ref("");
 const previewDescription = ref("");
-const messagesContainer = ref<HTMLElement>();
+const messagesEndRef = ref<HTMLElement>();
 let loadSessionToken = 0;
 
 const hasPendingSessions = computed(() => Object.keys(pendingSessions.value).length > 0);
@@ -664,9 +656,6 @@ watch(query, (value, oldValue) => {
 
 function updateViewportState() {
   isMobile.value = window.innerWidth < 1100;
-  if (isMobile.value) {
-    historyPanelOpen.value = false;
-  }
 }
 
 async function loadSourceCandidates(keyword = "") {
@@ -753,6 +742,91 @@ function handleInputKeydown(event: KeyboardEvent) {
   }
 }
 
+function getMessageAuthor(msg: Message): string {
+  return msg.role === "assistant" ? t("chat.assistantName") : t("chat.userName");
+}
+
+function getCopyableMessageText(msg: Message): string {
+  return String(msg.content || "").trim();
+}
+
+async function copyMessage(msg: Message) {
+  const text = getCopyableMessageText(msg);
+  if (!text) {
+    ElMessage.warning(t("chat.copyEmpty"));
+    return;
+  }
+  try {
+    if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    ElMessage.success(t("chat.copySuccess"));
+  } catch (error) {
+    console.error("复制消息失败:", error);
+    ElMessage.error(t("chat.copyFailed"));
+  }
+}
+
+function buildQuotedMessage(text: string): string {
+  return text
+    .split("\n")
+    .map((line) => `> ${line}`)
+    .join("\n");
+}
+
+function focusComposer() {
+  nextTick(() => {
+    composerInputRef.value?.focus?.();
+  });
+}
+
+function quoteMessage(msg: Message) {
+  const text = getCopyableMessageText(msg);
+  if (!text) {
+    ElMessage.warning(t("chat.copyEmpty"));
+    return;
+  }
+  const quoted = buildQuotedMessage(text);
+  query.value = query.value.trim()
+    ? `${query.value.trim()}\n\n${quoted}\n`
+    : `${quoted}\n`;
+  focusComposer();
+  ElMessage.success(t("chat.quoteAdded"));
+}
+
+function getRelatedUserMessage(index: number): Message | undefined {
+  for (let current = index; current >= 0; current -= 1) {
+    const candidate = messages.value[current];
+    if (candidate?.role === "user" && String(candidate.content || "").trim()) {
+      return candidate;
+    }
+  }
+  return undefined;
+}
+
+async function resendMessage(msg: Message, index: number) {
+  const sourceMessage = msg.role === "user" ? msg : getRelatedUserMessage(index);
+  const text = String(sourceMessage?.content || "").trim();
+  if (!text) {
+    ElMessage.warning(t("chat.resendUnavailable"));
+    return;
+  }
+  query.value = text;
+  focusComposer();
+  await nextTick();
+  await doChat();
+}
+
 async function loadSessions() {
   try {
     sessions.value = await getSessions();
@@ -792,7 +866,7 @@ function selectSession(id: string) {
 }
 
 function selectSessionFromDrawer(id: string) {
-  mobileHistoryOpen.value = false;
+  historyDrawerOpen.value = false;
   selectSession(id);
 }
 
@@ -814,9 +888,7 @@ async function handleCreateSession() {
     sessions.value.unshift(session);
     currentSessionTitle.value = session.title || t("chat.newSession");
     currentSessionId.value = session.id;
-    if (!isMobile.value) {
-      historyPanelOpen.value = true;
-    }
+    historyDrawerOpen.value = false;
   } catch (e) {
     console.error("创建会话失败:", e);
     ElMessage.error("创建会话失败");
@@ -827,7 +899,6 @@ function handleRenameSession(id: string) {
   const session = sessions.value.find((s) => s.id === id);
   if (session) {
     sessionListRef.value?.openRenameDialog(id, session.title || "");
-    mobileSessionListRef.value?.openRenameDialog(id, session.title || "");
   }
 }
 
@@ -1151,9 +1222,7 @@ async function doChat() {
 }
 
 function scrollToBottom() {
-  if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-  }
+  messagesEndRef.value?.scrollIntoView({ block: "end" });
 }
 
 function getSourceImageSrc(source: SourceItem): string {
@@ -1170,7 +1239,7 @@ function showPreview(source: SourceItem) {
 }
 
 function formatTime(isoString: string): string {
-  return new Date(isoString).toLocaleTimeString();
+  return new Date(isoString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function onImgError(e: Event) {
@@ -1213,32 +1282,42 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .chat-page {
-  min-height: calc(100vh - 120px);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: visible;
+}
+
+.page-intro {
+  display: none;
+}
+
+.page-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  display: none;
 }
 
 .chat-shell {
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 20px;
-  align-items: stretch;
+  display: block;
+  flex: 0 0 auto;
+  min-height: 0;
+  height: auto;
+  overflow: visible;
 }
 
-.chat-shell.compact {
-  grid-template-columns: 88px minmax(0, 1fr);
-}
-
-.history-panel,
-.history-panel-card,
-.history-rail,
 .chat-panel {
-  height: calc(100vh - 182px);
-}
-
-.history-panel-card {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  height: auto;
 }
 
 .history-panel-head {
@@ -1246,57 +1325,55 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .history-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .history-subtitle {
-  margin-top: 4px;
-  font-size: 12px;
+  margin-top: 2px;
+  font-size: 11px;
   color: var(--text-tertiary);
-}
-
-.history-rail {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 16px;
-}
-
-.mobile-history-rail {
-  display: none;
 }
 
 .chat-main {
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
 }
 
 .chat-panel {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: visible;
 }
 
 .chat-panel :deep(.el-card__header) {
-  padding: 18px 22px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--border-color);
 }
 
 .chat-panel :deep(.el-card__body) {
   display: flex;
-  flex: 1;
+  flex: 0 0 auto;
   flex-direction: column;
   padding: 0;
+  min-height: 0;
 }
 
 .chat-header {
   display: flex;
   align-items: center;
-  min-height: 30px;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 24px;
 }
 
 .chat-header-main {
@@ -1307,7 +1384,7 @@ onBeforeUnmount(() => {
 }
 
 .chat-title {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   min-width: 0;
   overflow: hidden;
@@ -1315,34 +1392,60 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
+.chat-header-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.history-trigger-btn {
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.history-trigger-btn:hover {
+  color: var(--accent-primary);
+  background: var(--bg-accent-soft);
+}
+
 .messages-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.4) 100%);
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: visible;
+  padding: 10px 14px 18px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.45) 100%);
 }
 
 .empty-chat {
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   color: var(--text-secondary);
-  text-align: center;
-  gap: 10px;
-  max-width: 420px;
+  text-align: left;
+  gap: 8px;
+  max-width: 520px;
   margin: 0 auto;
+  padding-top: clamp(16px, 8vh, 64px);
 }
 
 .empty-icon {
-  width: 72px;
-  height: 72px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 22px;
-  font-size: 34px;
+  border-radius: 18px;
+  font-size: 28px;
   color: var(--accent-primary);
   background: var(--bg-accent-soft);
   border: 1px solid rgba(37, 99, 235, 0.12);
@@ -1350,7 +1453,7 @@ onBeforeUnmount(() => {
 
 .empty-chat h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   color: var(--text-primary);
 }
 
@@ -1361,27 +1464,33 @@ onBeforeUnmount(() => {
 
 .empty-actions {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 14px;
   flex-wrap: wrap;
 }
 
 .empty-action-btn {
-  min-width: 140px;
+  min-width: 124px;
   border-radius: 12px;
 }
 
 .messages-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
+}
+
+.messages-end-anchor {
+  width: 100%;
+  height: 1px;
 }
 
 .message-item {
   display: flex;
-  gap: 14px;
+  gap: 10px;
   animation: slideUp 0.22s ease;
+  align-items: flex-start;
 }
 
 @keyframes slideUp {
@@ -1394,15 +1503,18 @@ onBeforeUnmount(() => {
 }
 
 .message-avatar {
-  width: 40px;
-  height: 40px;
+  position: relative;
+  width: 42px;
+  height: 42px;
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   flex-shrink: 0;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
 }
 
 .message-item.user .message-avatar {
@@ -1412,26 +1524,66 @@ onBeforeUnmount(() => {
 }
 
 .message-item.assistant .message-avatar {
-  background: var(--bg-secondary);
-  color: var(--accent-primary);
+  background: linear-gradient(160deg, #0f172a 0%, #1e3a8a 100%);
+  color: #fff;
+}
+
+.avatar-ring {
+  position: absolute;
+  inset: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.assistant-avatar-mark {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
 
 .message-content {
-  max-width: min(74%, 760px);
+  max-width: min(100%, 1320px);
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .message-item.user .message-content {
   align-items: flex-end;
+  max-width: min(74%, 980px);
+}
+
+.message-item.assistant .message-content {
+  max-width: 100%;
+}
+
+.message-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px;
+  min-height: 18px;
+}
+
+.message-author {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.message-role-note {
+  font-size: 11px;
+  color: var(--text-tertiary);
 }
 
 .message-bubble {
   padding: 14px 16px;
   border-radius: 18px;
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.78;
   border: 1px solid var(--border-color);
 }
 
@@ -1443,16 +1595,23 @@ onBeforeUnmount(() => {
 }
 
 .message-item.assistant .message-bubble {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--text-primary);
-  border-bottom-left-radius: 6px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  border-bottom-left-radius: 8px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
 }
 
 .assistant-meta {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.assistant-name {
+  display: none;
 }
 
 .assistant-mode-badge {
@@ -1482,6 +1641,9 @@ onBeforeUnmount(() => {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+  overflow-wrap: anywhere;
+  letter-spacing: 0.01em;
+  font-size: 14px;
 }
 
 .message-text.typing::after {
@@ -1543,7 +1705,7 @@ onBeforeUnmount(() => {
 }
 
 .referenced-images {
-  margin-top: 12px;
+  margin-top: 14px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
   gap: 10px;
@@ -1558,7 +1720,7 @@ onBeforeUnmount(() => {
   position: relative;
   overflow: hidden;
   min-height: 120px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   cursor: pointer;
@@ -1568,7 +1730,7 @@ onBeforeUnmount(() => {
 .ref-image-item:hover {
   transform: translateY(-2px);
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.14);
 }
 
 .ref-image-item img {
@@ -1577,6 +1739,32 @@ onBeforeUnmount(() => {
   min-height: 120px;
   object-fit: cover;
   display: block;
+}
+
+.ref-image-overlay {
+  position: absolute;
+  inset: auto 10px 10px 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.7);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ref-image-item:hover .ref-image-overlay,
+.ref-image-item:focus-within .ref-image-overlay {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .ref-image-badges {
@@ -1692,11 +1880,6 @@ onBeforeUnmount(() => {
   word-break: break-word;
 }
 
-.message-time {
-  font-size: 11px;
-  color: var(--text-tertiary);
-}
-
 .sources-heading {
   grid-column: 1 / -1;
   font-size: 12px;
@@ -1705,12 +1888,14 @@ onBeforeUnmount(() => {
 }
 
 .input-area {
-  padding: 18px 22px 20px;
+  padding: 8px 12px 10px;
   border-top: 1px solid var(--border-color);
   background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.04);
 }
 
 .input-row {
@@ -1719,22 +1904,38 @@ onBeforeUnmount(() => {
   align-items: flex-end;
 }
 
+.composer-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 0;
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.composer-tools-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
 .input-context-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding-left: 54px;
 }
 
 .slash-panel {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-left: 54px;
 }
 
 .slash-status {
-  padding-left: 54px;
   font-size: 12px;
   color: var(--accent-primary);
 }
@@ -1813,8 +2014,8 @@ onBeforeUnmount(() => {
 
 .attach-btn {
   color: var(--text-secondary);
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
@@ -1833,8 +2034,8 @@ onBeforeUnmount(() => {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   box-shadow: none;
-  padding: 10px 14px;
-  border-radius: 16px;
+  padding: 8px 12px;
+  border-radius: 14px;
 }
 
 .chat-input :deep(.el-input__wrapper:focus-within) {
@@ -1858,9 +2059,9 @@ onBeforeUnmount(() => {
 }
 
 .send-btn {
-  min-width: 48px;
-  min-height: 48px;
-  border-radius: 16px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 14px;
   background: var(--accent-gradient);
   border: none;
   box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
@@ -1871,20 +2072,19 @@ onBeforeUnmount(() => {
 }
 
 .input-hint {
-  padding-left: 54px;
   font-size: 12px;
   color: var(--text-tertiary);
 }
 
 .settings-toggle-row {
-  padding-left: 54px;
+  margin-top: 2px;
 }
 
 .settings-toggle {
   width: 100%;
   justify-content: space-between;
-  border-radius: 14px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  padding: 8px 10px;
   color: var(--text-secondary);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
@@ -1898,13 +2098,12 @@ onBeforeUnmount(() => {
 .settings-summary {
   margin-left: auto;
   color: var(--text-tertiary);
-  font-size: 12px;
+  font-size: 11px;
   text-align: right;
 }
 
 .settings-panel {
-  margin-left: 54px;
-  padding: 14px;
+  padding: 12px;
   border-radius: 16px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
@@ -2020,26 +2219,77 @@ onBeforeUnmount(() => {
   margin-bottom: 18px;
 }
 
+.message-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px;
+  min-height: 22px;
+}
+
+.message-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  opacity: 0.18;
+  transition: opacity 0.18s ease;
+}
+
+.message-item:hover .message-actions,
+.message-item:focus-within .message-actions {
+  opacity: 1;
+}
+
+.message-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.message-action-btn:hover {
+  color: var(--accent-primary);
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.08);
+}
+
+.message-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
 @keyframes typing-cursor {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
 @media (max-width: 1240px) {
-  .message-content {
-    max-width: 82%;
+  .message-item.assistant .message-content {
+    max-width: 100%;
   }
 }
 
 @media (max-width: 1100px) {
   .chat-shell {
     display: block;
+    height: auto;
+    overflow: visible;
   }
 
-  .mobile-history-rail {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 12px;
+  .chat-page {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
   }
 }
 
@@ -2049,28 +2299,32 @@ onBeforeUnmount(() => {
   }
 
   .settings-panel,
-  .settings-toggle-row,
-  .input-hint,
-  .input-context-row,
-  .slash-panel,
-  .slash-status {
-    padding-left: 0;
-    margin-left: 0;
-  }
-
-  .message-content {
-    max-width: 92%;
-  }
-
   .chat-header-main {
     width: 100%;
-    justify-content: space-between;
+  }
+
+  .chat-header {
+    align-items: flex-start;
+  }
+
+  .chat-header-tools {
+    margin-left: auto;
+  }
+
+  .message-content,
+  .message-item.user .message-content,
+  .message-item.assistant .message-content {
+    max-width: 100%;
+  }
+
+  .message-actions {
+    opacity: 1;
   }
 }
 
 @media (max-width: 640px) {
   .messages-container {
-    padding: 18px 14px;
+    padding: 14px 12px 10px;
   }
 
   .input-area {
@@ -2079,6 +2333,29 @@ onBeforeUnmount(() => {
 
   .input-row {
     align-items: stretch;
+  }
+
+  .message-item {
+    gap: 10px;
+  }
+
+  .message-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .message-bubble {
+    padding: 14px;
+  }
+
+  .message-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-subtitle {
+    display: none;
   }
 }
 </style>
