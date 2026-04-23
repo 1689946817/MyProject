@@ -190,6 +190,9 @@ export default {
     resendQuestion: '重发同问',
     copySuccess: '消息内容已复制',
     copyFailed: '复制失败，请重试',
+    copyCode: '复制代码',
+    copyCodeSuccess: '代码块已复制',
+    copyCodeFailed: '代码块复制失败，请重试',
     copyEmpty: '这条消息没有可复制的正文',
     quoteAdded: '已将消息内容引用到输入框',
     resendUnavailable: '当前无法从这条消息恢复提问内容'

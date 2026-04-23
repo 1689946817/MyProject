@@ -190,6 +190,9 @@ export default {
     resendQuestion: 'Ask again',
     copySuccess: 'Message copied',
     copyFailed: 'Copy failed, please try again',
+    copyCode: 'Copy code',
+    copyCodeSuccess: 'Code block copied',
+    copyCodeFailed: 'Code block copy failed, please try again',
     copyEmpty: 'This message has no text to copy',
     quoteAdded: 'Message quoted into the input',
     resendUnavailable: 'No reusable question content was found for this message'

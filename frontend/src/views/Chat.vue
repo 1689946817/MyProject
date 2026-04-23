@@ -107,10 +107,15 @@
                         <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
                     </div>
+                    <ChatMarkdown
+                      v-if="msg.role === 'assistant' && msg.content"
+                      class="assistant-markdown"
+                      :content="msg.content"
+                      :streaming="String(msg.id) === streamingId"
+                    />
                     <p
-                      v-if="msg.content"
+                      v-else-if="msg.content"
                       class="message-text"
-                      :class="[{ typing: msg.role === 'assistant' && String(msg.id) === streamingId }, msg.role === 'assistant' ? `mode-text-${getPresentationMode(msg)}` : '']"
                     >{{ msg.content }}</p>
                     <el-alert
                       v-if="shouldShowRerankFilterNotice(msg)"
@@ -336,6 +341,7 @@ import { imgSrc } from "@/utils/image";
 import SessionList from "@/components/SessionList.vue";
 import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
 import QaProcessCard from "@/components/QaProcessCard.vue";
+import ChatMarkdown from "@/components/ChatMarkdown.vue";
 import type { ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
 
 const { t } = useI18n();
@@ -1786,10 +1792,8 @@ onBeforeUnmount(() => {
   font-size: 14px;
 }
 
-.message-text.typing::after {
-  content: "|";
-  animation: typing-cursor 0.8s ease-in-out infinite;
-  color: var(--accent-primary);
+.assistant-markdown {
+  margin: 0;
 }
 
 .message-notice {
