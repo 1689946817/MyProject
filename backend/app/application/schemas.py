@@ -67,6 +67,13 @@ class ImageRecordOut(BaseModel):
     continued_from_previous_page: bool = False
     continued_to_next_page: bool = False
     fallback_reason: Optional[str] = None
+    parent_doc_id: Optional[str] = None
+    content_hash: Optional[str] = None
+    logical_asset_id: Optional[str] = None
+    version_number: int = 1
+    is_latest: bool = True
+    deduplicated: bool = False
+    duplicate_of: Optional[str] = None
 
     @model_validator(mode="before")
     @classmethod
@@ -86,6 +93,11 @@ class ImageRecordOut(BaseModel):
                 "notes": getattr(value, "notes", None),
                 "enabled": getattr(value, "enabled", True),
                 "custom_metadata": getattr(value, "custom_metadata", None),
+                "parent_doc_id": getattr(value, "parent_doc_id", None),
+                "content_hash": getattr(value, "content_hash", None),
+                "logical_asset_id": getattr(value, "logical_asset_id", None),
+                "version_number": getattr(value, "version_number", 1),
+                "is_latest": getattr(value, "is_latest", True),
             }
             extra_metadata = getattr(value, "extra_metadata", None)
             payload["extra_metadata"] = extra_metadata
@@ -127,6 +139,7 @@ class UploadImagesResponse(BaseModel):
     用于返回批量上传图像的结果。
     """
     images: List[ImageRecordOut]  # 上传的图像记录列表
+    deduplicated_count: int = 0
     timings: Optional["TimingSummary"] = None
 
 
@@ -270,6 +283,7 @@ class ChatMessageOut(BaseModel):
     citations: List[ChatCitationItem] = Field(default_factory=list)
     retrieval_params: Optional[dict[str, Any]] = None
     retrieval_steps: List[dict[str, Any]] = Field(default_factory=list)
+    feedback: Optional["AnswerFeedbackOut"] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -368,6 +382,12 @@ class DocumentRecordOut(BaseModel):
     parse_stage: str = "queued"
     progress_percent: int = 0
     progress_message: Optional[str] = None
+    content_hash: Optional[str] = None
+    logical_asset_id: Optional[str] = None
+    version_number: int = 1
+    is_latest: bool = True
+    deduplicated: bool = False
+    duplicate_of: Optional[str] = None
 
     @field_validator("tags", mode="before")
     @classmethod
@@ -403,6 +423,7 @@ class DocumentRecordUpdateRequest(BaseModel):
 class UploadDocumentResponse(BaseModel):
     """上传文档响应模型"""
     document: DocumentRecordOut
+    job: Optional["JobTaskOut"] = None
     message: str = ""
     timings: Optional[TimingSummary] = None
 
@@ -414,6 +435,7 @@ class DocumentProgressResponse(BaseModel):
     stage: str
     progress_percent: int = 0
     message: Optional[str] = None
+    job: Optional["JobTaskOut"] = None
     timings: Optional[TimingSummary] = None
 
 
@@ -433,3 +455,141 @@ class DocParseResult(BaseModel):
     chunks: List[DocChunk]
     images: List[ImageRecordOut]
     timings: Optional[TimingSummary] = None
+
+
+class JobTaskOut(BaseModel):
+    id: str
+    job_type: str
+    status: str
+    priority: int = 100
+    payload: dict[str, Any] = Field(default_factory=dict)
+    result: dict[str, Any] = Field(default_factory=dict)
+    error_message: Optional[str] = None
+    retry_count: int = 0
+    max_retries: int = 0
+    locked_by: Optional[str] = None
+    related_doc_id: Optional[str] = None
+    related_batch_id: Optional[str] = None
+    created_at: datetime
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_job_payloads(cls, value: Any) -> Any:
+        if isinstance(value, dict):
+            payload = dict(value)
+        else:
+            payload = {
+                "id": getattr(value, "id", None),
+                "job_type": getattr(value, "job_type", None),
+                "status": getattr(value, "status", None),
+                "priority": getattr(value, "priority", 100),
+                "payload": getattr(value, "payload_json", None),
+                "result": getattr(value, "result_json", None),
+                "error_message": getattr(value, "error_message", None),
+                "retry_count": getattr(value, "retry_count", 0),
+                "max_retries": getattr(value, "max_retries", 0),
+                "locked_by": getattr(value, "locked_by", None),
+                "related_doc_id": getattr(value, "related_doc_id", None),
+                "related_batch_id": getattr(value, "related_batch_id", None),
+                "created_at": getattr(value, "created_at", None),
+                "started_at": getattr(value, "started_at", None),
+                "finished_at": getattr(value, "finished_at", None),
+            }
+        payload["payload"] = _parse_json_dict(payload.get("payload"))
+        payload["result"] = _parse_json_dict(payload.get("result"))
+        return payload
+
+    model_config = {"from_attributes": True}
+
+
+class ImportBatchOut(BaseModel):
+    id: str
+    source_type: str
+    status: str
+    summary: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime
+    updated_at: datetime
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_import_batch(cls, value: Any) -> Any:
+        if isinstance(value, dict):
+            payload = dict(value)
+        else:
+            payload = {
+                "id": getattr(value, "id", None),
+                "source_type": getattr(value, "source_type", None),
+                "status": getattr(value, "status", None),
+                "summary": getattr(value, "summary_json", None),
+                "created_at": getattr(value, "created_at", None),
+                "updated_at": getattr(value, "updated_at", None),
+            }
+        payload["summary"] = _parse_json_dict(payload.get("summary"))
+        return payload
+
+    model_config = {"from_attributes": True}
+
+
+class BatchImportResponse(BaseModel):
+    batch: ImportBatchOut
+    jobs: List[JobTaskOut] = Field(default_factory=list)
+    documents: List[DocumentRecordOut] = Field(default_factory=list)
+    message: str = ""
+    timings: Optional[TimingSummary] = None
+
+
+class AnswerFeedbackRequest(BaseModel):
+    rating: str = Field(pattern="^(up|down)$")
+    issue_types: List[str] = Field(default_factory=list)
+    comment: Optional[str] = Field(default=None, max_length=2000)
+
+
+class AnswerFeedbackOut(BaseModel):
+    id: int
+    session_id: Optional[str] = None
+    assistant_message_id: int
+    rating: str
+    issue_types: List[str] = Field(default_factory=list)
+    comment: Optional[str] = None
+    query: Optional[str] = None
+    retrieval_snapshot: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_feedback(cls, value: Any) -> Any:
+        if isinstance(value, dict):
+            payload = dict(value)
+        else:
+            payload = {
+                "id": getattr(value, "id", None),
+                "session_id": getattr(value, "session_id", None),
+                "assistant_message_id": getattr(value, "assistant_message_id", None),
+                "rating": getattr(value, "rating", None),
+                "issue_types": getattr(value, "issue_types_json", None),
+                "comment": getattr(value, "comment", None),
+                "query": getattr(value, "query", None),
+                "retrieval_snapshot": getattr(value, "retrieval_snapshot_json", None),
+                "created_at": getattr(value, "created_at", None),
+            }
+        raw_issue_types = payload.get("issue_types")
+        if isinstance(raw_issue_types, str):
+            try:
+                loaded = json.loads(raw_issue_types)
+            except (TypeError, ValueError, json.JSONDecodeError):
+                loaded = []
+            payload["issue_types"] = loaded if isinstance(loaded, list) else []
+        elif not isinstance(raw_issue_types, list):
+            payload["issue_types"] = []
+        payload["retrieval_snapshot"] = _parse_json_dict(payload.get("retrieval_snapshot"))
+        return payload
+
+    model_config = {"from_attributes": True}
+
+
+class HealthStatusResponse(BaseModel):
+    status: str
+    checks: dict[str, Any] = Field(default_factory=dict)
+    generated_at: datetime

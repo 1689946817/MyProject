@@ -28,6 +28,11 @@ def ensure_image_management_columns(db: Session) -> None:
         "notes": "ALTER TABLE image_records ADD COLUMN notes TEXT",
         "enabled": "ALTER TABLE image_records ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT 1",
         "custom_metadata": "ALTER TABLE image_records ADD COLUMN custom_metadata TEXT",
+        "parent_doc_id": "ALTER TABLE image_records ADD COLUMN parent_doc_id TEXT",
+        "content_hash": "ALTER TABLE image_records ADD COLUMN content_hash TEXT",
+        "logical_asset_id": "ALTER TABLE image_records ADD COLUMN logical_asset_id TEXT",
+        "version_number": "ALTER TABLE image_records ADD COLUMN version_number INTEGER NOT NULL DEFAULT 1",
+        "is_latest": "ALTER TABLE image_records ADD COLUMN is_latest BOOLEAN NOT NULL DEFAULT 1",
     }
     for column, ddl in statements.items():
         if column in columns:
@@ -50,6 +55,10 @@ def ensure_document_management_columns(db: Session) -> None:
         "parse_stage": "ALTER TABLE document_records ADD COLUMN parse_stage TEXT NOT NULL DEFAULT 'queued'",
         "progress_percent": "ALTER TABLE document_records ADD COLUMN progress_percent INTEGER NOT NULL DEFAULT 0",
         "progress_message": "ALTER TABLE document_records ADD COLUMN progress_message TEXT",
+        "content_hash": "ALTER TABLE document_records ADD COLUMN content_hash TEXT",
+        "logical_asset_id": "ALTER TABLE document_records ADD COLUMN logical_asset_id TEXT",
+        "version_number": "ALTER TABLE document_records ADD COLUMN version_number INTEGER NOT NULL DEFAULT 1",
+        "is_latest": "ALTER TABLE document_records ADD COLUMN is_latest BOOLEAN NOT NULL DEFAULT 1",
     }
     for column, ddl in statements.items():
         if column in columns:
@@ -119,6 +128,9 @@ def get_document_record_or_raise(db: Session, doc_id: str) -> DocumentRecord:
 
 def get_document_image_records(db: Session, doc_id: str) -> list[ImageRecord]:
     ensure_knowledge_management_columns(db)
+    explicit_matches = db.query(ImageRecord).filter(ImageRecord.parent_doc_id == doc_id).all()
+    if explicit_matches:
+        return explicit_matches
     candidates = db.query(ImageRecord).filter(ImageRecord.extra_metadata.contains(doc_id)).all()
     related: list[ImageRecord] = []
     for record in candidates:
@@ -163,8 +175,10 @@ def filter_enabled_image_hit_dicts(hits: list[dict[str, Any]]) -> list[dict[str,
         parent_doc_ids: set[str] = set()
         image_doc_map: dict[str, Optional[str]] = {}
         for image_id, record in image_map.items():
-            metadata = load_json_dict(record.extra_metadata)
-            doc_id = metadata.get("doc_id")
+            doc_id = getattr(record, "parent_doc_id", None)
+            if not doc_id:
+                metadata = load_json_dict(record.extra_metadata)
+                doc_id = metadata.get("doc_id")
             image_doc_map[image_id] = doc_id
             if isinstance(doc_id, str) and doc_id:
                 parent_doc_ids.add(doc_id)

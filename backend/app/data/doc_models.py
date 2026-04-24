@@ -71,3 +71,15 @@ class DocumentRecord(Base):
 
     # 当前阶段提示文案
     progress_message = Column(Text, nullable=True)
+
+    # 内容哈希，用于去重
+    content_hash = Column(String, nullable=True, index=True)
+
+    # 逻辑资源 ID，用于版本归组
+    logical_asset_id = Column(String, nullable=True, index=True)
+
+    # 版本号
+    version_number = Column(Integer, default=1, nullable=False)
+
+    # 是否为最新版本
+    is_latest = Column(Boolean, default=True, nullable=False, index=True)

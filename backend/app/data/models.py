@@ -9,7 +9,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 
 from .database import Base
 
@@ -57,3 +57,18 @@ class ImageRecord(Base):
 
     # 额外元数据，使用文本格式存储，可为空
     extra_metadata = Column(Text, nullable=True)
+
+    # 父文档 ID，若该图片由文档解析派生则写入
+    parent_doc_id = Column(String, nullable=True, index=True)
+
+    # 内容哈希，用于去重
+    content_hash = Column(String, nullable=True, index=True)
+
+    # 逻辑资源 ID，用于版本链归组
+    logical_asset_id = Column(String, nullable=True, index=True)
+
+    # 版本号，默认 1
+    version_number = Column(Integer, default=1, nullable=False)
+
+    # 是否为最新版本
+    is_latest = Column(Boolean, default=True, nullable=False, index=True)

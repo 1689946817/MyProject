@@ -10,6 +10,7 @@ LangChain 适配器模块
 """
 import base64
 import asyncio
+import hashlib
 import json
 import logging
 import os
@@ -105,13 +106,42 @@ class LangChainAdapter:
         self.retriever = get_multimodal_retriever()
         self.document_vector_store = get_document_vector_store()
 
+    @staticmethod
+    def _compute_content_hash(contents: bytes) -> str:
+        return hashlib.sha256(contents).hexdigest()
+
+    @staticmethod
+    def _next_document_version(db: Session, logical_asset_id: str) -> int:
+        existing = (
+            db.query(DocumentRecord)
+            .filter(DocumentRecord.logical_asset_id == logical_asset_id)
+            .order_by(DocumentRecord.version_number.desc())
+            .first()
+        )
+        if existing is None:
+            return 1
+        return int(getattr(existing, "version_number", 1) or 1) + 1
+
+    @staticmethod
+    def _next_image_version(db: Session, logical_asset_id: str) -> int:
+        existing = (
+            db.query(ImageRecord)
+            .filter(ImageRecord.logical_asset_id == logical_asset_id)
+            .order_by(ImageRecord.version_number.desc())
+            .first()
+        )
+        if existing is None:
+            return 1
+        return int(getattr(existing, "version_number", 1) or 1) + 1
+
     async def process_image_upload(
         self,
         db: Session,
         file: UploadFile,
         split: str = "custom",
         source_dataset: Optional[str] = None,
-    ) -> Tuple[ImageRecord, str]:
+        logical_asset_id: Optional[str] = None,
+    ) -> Tuple[ImageRecord, str, bool, Optional[str]]:
         """
         处理单个图像上传
 
@@ -133,11 +163,20 @@ class LangChainAdapter:
 
             with timing_stage("upload_file_read"):
                 contents = await file.read()
+            content_hash = self._compute_content_hash(contents)
 
             filename = file.filename or "image.jpg"
             ext = os.path.splitext(filename)[1].lower()
             if not ext:
                 ext = ".jpg"
+
+            existing = (
+                db.query(ImageRecord)
+                .filter(ImageRecord.content_hash == content_hash, ImageRecord.is_latest.is_(True))
+                .first()
+            )
+            if existing is not None:
+                return existing, existing.generated_description or "", True, existing.id
 
             storage_path = str(get_image_path(image_id, split))
             os.makedirs(os.path.dirname(storage_path), exist_ok=True)
@@ -146,12 +185,24 @@ class LangChainAdapter:
                 with open(storage_path, "wb") as f:
                     f.write(contents)
 
+            resolved_logical_asset_id = logical_asset_id or image_id
+            version_number = self._next_image_version(db, resolved_logical_asset_id) if logical_asset_id else 1
+            if logical_asset_id:
+                db.query(ImageRecord).filter(
+                    ImageRecord.logical_asset_id == resolved_logical_asset_id,
+                    ImageRecord.is_latest.is_(True),
+                ).update({"is_latest": False})
+
             record = ImageRecord(
                 id=image_id,
                 file_path=storage_path,
                 source_dataset=source_dataset,
                 title=os.path.splitext(filename)[0],
                 status="Processing",
+                content_hash=content_hash,
+                logical_asset_id=resolved_logical_asset_id,
+                version_number=version_number,
+                is_latest=True,
             )
             db.add(record)
             db.commit()
@@ -189,7 +240,7 @@ class LangChainAdapter:
                 with timing_stage("bm25_incremental_update"):
                     self._bm25_add_document(image_id, description)
 
-                return record, description
+                return record, description, False, None
 
             except Exception as e:
                 record.status = "Failed"
@@ -202,7 +253,7 @@ class LangChainAdapter:
         files: List[UploadFile],
         split: str = "custom",
         source_dataset: Optional[str] = None,
-    ) -> List[Tuple[ImageRecord, str]]:
+    ) -> List[Tuple[ImageRecord, str, bool, Optional[str]]]:
         """
         处理多个图像上传
 
@@ -949,9 +1000,9 @@ class LangChainAdapter:
 
         text_chunks: List[Dict[str, Any]] = []
         if settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED and settings.IMAGE_GROUNDED_TEXT_TOP_K > 0:
-            text_chunks = self.document_vector_store.similarity_search(
+            text_chunks = self.document_vector_store.search_with_pipeline(
                 query,
-                k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
+                top_k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
             )
             text_chunks = self._filter_text_chunks_by_source_scope(text_chunks, source_scope or {})
 
@@ -998,9 +1049,12 @@ class LangChainAdapter:
         streaming_ready = False
 
         if execution_hint == "multimodal_rag":
-            text_chunks = self.document_vector_store.similarity_search(
+            text_chunks = self.document_vector_store.search_with_pipeline(
                 scoped_query,
-                k=max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
+                top_k=self.rag_chain.text_top_k,
+                candidate_k=max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
             )
             text_chunks = self._filter_text_chunks_by_source_scope(text_chunks, scope)
             generation_documents = documents
@@ -1363,7 +1417,7 @@ class LangChainAdapter:
         from app.data.database import SessionLocal
 
         with SessionLocal() as db:
-            record, description = await self.process_image_upload(
+            record, description, deduplicated, _duplicate_of = await self.process_image_upload(
                 db=db,
                 file=image,
                 split="custom",
@@ -1371,7 +1425,7 @@ class LangChainAdapter:
             )
 
         title = record.title or Path(record.file_path).stem
-        answer = f"已将图片“{title}”存入图片知识库。"
+        answer = f"图片“{title}”已存在，已复用现有知识库记录。" if deduplicated else f"已将图片“{title}”存入图片知识库。"
         return answer, [
             {
                 "id": record.id,
@@ -1404,9 +1458,9 @@ class LangChainAdapter:
 
         text_chunks: List[Dict[str, Any]] = []
         if settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED and settings.IMAGE_GROUNDED_TEXT_TOP_K > 0:
-            text_chunks = self.document_vector_store.similarity_search(
+            text_chunks = self.document_vector_store.search_with_pipeline(
                 query,
-                k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
+                top_k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
             )
 
         return await self.rag_chain.agenerate_from_context(
@@ -1507,16 +1561,34 @@ class LangChainAdapter:
         self,
         db: Session,
         file: UploadFile,
-    ) -> DocumentRecord:
+        logical_asset_id: Optional[str] = None,
+    ) -> Tuple[DocumentRecord, bool, Optional[str]]:
         """创建文档记录并保存原始文件，不阻塞等待解析完成。"""
         ensure_knowledge_management_columns(db)
         doc_id = str(uuid.uuid4())
         contents = await file.read()
         file_name = file.filename or "document.pdf"
+        content_hash = self._compute_content_hash(contents)
+
+        existing = (
+            db.query(DocumentRecord)
+            .filter(DocumentRecord.content_hash == content_hash, DocumentRecord.is_latest.is_(True))
+            .first()
+        )
+        if existing is not None:
+            return existing, True, existing.id
 
         doc_path = get_doc_path(doc_id)
         with open(str(doc_path), "wb") as f:
             f.write(contents)
+
+        resolved_logical_asset_id = logical_asset_id or doc_id
+        version_number = self._next_document_version(db, resolved_logical_asset_id) if logical_asset_id else 1
+        if logical_asset_id:
+            db.query(DocumentRecord).filter(
+                DocumentRecord.logical_asset_id == resolved_logical_asset_id,
+                DocumentRecord.is_latest.is_(True),
+            ).update({"is_latest": False})
 
         record = DocumentRecord(
             id=doc_id,
@@ -1529,11 +1601,15 @@ class LangChainAdapter:
             parse_stage="queued",
             progress_percent=0,
             progress_message="文档已上传，等待解析",
+            content_hash=content_hash,
+            logical_asset_id=resolved_logical_asset_id,
+            version_number=version_number,
+            is_latest=True,
         )
         db.add(record)
         db.commit()
         db.refresh(record)
-        return record
+        return record, False, None
 
     def _set_document_progress(
         self,
@@ -1651,7 +1727,7 @@ class LangChainAdapter:
         Returns:
             DocumentRecord: 文档记录
         """
-        record = await self.create_document_upload_record(db, file)
+        record, _deduplicated, _duplicate_of = await self.create_document_upload_record(db, file)
         doc_path = Path(record.file_path)
 
         try:
@@ -1772,6 +1848,11 @@ class LangChainAdapter:
                     generated_description=description,
                     status="Completed",
                     source_dataset=record.document_type,
+                    parent_doc_id=doc_id,
+                    content_hash=self._compute_content_hash(img_bytes),
+                    logical_asset_id=img_id,
+                    version_number=1,
+                    is_latest=True,
                     extra_metadata=json.dumps(
                         image_extra_metadata,
                         ensure_ascii=False,
@@ -1942,6 +2023,11 @@ class LangChainAdapter:
                     generated_description=description,
                     status="Completed",
                     source_dataset=record.document_type,
+                    parent_doc_id=record.id,
+                    content_hash=self._compute_content_hash(image_bytes),
+                    logical_asset_id=img_id,
+                    version_number=1,
+                    is_latest=True,
                     extra_metadata=json.dumps(
                         {
                             "doc_id": record.id,
@@ -2045,7 +2131,7 @@ class LangChainAdapter:
             "enabled": bool(record.enabled),
             "parent_doc_enabled": True,
         }
-        parent_doc_id = load_json_dict(record.extra_metadata).get("doc_id")
+        parent_doc_id = record.parent_doc_id or load_json_dict(record.extra_metadata).get("doc_id")
         if isinstance(parent_doc_id, str) and parent_doc_id:
             metadata["doc_id"] = parent_doc_id
             metadata["parent_doc_enabled"] = True
@@ -2167,7 +2253,9 @@ class LangChainAdapter:
             "parent_doc_enabled": bool(parent_doc_enabled),
         }
         extra = load_json_dict(record.extra_metadata)
-        if extra.get("doc_id"):
+        if record.parent_doc_id:
+            metadata["doc_id"] = record.parent_doc_id
+        elif extra.get("doc_id"):
             metadata["doc_id"] = extra["doc_id"]
         if extra.get("page_number") is not None:
             metadata["page_number"] = extra["page_number"]

@@ -4,6 +4,9 @@
 
 - 文本→图像检索、图像→图像检索
 - 基于检索结果的多模态 RAG 问答
+- PDF 文档知识库、异步解析与进度查询
+- 文档解析任务队列、批量导入、健康检查与基础指标暴露
+- 图片/文档去重与版本管理、回答反馈闭环
 - 在 MS-COCO 子集上的离线检索评测与多方法对比实验（Proposed / Baseline）
 
 后端基于 `FastAPI + SQLite + ChromaDB`，前端基于 `Vue3 + TS + Vite + Element Plus`。
@@ -69,18 +72,29 @@ cp .env.example .env
 在 `backend/` 下：
 
 ```bash
-python main.py
+E:/Pyenvironment/multimodal-rag/python.exe main.py
 ```
 
-默认监听 `http://localhost:8000`，可以通过：
+默认监听 `http://localhost:9090`，可以通过：
 
 ```bash
-curl http://localhost:8000/api/health
+curl http://localhost:9090/api/health
 ```
 
 检查健康状态。
 
-### 2. 启动前端
+### 2. 启动文档解析 worker
+
+文档上传和重处理不再依赖进程内 `BackgroundTasks`，而是通过数据库任务队列驱动。需要额外启动一个 worker：
+
+```bash
+cd backend
+E:/Pyenvironment/multimodal-rag/python.exe -m app.workers.task_worker
+```
+
+如果 worker 未启动，文档会进入 `queued` 状态，但不会继续解析。
+
+### 3. 启动前端
 
 在项目根目录：
 
@@ -94,8 +108,75 @@ npm run dev
 
 - 左侧导航在三个页面间切换：
   - “知识库管理”：上传图片，自动生成结构化描述并入库
+  - “文档知识库”：上传 PDF，查看解析进度、文本片段和派生图片
   - “图像检索”：文本→图像、图像→图像检索结果列表
   - “RAG 智能问答”：输入问题（可带图像），查看回答与引用图像
+
+---
+
+## 后端运行与验收要点
+
+### 1. 建议启动顺序
+
+```bash
+cd backend
+E:/Pyenvironment/multimodal-rag/python.exe main.py
+E:/Pyenvironment/multimodal-rag/python.exe -m app.workers.task_worker
+cd ../frontend
+npm run dev
+```
+
+### 2. 核心接口检查
+
+- 健康检查：`GET /api/health`
+- 存活检查：`GET /api/health/live`
+- 就绪检查：`GET /api/health/ready`
+- 依赖状态：`GET /api/health/deps`
+- 指标：`GET /api/metrics`
+- 任务列表：`GET /api/jobs`
+- 批量导入：`POST /api/imports/batch`
+
+### 3. 文档知识库相关接口
+
+- 上传文档：`POST /api/docs/upload`
+- 查看解析进度：`GET /api/docs/{doc_id}/progress`
+- 查看解析结果：`GET /api/docs/{doc_id}/result`
+- 重处理文档：`POST /api/docs/{doc_id}/reprocess`
+- 查看版本历史：`GET /api/docs/{doc_id}/versions`
+- 上传新版本：`POST /api/docs/{doc_id}/versions`
+
+### 4. 图片知识库相关接口
+
+- 上传图片：`POST /api/knowledge-base/upload`
+- 重处理图片：`POST /api/knowledge-base/{image_id}/reprocess`
+- 查看版本历史：`GET /api/knowledge-base/{image_id}/versions`
+- 上传新版本：`POST /api/knowledge-base/{image_id}/versions`
+
+### 5. 问答反馈接口
+
+- 提交反馈：`POST /api/chat/messages/{message_id}/feedback`
+
+---
+
+## 演示建议流程
+
+建议按下面顺序演示，稳定且容易说明系统亮点：
+
+1. 打开 `/api/health/ready` 和 `/api/metrics`，说明系统具备基础可观测性。
+2. 上传一份 PDF，展示文档进入队列、worker 消费、进度更新和解析结果。
+3. 上传一张图片，展示自动描述生成、去重逻辑和版本接口。
+4. 在检索页展示文本搜图或图搜图。
+5. 在聊天页提问，展示来源回溯、引用和反馈接口。
+
+---
+
+## 当前后端已落地的工程增强点
+
+- 文档解析由任务队列驱动，支持任务查询、重试和 worker 心跳。
+- 新增健康检查与 Prometheus 风格文本指标接口。
+- 图片与文档支持内容去重、逻辑资源归组和版本历史。
+- 回答支持反馈闭环，便于收集错误样本。
+- 文档检索链已补充 query rewrite、BM25、RRF、rerank 和相关性过滤。
 
 ---
 
@@ -161,10 +242,10 @@ python -m evaluation.run_offline_eval \
 ## 你需要做的主要操作总结
 
 1. **配置云端模型**：在 `.env` 中填好多模态模型、Embedding 模型与 LLM 的接口信息。
-2. **启动后端与前端**：`python backend/main.py` 与 `npm run dev`。
-3. **构建知识库**：在前端“知识库管理”页上传图片，等待生成描述与入库。
-4. **互动体验**：在“图像检索”和“RAG 智能问答”页面体验文本/图像检索与问答功能。
-5. **准备 COCO 子集 JSON 与向量库**：保证 `relevant_ids` 与系统内部 ID 对齐。
-6. **运行离线评测脚本**：使用 `evaluation/run_offline_eval.py` 分别对 Proposed 与 Baseline 方法评测，
+2. **启动后端与 worker**：`E:/Pyenvironment/multimodal-rag/python.exe backend/main.py` 与 `E:/Pyenvironment/multimodal-rag/python.exe -m app.workers.task_worker`。
+3. **启动前端**：`npm run dev`。
+4. **构建知识库**：在前端“知识库管理”和“文档知识库”页面上传图片/PDF。
+5. **互动体验**：在“图像检索”和“RAG 智能问答”页面体验检索、问答、反馈和来源回溯功能。
+6. **准备 COCO 子集 JSON 与向量库**：保证 `relevant_ids` 与系统内部 ID 对齐。
+7. **运行离线评测脚本**：使用 `evaluation/run_offline_eval.py` 分别对 Proposed 与 Baseline 方法评测，
    收集 Recall、mAP、MRR 等指标用于论文撰写与对比实验分析。
-

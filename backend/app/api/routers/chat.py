@@ -22,7 +22,10 @@ from app.application.chat_service import (
     load_json_field,
 )
 from app.application.chat_citations import build_chat_citations
+from app.application.operations import get_feedback_for_message, record_feedback
 from app.application.schemas import (
+    AnswerFeedbackOut,
+    AnswerFeedbackRequest,
     ChatCitationItem,
     ChatMessageOut,
     ChatResponse,
@@ -36,6 +39,7 @@ from app.application.schemas import (
 )
 from app.core.config import settings
 from app.core.timing import RequestTimingCollector, bind_timing_collector
+from app.data.chat_models import ChatMessage
 from app.data.database import get_db
 from app.langchain_integration.adapters import get_langchain_adapter
 from app.retrieval.relevance import annotate_relevance
@@ -230,6 +234,7 @@ def _to_chat_message_out(message) -> ChatMessageOut:
     sources = [ChatSourceItem.model_validate(item) for item in load_message_sources(getattr(message, "sources_json", None))]
     retrieval_params = load_json_field(getattr(message, "retrieval_params_json", None))
     retrieval_steps = load_json_list(getattr(message, "retrieval_steps_json", None))
+    feedback = get_feedback_for_message(message._sa_instance_state.session, message.id)
     citations = []
     if isinstance(retrieval_params, dict):
         citations = [
@@ -247,6 +252,7 @@ def _to_chat_message_out(message) -> ChatMessageOut:
         citations=citations,
         retrieval_params=retrieval_params,
         retrieval_steps=retrieval_steps,
+        feedback=AnswerFeedbackOut.model_validate(feedback) if feedback is not None else None,
         created_at=message.created_at,
     )
 
@@ -313,6 +319,50 @@ def delete_chat_session(
     if not success:
         raise HTTPException(status_code=404, detail="会话不存在")
     return DeleteResponse(success=True)
+
+
+@router.post("/api/chat/messages/{message_id}/feedback", response_model=AnswerFeedbackOut)
+def submit_message_feedback(
+    message_id: int,
+    body: AnswerFeedbackRequest,
+    db: Session = Depends(get_db),
+) -> AnswerFeedbackOut:
+    assistant_message = (
+        db.query(ChatMessage)
+        .filter(ChatMessage.id == message_id, ChatMessage.role == "assistant")
+        .first()
+    )
+    if assistant_message is None:
+        raise HTTPException(status_code=404, detail="助手消息不存在")
+
+    session = get_session_or_raise(db, assistant_message.session_id)
+    query = None
+    messages = list(session.messages)
+    for index, item in enumerate(messages):
+        if item.id != assistant_message.id or index == 0:
+            continue
+        previous = messages[index - 1]
+        if previous.role == "user":
+            query = previous.content
+        break
+
+    retrieval_params = load_json_field(getattr(assistant_message, "retrieval_params_json", None)) or {}
+    retrieval_steps = load_json_list(getattr(assistant_message, "retrieval_steps_json", None))
+    sources = load_message_sources(getattr(assistant_message, "sources_json", None))
+    feedback = record_feedback(
+        db,
+        assistant_message=assistant_message,
+        rating=body.rating,
+        issue_types=body.issue_types,
+        comment=body.comment,
+        query=query,
+        retrieval_snapshot={
+            "retrieval_params": retrieval_params,
+            "retrieval_steps": retrieval_steps,
+            "sources": sources,
+        },
+    )
+    return AnswerFeedbackOut.model_validate(feedback)
 
 
 def _coerce_rag_chat_result(

@@ -38,9 +38,12 @@ async def list_images(
     enabled: Optional[bool] = None,
     source_dataset: Optional[str] = Query(default=None, max_length=100),
     tag: Optional[str] = Query(default=None, max_length=50),
+    include_history: bool = False,
 ) -> List[ImageRecordOut]:
     ensure_knowledge_management_columns(db)
     query = db.query(ImageRecord)
+    if not include_history:
+        query = query.filter(ImageRecord.is_latest.is_(True))
     if keyword:
         like = f"%{keyword}%"
         query = query.filter(
@@ -60,6 +63,66 @@ async def list_images(
 
     records = query.order_by(ImageRecord.upload_time.desc()).offset(skip).limit(limit).all()
     return [ImageRecordOut.model_validate(r) for r in records]
+
+
+@router.get("/{image_id}/versions", response_model=List[ImageRecordOut])
+async def list_image_versions(
+    image_id: str,
+    db: Session = Depends(get_db),
+) -> List[ImageRecordOut]:
+    try:
+        record = get_image_record_or_raise(db, image_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    logical_asset_id = record.logical_asset_id or record.id
+    versions = (
+        db.query(ImageRecord)
+        .filter(ImageRecord.logical_asset_id == logical_asset_id)
+        .order_by(ImageRecord.version_number.desc(), ImageRecord.upload_time.desc())
+        .all()
+    )
+    return [ImageRecordOut.model_validate(item) for item in versions]
+
+
+@router.post("/{image_id}/versions", response_model=UploadImagesResponse, response_model_exclude_none=True)
+async def upload_image_new_version(
+    image_id: str,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+) -> UploadImagesResponse:
+    try:
+        current = get_image_record_or_raise(db, image_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    collector = RequestTimingCollector("/api/knowledge-base/{image_id}/versions", "knowledge_base_upload_new_version")
+    collector.set_metadata(filename=file.filename, logical_asset_id=current.logical_asset_id or current.id)
+    response: UploadImagesResponse | None = None
+    try:
+        with bind_timing_collector(collector), collector.stage("knowledge_base_upload_new_version_total"):
+            record, _description, deduplicated, duplicate_of = await get_langchain_adapter().process_image_upload(
+                db=db,
+                file=file,
+                split="custom",
+                source_dataset=current.source_dataset,
+                logical_asset_id=current.logical_asset_id or current.id,
+            )
+            response = UploadImagesResponse(
+                images=[
+                    ImageRecordOut.model_validate(
+                        {
+                            **ImageRecordOut.model_validate(record).model_dump(),
+                            "deduplicated": deduplicated,
+                            "duplicate_of": duplicate_of,
+                        }
+                    )
+                ],
+                deduplicated_count=1 if deduplicated else 0,
+            )
+        if settings.EXPOSE_TIMINGS_IN_API and response is not None:
+            response.timings = TimingSummary.model_validate(collector.snapshot())
+        return response
+    finally:
+        collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
 
 @router.get("/{image_id}", response_model=ImageRecordOut)
@@ -167,9 +230,23 @@ async def upload_images(
                 split=split,
                 source_dataset=source_dataset,
             )
-            records = [rec for rec, _desc in processed]
+            records = []
+            deduplicated_count = 0
+            for rec, _desc, deduplicated, duplicate_of in processed:
+                if deduplicated:
+                    deduplicated_count += 1
+                records.append(
+                    ImageRecordOut.model_validate(
+                        {
+                            **ImageRecordOut.model_validate(rec).model_dump(),
+                            "deduplicated": deduplicated,
+                            "duplicate_of": duplicate_of,
+                        }
+                    )
+                )
             response = UploadImagesResponse(
-                images=[ImageRecordOut.model_validate(r) for r in records],
+                images=records,
+                deduplicated_count=deduplicated_count,
             )
         if settings.EXPOSE_TIMINGS_IN_API and response is not None:
             response.timings = TimingSummary.model_validate(collector.snapshot())

@@ -268,7 +268,7 @@ class RAGChain:
 
         # 检索一次
         documents = self.retriever.search_with_dict_output(query, top_k=self.top_k)
-        text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
+        text_chunks = self.doc_vector_store.search_with_pipeline(query, top_k=self.text_top_k)
 
         # 将预检索结果注入 chain
         chain_inputs = {
@@ -300,7 +300,12 @@ class RAGChain:
                 min_relevance_score=min_relevance_score,
             )
         with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
-            text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
+            text_chunks = await self.doc_vector_store.async_search_with_pipeline(
+                query,
+                top_k=self.text_top_k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
 
         # 上下文压缩：过滤无关文档
         from app.langchain_integration.context_compression import compress_context
@@ -334,7 +339,12 @@ class RAGChain:
                 min_relevance_score=min_relevance_score,
             )
         with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
-            text_chunks = self.doc_vector_store.similarity_search(query, k=self.text_top_k)
+            text_chunks = await self.doc_vector_store.async_search_with_pipeline(
+                query,
+                top_k=self.text_top_k,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+            )
 
         # 上下文压缩
         from app.langchain_integration.context_compression import compress_context
@@ -391,7 +401,7 @@ class RAGChain:
             })
 
         with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
-            text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
+            text_chunks = self.doc_vector_store.search_with_pipeline(description, top_k=self.text_top_k)
 
         # 使用生成的描述作为查询执行 RAG，并保留历史和检索上下文
         answer = await self.agenerate_from_context(
@@ -434,7 +444,7 @@ class RAGChain:
             })
 
         with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
-            text_chunks = self.doc_vector_store.similarity_search(description, k=self.text_top_k)
+            text_chunks = self.doc_vector_store.search_with_pipeline(description, top_k=self.text_top_k)
         async for chunk in self.astream_from_context(
             query=description,
             documents=dict_documents,
