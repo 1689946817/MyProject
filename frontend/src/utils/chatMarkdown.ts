@@ -6,6 +6,12 @@ type RenderOptions = {
   copyCodeLabel: string;
 };
 
+export type ChatMarkdownBlock = {
+  key: string;
+  index: number;
+  raw: string;
+};
+
 const renderCache = new Map<string, string>();
 const MAX_CACHE_SIZE = 120;
 const markdownUtils = new MarkdownIt().utils;
@@ -188,8 +194,53 @@ function sanitizeRenderedHtml(html: string): string {
   });
 }
 
+const fencePattern = /^\s*(```|~~~)/;
+
+export function splitChatMarkdownBlocks(content: string): ChatMarkdownBlock[] {
+  const normalizedContent = String(content || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+  if (!normalizedContent.trim()) {
+    return [];
+  }
+
+  const blocks: string[] = [];
+  let current: string[] = [];
+  let inFence = false;
+
+  normalizedContent.split("\n").forEach((line) => {
+    if (fencePattern.test(line)) {
+      current.push(line);
+      inFence = !inFence;
+      return;
+    }
+
+    if (!inFence && !line.trim()) {
+      if (current.some((item) => item.trim())) {
+        blocks.push(current.join("\n").trim());
+        current = [];
+      }
+      return;
+    }
+
+    current.push(line);
+  });
+
+  if (current.some((item) => item.trim())) {
+    blocks.push(current.join("\n").trim());
+  }
+
+  return blocks.map((raw, index) => ({
+    key: `p-${index}`,
+    index,
+    raw,
+  }));
+}
+
 export function renderChatMarkdown(content: string, options: RenderOptions): string {
-  const normalizedContent = String(content || "");
+  const normalizedContent = String(content || "")
+    .replace(/<br\s*\/?>/gi, "\n");
   if (!normalizedContent.trim()) {
     return "";
   }

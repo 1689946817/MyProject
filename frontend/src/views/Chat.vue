@@ -94,15 +94,25 @@
                     </div>
                     <div v-if="shouldShowSourcesFirst(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg) }">
                       <div class="sources-heading">{{ t("chat.sourceReferences") }}</div>
-                      <div v-for="source in getVisibleSources(msg)" :key="source.source_id" class="source-card">
+                      <div
+                        v-for="source in getVisibleSources(msg)"
+                        :key="source.source_id"
+                        :ref="(el) => setSourceCardRef(String(msg.id), source.source_id, el)"
+                        class="source-card"
+                        :class="{ active: isSourceHighlighted(msg, source), clickable: getSourceCitationCount(msg, source) > 0 }"
+                        @click="toggleSourceHighlight(msg, source)"
+                      >
                         <div class="source-card-main">
-                          <div v-if="isImageSource(source)" class="source-card-visual" @click="showPreview(source)">
+                          <div v-if="isImageSource(source)" class="source-card-visual" @click.stop="showPreview(source)">
                             <img :src="getSourceImageSrc(source)" @error="onImgError" />
                           </div>
                           <div class="source-card-copy">
                             <div class="source-card-head">
                               <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
-                              <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                              <div class="source-card-head-badges">
+                                <span v-if="getSourceCitationCount(msg, source) > 0" class="source-card-refcount">{{ getSourceCitationCount(msg, source) }}</span>
+                                <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                              </div>
                             </div>
                             <div class="source-card-meta">
                               <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
@@ -117,7 +127,7 @@
                             v-if="isImageSource(source)"
                             type="button"
                             class="message-action-btn compact"
-                            @click="showPreview(source)"
+                            @click.stop="showPreview(source)"
                           >
                             <i class="i-ep-zoom-in"></i>
                             <span>{{ t("chat.previewImage") }}</span>
@@ -126,7 +136,7 @@
                             v-if="canOpenSourceDocument(source)"
                             type="button"
                             class="message-action-btn compact"
-                            @click="openSourceDocument(source)"
+                            @click.stop="openSourceDocument(source)"
                           >
                             <i class="i-ep-document"></i>
                             <span>{{ t("chat.openSourceDoc") }}</span>
@@ -138,7 +148,13 @@
                       v-if="msg.role === 'assistant' && msg.content"
                       class="assistant-markdown"
                       :content="msg.content"
+                      :citations="getMessageCitations(msg)"
+                      :active-paragraph-keys="getActiveParagraphKeys(msg)"
+                      :active-source-ids="getActiveSourceIds(msg)"
+                      :source-labels="getSourceLabelMap(msg)"
                       :streaming="String(msg.id) === streamingId"
+                      @paragraph-select="handleParagraphSelect(msg, $event)"
+                      @citation-open-doc="openCitationDocRef"
                     />
                     <p
                       v-else-if="msg.content"
@@ -155,15 +171,25 @@
                     <QaProcessCard v-if="shouldShowProcessCard(msg)" :message="msg" />
                     <div v-if="shouldShowSourcesAfterText(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg) }">
                       <div class="sources-heading">{{ t("chat.sourceReferences") }}</div>
-                      <div v-for="source in getVisibleSources(msg)" :key="source.source_id" class="source-card">
+                      <div
+                        v-for="source in getVisibleSources(msg)"
+                        :key="source.source_id"
+                        :ref="(el) => setSourceCardRef(String(msg.id), source.source_id, el)"
+                        class="source-card"
+                        :class="{ active: isSourceHighlighted(msg, source), clickable: getSourceCitationCount(msg, source) > 0 }"
+                        @click="toggleSourceHighlight(msg, source)"
+                      >
                         <div class="source-card-main">
-                          <div v-if="isImageSource(source)" class="source-card-visual" @click="showPreview(source)">
+                          <div v-if="isImageSource(source)" class="source-card-visual" @click.stop="showPreview(source)">
                             <img :src="getSourceImageSrc(source)" @error="onImgError" />
                           </div>
                           <div class="source-card-copy">
                             <div class="source-card-head">
                               <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
-                              <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                              <div class="source-card-head-badges">
+                                <span v-if="getSourceCitationCount(msg, source) > 0" class="source-card-refcount">{{ getSourceCitationCount(msg, source) }}</span>
+                                <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                              </div>
                             </div>
                             <div class="source-card-meta">
                               <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
@@ -178,7 +204,7 @@
                             v-if="isImageSource(source)"
                             type="button"
                             class="message-action-btn compact"
-                            @click="showPreview(source)"
+                            @click.stop="showPreview(source)"
                           >
                             <i class="i-ep-zoom-in"></i>
                             <span>{{ t("chat.previewImage") }}</span>
@@ -187,7 +213,7 @@
                             v-if="canOpenSourceDocument(source)"
                             type="button"
                             class="message-action-btn compact"
-                            @click="openSourceDocument(source)"
+                            @click.stop="openSourceDocument(source)"
                           >
                             <i class="i-ep-document"></i>
                             <span>{{ t("chat.openSourceDoc") }}</span>
@@ -450,13 +476,14 @@ import SessionList from "@/components/SessionList.vue";
 import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
 import QaProcessCard from "@/components/QaProcessCard.vue";
 import ChatMarkdown from "@/components/ChatMarkdown.vue";
-import type { ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
+import type { ChatCitationChunkRef, ChatCitationItem, ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
 
 const { t } = useI18n();
 const router = useRouter();
 
 type SourceItem = ChatSourceItem;
 type Message = ChatMessage;
+type CitationItem = ChatCitationItem;
 type ExecutionHint =
   | "direct_llm"
   | "multimodal_rag"
@@ -520,6 +547,10 @@ const previewSrc = ref("");
 const previewTitle = ref("");
 const previewDescription = ref("");
 const messagesEndRef = ref<HTMLElement>();
+const sourceCardRefs = new Map<string, HTMLElement>();
+const activeCitationMessageId = ref<string | null>(null);
+const activeCitationSourceIds = ref<string[]>([]);
+const activeCitationParagraphKeys = ref<string[]>([]);
 let loadSessionToken = 0;
 let scrollToBottomRaf = 0;
 
@@ -1085,6 +1116,7 @@ function selectSessionFromDrawer(id: string) {
 }
 
 watch(currentSessionId, (newId, oldId) => {
+  clearCitationHighlight();
   if (oldId) {
     saveSessionDraft(oldId);
   }
@@ -1176,11 +1208,25 @@ function trackObjectUrl(url: string) {
 }
 
 function cloneMessage(message: Message): Message {
+  const normalizedCitations = message.citations
+    ? message.citations.map((citation) => ({
+      ...citation,
+      source_ids: [...citation.source_ids],
+      doc_chunk_refs: citation.doc_chunk_refs ? citation.doc_chunk_refs.map((ref) => ({ ...ref })) : [],
+    }))
+    : (Array.isArray(message.retrieval_params?.citations)
+      ? (message.retrieval_params.citations as CitationItem[]).map((citation) => ({
+        ...citation,
+        source_ids: [...citation.source_ids],
+        doc_chunk_refs: citation.doc_chunk_refs ? citation.doc_chunk_refs.map((ref) => ({ ...ref })) : [],
+      }))
+      : []);
   return {
     ...message,
     sources: message.sources ? [...message.sources] : [],
+    citations: normalizedCitations,
     retrieval_steps: message.retrieval_steps ? [...message.retrieval_steps] : [],
-    retrieval_params: message.retrieval_params ? { ...message.retrieval_params } : null,
+    retrieval_params: message.retrieval_params ? { ...message.retrieval_params, citations: normalizedCitations } : null,
     timings: message.timings ? { ...message.timings, stages: [...message.timings.stages] } : null,
   };
 }
@@ -1283,6 +1329,100 @@ function getImageSources(msg: Message): SourceItem[] {
 
 function getVisibleSources(msg: Message): SourceItem[] {
   return msg.sources || [];
+}
+
+function getMessageCitations(msg: Message): CitationItem[] {
+  return msg.citations || (Array.isArray(msg.retrieval_params?.citations) ? msg.retrieval_params.citations as CitationItem[] : []);
+}
+
+function getSourceLabelMap(msg: Message): Record<string, string> {
+  return getVisibleSources(msg).reduce<Record<string, string>>((acc, source, index) => {
+    acc[source.source_id] = `S${index + 1}`;
+    return acc;
+  }, {});
+}
+
+function getSourceCitationCount(msg: Message, source: SourceItem): number {
+  return getMessageCitations(msg).filter((citation) => citation.source_ids.includes(source.source_id)).length;
+}
+
+function getActiveParagraphKeys(msg: Message): string[] {
+  return activeCitationMessageId.value === String(msg.id) ? activeCitationParagraphKeys.value : [];
+}
+
+function getActiveSourceIds(msg: Message): string[] {
+  return activeCitationMessageId.value === String(msg.id) ? activeCitationSourceIds.value : [];
+}
+
+function setSourceCardRef(messageId: string, sourceId: string, element: Element | { $el?: Element } | null) {
+  const key = `${messageId}::${sourceId}`;
+  const actualElement = element instanceof HTMLElement
+    ? element
+    : element && "$el" in element && element.$el instanceof HTMLElement
+      ? element.$el
+      : null;
+  if (actualElement) {
+    sourceCardRefs.set(key, actualElement);
+    return;
+  }
+  sourceCardRefs.delete(key);
+}
+
+function clearCitationHighlight() {
+  activeCitationMessageId.value = null;
+  activeCitationSourceIds.value = [];
+  activeCitationParagraphKeys.value = [];
+}
+
+function scrollToHighlightedSource(messageId: string, sourceId: string) {
+  const target = sourceCardRefs.get(`${messageId}::${sourceId}`);
+  target?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function isSourceHighlighted(msg: Message, source: SourceItem): boolean {
+  return getActiveSourceIds(msg).includes(source.source_id);
+}
+
+function handleParagraphSelect(msg: Message, citation: CitationItem) {
+  const messageId = String(msg.id);
+  const sameSelection = activeCitationMessageId.value === messageId
+    && activeCitationParagraphKeys.value.length === 1
+    && activeCitationParagraphKeys.value[0] === citation.paragraph_key;
+  if (sameSelection) {
+    clearCitationHighlight();
+    return;
+  }
+  activeCitationMessageId.value = messageId;
+  activeCitationParagraphKeys.value = [citation.paragraph_key];
+  activeCitationSourceIds.value = [...citation.source_ids];
+  if (citation.source_ids.length > 0) {
+    nextTick(() => scrollToHighlightedSource(messageId, citation.source_ids[0]));
+  }
+}
+
+function toggleSourceHighlight(msg: Message, source: SourceItem) {
+  const citations = getMessageCitations(msg);
+  if (!citations.length) {
+    return;
+  }
+  const relatedParagraphKeys = citations
+    .filter((citation) => citation.source_ids.includes(source.source_id))
+    .map((citation) => citation.paragraph_key);
+  if (!relatedParagraphKeys.length) {
+    return;
+  }
+  const messageId = String(msg.id);
+  const sameSelection = activeCitationMessageId.value === messageId
+    && activeCitationSourceIds.value.length === 1
+    && activeCitationSourceIds.value[0] === source.source_id;
+  if (sameSelection) {
+    clearCitationHighlight();
+    return;
+  }
+  activeCitationMessageId.value = messageId;
+  activeCitationSourceIds.value = [source.source_id];
+  activeCitationParagraphKeys.value = relatedParagraphKeys;
+  nextTick(() => scrollToHighlightedSource(messageId, source.source_id));
 }
 
 function isImageSource(source: SourceItem): boolean {
@@ -1404,6 +1544,20 @@ function openSourceDocument(source: SourceItem) {
   router.push({ path: "/docs", query: queryParams });
 }
 
+function openCitationDocRef(ref: ChatCitationChunkRef) {
+  const docId = String(ref.doc_id || "").trim();
+  if (!docId) return;
+  const queryParams: Record<string, string> = {
+    docId,
+    tab: "chunks",
+    chunk: String(ref.chunk_index),
+  };
+  if (typeof ref.page_number === "number") {
+    queryParams.page = String(ref.page_number);
+  }
+  router.push({ path: "/docs", query: queryParams });
+}
+
 function shouldShowRerankFilterNotice(msg: Message): boolean {
   if (msg.role !== "assistant" || !msg.retrieval_params?.enable_score_filter) {
     return false;
@@ -1476,6 +1630,7 @@ async function sendChat(options: SendChatOptions) {
   }
 
   const sentImageUrl = options.requestImage ? trackObjectUrl(URL.createObjectURL(options.requestImage)) : "";
+  clearCitationHighlight();
   const userMessage: Message = {
     id: Date.now().toString(),
     session_id: sessionId,
@@ -1485,6 +1640,7 @@ async function sendChat(options: SendChatOptions) {
     has_image: Boolean(options.requestImage),
     local_image_url: sentImageUrl || undefined,
     sources: [],
+    citations: [],
     retrieval_params: null,
   };
 
@@ -1500,6 +1656,7 @@ async function sendChat(options: SendChatOptions) {
     created_at: new Date().toISOString(),
     has_image: false,
     sources: [],
+    citations: [],
     retrieval_steps: [],
     retrieval_params: null,
     timings: null,
@@ -1537,6 +1694,7 @@ async function sendChat(options: SendChatOptions) {
 
     const finalizeAssistantMessage = (targetSessionId: string, payload: {
       sources: Message["sources"];
+      citations?: Message["citations"];
       presentation_mode?: Message["presentation_mode"];
       execution_mode?: Message["execution_mode"];
       use_rag?: Message["use_rag"];
@@ -1546,6 +1704,7 @@ async function sendChat(options: SendChatOptions) {
       const assignPayload = (message: Message) => {
         message.session_id = targetSessionId;
         message.sources = payload.sources || [];
+        message.citations = payload.citations || [];
         message.presentation_mode = payload.presentation_mode;
         message.execution_mode = payload.execution_mode;
         message.use_rag = payload.use_rag;
@@ -1559,6 +1718,7 @@ async function sendChat(options: SendChatOptions) {
           min_relevance_score: chatMinRelevanceScore.value,
           execution_hint: options.requestExecutionHint,
           source_scope: options.requestSourceScope,
+          citations: payload.citations || [],
           timings: payload.timings || null,
         };
         message.timings = payload.timings || null;
@@ -1605,6 +1765,7 @@ async function sendChat(options: SendChatOptions) {
         onResults: (event) => {
           finalizeAssistantMessage(effectiveSessionId, {
             sources: event.sources || [],
+            citations: event.citations || [],
             presentation_mode: event.presentation_mode,
             execution_mode: event.execution_mode,
             use_rag: event.use_rag,
@@ -2418,6 +2579,16 @@ onBeforeUnmount(() => {
   background: linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.92) 100%);
 }
 
+.source-card.clickable {
+  cursor: pointer;
+}
+
+.source-card.active {
+  border-color: rgba(14, 165, 233, 0.34);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16);
+  background: linear-gradient(180deg, rgba(240, 249, 255, 0.96) 0%, rgba(224, 242, 254, 0.92) 100%);
+}
+
 .source-card-main {
   display: flex;
   gap: 12px;
@@ -2457,6 +2628,12 @@ onBeforeUnmount(() => {
   gap: 8px;
 }
 
+.source-card-head-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .source-card-title {
   font-size: 13px;
   font-weight: 700;
@@ -2476,6 +2653,20 @@ onBeforeUnmount(() => {
   color: var(--accent-primary);
   background: rgba(37, 99, 235, 0.1);
   white-space: nowrap;
+}
+
+.source-card-refcount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #075985;
+  background: rgba(14, 165, 233, 0.12);
 }
 
 .source-card-meta {

@@ -21,7 +21,9 @@ from app.application.chat_service import (
     load_json_list,
     load_json_field,
 )
+from app.application.chat_citations import build_chat_citations
 from app.application.schemas import (
+    ChatCitationItem,
     ChatMessageOut,
     ChatResponse,
     ChatSessionCreateResponse,
@@ -228,6 +230,13 @@ def _to_chat_message_out(message) -> ChatMessageOut:
     sources = [ChatSourceItem.model_validate(item) for item in load_message_sources(getattr(message, "sources_json", None))]
     retrieval_params = load_json_field(getattr(message, "retrieval_params_json", None))
     retrieval_steps = load_json_list(getattr(message, "retrieval_steps_json", None))
+    citations = []
+    if isinstance(retrieval_params, dict):
+        citations = [
+            ChatCitationItem.model_validate(item)
+            for item in retrieval_params.get("citations", [])
+            if isinstance(item, dict)
+        ]
     return ChatMessageOut(
         id=message.id,
         session_id=message.session_id,
@@ -235,6 +244,7 @@ def _to_chat_message_out(message) -> ChatMessageOut:
         content=message.content,
         has_image=message.has_image,
         sources=sources,
+        citations=citations,
         retrieval_params=retrieval_params,
         retrieval_steps=retrieval_steps,
         created_at=message.created_at,
@@ -374,6 +384,8 @@ def _build_chat_response(
     *,
     answer: str,
     retrieved: List[dict],
+    sources: List[ChatSourceItem],
+    citations: List[ChatCitationItem],
     session_id: str,
     intent: dict[str, Any],
     collector: RequestTimingCollector,
@@ -381,13 +393,14 @@ def _build_chat_response(
     response = ChatResponse(
         answer=answer,
         results=_build_results(retrieved),
-        sources=_normalize_chat_sources(retrieved),
+        sources=sources,
         session_id=session_id,
         presentation_mode=intent.get("presentation_mode", "rag_answer"),
         execution_mode=intent.get("execution_mode", "multimodal_rag"),
         use_rag=bool(intent.get("use_rag", True)),
         has_uploaded_image=bool(intent.get("has_uploaded_image", False)),
         retrieval_steps=intent.get("retrieval_steps") or [],
+        citations=citations,
     )
     if settings.EXPOSE_TIMINGS_IN_API:
         response.timings = _maybe_timings_payload(collector)
@@ -397,18 +410,21 @@ def _build_chat_response(
 def _build_results_payload(
     *,
     retrieved: List[dict],
+    sources: List[ChatSourceItem],
+    citations: List[ChatCitationItem],
     intent: dict[str, Any],
     collector: RequestTimingCollector,
 ) -> dict[str, Any]:
     payload = {
         "type": "results",
         "results": [item.model_dump() for item in _build_results(retrieved)],
-        "sources": [source.model_dump() for source in _normalize_chat_sources(retrieved)],
+        "sources": [source.model_dump() for source in sources],
         "retrieval_steps": intent.get("retrieval_steps") or [],
         "presentation_mode": intent.get("presentation_mode", "rag_answer"),
         "execution_mode": intent.get("execution_mode", "multimodal_rag"),
         "use_rag": bool(intent.get("use_rag", True)),
         "has_uploaded_image": bool(intent.get("has_uploaded_image", False)),
+        "citations": [citation.model_dump() for citation in citations],
     }
     if settings.EXPOSE_TIMINGS_IN_API:
         payload["timings"] = TimingSummary.model_validate(collector.snapshot()).model_dump()
@@ -602,11 +618,13 @@ def _build_rag_streaming_response(
                     stream=True,
                 )
                 sources = _normalize_chat_sources(retrieved_docs)
+                citations = build_chat_citations(full_answer, sources)
                 retrieval_steps = final_intent.get("retrieval_steps") or []
                 with collector.stage("chat_message_persist"):
                     add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
                     assistant_retrieval_params = {
                         **retrieval_params,
+                        "citations": [citation.model_dump() for citation in citations],
                         "timings": TimingSummary.model_validate(collector.snapshot()).model_dump() if settings.EXPOSE_TIMINGS_IN_API else None,
                     }
                     add_message(
@@ -622,6 +640,8 @@ def _build_rag_streaming_response(
                 yield _build_sse_chunk(
                     _build_results_payload(
                         retrieved=retrieved_docs,
+                        sources=sources,
+                        citations=citations,
                         intent={
                             **final_intent,
                             "retrieval_steps": retrieval_steps,
@@ -724,6 +744,7 @@ async def rag_chat_endpoint(
                 presentation_mode=intent.get("presentation_mode"),
             )
             sources = _normalize_chat_sources(retrieved)
+            citations = build_chat_citations(answer, sources)
             retrieval_steps = intent.get("retrieval_steps") or []
             retrieval_params = _build_retrieval_params(
                 query=query,
@@ -740,6 +761,7 @@ async def rag_chat_endpoint(
                 add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
                 assistant_retrieval_params = {
                     **retrieval_params,
+                    "citations": [citation.model_dump() for citation in citations],
                     "timings": _maybe_timings_payload(collector).model_dump() if settings.EXPOSE_TIMINGS_IN_API else None,
                 }
                 add_message(
@@ -762,6 +784,7 @@ async def rag_chat_endpoint(
                 use_rag=bool(intent.get("use_rag", True)),
                 has_uploaded_image=image is not None,
                 retrieval_steps=retrieval_steps,
+                citations=citations,
             )
         if settings.EXPOSE_TIMINGS_IN_API and response is not None:
             response.timings = _maybe_timings_payload(collector)

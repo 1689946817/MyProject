@@ -76,6 +76,25 @@ class FakeAdapter:
             )
         if query == "no-source":
             return ("answer for no-source", [])
+        if query == "citation-hit":
+            return (
+                "概览。\n\n保修流程需要先提交报修入口表单。",
+                [
+                    {
+                        "doc_id": "doc-cite",
+                        "chunk_index": 1,
+                        "content": "保修流程需要先提交报修入口表单，然后等待审核。",
+                        "metadata": {
+                            "file_name": "guide.pdf",
+                            "file_path": "/tmp/guide.pdf",
+                            "page_number": 4,
+                        },
+                        "score": 0.81,
+                        "relevance_score": 0.81,
+                        "score_source": "vector",
+                    }
+                ],
+            )
         return (
             f"answer for {query}",
             [
@@ -375,6 +394,22 @@ class TestChatSessions(unittest.TestCase):
         self.assertEqual(len(assistant_messages), 1)
         self.assertEqual(assistant_messages[0]["sources"][0]["source_type"], "document_chunk")
         self.assertEqual(assistant_messages[0]["sources"][0]["source_id"], "stream-doc#chunk-3")
+
+    def test_rag_chat_returns_citations_and_persists_them_in_history(self):
+        response = self.client.post("/api/rag/chat", data={"query": "citation-hit"})
+        self.assertEqual(response.status_code, 200)
+
+        payload = response.json()
+        self.assertTrue(payload["citations"])
+        self.assertEqual(payload["citations"][0]["source_ids"], ["doc-cite#chunk-1"])
+        self.assertEqual(payload["citations"][0]["doc_chunk_refs"][0]["doc_id"], "doc-cite")
+        self.assertEqual(payload["citations"][0]["doc_chunk_refs"][0]["page_number"], 4)
+
+        detail = self.client.get(f"/api/chat/sessions/{payload['session_id']}")
+        self.assertEqual(detail.status_code, 200)
+        assistant = [message for message in detail.json()["messages"] if message["role"] == "assistant"][0]
+        self.assertEqual(assistant["citations"][0]["source_ids"], ["doc-cite#chunk-1"])
+        self.assertEqual(assistant["retrieval_params"]["citations"][0]["paragraph_key"], "p-1")
 
 
 if __name__ == "__main__":

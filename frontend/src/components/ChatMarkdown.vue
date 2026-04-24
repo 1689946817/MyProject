@@ -1,10 +1,39 @@
 <template>
-  <div
-    class="chat-markdown"
-    :class="{ typing: streaming }"
-    v-html="renderedHtml"
-    @click="handleMarkdownClick"
-  ></div>
+  <div class="chat-markdown" :class="{ typing: streaming }" @click="handleMarkdownClick">
+    <div
+      v-for="block in renderedBlocks"
+      :key="block.key"
+      class="chat-markdown-block"
+      :class="{ active: isParagraphActive(block.key) }"
+      :data-paragraph-key="block.key"
+    >
+      <div class="chat-markdown-html" v-html="block.html"></div>
+      <div v-if="block.citations.length > 0" class="chat-citation-strip">
+        <div
+          v-for="citation in block.citations"
+          :key="`${block.key}-${citation.paragraph_index}`"
+          class="chat-citation-row"
+        >
+          <button
+            type="button"
+            class="chat-citation-pill"
+            :class="{ active: isCitationActive(citation) }"
+            @click.stop="emit('paragraph-select', citation)"
+          >
+            <span>{{ getCitationLabel(citation) }}</span>
+          </button>
+          <button
+            v-if="citation.doc_chunk_refs?.length"
+            type="button"
+            class="chat-citation-open"
+            @click.stop="emit('citation-open-doc', citation.doc_chunk_refs[0])"
+          >
+            <i class="i-ep-document"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -13,18 +42,64 @@ import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
 import "highlight.js/styles/github-dark.css";
 
-import { decodeCopiedCode, renderChatMarkdown } from "@/utils/chatMarkdown";
+import type { ChatCitationChunkRef, ChatCitationItem } from "@/types";
+import { decodeCopiedCode, renderChatMarkdown, splitChatMarkdownBlocks } from "@/utils/chatMarkdown";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   content: string;
   streaming?: boolean;
+  citations?: ChatCitationItem[];
+  activeParagraphKeys?: string[];
+  activeSourceIds?: string[];
+  sourceLabels?: Record<string, string>;
+}>(), {
+  streaming: false,
+  citations: () => [],
+  activeParagraphKeys: () => [],
+  activeSourceIds: () => [],
+  sourceLabels: () => ({}),
+});
+
+const emit = defineEmits<{
+  (event: "paragraph-select", citation: ChatCitationItem): void;
+  (event: "citation-open-doc", ref: ChatCitationChunkRef): void;
 }>();
 
 const { t } = useI18n();
 
-const renderedHtml = computed(() => renderChatMarkdown(props.content, {
-  copyCodeLabel: t("chat.copyCode"),
-}));
+const renderedBlocks = computed(() => {
+  const citationMap = new Map<string, ChatCitationItem[]>();
+  (props.citations || []).forEach((citation) => {
+    const key = citation.paragraph_key || `p-${citation.paragraph_index}`;
+    const list = citationMap.get(key) || [];
+    list.push(citation);
+    citationMap.set(key, list);
+  });
+
+  return splitChatMarkdownBlocks(props.content).map((block) => ({
+    ...block,
+    html: renderChatMarkdown(block.raw, {
+      copyCodeLabel: t("chat.copyCode"),
+    }),
+    citations: citationMap.get(block.key) || [],
+  }));
+});
+
+function getCitationLabel(citation: ChatCitationItem): string {
+  const labels = citation.source_ids
+    .map((sourceId) => props.sourceLabels[sourceId] || sourceId)
+    .filter(Boolean);
+  return labels.join(" · ");
+}
+
+function isParagraphActive(paragraphKey: string): boolean {
+  return props.activeParagraphKeys.includes(paragraphKey);
+}
+
+function isCitationActive(citation: ChatCitationItem): boolean {
+  return citation.source_ids.some((sourceId) => props.activeSourceIds.includes(sourceId))
+    || props.activeParagraphKeys.includes(citation.paragraph_key);
+}
 
 async function copyCode(text: string) {
   if (navigator?.clipboard?.writeText) {
@@ -75,6 +150,76 @@ async function handleMarkdownClick(event: MouseEvent) {
   overflow-wrap: anywhere;
 }
 
+.chat-markdown-block {
+  margin-bottom: 12px;
+  padding: 0;
+  border-radius: 14px;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.chat-markdown-block:last-child {
+  margin-bottom: 0;
+}
+
+.chat-markdown-block.active {
+  padding: 8px 10px;
+  background: rgba(14, 165, 233, 0.1);
+  box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.22);
+  border-left: 4px solid rgba(14, 165, 233, 0.7);
+}
+
+.chat-markdown-html {
+  padding: 0;
+}
+
+.chat-citation-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 0 2px 2px;
+}
+
+.chat-citation-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chat-citation-pill,
+.chat-citation-open {
+  border: 1px solid rgba(14, 165, 233, 0.18);
+  background: rgba(239, 246, 255, 0.92);
+  color: #0369a1;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chat-citation-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.chat-citation-pill.active {
+  background: rgba(14, 165, 233, 0.22);
+  border-color: rgba(14, 165, 233, 0.45);
+  color: #075985;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.14);
+}
+
+.chat-citation-open {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .chat-markdown :deep(p),
 .chat-markdown :deep(ul),
 .chat-markdown :deep(ol),
@@ -83,7 +228,7 @@ async function handleMarkdownClick(event: MouseEvent) {
 .chat-markdown :deep(.chat-code-block),
 .chat-markdown :deep(.chat-table-wrap),
 .chat-markdown :deep(hr) {
-  margin: 0 0 12px;
+  margin: 0;
 }
 
 .chat-markdown :deep(*:last-child) {
@@ -94,7 +239,7 @@ async function handleMarkdownClick(event: MouseEvent) {
 .chat-markdown :deep(h2),
 .chat-markdown :deep(h3),
 .chat-markdown :deep(h4) {
-  margin: 18px 0 10px;
+  margin: 0;
   color: #0f172a;
   font-weight: 700;
   line-height: 1.35;
@@ -256,21 +401,5 @@ async function handleMarkdownClick(event: MouseEvent) {
 
 .chat-markdown :deep(.task-list-item) {
   list-style: none;
-}
-
-.chat-markdown :deep(.task-list-checkbox) {
-  margin-right: 10px;
-  vertical-align: middle;
-}
-
-.chat-markdown.typing::after {
-  content: "|";
-  animation: typing-cursor 0.8s ease-in-out infinite;
-  color: var(--accent-primary);
-}
-
-@keyframes typing-cursor {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
 }
 </style>

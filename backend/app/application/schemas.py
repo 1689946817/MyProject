@@ -211,6 +211,24 @@ class ChatSourceItem(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class ChatCitationChunkRef(BaseModel):
+    """引用命中的文档片段定位信息。"""
+
+    doc_id: str
+    chunk_index: int
+    page_number: Optional[int] = None
+
+
+class ChatCitationItem(BaseModel):
+    """段落级引用信息。"""
+
+    paragraph_key: str
+    paragraph_index: int
+    source_ids: List[str] = Field(default_factory=list)
+    doc_chunk_refs: List[ChatCitationChunkRef] = Field(default_factory=list)
+    confidence: Optional[float] = None
+
+
 class ChatResponse(BaseModel):
     """聊天响应模型
 
@@ -225,6 +243,7 @@ class ChatResponse(BaseModel):
     use_rag: bool = True
     has_uploaded_image: bool = False
     retrieval_steps: List[dict[str, Any]] = Field(default_factory=list)
+    citations: List[ChatCitationItem] = Field(default_factory=list)
     timings: Optional[TimingSummary] = None
 
 
@@ -248,6 +267,7 @@ class ChatMessageOut(BaseModel):
     content: str
     has_image: bool = False
     sources: List[ChatSourceItem] = Field(default_factory=list)
+    citations: List[ChatCitationItem] = Field(default_factory=list)
     retrieval_params: Optional[dict[str, Any]] = None
     retrieval_steps: List[dict[str, Any]] = Field(default_factory=list)
     created_at: datetime

@@ -9,6 +9,7 @@
  */
 import { http } from "./http";
 import type {
+  ChatCitationItem,
   ChatMessage,
   RetrievalStepItem,
   ChatSession,
@@ -32,6 +33,7 @@ export interface ChatResponse {
   answer: string; // 生成的回答
   results: SearchResultItem[]; // 检索到的相关图像列表
   sources: ChatSourceItem[];
+  citations?: ChatCitationItem[];
   session_id: string;
   presentation_mode: PresentationMode;
   execution_mode: ExecutionMode;
@@ -62,6 +64,7 @@ export interface ChatStreamResultsEvent {
   type: "results";
   results: SearchResultItem[];
   sources: ChatSourceItem[];
+  citations?: ChatCitationItem[];
   retrieval_steps: RetrievalStepItem[];
   presentation_mode: PresentationMode;
   execution_mode: ExecutionMode;

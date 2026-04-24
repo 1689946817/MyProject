@@ -56,6 +56,20 @@ export interface ChatSourceItem {
   metadata?: Record<string, any>
 }
 
+export interface ChatCitationChunkRef {
+  doc_id: string
+  chunk_index: number
+  page_number?: number | null
+}
+
+export interface ChatCitationItem {
+  paragraph_key: string
+  paragraph_index: number
+  source_ids: string[]
+  doc_chunk_refs?: ChatCitationChunkRef[]
+  confidence?: number | null
+}
+
 export interface RetrievalStepItem {
   key: string
   label: string
@@ -130,6 +144,7 @@ export interface ChatMessage {
   has_image?: boolean
   local_image_url?: string
   sources?: ChatSourceItem[]
+  citations?: ChatCitationItem[]
   presentation_mode?: PresentationMode
   execution_mode?: ExecutionMode
   use_rag?: boolean
