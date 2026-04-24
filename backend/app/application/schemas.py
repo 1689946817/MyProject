@@ -403,6 +403,8 @@ class DocChunk(BaseModel):
     chunk_index: int
     content: str
     score: float
+    page_number: Optional[int] = None
+    source_type: Optional[str] = None
 
 
 class DocParseResult(BaseModel):

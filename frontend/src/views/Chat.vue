@@ -92,19 +92,46 @@
                         <span class="user-attachment-hint">{{ t("chat.attachedImageHint") }}</span>
                       </div>
                     </div>
-                    <div v-if="shouldShowImagesFirst(msg)" class="referenced-images" :class="{ prominent: isImageFocusedMode(msg) }">
-                      <div v-for="source in getImageSources(msg)" :key="source.source_id" class="ref-image-item" @click="showPreview(source)">
-                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source) || getSourceScoreLabel(source)" class="ref-image-badges">
-                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">{{ getSourceAssetLabel(source) }}</span>
-                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">{{ getSourcePageLabel(source) }}</span>
-                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">{{ getSourceScoreLabel(source) }}</span>
-                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">{{ t("docs.crossPageContinued") }}</span>
+                    <div v-if="shouldShowSourcesFirst(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg) }">
+                      <div class="sources-heading">{{ t("chat.sourceReferences") }}</div>
+                      <div v-for="source in getVisibleSources(msg)" :key="source.source_id" class="source-card">
+                        <div class="source-card-main">
+                          <div v-if="isImageSource(source)" class="source-card-visual" @click="showPreview(source)">
+                            <img :src="getSourceImageSrc(source)" @error="onImgError" />
+                          </div>
+                          <div class="source-card-copy">
+                            <div class="source-card-head">
+                              <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
+                              <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                            </div>
+                            <div class="source-card-meta">
+                              <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
+                              <span v-if="getSourceChunkLabel(source)">{{ getSourceChunkLabel(source) }}</span>
+                              <span v-if="getSourceScoreLabel(source)">{{ getSourceScoreLabel(source) }}</span>
+                            </div>
+                            <p v-if="getSourceSummary(source)" class="source-card-summary">{{ getSourceSummary(source) }}</p>
+                          </div>
                         </div>
-                        <div class="ref-image-overlay">
-                          <i class="i-ep-zoom-in"></i>
-                          <span>{{ t("chat.previewImage") }}</span>
+                        <div class="source-card-actions-row">
+                          <button
+                            v-if="isImageSource(source)"
+                            type="button"
+                            class="message-action-btn compact"
+                            @click="showPreview(source)"
+                          >
+                            <i class="i-ep-zoom-in"></i>
+                            <span>{{ t("chat.previewImage") }}</span>
+                          </button>
+                          <button
+                            v-if="canOpenSourceDocument(source)"
+                            type="button"
+                            class="message-action-btn compact"
+                            @click="openSourceDocument(source)"
+                          >
+                            <i class="i-ep-document"></i>
+                            <span>{{ t("chat.openSourceDoc") }}</span>
+                          </button>
                         </div>
-                        <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
                     </div>
                     <ChatMarkdown
@@ -126,20 +153,46 @@
                       class="message-notice"
                     />
                     <QaProcessCard v-if="shouldShowProcessCard(msg)" :message="msg" />
-                    <div v-if="shouldShowImagesAfterText(msg)" class="referenced-images" :class="{ prominent: isImageFocusedMode(msg) }">
-                      <div class="sources-heading">{{ t("chat.sourceImages") }}</div>
-                      <div v-for="source in getImageSources(msg)" :key="source.source_id" class="ref-image-item" @click="showPreview(source)">
-                        <div v-if="getSourceAssetLabel(source) || getSourcePageLabel(source) || getSourceScoreLabel(source)" class="ref-image-badges">
-                          <span v-if="getSourceAssetLabel(source)" class="ref-image-badge primary">{{ getSourceAssetLabel(source) }}</span>
-                          <span v-if="getSourcePageLabel(source)" class="ref-image-badge subtle">{{ getSourcePageLabel(source) }}</span>
-                          <span v-if="getSourceScoreLabel(source)" class="ref-image-badge score">{{ getSourceScoreLabel(source) }}</span>
-                          <span v-if="isCrossPageSource(source)" class="ref-image-badge warn">{{ t("docs.crossPageContinued") }}</span>
+                    <div v-if="shouldShowSourcesAfterText(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg) }">
+                      <div class="sources-heading">{{ t("chat.sourceReferences") }}</div>
+                      <div v-for="source in getVisibleSources(msg)" :key="source.source_id" class="source-card">
+                        <div class="source-card-main">
+                          <div v-if="isImageSource(source)" class="source-card-visual" @click="showPreview(source)">
+                            <img :src="getSourceImageSrc(source)" @error="onImgError" />
+                          </div>
+                          <div class="source-card-copy">
+                            <div class="source-card-head">
+                              <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
+                              <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                            </div>
+                            <div class="source-card-meta">
+                              <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
+                              <span v-if="getSourceChunkLabel(source)">{{ getSourceChunkLabel(source) }}</span>
+                              <span v-if="getSourceScoreLabel(source)">{{ getSourceScoreLabel(source) }}</span>
+                            </div>
+                            <p v-if="getSourceSummary(source)" class="source-card-summary">{{ getSourceSummary(source) }}</p>
+                          </div>
                         </div>
-                        <div class="ref-image-overlay">
-                          <i class="i-ep-zoom-in"></i>
-                          <span>{{ t("chat.previewImage") }}</span>
+                        <div class="source-card-actions-row">
+                          <button
+                            v-if="isImageSource(source)"
+                            type="button"
+                            class="message-action-btn compact"
+                            @click="showPreview(source)"
+                          >
+                            <i class="i-ep-zoom-in"></i>
+                            <span>{{ t("chat.previewImage") }}</span>
+                          </button>
+                          <button
+                            v-if="canOpenSourceDocument(source)"
+                            type="button"
+                            class="message-action-btn compact"
+                            @click="openSourceDocument(source)"
+                          >
+                            <i class="i-ep-document"></i>
+                            <span>{{ t("chat.openSourceDoc") }}</span>
+                          </button>
                         </div>
-                        <img :src="getSourceImageSrc(source)" @error="onImgError" />
                       </div>
                     </div>
                   </div>
@@ -157,6 +210,20 @@
                         <i class="i-ep-refresh-right"></i>
                         <span>{{ msg.role === "assistant" ? t("chat.resendQuestion") : t("chat.resendMessage") }}</span>
                       </button>
+                      <template v-if="canUseAssistantFollowup(msg)">
+                        <button v-if="canRetryAssistantMessage(msg)" type="button" class="message-action-btn" @click="rerunAssistantMessage(msg, index)">
+                          <i class="i-ep-refresh"></i>
+                          <span>{{ t("chat.retryAnswer") }}</span>
+                        </button>
+                        <button type="button" class="message-action-btn" @click="expandAssistantMessage(msg)">
+                          <i class="i-ep-plus"></i>
+                          <span>{{ t("chat.expandAnswer") }}</span>
+                        </button>
+                        <button type="button" class="message-action-btn" @click="summarizeAssistantMessage(msg)">
+                          <i class="i-ep-document"></i>
+                          <span>{{ t("chat.summarizeAnswer") }}</span>
+                        </button>
+                      </template>
                     </div>
                     <span class="message-time">{{ formatTime(msg.created_at) }}</span>
                   </div>
@@ -170,6 +237,47 @@
             <div v-if="isCurrentSessionPending && currentSessionId && sessionDrafts[currentSessionId]" class="pending-banner">
               <i class="i-ep-loading"></i>
               <span>{{ t("chat.pendingSession") }}</span>
+            </div>
+            <div class="composer-status-bar">
+              <button type="button" class="composer-status-pill" @click="cycleExecutionMode">
+                <i class="i-ep-guide"></i>
+                <span>{{ t("chat.activeMode") }}：{{ composerModeLabel }}</span>
+              </button>
+              <button type="button" class="composer-status-pill" @click="openSourcePanel">
+                <i class="i-ep-collection-tag"></i>
+                <span>{{ composerSourceLabel }}</span>
+              </button>
+              <button type="button" class="composer-status-pill" @click="settingsPanelOpen = !settingsPanelOpen">
+                <i class="i-ep-setting"></i>
+                <span>{{ composerRetrievalLabel }}</span>
+              </button>
+              <span class="composer-status-pill passive">
+                <i :class="attachedImage ? 'i-ep-picture' : 'i-ep-chat-line-square'"></i>
+                <span>{{ composerAttachmentLabel }}</span>
+              </span>
+            </div>
+            <div v-if="composerWarnings.length > 0" class="composer-warning-stack">
+              <el-alert
+                v-for="warning in composerWarnings"
+                :key="warning"
+                :title="warning"
+                type="info"
+                :closable="false"
+                show-icon
+                class="composer-warning"
+              />
+            </div>
+            <div v-if="questionTemplates.length > 0 && (!messages.length || query.trim().length === 0)" class="question-template-bar">
+              <button
+                v-for="template in questionTemplates"
+                :key="template.id"
+                type="button"
+                class="question-template-chip"
+                @click="applyQuestionTemplate(template)"
+              >
+                <span class="question-template-title">{{ template.title }}</span>
+                <span class="question-template-desc">{{ template.description }}</span>
+              </button>
             </div>
             <div class="input-row">
               <el-upload :auto-upload="false" :show-file-list="false" :on-change="onImageChange">
@@ -223,7 +331,7 @@
               <el-input
                 ref="composerInputRef"
                 v-model="query"
-                :placeholder="t('chat.inputPlaceholder')"
+                :placeholder="dynamicInputPlaceholder"
                 class="chat-input"
                 :class="{ 'slash-active': isSlashMode, 'slash-invalid': hasInvalidSlashCommand }"
                 type="textarea"
@@ -366,6 +474,13 @@ type SlashCommand = {
   label: string;
   description: string;
   apply: () => void;
+};
+type QuestionTemplate = {
+  id: string;
+  title: string;
+  description: string;
+  prompt: string;
+  executionHint?: ExecutionHint | "auto";
 };
 
 const sessions = ref<ChatSession[]>([]);
@@ -641,6 +756,98 @@ const settingsSummary = computed(() => {
   }
   return parts.length > 0 ? parts.join(" / ") : t("chat.defaultSettings");
 });
+
+const composerModeLabel = computed(() => {
+  const mode = effectiveExecutionHint.value || "multimodal_rag";
+  const modeMap: Record<string, string> = {
+    direct_llm: t("chat.commandModeDirect"),
+    multimodal_rag: t("chat.commandModeKb"),
+    image_similarity: t("chat.commandModeImage"),
+    image_grounded_answer: t("chat.modeImageGrounded"),
+    uploaded_image_qa: t("chat.attachmentModeAskImage"),
+    save_uploaded_image: t("chat.attachmentModeSave"),
+  };
+  return modeMap[mode] || t("chat.commandModeKb");
+});
+
+const composerSourceLabel = computed(() => {
+  const docCount = selectedSources.value.filter((item) => item.type === "doc").length;
+  const imageCount = selectedSources.value.filter((item) => item.type === "image").length;
+  if (docCount === 0 && imageCount === 0) {
+    return t("chat.contextAllSources");
+  }
+  return t("chat.contextScopedSources", { docs: docCount, images: imageCount });
+});
+
+const composerAttachmentLabel = computed(() => attachedImage.value ? t("chat.contextHasAttachment") : t("chat.contextNoAttachment"));
+
+const composerRetrievalLabel = computed(() => {
+  if (!chatEnableScoreFilter.value) {
+    return t("chat.contextRetrievalSummary", { topK: chatTopK.value, filter: t("chat.processDisabled") });
+  }
+  return t("chat.contextRetrievalSummary", { topK: chatTopK.value, filter: `≥ ${formatNumeric(chatMinRelevanceScore.value)}` });
+});
+
+const composerWarnings = computed(() => {
+  const warnings: string[] = [];
+  if (effectiveExecutionHint.value === "direct_llm" && selectedSources.value.length > 0) {
+    warnings.push(t("chat.warningDirectIgnoresSources"));
+  }
+  if (!attachedImage.value && attachmentMode.value !== "auto") {
+    warnings.push(t("chat.warningAttachmentModeWithoutImage"));
+  }
+  if (attachedImage.value && selectedExecutionHint.value === "direct_llm") {
+    warnings.push(t("chat.warningDirectWithAttachment"));
+  }
+  return warnings;
+});
+
+const dynamicInputPlaceholder = computed(() => {
+  if (effectiveExecutionHint.value === "direct_llm") return t("chat.inputPlaceholderDirect");
+  if (sourceScope.value) return t("chat.inputPlaceholderScoped");
+  if (attachedImage.value && attachmentMode.value === "uploaded_image_qa") return t("chat.inputPlaceholderAskImage");
+  if (attachedImage.value && attachmentMode.value === "image_similarity") return t("chat.inputPlaceholderFindSimilar");
+  if (attachedImage.value && attachmentMode.value === "save_uploaded_image") return t("chat.inputPlaceholderSaveImage");
+  return t("chat.inputPlaceholder");
+});
+
+const questionTemplates = computed<QuestionTemplate[]>(() => [
+  {
+    id: "kb-summary",
+    title: t("chat.templateKbTitle"),
+    description: t("chat.templateKbDesc"),
+    prompt: t("chat.templateKbPrompt"),
+    executionHint: "multimodal_rag",
+  },
+  {
+    id: "image-qa",
+    title: t("chat.templateImageQaTitle"),
+    description: t("chat.templateImageQaDesc"),
+    prompt: t("chat.templateImageQaPrompt"),
+    executionHint: "uploaded_image_qa",
+  },
+  {
+    id: "image-search",
+    title: t("chat.templateImageSearchTitle"),
+    description: t("chat.templateImageSearchDesc"),
+    prompt: t("chat.templateImageSearchPrompt"),
+    executionHint: "image_similarity",
+  },
+  {
+    id: "doc-locate",
+    title: t("chat.templateDocLocateTitle"),
+    description: t("chat.templateDocLocateDesc"),
+    prompt: t("chat.templateDocLocatePrompt"),
+    executionHint: "multimodal_rag",
+  },
+  {
+    id: "save-image",
+    title: t("chat.templateSaveImageTitle"),
+    description: t("chat.templateSaveImageDesc"),
+    prompt: t("chat.templateSaveImagePrompt"),
+    executionHint: "save_uploaded_image",
+  },
+]);
 
 watch([chatTopK, chatEnableScoreFilter, chatMinRelevanceScore], () => {
   settingsPanelOpen.value =
@@ -1074,17 +1281,29 @@ function getImageSources(msg: Message): SourceItem[] {
   return (msg.sources || []).filter((source) => source.source_type === "image");
 }
 
+function getVisibleSources(msg: Message): SourceItem[] {
+  return msg.sources || [];
+}
+
+function isImageSource(source: SourceItem): boolean {
+  return source.source_type === "image";
+}
+
+function isDocumentSource(source: SourceItem): boolean {
+  return source.source_type === "document_chunk";
+}
+
 function isImageFocusedMode(msg: Message): boolean {
   const mode = getPresentationMode(msg);
   return mode === "image_only" || mode === "image_plus_answer";
 }
 
-function shouldShowImagesFirst(msg: Message): boolean {
-  return msg.role === "assistant" && isImageFocusedMode(msg) && getImageSources(msg).length > 0;
+function shouldShowSourcesFirst(msg: Message): boolean {
+  return msg.role === "assistant" && isImageFocusedMode(msg) && getVisibleSources(msg).length > 0;
 }
 
-function shouldShowImagesAfterText(msg: Message): boolean {
-  return msg.role === "assistant" && !isImageFocusedMode(msg) && getImageSources(msg).length > 0;
+function shouldShowSourcesAfterText(msg: Message): boolean {
+  return msg.role === "assistant" && !isImageFocusedMode(msg) && getVisibleSources(msg).length > 0;
 }
 
 function getModeLabel(msg: Message): string {
@@ -1119,6 +1338,14 @@ function getSourcePageLabel(source: SourceItem): string {
   return "";
 }
 
+function getSourceChunkLabel(source: SourceItem): string {
+  const chunkIndex = source.metadata?.chunk_index;
+  if (typeof chunkIndex === "number") {
+    return t("chat.chunkLabel", { index: chunkIndex + 1 });
+  }
+  return "";
+}
+
 function isCrossPageSource(source: SourceItem): boolean {
   return Boolean(source.metadata?.continued_from_previous_page || source.metadata?.continued_to_next_page);
 }
@@ -1135,7 +1362,46 @@ function getSourceScoreLabel(source: SourceItem): string {
   if (!Number.isNaN(relevanceScore)) {
     return `${String(source.score_source || "rel").toUpperCase()} ${formatNumeric(relevanceScore)}`;
   }
+  const rerankScore = Number(source.rerank_score);
+  if (!Number.isNaN(rerankScore)) {
+    return `RERANK ${formatNumeric(rerankScore)}`;
+  }
+  const score = Number(source.score);
+  if (!Number.isNaN(score)) {
+    return `SCORE ${formatNumeric(score)}`;
+  }
   return "";
+}
+
+function getSourceDisplayTitle(source: SourceItem): string {
+  return source.title
+    || String(source.metadata?.file_name || source.metadata?.filename || source.metadata?.doc_id || source.source_id);
+}
+
+function getSourceSummary(source: SourceItem): string {
+  const raw = String(source.content || "").replace(/\s+/g, " ").trim();
+  if (!raw) return "";
+  return raw.length > 140 ? `${raw.slice(0, 140)}…` : raw;
+}
+
+function canOpenSourceDocument(source: SourceItem): boolean {
+  return Boolean(source.metadata?.doc_id);
+}
+
+function openSourceDocument(source: SourceItem) {
+  const docId = String(source.metadata?.doc_id || "").trim();
+  if (!docId) return;
+  const queryParams: Record<string, string> = {
+    docId,
+    tab: isDocumentSource(source) ? "chunks" : "images",
+  };
+  if (typeof source.metadata?.chunk_index === "number") {
+    queryParams.chunk = String(source.metadata.chunk_index);
+  }
+  if (typeof source.metadata?.page_number === "number") {
+    queryParams.page = String(source.metadata.page_number);
+  }
+  router.push({ path: "/docs", query: queryParams });
 }
 
 function shouldShowRerankFilterNotice(msg: Message): boolean {
@@ -1153,8 +1419,44 @@ function shouldShowProcessCard(msg: Message): boolean {
   return Boolean((msg.retrieval_steps && msg.retrieval_steps.length > 0) || msg.timings || msg.retrieval_params?.timings);
 }
 
-async function doChat() {
-  if (!query.value.trim() && !attachedImage.value) {
+function cycleExecutionMode() {
+  const modes: Array<ExecutionHint | "auto"> = [
+    "auto",
+    "multimodal_rag",
+    "direct_llm",
+    "image_similarity",
+  ];
+  const current = selectedExecutionHint.value;
+  const currentIndex = modes.indexOf(current);
+  selectedExecutionHint.value = modes[(currentIndex + 1) % modes.length];
+}
+
+function applyQuestionTemplate(template: QuestionTemplate) {
+  query.value = template.prompt;
+  selectedExecutionHint.value = template.executionHint ?? "auto";
+  if (template.executionHint === "uploaded_image_qa") {
+    attachmentMode.value = "uploaded_image_qa";
+  } else if (template.executionHint === "image_similarity") {
+    attachmentMode.value = "image_similarity";
+  } else if (template.executionHint === "save_uploaded_image") {
+    attachmentMode.value = "save_uploaded_image";
+  } else {
+    attachmentMode.value = "auto";
+  }
+  focusComposer();
+}
+
+type SendChatOptions = {
+  userQuery: string;
+  requestImage: File | null;
+  requestExecutionHint?: ExecutionHint;
+  requestSourceScope?: { doc_ids?: string[]; image_ids?: string[] } | null;
+  assistantPromptLabel?: string;
+};
+
+async function sendChat(options: SendChatOptions) {
+  const normalizedQuery = options.userQuery.trim();
+  if (!normalizedQuery && !options.requestImage) {
     ElMessage.warning(t("chat.enterQuestion"));
     return;
   }
@@ -1172,14 +1474,15 @@ async function doChat() {
     ElMessage.warning(t("chat.pendingSession"));
     return;
   }
-  const sentImageUrl = attachedImage.value ? trackObjectUrl(URL.createObjectURL(attachedImage.value)) : "";
+
+  const sentImageUrl = options.requestImage ? trackObjectUrl(URL.createObjectURL(options.requestImage)) : "";
   const userMessage: Message = {
     id: Date.now().toString(),
     session_id: sessionId,
     role: "user",
-    content: query.value,
+    content: normalizedQuery,
     created_at: new Date().toISOString(),
-    has_image: Boolean(attachedImage.value),
+    has_image: Boolean(options.requestImage),
     local_image_url: sentImageUrl || undefined,
     sources: [],
     retrieval_params: null,
@@ -1188,10 +1491,6 @@ async function doChat() {
   messages.value.push(userMessage);
   currentSessionTitle.value = getSessionDisplayTitle(sessionId, currentSessionTitle.value);
   saveSessionDraft(sessionId);
-  const userQuery = query.value;
-  const requestImage = attachedImage.value;
-  const requestExecutionHint = effectiveExecutionHint.value;
-  const requestSourceScope = sourceScope.value;
   const assistantMessageId = (Date.now() + 1).toString();
   const assistantMessage: Message = {
     id: assistantMessageId,
@@ -1258,8 +1557,8 @@ async function doChat() {
           top_k: chatTopK.value,
           enable_score_filter: chatEnableScoreFilter.value,
           min_relevance_score: chatMinRelevanceScore.value,
-          execution_hint: requestExecutionHint,
-          source_scope: requestSourceScope,
+          execution_hint: options.requestExecutionHint,
+          source_scope: options.requestSourceScope,
           timings: payload.timings || null,
         };
         message.timings = payload.timings || null;
@@ -1278,14 +1577,14 @@ async function doChat() {
 
     await ragChatStream(
       {
-        query: userQuery,
+        query: normalizedQuery,
         sessionId,
         topK: chatTopK.value,
         enableScoreFilter: chatEnableScoreFilter.value,
         minRelevanceScore: chatMinRelevanceScore.value,
-        executionHint: requestExecutionHint,
-        sourceScope: requestSourceScope,
-        image: requestImage,
+        executionHint: options.requestExecutionHint,
+        sourceScope: options.requestSourceScope,
+        image: options.requestImage,
       },
       {
         onSession: (event) => {
@@ -1325,7 +1624,7 @@ async function doChat() {
 
     const userMsgCount = messages.value.filter((m) => m.role === "user").length;
     if (userMsgCount === 1) {
-      const title = generateSessionTitle(userQuery);
+      const title = generateSessionTitle(normalizedQuery || options.assistantPromptLabel || t("chat.newSession"));
       await updateSessionTitle(effectiveSessionId, title);
       currentSessionTitle.value = title;
       saveSessionDraft(effectiveSessionId);
@@ -1351,8 +1650,19 @@ async function doChat() {
     if (streamCompleted || streamingId.value === assistantMessageId) {
       streamingId.value = "";
     }
-    removeAttached();
+    if (options.requestImage === attachedImage.value) {
+      removeAttached();
+    }
   }
+}
+
+async function doChat() {
+  await sendChat({
+    userQuery: query.value,
+    requestImage: attachedImage.value,
+    requestExecutionHint: effectiveExecutionHint.value,
+    requestSourceScope: sourceScope.value,
+  });
 }
 
 function scrollToBottom() {
@@ -1378,6 +1688,63 @@ function showPreview(source: SourceItem) {
   previewDescription.value = source.content || "";
   previewSrc.value = getSourceImageSrc(source);
   previewVisible.value = true;
+}
+
+function canUseAssistantFollowup(msg: Message): boolean {
+  return msg.role === "assistant" && msg.execution_mode !== "save_uploaded_image" && !isCurrentSessionPending.value;
+}
+
+function canRetryAssistantMessage(msg: Message): boolean {
+  return canUseAssistantFollowup(msg) && !Boolean(msg.retrieval_params?.has_image);
+}
+
+function getAssistantSourceScope(msg: Message) {
+  return (msg.retrieval_params?.source_scope as { doc_ids?: string[]; image_ids?: string[] } | null) || null;
+}
+
+function getAssistantExecutionHint(msg: Message): ExecutionHint | undefined {
+  const hint = msg.retrieval_params?.execution_hint as ExecutionHint | undefined;
+  if (hint) return hint;
+  if (msg.execution_mode && msg.execution_mode !== "save_uploaded_image") {
+    return msg.execution_mode;
+  }
+  return undefined;
+}
+
+async function rerunAssistantMessage(msg: Message, index: number) {
+  const sourceMessage = getRelatedUserMessage(index);
+  const text = String(sourceMessage?.content || "").trim();
+  if (!text) {
+    ElMessage.warning(t("chat.resendUnavailable"));
+    return;
+  }
+  await sendChat({
+    userQuery: text,
+    requestImage: null,
+    requestExecutionHint: getAssistantExecutionHint(msg),
+    requestSourceScope: getAssistantSourceScope(msg),
+    assistantPromptLabel: t("chat.retryAnswer"),
+  });
+}
+
+async function expandAssistantMessage(msg: Message) {
+  await sendChat({
+    userQuery: `${t("chat.expandPromptPrefix")}\n\n${msg.content}`,
+    requestImage: null,
+    requestExecutionHint: getAssistantExecutionHint(msg),
+    requestSourceScope: getAssistantSourceScope(msg),
+    assistantPromptLabel: t("chat.expandAnswer"),
+  });
+}
+
+async function summarizeAssistantMessage(msg: Message) {
+  await sendChat({
+    userQuery: `${t("chat.summarizePromptPrefix")}\n\n${msg.content}`,
+    requestImage: null,
+    requestExecutionHint: getAssistantExecutionHint(msg),
+    requestSourceScope: getAssistantSourceScope(msg),
+    assistantPromptLabel: t("chat.summarizeAnswer"),
+  });
 }
 
 function formatTime(isoString: string): string {
@@ -2031,6 +2398,108 @@ onBeforeUnmount(() => {
   color: var(--text-secondary);
 }
 
+.source-card-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.source-card-list.prominent {
+  gap: 12px;
+}
+
+.source-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.92) 100%);
+}
+
+.source-card-main {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.source-card-visual {
+  width: 96px;
+  min-width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(226, 232, 240, 0.55);
+  cursor: pointer;
+}
+
+.source-card-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.source-card-copy {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.source-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.source-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.source-card-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: rgba(37, 99, 235, 0.1);
+  white-space: nowrap;
+}
+
+.source-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.source-card-summary {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  word-break: break-word;
+}
+
+.source-card-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .input-area {
   padding: 8px 12px 10px;
   border-top: 1px solid var(--border-color);
@@ -2040,6 +2509,91 @@ onBeforeUnmount(() => {
   gap: 6px;
   flex-shrink: 0;
   box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.composer-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.composer-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  background: rgba(248, 250, 252, 0.92);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.composer-status-pill:hover {
+  border-color: rgba(37, 99, 235, 0.28);
+  color: var(--accent-primary);
+  background: rgba(239, 246, 255, 0.96);
+}
+
+.composer-status-pill.passive {
+  cursor: default;
+}
+
+.composer-status-pill.passive:hover {
+  border-color: rgba(148, 163, 184, 0.26);
+  color: var(--text-secondary);
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.composer-warning-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.composer-warning {
+  margin: 0;
+}
+
+.question-template-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.question-template-chip {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.94) 100%);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.question-template-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.24);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.question-template-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.question-template-desc {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-secondary);
 }
 
 .input-row {
@@ -2406,6 +2960,13 @@ onBeforeUnmount(() => {
   border-color: rgba(37, 99, 235, 0.08);
 }
 
+.message-action-btn.compact {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(148, 163, 184, 0.18);
+  font-size: 12px;
+}
+
 .message-time {
   font-size: 11px;
   color: var(--text-tertiary);
@@ -2464,6 +3025,16 @@ onBeforeUnmount(() => {
   .message-actions {
     opacity: 1;
   }
+
+  .source-card-main {
+    flex-direction: column;
+  }
+
+  .source-card-visual {
+    width: 100%;
+    min-width: 0;
+    height: 180px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -2496,6 +3067,20 @@ onBeforeUnmount(() => {
   .message-footer {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .composer-status-bar,
+  .source-card-actions-row {
+    width: 100%;
+  }
+
+  .composer-status-pill,
+  .question-template-chip {
+    width: 100%;
+  }
+
+  .question-template-bar {
+    grid-template-columns: 1fr;
   }
 
   .page-subtitle {

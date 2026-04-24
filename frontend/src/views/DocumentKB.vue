@@ -153,13 +153,18 @@
               <el-card
                 v-for="chunk in parseResult.chunks"
                 :key="chunk.chunk_index"
+                :ref="(el: Element | { $el?: Element } | null) => setChunkItemRef(chunk.chunk_index, el)"
                 class="chunk-card glass-card"
+                :class="{ 'chunk-card-active': activeChunkIndex === chunk.chunk_index }"
                 shadow="never"
               >
                 <template #header>
                   <div class="chunk-header">
                     <span>片段 #{{ chunk.chunk_index + 1 }}</span>
-                    <span>{{ chunk.content.length }} 字</span>
+                    <span>
+                      <template v-if="chunk.page_number">{{ t("docs.pageLabel", { page: chunk.page_number }) }} · </template>
+                      {{ chunk.content.length }} 字
+                    </span>
                   </div>
                 </template>
                 <pre class="chunk-content">{{ chunk.content }}</pre>
@@ -236,10 +241,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import {
   deleteDocument,
   getDocumentProgress,
@@ -257,6 +263,8 @@ import UploadZone from "@/components/UploadZone.vue";
 import { imgSrc } from "@/utils/image";
 
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 
 const selectedFiles = ref<File[]>([]);
 const selectedFile = computed(() => selectedFiles.value[0] || null);
@@ -285,6 +293,8 @@ const activeDoc = ref<DocumentRecord | null>(null);
 const parseResult = ref<DocParseResult | null>(null);
 const loadingResult = ref(false);
 const resultTab = ref("chunks");
+const activeChunkIndex = ref<number | null>(null);
+const chunkItemRefs = new Map<number, HTMLElement>();
 
 const editVisible = ref(false);
 const currentDocId = ref("");
@@ -464,6 +474,66 @@ function assetDetailText(img: DocParseResult["images"][number]) {
   return parts.join(" · ");
 }
 
+function setChunkItemRef(chunkIndex: number, element: Element | { $el?: Element } | null) {
+  const actualElement = element instanceof HTMLElement
+    ? element
+    : element && "$el" in element && element.$el instanceof HTMLElement
+      ? element.$el
+      : null;
+  if (actualElement) {
+    chunkItemRefs.set(chunkIndex, actualElement);
+    return;
+  }
+  chunkItemRefs.delete(chunkIndex);
+}
+
+async function scrollToTargetChunk(chunkIndex: number | null) {
+  if (chunkIndex === null || chunkIndex === undefined) {
+    activeChunkIndex.value = null;
+    return;
+  }
+  activeChunkIndex.value = chunkIndex;
+  await nextTick();
+  const target = chunkItemRefs.get(chunkIndex);
+  target?.scrollIntoView({ behavior: "smooth", block: "center" });
+  window.setTimeout(() => {
+    if (activeChunkIndex.value === chunkIndex) {
+      activeChunkIndex.value = null;
+    }
+  }, 2600);
+}
+
+function resolveChunkIndexFromRoute(result: DocParseResult): number | null {
+  const chunkParam = route.query.chunk;
+  if (typeof chunkParam === "string" && chunkParam !== "") {
+    const parsed = Number(chunkParam);
+    if (!Number.isNaN(parsed) && result.chunks.some((chunk) => chunk.chunk_index === parsed)) {
+      return parsed;
+    }
+  }
+  const pageParam = route.query.page;
+  if (typeof pageParam === "string" && pageParam !== "") {
+    const parsed = Number(pageParam);
+    if (!Number.isNaN(parsed)) {
+      const matched = result.chunks.find((chunk) => chunk.page_number === parsed);
+      if (matched) {
+        return matched.chunk_index;
+      }
+    }
+  }
+  return null;
+}
+
+async function applyRouteTarget(result: DocParseResult) {
+  const requestedTab = route.query.tab === "images" ? "images" : "chunks";
+  resultTab.value = requestedTab;
+  if (requestedTab === "chunks") {
+    await scrollToTargetChunk(resolveChunkIndexFromRoute(result));
+  } else {
+    activeChunkIndex.value = null;
+  }
+}
+
 async function viewResult(doc: DocumentRecord) {
   activeDoc.value = doc;
   drawerVisible.value = true;
@@ -472,11 +542,43 @@ async function viewResult(doc: DocumentRecord) {
   parseResult.value = null;
   try {
     parseResult.value = await getDocResult(doc.id);
+    await applyRouteTarget(parseResult.value);
   } catch {
     ElMessage.error(t("docs.loadResultFailed"));
   } finally {
     loadingResult.value = false;
   }
+}
+
+async function openDocumentFromRoute(docId: string) {
+  const target = docList.value.find((item) => item.id === docId);
+  if (target) {
+    await viewResult(target);
+    return;
+  }
+  try {
+    await loadDocList(false);
+    const reloaded = docList.value.find((item) => item.id === docId);
+    if (reloaded) {
+      await viewResult(reloaded);
+    }
+  } catch {
+    // keep existing load error handling
+  }
+}
+
+async function syncRouteTarget() {
+  const docId = typeof route.query.docId === "string" ? route.query.docId : "";
+  if (!docId) {
+    return;
+  }
+
+  if (!drawerVisible.value || activeDoc.value?.id !== docId || !parseResult.value) {
+    await openDocumentFromRoute(docId);
+    return;
+  }
+
+  await applyRouteTarget(parseResult.value);
 }
 
 function openEdit(doc: DocumentRecord) {
@@ -549,7 +651,29 @@ async function handleReprocess(doc: DocumentRecord) {
   }
 }
 
-onMounted(loadDocList);
+onMounted(async () => {
+  await loadDocList();
+  await syncRouteTarget();
+});
+
+watch(
+  () => route.query,
+  async () => {
+    await syncRouteTarget();
+  },
+);
+
+watch(drawerVisible, (visible) => {
+  if (visible || !route.query.docId) {
+    return;
+  }
+  const nextQuery = { ...route.query };
+  delete nextQuery.docId;
+  delete nextQuery.tab;
+  delete nextQuery.chunk;
+  delete nextQuery.page;
+  router.replace({ path: route.path, query: nextQuery });
+});
 
 onBeforeUnmount(() => {
   clearProgressPolling();
@@ -692,6 +816,11 @@ onBeforeUnmount(() => {
   padding: 0;
   height: auto;
   overflow: visible;
+}
+
+.chunk-card-active {
+  border-color: rgba(59, 130, 246, 0.42);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12), 0 16px 32px rgba(59, 130, 246, 0.1);
 }
 
 .chunk-card :deep(.el-card__header) {

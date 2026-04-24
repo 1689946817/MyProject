@@ -175,8 +175,12 @@ export interface DocParseResult {
  * 文档文本片段
  */
 export interface DocChunk {
+  doc_id: string
   chunk_index: number
   content: string
+  score?: number
+  page_number?: number | null
+  source_type?: string | null
 }
 
 export interface ConfigOption {

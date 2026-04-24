@@ -166,6 +166,8 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
                 metadata.setdefault("doc_id", doc_id)
             if chunk_index is not None:
                 metadata.setdefault("chunk_index", chunk_index)
+            if metadata.get("file_path") and not metadata.get("file_name"):
+                metadata.setdefault("file_name", os.path.basename(metadata["file_path"]))
 
             source_id = (
                 f"{doc_id}#chunk-{chunk_index}"
@@ -197,6 +199,8 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
 
         source_id = item.get("id") or metadata.get("id") or _fallback_source_id(item, metadata)
         file_path = metadata.get("file_path")
+        if file_path and not metadata.get("file_name"):
+            metadata.setdefault("file_name", os.path.basename(file_path))
         title = metadata.get("title") or metadata.get("filename")
         if not title and file_path:
             title = os.path.basename(file_path)

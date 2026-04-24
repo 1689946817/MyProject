@@ -239,6 +239,8 @@ def get_doc_result(
                     chunk_index=meta.get("chunk_index", i),
                     content=content,
                     score=0.0,
+                    page_number=meta.get("page_number"),
+                    source_type=meta.get("source_type"),
                 )
             )
         chunks.sort(key=lambda c: c.chunk_index)
