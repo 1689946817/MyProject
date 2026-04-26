@@ -71,6 +71,20 @@ _COMMON_FACT_PATTERNS = [
     "位于哪里",
     "在哪个国家",
 ]
+_DIRECT_LLM_EXPLANATION_HINTS = [
+    "什么是",
+    "是什么意思",
+    "指什么",
+    "区别",
+    "不同",
+    "优缺点",
+    "作用",
+    "用途",
+    "原理",
+    "为什么",
+    "介绍一下",
+    "科普",
+]
 _PRODUCT_VENDOR_HINTS = [
     "华为",
     "huawei",
@@ -125,14 +139,32 @@ _INTERNAL_KNOWLEDGE_HINTS = [
 _IMAGE_LOOKUP_HINTS = [
     "图片",
     "图像",
+    "照片",
+    "截图",
     "配图",
     "海报",
     "流程图",
     "示意图",
+    "拓扑图",
+    "界面图",
+    "外观图",
     "相似",
     "类似",
     "找一张",
     "找个",
+]
+_UPLOADED_IMAGE_REFERENCE_HINTS = [
+    "这张图片",
+    "这张图",
+    "这张照片",
+    "这张截图",
+    "图里",
+    "图片里",
+    "照片里",
+    "截图里",
+    "图上",
+    "图片上",
+    "画面里",
 ]
 _SAVE_IMAGE_HINTS = [
     "存一下",
@@ -149,9 +181,13 @@ _ANSWER_HINTS = [
     "怎么",
     "如何",
     "为什么",
+    "看看",
+    "识别",
+    "描述",
     "告诉我",
     "解释",
     "说明",
+    "分析一下",
     "讲了什么",
     "内容",
     "第",
@@ -206,16 +242,24 @@ def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentC
     has_model_pattern = _has_model_pattern(normalized)
     has_product_doc_intent = _has_product_doc_intent(normalized)
     wants_images = any(token in normalized for token in _IMAGE_LOOKUP_HINTS)
+    wants_direct_explanation = any(token in normalized for token in _DIRECT_LLM_EXPLANATION_HINTS)
     asks_answer = any(token in normalized for token in _ANSWER_HINTS)
     asks_similarity = any(token in normalized for token in ["相似", "类似"])
     asks_find = any(token in normalized for token in ["找", "搜索", "给我", "帮我找"])
     asks_save = any(token in normalized for token in _SAVE_IMAGE_HINTS)
-    references_uploaded_image = any(token in normalized for token in ["这张图片", "这张图", "图里", "图片里", "图上", "图片上"])
+    references_uploaded_image = any(token in normalized for token in _UPLOADED_IMAGE_REFERENCE_HINTS)
     internal_knowledge = any(token in normalized for token in _INTERNAL_KNOWLEDGE_HINTS)
     common_fact = any(token in normalized for token in _COMMON_FACT_PATTERNS)
     explicit_explanation_request = any(
-        token in normalized for token in ["告诉我", "并告诉我", "并说明", "解释", "回答", "分析", "讲讲", "说说"]
+        token in normalized for token in ["告诉我", "并告诉我", "并说明", "解释", "回答", "分析", "分析一下", "讲讲", "说说", "看看", "识别", "描述"]
     )
+    is_safe_for_direct_llm = not any([
+        has_uploaded_image,
+        wants_images,
+        has_model_pattern,
+        has_product_doc_intent,
+        internal_knowledge,
+    ])
 
     if has_uploaded_image and asks_save and not (asks_similarity or asks_find or asks_answer):
         return _default_intent(
@@ -250,6 +294,17 @@ def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentC
             reason="uploaded_image_content_question",
         )
 
+    if has_uploaded_image and asks_answer:
+        return _default_intent(
+            presentation_mode=_DIRECT_ANSWER,
+            execution_mode="uploaded_image_qa",
+            use_rag=False,
+            has_uploaded_image=True,
+            wants_images=False,
+            confidence=0.92,
+            reason="uploaded_image_answer_request",
+        )
+
     if has_uploaded_image and wants_images and asks_answer:
         return _default_intent(
             presentation_mode=_IMAGE_PLUS_ANSWER,
@@ -272,7 +327,7 @@ def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentC
             reason="uploaded_image_only",
         )
 
-    if wants_images and asks_answer and explicit_explanation_request:
+    if wants_images and asks_answer and (explicit_explanation_request or not asks_find):
         return _default_intent(
             presentation_mode=_IMAGE_PLUS_ANSWER,
             execution_mode="image_grounded_answer",
@@ -314,6 +369,17 @@ def _rule_based_intent(query: str, has_uploaded_image: bool) -> Optional[IntentC
             wants_images=False,
             confidence=0.86,
             reason="internal_knowledge",
+        )
+
+    if wants_direct_explanation and is_safe_for_direct_llm:
+        return _default_intent(
+            presentation_mode=_DIRECT_ANSWER,
+            execution_mode="direct_llm",
+            use_rag=False,
+            has_uploaded_image=False,
+            wants_images=False,
+            confidence=0.84,
+            reason="general_explanation",
         )
 
     if common_fact and not has_model_pattern and not has_product_doc_intent:
