@@ -14,6 +14,7 @@ import KnowledgeBase from "@/views/KnowledgeBase.vue"; // 知识库管理页面
 import Search from "@/views/Search.vue"; // 搜索页面
 import Chat from "@/views/Chat.vue"; // 聊天页面
 import DocumentKB from "@/views/DocumentKB.vue"; // 文档知识库页面
+import Ops from "@/views/Ops.vue"; // 运营页面
 import Settings from "@/views/Settings.vue"; // 系统配置页面
 
 /**
@@ -27,6 +28,7 @@ const routes: RouteRecordRaw[] = [
   { path: "/search", component: Search }, // 搜索页面
   { path: "/chat", component: Chat }, // 聊天页面
   { path: "/docs", component: DocumentKB }, // 文档知识库页面
+  { path: "/ops", component: Ops }, // 运营页面
   { path: "/settings", component: Settings }, // 系统配置页面
 ];
 

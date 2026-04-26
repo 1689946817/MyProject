@@ -464,6 +464,7 @@ def _build_results_payload(
     citations: List[ChatCitationItem],
     intent: dict[str, Any],
     collector: RequestTimingCollector,
+    assistant_message_id: Optional[int] = None,
 ) -> dict[str, Any]:
     payload = {
         "type": "results",
@@ -475,10 +476,19 @@ def _build_results_payload(
         "use_rag": bool(intent.get("use_rag", True)),
         "has_uploaded_image": bool(intent.get("has_uploaded_image", False)),
         "citations": [citation.model_dump() for citation in citations],
+        "assistant_message_id": assistant_message_id,
     }
     if settings.EXPOSE_TIMINGS_IN_API:
         payload["timings"] = TimingSummary.model_validate(collector.snapshot()).model_dump()
     return payload
+
+
+def _safe_message_id(value: Any) -> Optional[int]:
+    try:
+        normalized = int(value)
+    except (TypeError, ValueError):
+        return None
+    return normalized if normalized > 0 else None
 
 
 async def _prepare_rag_chat_context(
@@ -670,6 +680,7 @@ def _build_rag_streaming_response(
                 sources = _normalize_chat_sources(retrieved_docs)
                 citations = build_chat_citations(full_answer, sources)
                 retrieval_steps = final_intent.get("retrieval_steps") or []
+                assistant_message = None
                 with collector.stage("chat_message_persist"):
                     add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)
                     assistant_retrieval_params = {
@@ -677,7 +688,7 @@ def _build_rag_streaming_response(
                         "citations": [citation.model_dump() for citation in citations],
                         "timings": TimingSummary.model_validate(collector.snapshot()).model_dump() if settings.EXPOSE_TIMINGS_IN_API else None,
                     }
-                    add_message(
+                    assistant_message = add_message(
                         db,
                         session,
                         "assistant",
@@ -698,6 +709,9 @@ def _build_rag_streaming_response(
                             "has_uploaded_image": image is not None,
                         },
                         collector=collector,
+                        assistant_message_id=_safe_message_id(
+                            getattr(assistant_message, "id", None)
+                        ),
                     )
                 )
             except Exception as exc:

@@ -105,7 +105,7 @@
         <el-table-column :label="t('docs.action')" width="280" align="center" fixed="right">
           <template #default="{ row }">
             <div class="row-actions">
-              <el-button size="small" :disabled="row.status !== 'Completed'" @click="viewResult(row)">
+              <el-button size="small" @click="openDrawer(row)">
                 {{ t("docs.view") }}
               </el-button>
               <el-button size="small" @click="openEdit(row)">{{ t("common.edit") }}</el-button>
@@ -124,88 +124,128 @@
       direction="rtl"
       class="dark-drawer"
     >
-      <div v-if="loadingResult" style="text-align:center;padding:40px">
+      <div v-if="loadingResult" class="detail-loading">
         <el-icon class="is-loading" style="font-size:32px"><Loading /></el-icon>
         <p>{{ t("common.loading") }}</p>
       </div>
-      <template v-else-if="parseResult">
+      <template v-else-if="activeDoc">
         <el-descriptions :column="3" border style="margin-bottom: 20px" class="dark-descriptions">
-          <el-descriptions-item :label="t('docs.chunks')">{{ parseResult.chunks.length }}</el-descriptions-item>
-          <el-descriptions-item :label="t('docs.images')">{{ parseResult.images.length }}</el-descriptions-item>
+          <el-descriptions-item :label="t('docs.chunks')">{{ activeChunkCount }}</el-descriptions-item>
+          <el-descriptions-item :label="t('docs.images')">{{ activeImageCount }}</el-descriptions-item>
           <el-descriptions-item :label="t('docs.status')">
-            <el-tag :type="statusType(parseResult.document.status)">{{ parseResult.document.status }}</el-tag>
+            <el-tag :type="statusType(activeDoc.status)">{{ activeDoc.status }}</el-tag>
           </el-descriptions-item>
-          <el-descriptions-item :label="t('docs.documentType')">{{ parseResult.document.document_type }}</el-descriptions-item>
+          <el-descriptions-item :label="t('docs.documentType')">{{ activeDoc.document_type }}</el-descriptions-item>
           <el-descriptions-item :label="t('kb.enabled')">
-            {{ parseResult.document.enabled ? t("kb.enabled") : t("kb.disabled") }}
+            {{ activeDoc.enabled ? t("kb.enabled") : t("kb.disabled") }}
           </el-descriptions-item>
-          <el-descriptions-item :label="t('kb.tags')">{{ formatTags(parseResult.document.tags) }}</el-descriptions-item>
+          <el-descriptions-item :label="t('kb.tags')">{{ formatTags(activeDoc.tags) }}</el-descriptions-item>
         </el-descriptions>
 
         <el-tabs v-model="resultTab" class="doc-result-tabs">
-          <el-tab-pane :label="`${t('docs.chunksTitle')} (${parseResult.chunks.length})`" name="chunks">
-            <div class="chunks-toolbar">
-              <span class="chunks-hint">
-                {{ parseResult.chunks.length > 0 ? t("docs.chunkReadableHint") : t("docs.noChunks") }}
-              </span>
-            </div>
-            <div class="chunks-container">
-              <el-card
-                v-for="chunk in parseResult.chunks"
-                :key="chunk.chunk_index"
-                :ref="(el: Element | { $el?: Element } | null) => setChunkItemRef(chunk.chunk_index, el)"
-                class="chunk-card glass-card"
-                :class="{ 'chunk-card-active': activeChunkIndex === chunk.chunk_index }"
-                shadow="never"
-              >
-                <template #header>
-                  <div class="chunk-header">
-                    <span>片段 #{{ chunk.chunk_index + 1 }}</span>
-                    <span>
-                      <template v-if="chunk.page_number">{{ t("docs.pageLabel", { page: chunk.page_number }) }} · </template>
-                      {{ chunk.content.length }} 字
-                    </span>
-                  </div>
-                </template>
-                <pre class="chunk-content">{{ chunk.content }}</pre>
-              </el-card>
-              <el-alert
-                v-if="parseResult.chunks.length === 0 && parseResult.document.chunk_count > 0"
-                :title="t('docs.chunksLoadMismatch')"
-                type="warning"
-                show-icon
-                :closable="false"
-              />
-              <el-empty v-else-if="parseResult.chunks.length === 0" :description="t('docs.noChunks')" />
-            </div>
+          <el-tab-pane :label="`${t('docs.chunksTitle')} (${activeChunkCount})`" name="chunks">
+            <template v-if="parseResult">
+              <div class="chunks-toolbar">
+                <span class="chunks-hint">
+                  {{ parseResult.chunks.length > 0 ? t("docs.chunkReadableHint") : t("docs.noChunks") }}
+                </span>
+              </div>
+              <div class="chunks-container">
+                <el-card
+                  v-for="chunk in parseResult.chunks"
+                  :key="chunk.chunk_index"
+                  :ref="(el: Element | { $el?: Element } | null) => setChunkItemRef(chunk.chunk_index, el)"
+                  class="chunk-card glass-card"
+                  :class="{ 'chunk-card-active': activeChunkIndex === chunk.chunk_index }"
+                  shadow="never"
+                >
+                  <template #header>
+                    <div class="chunk-header">
+                      <span>片段 #{{ chunk.chunk_index + 1 }}</span>
+                      <span>
+                        <template v-if="chunk.page_number">{{ t("docs.pageLabel", { page: chunk.page_number }) }} · </template>
+                        {{ chunk.content.length }} 字
+                      </span>
+                    </div>
+                  </template>
+                  <pre class="chunk-content">{{ chunk.content }}</pre>
+                </el-card>
+                <el-alert
+                  v-if="parseResult.chunks.length === 0 && parseResult.document.chunk_count > 0"
+                  :title="t('docs.chunksLoadMismatch')"
+                  type="warning"
+                  show-icon
+                  :closable="false"
+                />
+                <el-empty v-else-if="parseResult.chunks.length === 0" :description="t('docs.noChunks')" />
+              </div>
+            </template>
           </el-tab-pane>
 
-          <el-tab-pane :label="`${t('docs.imagesTitle')} (${parseResult.images.length})`" name="images">
-            <div class="images-grid">
-              <div v-for="img in sortedResultImages" :key="img.id" class="doc-image-item">
-                <div class="doc-image-badges">
-                  <el-tag v-if="assetTypeLabel(img)" size="small" type="primary" effect="dark">
-                    {{ assetTypeLabel(img) }}
-                  </el-tag>
-                  <el-tag v-if="img.page_number" size="small" effect="plain">
-                    {{ t("docs.pageLabel", { page: img.page_number }) }}
-                  </el-tag>
-                  <el-tag v-if="isCrossPageAsset(img)" size="small" type="warning" effect="plain">
-                    {{ t("docs.crossPageContinued") }}
-                  </el-tag>
+          <el-tab-pane :label="`${t('docs.imagesTitle')} (${activeImageCount})`" name="images">
+            <template v-if="parseResult">
+              <div class="images-grid">
+                <div v-for="img in sortedResultImages" :key="img.id" class="doc-image-item">
+                  <div class="doc-image-badges">
+                    <el-tag v-if="assetTypeLabel(img)" size="small" type="primary" effect="dark">
+                      {{ assetTypeLabel(img) }}
+                    </el-tag>
+                    <el-tag v-if="img.page_number" size="small" effect="plain">
+                      {{ t("docs.pageLabel", { page: img.page_number }) }}
+                    </el-tag>
+                    <el-tag v-if="isCrossPageAsset(img)" size="small" type="warning" effect="plain">
+                      {{ t("docs.crossPageContinued") }}
+                    </el-tag>
+                  </div>
+                  <ImageCard
+                    :src="imgSrc(img.file_path)"
+                    :title="img.title || img.id"
+                    :description="img.generated_description || ''"
+                    :status="img.status"
+                  />
+                  <p v-if="assetDetailText(img)" class="doc-image-meta">
+                    {{ assetDetailText(img) }}
+                  </p>
                 </div>
-                <ImageCard
-                  :src="imgSrc(img.file_path)"
-                  :title="img.title || img.id"
-                  :description="img.generated_description || ''"
-                  :status="img.status"
-                />
-                <p v-if="assetDetailText(img)" class="doc-image-meta">
-                  {{ assetDetailText(img) }}
-                </p>
+                <el-empty v-if="parseResult.images.length === 0" :description="t('docs.noImages')" />
               </div>
-              <el-empty v-if="parseResult.images.length === 0" :description="t('docs.noImages')" />
+            </template>
+          </el-tab-pane>
+
+          <el-tab-pane :label="t('docs.versionsTitle')" name="versions">
+            <div class="version-toolbar">
+              <div class="version-hint">{{ t("docs.versionsHint") }}</div>
+              <el-upload
+                :auto-upload="false"
+                :show-file-list="false"
+                accept=".pdf"
+                :on-change="handleVersionFileChange"
+              >
+                <el-button type="primary" :loading="versionUploading">
+                  <i class="i-ep-upload mr-2"></i>
+                  {{ t("docs.versionUploadBtn") }}
+                </el-button>
+              </el-upload>
             </div>
+            <el-table v-loading="versionsLoading" :data="documentVersions" stripe class="dark-table">
+              <el-table-column :label="t('docs.versionNumber')" width="100" align="center">
+                <template #default="{ row }">v{{ row.version_number || 1 }}</template>
+              </el-table-column>
+              <el-table-column :label="t('docs.latestVersion')" width="110" align="center">
+                <template #default="{ row }">
+                  <el-tag v-if="row.is_latest" type="success">{{ t("docs.latestVersion") }}</el-tag>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="t('docs.uploadTime')" width="180">
+                <template #default="{ row }">{{ formatDateTime(row.upload_time) }}</template>
+              </el-table-column>
+              <el-table-column prop="file_name" :label="t('docs.fileName')" min-width="180" show-overflow-tooltip />
+              <el-table-column prop="status" :label="t('docs.status')" width="120" />
+              <el-table-column :label="t('docs.contentHash')" min-width="180" show-overflow-tooltip>
+                <template #default="{ row }">{{ shortenHash(row.content_hash) }}</template>
+              </el-table-column>
+            </el-table>
           </el-tab-pane>
         </el-tabs>
       </template>
@@ -251,9 +291,11 @@ import {
   getDocumentProgress,
   getDocResult,
   listDocuments,
+  listDocumentVersions,
   reprocessDocument,
   updateDocument,
   uploadDocument,
+  uploadDocumentVersion,
   type DocumentProgressResponse,
   type DocParseResult,
   type DocumentRecord,
@@ -272,6 +314,8 @@ const uploading = ref(false);
 const uploadMsg = ref("");
 const uploadSuccess = ref(false);
 const saving = ref(false);
+const versionUploading = ref(false);
+const versionsLoading = ref(false);
 const uploadPercent = ref(0);
 const progressDocId = ref("");
 const progressStage = ref("idle");
@@ -291,6 +335,7 @@ const loadingList = ref(false);
 const drawerVisible = ref(false);
 const activeDoc = ref<DocumentRecord | null>(null);
 const parseResult = ref<DocParseResult | null>(null);
+const documentVersions = ref<DocumentRecord[]>([]);
 const loadingResult = ref(false);
 const resultTab = ref("chunks");
 const activeChunkIndex = ref<number | null>(null);
@@ -321,6 +366,8 @@ const sortedResultImages = computed(() => {
   });
 });
 
+const activeChunkCount = computed(() => parseResult.value?.chunks.length ?? activeDoc.value?.chunk_count ?? 0);
+const activeImageCount = computed(() => parseResult.value?.images.length ?? activeDoc.value?.image_count ?? 0);
 const showProgressPanel = computed(() => uploading.value || !!progressDocId.value);
 
 const progressTitle = computed(() => {
@@ -333,6 +380,16 @@ const progressStatus = computed(() => {
   if (progressStage.value === "completed") return "success";
   return undefined;
 });
+
+function formatDateTime(value?: string | null): string {
+  if (!value) return "-";
+  return new Date(value).toLocaleString();
+}
+
+function shortenHash(value?: string | null): string {
+  if (!value) return "-";
+  return value.length > 16 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value;
+}
 
 function clearProgressPolling() {
   if (progressTimer !== null) {
@@ -371,6 +428,9 @@ async function pollDocumentProgress(docId: string) {
       const progress = await getDocumentProgress(docId);
       applyProgress(progress);
       await loadDocList(false);
+      if (activeDoc.value?.id === docId) {
+        activeDoc.value = progress.document;
+      }
       if (progress.status === "Completed" || progress.status === "Failed") {
         progressDocId.value = "";
         return;
@@ -382,6 +442,18 @@ async function pollDocumentProgress(docId: string) {
   };
 
   await run();
+}
+
+async function loadDocVersions(docId: string) {
+  try {
+    versionsLoading.value = true;
+    documentVersions.value = await listDocumentVersions(docId);
+  } catch (error) {
+    console.error("加载文档版本失败:", error);
+    ElMessage.error(t("docs.versionLoadFailed"));
+  } finally {
+    versionsLoading.value = false;
+  }
 }
 
 async function doUpload() {
@@ -525,24 +597,31 @@ function resolveChunkIndexFromRoute(result: DocParseResult): number | null {
 }
 
 async function applyRouteTarget(result: DocParseResult) {
-  const requestedTab = route.query.tab === "images" ? "images" : "chunks";
-  resultTab.value = requestedTab;
-  if (requestedTab === "chunks") {
+  const requestedTab = typeof route.query.tab === "string" ? route.query.tab : "chunks";
+  resultTab.value = ["chunks", "images", "versions"].includes(requestedTab) ? requestedTab : "chunks";
+  if (resultTab.value === "chunks") {
     await scrollToTargetChunk(resolveChunkIndexFromRoute(result));
   } else {
     activeChunkIndex.value = null;
   }
 }
 
-async function viewResult(doc: DocumentRecord) {
+async function openDrawer(doc: DocumentRecord) {
   activeDoc.value = doc;
   drawerVisible.value = true;
   loadingResult.value = true;
   resultTab.value = "chunks";
   parseResult.value = null;
   try {
-    parseResult.value = await getDocResult(doc.id);
-    await applyRouteTarget(parseResult.value);
+    const [result] = await Promise.all([
+      getDocResult(doc.id).catch(() => null),
+      loadDocVersions(doc.id),
+    ]);
+    if (result) {
+      parseResult.value = result;
+      activeDoc.value = result.document;
+      await applyRouteTarget(result);
+    }
   } catch {
     ElMessage.error(t("docs.loadResultFailed"));
   } finally {
@@ -553,14 +632,14 @@ async function viewResult(doc: DocumentRecord) {
 async function openDocumentFromRoute(docId: string) {
   const target = docList.value.find((item) => item.id === docId);
   if (target) {
-    await viewResult(target);
+    await openDrawer(target);
     return;
   }
   try {
     await loadDocList(false);
     const reloaded = docList.value.find((item) => item.id === docId);
     if (reloaded) {
-      await viewResult(reloaded);
+      await openDrawer(reloaded);
     }
   } catch {
     // keep existing load error handling
@@ -569,16 +648,16 @@ async function openDocumentFromRoute(docId: string) {
 
 async function syncRouteTarget() {
   const docId = typeof route.query.docId === "string" ? route.query.docId : "";
-  if (!docId) {
-    return;
-  }
+  if (!docId) return;
 
-  if (!drawerVisible.value || activeDoc.value?.id !== docId || !parseResult.value) {
+  if (!drawerVisible.value || activeDoc.value?.id !== docId) {
     await openDocumentFromRoute(docId);
     return;
   }
 
-  await applyRouteTarget(parseResult.value);
+  if (parseResult.value) {
+    await applyRouteTarget(parseResult.value);
+  }
 }
 
 function openEdit(doc: DocumentRecord) {
@@ -594,7 +673,7 @@ function openEdit(doc: DocumentRecord) {
 async function submitEdit() {
   try {
     saving.value = true;
-    await updateDocument(currentDocId.value, {
+    const updated = await updateDocument(currentDocId.value, {
       title: editForm.title || null,
       tags: editForm.tagsText.split(",").map((item) => item.trim()).filter(Boolean),
       notes: editForm.notes || null,
@@ -605,7 +684,8 @@ async function submitEdit() {
     editVisible.value = false;
     await loadDocList();
     if (activeDoc.value?.id === currentDocId.value) {
-      activeDoc.value = docList.value.find((item) => item.id === currentDocId.value) || activeDoc.value;
+      activeDoc.value = updated;
+      await loadDocVersions(updated.id);
     }
   } catch {
     ElMessage.error(t("docs.updateFailed"));
@@ -627,6 +707,7 @@ async function handleDelete(doc: DocumentRecord) {
       drawerVisible.value = false;
       activeDoc.value = null;
       parseResult.value = null;
+      documentVersions.value = [];
     }
     await loadDocList();
   } catch {
@@ -644,10 +725,32 @@ async function handleReprocess(doc: DocumentRecord) {
     await loadDocList(false);
     await pollDocumentProgress(doc.id);
     if (activeDoc.value?.id === doc.id) {
-      await viewResult(doc);
+      await openDrawer(doc);
     }
   } catch {
     ElMessage.error(t("docs.reprocessFailed"));
+  }
+}
+
+async function handleVersionFileChange(uploadFile: { raw?: File }) {
+  if (!uploadFile.raw || !activeDoc.value) return;
+  try {
+    versionUploading.value = true;
+    const response = await uploadDocumentVersion(activeDoc.value.id, uploadFile.raw);
+    ElMessage.success(t("docs.versionUploadSuccess"));
+    progressStage.value = response.document.parse_stage || "queued";
+    progressPercent.value = response.document.progress_percent ?? 0;
+    progressMessage.value = response.document.progress_message || stageFallbackLabel(progressStage.value);
+    await loadDocList(false);
+    await loadDocVersions(activeDoc.value.id);
+    activeDoc.value = response.document;
+    resultTab.value = "versions";
+    await pollDocumentProgress(response.document.id);
+  } catch (error) {
+    console.error("上传文档新版本失败:", error);
+    ElMessage.error(t("docs.versionUploadFailed"));
+  } finally {
+    versionUploading.value = false;
   }
 }
 
@@ -664,9 +767,7 @@ watch(
 );
 
 watch(drawerVisible, (visible) => {
-  if (visible || !route.query.docId) {
-    return;
-  }
+  if (visible || !route.query.docId) return;
   const nextQuery = { ...route.query };
   delete nextQuery.docId;
   delete nextQuery.tab;
@@ -779,6 +880,11 @@ onBeforeUnmount(() => {
   background: var(--bg-tertiary);
 }
 
+.detail-loading {
+  text-align: center;
+  padding: 40px;
+}
+
 .doc-result-tabs :deep(.el-tabs__nav-wrap::after) {
   background: var(--border-color);
 }
@@ -791,14 +897,17 @@ onBeforeUnmount(() => {
   color: var(--accent-primary);
 }
 
-.chunks-toolbar {
+.chunks-toolbar,
+.version-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 12px;
 }
 
-.chunks-hint {
+.chunks-hint,
+.version-hint {
   font-size: 12px;
   color: var(--text-secondary);
 }
@@ -819,22 +928,12 @@ onBeforeUnmount(() => {
 }
 
 .chunk-card-active {
-  border-color: rgba(59, 130, 246, 0.42);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12), 0 16px 32px rgba(59, 130, 246, 0.1);
-}
-
-.chunk-card :deep(.el-card__header) {
-  padding: 10px 16px;
-}
-
-.chunk-card :deep(.el-card__body) {
-  padding: 14px 16px;
-  overflow: visible;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 1px rgba(0, 212, 255, 0.16), 0 10px 28px rgba(15, 23, 42, 0.12);
 }
 
 .chunk-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: 12px;
   font-size: 12px;
@@ -842,27 +941,25 @@ onBeforeUnmount(() => {
 }
 
 .chunk-content {
-  font-size: 13px;
-  line-height: 1.6;
+  margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
-  margin: 0;
+  font-family: "JetBrains Mono", "Cascadia Code", monospace;
+  font-size: 13px;
+  line-height: 1.7;
   color: var(--text-primary);
-  user-select: text;
-  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
 }
 
 .images-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
 }
 
 .doc-image-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .doc-image-badges {
@@ -873,12 +970,18 @@ onBeforeUnmount(() => {
 
 .doc-image-meta {
   margin: 0;
-  font-size: 12px;
   color: var(--text-secondary);
-  line-height: 1.5;
+  font-size: 12px;
 }
 
-.doc-kb :deep(.el-card__body) {
-  padding: 22px;
+@media (max-width: 900px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .version-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 </style>

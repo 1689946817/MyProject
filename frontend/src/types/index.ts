@@ -24,6 +24,13 @@ export interface ImageRecord {
   continued_from_previous_page?: boolean
   continued_to_next_page?: boolean
   fallback_reason?: string | null
+  parent_doc_id?: string | null
+  content_hash?: string | null
+  logical_asset_id?: string | null
+  version_number?: number
+  is_latest?: boolean
+  deduplicated?: boolean
+  duplicate_of?: string | null
 }
 
 /**
@@ -150,7 +157,26 @@ export interface ChatMessage {
   use_rag?: boolean
   retrieval_steps?: RetrievalStepItem[]
   retrieval_params?: Record<string, any> | null
+  feedback?: AnswerFeedbackResponse | null
   timings?: TimingSummary | null
+  created_at: string
+}
+
+export interface AnswerFeedbackRequest {
+  rating: "up" | "down"
+  issue_types?: string[]
+  comment?: string | null
+}
+
+export interface AnswerFeedbackResponse {
+  id: number
+  session_id?: string | null
+  assistant_message_id: number
+  rating: "up" | "down"
+  issue_types: string[]
+  comment?: string | null
+  query?: string | null
+  retrieval_snapshot?: Record<string, any>
   created_at: string
 }
 
@@ -175,6 +201,12 @@ export interface DocumentRecord {
   parse_stage?: string
   progress_percent?: number
   progress_message?: string | null
+  content_hash?: string | null
+  logical_asset_id?: string | null
+  version_number?: number
+  is_latest?: boolean
+  deduplicated?: boolean
+  duplicate_of?: string | null
 }
 
 /**
@@ -238,4 +270,56 @@ export interface ConfigUpdatePayload {
 export interface ConfigValidationError {
   field_errors?: Record<string, string>
   message?: string
+}
+
+export interface JobTask {
+  id: string
+  job_type: string
+  status: string
+  priority: number
+  payload: Record<string, any>
+  result: Record<string, any>
+  error_message?: string | null
+  retry_count: number
+  max_retries: number
+  locked_by?: string | null
+  related_doc_id?: string | null
+  related_batch_id?: string | null
+  created_at: string
+  started_at?: string | null
+  finished_at?: string | null
+}
+
+export interface ImportBatch {
+  id: string
+  source_type: string
+  status: string
+  summary: Record<string, any>
+  created_at: string
+  updated_at: string
+}
+
+export interface BatchImportResponse {
+  batch: ImportBatch
+  jobs: JobTask[]
+  documents: DocumentRecord[]
+  message: string
+  timings?: TimingSummary | null
+}
+
+export interface HealthStatus {
+  status: string
+  checks: Record<string, any>
+  generated_at: string
+}
+
+export interface MetricsSummary {
+  raw: string
+  totalJobs: number
+  queuedJobs: number
+  runningJobs: number
+  failedJobs: number
+  completedJobs: number
+  activeWorkers: number
+  latestWorkerHeartbeat?: string | null
 }

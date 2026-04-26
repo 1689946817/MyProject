@@ -69,6 +69,7 @@ _TRANSIENT_EXTERNAL_ERROR_MARKERS = (
     "unexpected_eof_while_reading",
     "eof occurred in violation of protocol",
     "connection reset",
+    "all connection attempts failed",
     "temporarily unavailable",
     "read timed out",
     "timed out",
@@ -1631,6 +1632,26 @@ class LangChainAdapter:
         db.commit()
         db.refresh(record)
 
+    def _mark_document_failed(
+        self,
+        db: Session,
+        *,
+        doc_id: str,
+        error_message: str,
+    ) -> None:
+        db.rollback()
+        record = db.query(DocumentRecord).filter(DocumentRecord.id == doc_id).first()
+        if record is None:
+            logger.warning("[Adapter] 文档后台解析目标不存在: %s", doc_id)
+            return
+        record.parse_stage = "failed"
+        record.progress_percent = 100
+        record.progress_message = error_message
+        record.status = "Failed"
+        record.extra_metadata = error_message
+        db.add(record)
+        db.commit()
+
     async def process_document_record_task(self, doc_id: str) -> None:
         """后台任务入口：按配置解析指定文档。"""
         with SessionLocal() as db:
@@ -1643,16 +1664,8 @@ class LangChainAdapter:
                 await self._process_document_record(db, record)
             except Exception as exc:
                 logger.exception("[Adapter] 文档后台解析失败: doc=%s error=%s", doc_id, exc)
-                self._set_document_progress(
-                    db,
-                    record,
-                    stage="failed",
-                    percent=100,
-                    message=str(exc),
-                    status="Failed",
-                )
-                record.extra_metadata = str(exc)
-                db.commit()
+                self._mark_document_failed(db, doc_id=doc_id, error_message=str(exc))
+                raise
 
     async def reprocess_document_record_task(self, doc_id: str) -> None:
         """后台重处理任务入口。"""
@@ -1670,16 +1683,8 @@ class LangChainAdapter:
                 await self._process_document_record(db, record)
             except Exception as exc:
                 logger.exception("[Adapter] 文档后台重处理失败: doc=%s error=%s", doc_id, exc)
-                self._set_document_progress(
-                    db,
-                    record,
-                    stage="failed",
-                    percent=100,
-                    message=str(exc),
-                    status="Failed",
-                )
-                record.extra_metadata = str(exc)
-                db.commit()
+                self._mark_document_failed(db, doc_id=doc_id, error_message=str(exc))
+                raise
 
     async def _process_document_record(self, db: Session, record: DocumentRecord) -> None:
         backend = (record.parse_backend or settings.DOC_PARSE_BACKEND or "local").strip().lower()
@@ -1733,15 +1738,7 @@ class LangChainAdapter:
         try:
             await self._process_document_record(db, record)
         except Exception as e:
-            record.extra_metadata = str(e)
-            self._set_document_progress(
-                db,
-                record,
-                stage="failed",
-                percent=100,
-                message=str(e),
-                status="Failed",
-            )
+            self._mark_document_failed(db, doc_id=record.id, error_message=str(e))
 
         return record
 
@@ -1895,6 +1892,8 @@ class LangChainAdapter:
         record: DocumentRecord,
         contents: bytes,
     ) -> None:
+        record_id = record.id
+        record_file_name = record.file_name
         if not settings.MINERU_API_TOKEN:
             raise ValueError("DOC_PARSE_BACKEND=mineru 时必须配置 MINERU_API_TOKEN")
 
@@ -1906,7 +1905,7 @@ class LangChainAdapter:
             percent=10,
             message="正在向 MinerU 提交解析任务",
         )
-        batch_id, signed_url = await client.create_upload_task(record.file_name, record.id)
+        batch_id, signed_url = await client.create_upload_task(record_file_name, record_id)
         await client.upload_file(signed_url, contents)
         self._set_document_progress(
             db,
@@ -1957,11 +1956,11 @@ class LangChainAdapter:
             page_content=cleaned_markdown,
             metadata={
                 "page_number": 1,
-                "file_name": record.file_name,
+                "file_name": record_file_name,
                 "source_type": "pdf_page",
             },
         )
-        parsed_text_chunks = build_pdf_text_chunks([markdown_doc], doc_id=record.id)
+        parsed_text_chunks = build_pdf_text_chunks([markdown_doc], doc_id=record_id)
 
         self._set_document_progress(
             db,
@@ -2005,13 +2004,13 @@ class LangChainAdapter:
                     metadata={
                         "id": img_id,
                         "source": "pdf",
-                        "doc_id": record.id,
-                        "file_name": record.file_name,
+                        "doc_id": record_id,
+                        "file_name": record_file_name,
                         "file_path": str(img_path),
                         "asset_type": "mineru_image",
                         "enabled": True,
                         "parent_doc_enabled": bool(record.enabled),
-                        "title": f"{record.file_name} MinerU 图片 {index}",
+                        "title": f"{record_file_name} MinerU 图片 {index}",
                         "tags": [],
                     },
                 )
@@ -2019,18 +2018,18 @@ class LangChainAdapter:
                 img_record = ImageRecord(
                     id=img_id,
                     file_path=str(img_path),
-                    title=f"{record.file_name} MinerU 图片 {index}",
+                    title=f"{record_file_name} MinerU 图片 {index}",
                     generated_description=description,
                     status="Completed",
                     source_dataset=record.document_type,
-                    parent_doc_id=record.id,
+                    parent_doc_id=record_id,
                     content_hash=self._compute_content_hash(image_bytes),
                     logical_asset_id=img_id,
                     version_number=1,
                     is_latest=True,
                     extra_metadata=json.dumps(
                         {
-                            "doc_id": record.id,
+                            "doc_id": record_id,
                             "asset_type": "mineru_image",
                             "source_name": image_name,
                         },
@@ -2048,7 +2047,8 @@ class LangChainAdapter:
                     message=f"正在写入 MinerU 图片结果 {processed_image_count}/{total_images}",
                 )
             except Exception as exc:
-                logger.warning("[Adapter] MinerU 图片处理失败: file=%s index=%s error=%s", record.file_name, index, exc)
+                db.rollback()
+                logger.warning("[Adapter] MinerU 图片处理失败: file=%s index=%s error=%s", record_file_name, index, exc)
 
         record.chunk_count = len(parsed_text_chunks)
         record.image_count = processed_image_count

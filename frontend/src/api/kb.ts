@@ -38,6 +38,7 @@ export interface ImageRecordUpdatePayload {
  */
 export interface UploadImagesResponse {
   images: ImageRecord[]; // 上传的图像记录列表
+  deduplicated_count?: number;
 }
 
 /**
@@ -99,6 +100,20 @@ export async function uploadImages(files: File[]): Promise<UploadImagesResponse>
 
   const { data } = await http.post<UploadImagesResponse>('/api/knowledge-base/upload', form, {
     headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return data;
+}
+
+export async function listImageVersions(id: string): Promise<ImageRecord[]> {
+  const { data } = await http.get<ImageRecord[]>(`/api/knowledge-base/${id}/versions`);
+  return data;
+}
+
+export async function uploadImageVersion(id: string, file: File): Promise<UploadImagesResponse> {
+  const form = new FormData();
+  form.append("file", file);
+  const { data } = await http.post<UploadImagesResponse>(`/api/knowledge-base/${id}/versions`, form, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
   return data;
 }

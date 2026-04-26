@@ -147,7 +147,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { ChatDotRound, Search, Picture, Document, Setting } from "@element-plus/icons-vue";
+import { ChatDotRound, Search, Picture, Document, DataAnalysis, Setting } from "@element-plus/icons-vue";
 import { useTheme } from "@/composables/useTheme";
 import { setLocale, getLocale } from "@/locales";
 import { http } from "@/api/http";
@@ -170,6 +170,7 @@ const navItems = computed(() => [
   { path: "/search", icon: Search, label: t("nav.search") },
   { path: "/kb", icon: Picture, label: t("nav.knowledgeBase") },
   { path: "/docs", icon: Document, label: t("nav.documents") },
+  { path: "/ops", icon: DataAnalysis, label: t("nav.ops") },
   { path: "/settings", icon: Setting, label: t("nav.settings") },
 ]);
 

@@ -236,6 +236,69 @@
                         <i class="i-ep-refresh-right"></i>
                         <span>{{ msg.role === "assistant" ? t("chat.resendQuestion") : t("chat.resendMessage") }}</span>
                       </button>
+                      <template v-if="msg.role === 'assistant'">
+                        <button
+                          type="button"
+                          class="message-action-btn"
+                          :class="{ active: msg.feedback?.rating === 'up' }"
+                          :disabled="feedbackSubmittingId === String(msg.id) || !hasPersistedAssistantMessageId(msg)"
+                          @click="submitHelpfulFeedback(msg)"
+                        >
+                          <i class="i-ep-select"></i>
+                          <span>{{ msg.feedback?.rating === "up" ? t("chat.feedbackSubmitted") : t("chat.feedbackHelpful") }}</span>
+                        </button>
+                        <el-popover
+                          :visible="feedbackPopoverId === String(msg.id)"
+                          placement="top"
+                          :width="320"
+                          trigger="manual"
+                          popper-class="feedback-popover"
+                        >
+                          <template #reference>
+                            <button
+                              type="button"
+                              class="message-action-btn"
+                              :class="{ active: msg.feedback?.rating === 'down' }"
+                              :disabled="feedbackSubmittingId === String(msg.id) || !hasPersistedAssistantMessageId(msg)"
+                              @click="toggleFeedbackPopover(msg)"
+                            >
+                              <i class="i-ep-warning"></i>
+                              <span>{{ msg.feedback?.rating === "down" ? t("chat.feedbackUpdate") : t("chat.feedbackIssue") }}</span>
+                            </button>
+                          </template>
+                          <div class="feedback-panel">
+                            <div class="feedback-title">{{ t("chat.feedbackPopoverTitle") }}</div>
+                            <div class="feedback-label">{{ t("chat.feedbackIssueLabel") }}</div>
+                            <el-checkbox-group v-model="getFeedbackForm(String(msg.id)).issue_types" class="feedback-checks">
+                              <el-checkbox
+                                v-for="option in feedbackIssueOptions"
+                                :key="option.value"
+                                :label="option.value"
+                              >
+                                {{ option.label }}
+                              </el-checkbox>
+                            </el-checkbox-group>
+                            <div class="feedback-label">{{ t("chat.feedbackCommentLabel") }}</div>
+                            <el-input
+                              v-model="getFeedbackForm(String(msg.id)).comment"
+                              type="textarea"
+                              :rows="3"
+                              :placeholder="t('chat.feedbackCommentPlaceholder')"
+                            />
+                            <div class="feedback-actions">
+                              <el-button size="small" @click="feedbackPopoverId = null">{{ t("common.cancel") }}</el-button>
+                              <el-button
+                                size="small"
+                                type="primary"
+                                :loading="feedbackSubmittingId === String(msg.id)"
+                                @click="submitIssueFeedback(msg)"
+                              >
+                                {{ t("chat.feedbackSubmit") }}
+                              </el-button>
+                            </div>
+                          </div>
+                        </el-popover>
+                      </template>
                       <template v-if="canUseAssistantFollowup(msg)">
                         <button v-if="canRetryAssistantMessage(msg)" type="button" class="message-action-btn" @click="rerunAssistantMessage(msg, index)">
                           <i class="i-ep-refresh"></i>
@@ -467,7 +530,7 @@ import { ElMessage } from "element-plus";
 import { Promotion } from "@element-plus/icons-vue";
 import type { InputInstance, UploadFile } from "element-plus";
 import { useRouter } from "vue-router";
-import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChatStream, type ChatSession } from "@/api/chat";
+import { getSessions, createSession, renameSession, deleteSession, getSessionMessages, ragChatStream, submitMessageFeedback, type ChatSession } from "@/api/chat";
 import { listDocuments } from "@/api/docs";
 import { listImages } from "@/api/kb";
 import { getSystemConfig } from "@/api/settings";
@@ -476,7 +539,7 @@ import SessionList from "@/components/SessionList.vue";
 import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
 import QaProcessCard from "@/components/QaProcessCard.vue";
 import ChatMarkdown from "@/components/ChatMarkdown.vue";
-import type { ChatCitationChunkRef, ChatCitationItem, ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
+import type { AnswerFeedbackResponse, ChatCitationChunkRef, ChatCitationItem, ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -551,6 +614,9 @@ const sourceCardRefs = new Map<string, HTMLElement>();
 const activeCitationMessageId = ref<string | null>(null);
 const activeCitationSourceIds = ref<string[]>([]);
 const activeCitationParagraphKeys = ref<string[]>([]);
+const feedbackPopoverId = ref<string | null>(null);
+const feedbackSubmittingId = ref<string | null>(null);
+const feedbackForms = ref<Record<string, { issue_types: string[]; comment: string }>>({});
 let loadSessionToken = 0;
 let scrollToBottomRaf = 0;
 
@@ -587,6 +653,13 @@ const attachmentModeOptions = computed(() => [
   { label: t("chat.attachmentModeAskImage"), value: "uploaded_image_qa" },
   { label: t("chat.attachmentModeFindSimilar"), value: "image_similarity" },
   { label: t("chat.attachmentModeSave"), value: "save_uploaded_image" },
+]);
+
+const feedbackIssueOptions = computed(() => [
+  { value: "wrong_retrieval", label: t("chat.feedbackIssueWrongRetrieval") },
+  { value: "hallucination", label: t("chat.feedbackIssueHallucination") },
+  { value: "missing_citation", label: t("chat.feedbackIssueMissingCitation") },
+  { value: "not_helpful", label: t("chat.feedbackIssueNotHelpful") },
 ]);
 
 const slashCommands = computed<SlashCommand[]>(() => [
@@ -1084,6 +1157,7 @@ async function loadSession(id: string) {
   const token = ++loadSessionToken;
   const draft = sessionDrafts.value[id];
   messages.value = draft?.messages ? draft.messages.map(cloneMessage) : [];
+  syncFeedbackFormsForMessages(messages.value);
   currentSessionTitle.value = draft?.title || sessions.value.find((s) => s.id === id)?.title || "";
   try {
     const msgs = await getSessionMessages(id);
@@ -1092,6 +1166,7 @@ async function loadSession(id: string) {
     }
     if (msgs.length > 0 || !draft?.messages?.length) {
       messages.value = msgs.map(cloneMessage);
+      syncFeedbackFormsForMessages(messages.value);
     }
     const session = sessions.value.find((s) => s.id === id);
     currentSessionTitle.value = session?.title || draft?.title || "";
@@ -1227,6 +1302,7 @@ function cloneMessage(message: Message): Message {
     citations: normalizedCitations,
     retrieval_steps: message.retrieval_steps ? [...message.retrieval_steps] : [],
     retrieval_params: message.retrieval_params ? { ...message.retrieval_params, citations: normalizedCitations } : null,
+    feedback: message.feedback ? { ...message.feedback, issue_types: [...message.feedback.issue_types] } : null,
     timings: message.timings ? { ...message.timings, stages: [...message.timings.stages] } : null,
   };
 }
@@ -1246,6 +1322,52 @@ function saveSessionDraft(sessionId: string) {
     messages: messages.value.map(cloneMessage),
     title: currentSessionTitle.value || sessions.value.find((session) => session.id === sessionId)?.title || "",
   };
+}
+
+function getFeedbackForm(messageId: string) {
+  if (!feedbackForms.value[messageId]) {
+    feedbackForms.value[messageId] = {
+      issue_types: [],
+      comment: "",
+    };
+  }
+  return feedbackForms.value[messageId];
+}
+
+function syncFeedbackForm(message: Message) {
+  if (message.role !== "assistant") return;
+  const form = getFeedbackForm(String(message.id));
+  form.issue_types = message.feedback?.issue_types ? [...message.feedback.issue_types] : [];
+  form.comment = message.feedback?.comment || "";
+}
+
+function applyMessageFeedback(messageId: string | number, sessionId: string, feedback: AnswerFeedbackResponse) {
+  const normalizedId = String(messageId);
+  const target = messages.value.find((message) => String(message.id) === normalizedId);
+  if (target) {
+    target.feedback = {
+      ...feedback,
+      issue_types: [...feedback.issue_types],
+    };
+    syncFeedbackForm(target);
+  }
+  updateDraftMessage(sessionId, normalizedId, (message) => {
+    message.feedback = {
+      ...feedback,
+      issue_types: [...feedback.issue_types],
+    };
+  });
+  if (currentSessionId.value === sessionId) {
+    saveSessionDraft(sessionId);
+  }
+}
+
+function syncFeedbackFormsForMessages(list: Message[]) {
+  list.forEach((message) => syncFeedbackForm(message));
+}
+
+function hasPersistedAssistantMessageId(message: Message): boolean {
+  return message.role === "assistant" && Number.isInteger(Number(message.id));
 }
 
 function clearSessionDraft(sessionId: string) {
@@ -1674,6 +1796,7 @@ async function sendChat(options: SendChatOptions) {
       [sessionId]: true,
     };
     messages.value.push(assistantMessage);
+    syncFeedbackForm(assistantMessage);
     saveSessionDraft(sessionId);
     streamingId.value = assistantMessageId;
 
@@ -1693,6 +1816,7 @@ async function sendChat(options: SendChatOptions) {
     };
 
     const finalizeAssistantMessage = (targetSessionId: string, payload: {
+      assistant_message_id?: number;
       sources: Message["sources"];
       citations?: Message["citations"];
       presentation_mode?: Message["presentation_mode"];
@@ -1702,6 +1826,9 @@ async function sendChat(options: SendChatOptions) {
       timings?: Message["timings"];
     }) => {
       const assignPayload = (message: Message) => {
+        if (payload.assistant_message_id) {
+          message.id = payload.assistant_message_id;
+        }
         message.session_id = targetSessionId;
         message.sources = payload.sources || [];
         message.citations = payload.citations || [];
@@ -1764,6 +1891,7 @@ async function sendChat(options: SendChatOptions) {
         },
         onResults: (event) => {
           finalizeAssistantMessage(effectiveSessionId, {
+            assistant_message_id: event.assistant_message_id,
             sources: event.sources || [],
             citations: event.citations || [],
             presentation_mode: event.presentation_mode,
@@ -1824,6 +1952,57 @@ async function doChat() {
     requestExecutionHint: effectiveExecutionHint.value,
     requestSourceScope: sourceScope.value,
   });
+}
+
+function toggleFeedbackPopover(message: Message) {
+  const targetId = String(message.id);
+  if (feedbackPopoverId.value === targetId) {
+    feedbackPopoverId.value = null;
+    return;
+  }
+  syncFeedbackForm(message);
+  feedbackPopoverId.value = targetId;
+}
+
+async function submitHelpfulFeedback(message: Message) {
+  const messageId = String(message.id);
+  try {
+    feedbackSubmittingId.value = messageId;
+    const response = await submitMessageFeedback(message.id, {
+      rating: "up",
+      issue_types: [],
+      comment: null,
+    });
+    applyMessageFeedback(message.id, message.session_id, response);
+    feedbackPopoverId.value = null;
+    ElMessage.success(t("chat.feedbackSuccess"));
+  } catch (error) {
+    console.error("提交正向反馈失败:", error);
+    ElMessage.error(t("chat.feedbackFailed"));
+  } finally {
+    feedbackSubmittingId.value = null;
+  }
+}
+
+async function submitIssueFeedback(message: Message) {
+  const messageId = String(message.id);
+  const form = getFeedbackForm(messageId);
+  try {
+    feedbackSubmittingId.value = messageId;
+    const response = await submitMessageFeedback(message.id, {
+      rating: "down",
+      issue_types: [...form.issue_types],
+      comment: form.comment || null,
+    });
+    applyMessageFeedback(message.id, message.session_id, response);
+    feedbackPopoverId.value = null;
+    ElMessage.success(t("chat.feedbackSuccess"));
+  } catch (error) {
+    console.error("提交问题反馈失败:", error);
+    ElMessage.error(t("chat.feedbackFailed"));
+  } finally {
+    feedbackSubmittingId.value = null;
+  }
 }
 
 function scrollToBottom() {
@@ -3151,11 +3330,46 @@ onBeforeUnmount(() => {
   border-color: rgba(37, 99, 235, 0.08);
 }
 
+.message-action-btn.active {
+  color: var(--accent-primary);
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.18);
+}
+
 .message-action-btn.compact {
   padding: 4px 10px;
   background: rgba(255, 255, 255, 0.7);
   border-color: rgba(148, 163, 184, 0.18);
   font-size: 12px;
+}
+
+.feedback-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feedback-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.feedback-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.feedback-checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.feedback-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .message-time {

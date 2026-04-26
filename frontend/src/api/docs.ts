@@ -2,7 +2,7 @@
  * 文档知识库 API 模块
  */
 import { http } from "./http";
-import type { DocumentRecord, DocParseResult } from "@/types";
+import type { DocumentRecord, DocParseResult, JobTask } from "@/types";
 
 export type { DocumentRecord, DocParseResult } from "@/types";
 
@@ -27,6 +27,7 @@ export interface DocumentRecordUpdatePayload {
 
 export interface UploadDocumentResponse {
   document: DocumentRecord;
+  job?: JobTask | null;
   message: string;
 }
 
@@ -36,6 +37,7 @@ export interface DocumentProgressResponse {
   stage: string;
   progress_percent: number;
   message?: string | null;
+  job?: JobTask | null;
 }
 
 export interface DocChunk {
@@ -110,5 +112,27 @@ export async function getDocumentProgress(docId: string): Promise<DocumentProgre
 
 export async function getDocResult(docId: string): Promise<DocParseResult> {
   const { data } = await http.get<DocParseResult>(`/api/docs/${docId}/result`);
+  return data;
+}
+
+export async function listDocumentVersions(docId: string): Promise<DocumentRecord[]> {
+  const { data } = await http.get<DocumentRecord[]>(`/api/docs/${docId}/versions`);
+  return data;
+}
+
+export async function uploadDocumentVersion(
+  docId: string,
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<UploadDocumentResponse> {
+  const form = new FormData();
+  form.append("file", file);
+  const { data } = await http.post<UploadDocumentResponse>(`/api/docs/${docId}/versions`, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+    onUploadProgress: (event) => {
+      if (!onProgress || !event.total) return;
+      onProgress(Math.min(100, Math.round((event.loaded * 100) / event.total)));
+    },
+  });
   return data;
 }

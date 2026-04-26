@@ -9,6 +9,8 @@
  */
 import { http } from "./http";
 import type {
+  AnswerFeedbackRequest,
+  AnswerFeedbackResponse,
   ChatCitationItem,
   ChatMessage,
   RetrievalStepItem,
@@ -65,6 +67,7 @@ export interface ChatStreamResultsEvent {
   results: SearchResultItem[];
   sources: ChatSourceItem[];
   citations?: ChatCitationItem[];
+  assistant_message_id?: number;
   retrieval_steps: RetrievalStepItem[];
   presentation_mode: PresentationMode;
   execution_mode: ExecutionMode;
@@ -177,6 +180,14 @@ export async function deleteSession(id: string): Promise<void> {
 export async function getSessionMessages(id: string): Promise<ChatMessage[]> {
   const { data } = await http.get<ChatSessionDetail>(`/api/chat/sessions/${id}`);
   return data.messages;
+}
+
+export async function submitMessageFeedback(
+  messageId: string | number,
+  payload: AnswerFeedbackRequest,
+): Promise<AnswerFeedbackResponse> {
+  const { data } = await http.post<AnswerFeedbackResponse>(`/api/chat/messages/${messageId}/feedback`, payload);
+  return data;
 }
 
 /**
