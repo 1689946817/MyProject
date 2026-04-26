@@ -336,27 +336,27 @@
                 <i class="i-ep-collection-tag"></i>
                 <span>{{ composerSourceLabel }}</span>
               </button>
-              <button type="button" class="composer-status-pill" @click="settingsPanelOpen = !settingsPanelOpen">
-                <i class="i-ep-setting"></i>
-                <span>{{ composerRetrievalLabel }}</span>
+              <button
+                type="button"
+                class="composer-status-pill weak"
+                :class="{ active: settingsPanelOpen }"
+                @click="settingsPanelOpen = !settingsPanelOpen"
+              >
+                <i :class="settingsPanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
+                <span>{{ t("chat.retrievalSettings") }}：{{ settingsSummary }}</span>
               </button>
-              <span class="composer-status-pill passive">
-                <i :class="attachedImage ? 'i-ep-picture' : 'i-ep-chat-line-square'"></i>
-                <span>{{ composerAttachmentLabel }}</span>
-              </span>
             </div>
             <div v-if="composerWarnings.length > 0" class="composer-warning-stack">
-              <el-alert
+              <div
                 v-for="warning in composerWarnings"
                 :key="warning"
-                :title="warning"
-                type="info"
-                :closable="false"
-                show-icon
                 class="composer-warning"
-              />
+              >
+                <i class="i-ep-info-filled"></i>
+                <span>{{ warning }}</span>
+              </div>
             </div>
-            <div v-if="questionTemplates.length > 0 && (!messages.length || query.trim().length === 0)" class="question-template-bar">
+            <div v-if="showLargeTemplateCards" class="question-template-bar">
               <button
                 v-for="template in questionTemplates"
                 :key="template.id"
@@ -368,82 +368,90 @@
                 <span class="question-template-desc">{{ template.description }}</span>
               </button>
             </div>
-            <div class="input-row">
-              <el-upload :auto-upload="false" :show-file-list="false" :on-change="onImageChange">
-                <el-button text class="attach-btn"><i class="i-ep-plus"></i></el-button>
-              </el-upload>
-              <el-popover v-model:visible="sourcePanelOpen" placement="top-start" width="360" trigger="manual" popper-class="source-popover">
-                <template #reference>
-                  <el-button text class="attach-btn" @click="openSourcePanel"><i class="i-ep-collection-tag"></i></el-button>
-                </template>
-                <div class="source-picker">
-                  <el-input
-                    v-model="sourceQuery"
-                    :placeholder="t('chat.sourceSearchPlaceholder')"
-                    clearable
-                    @input="loadSourceCandidates(sourceQuery)"
-                  />
-                  <div v-loading="sourceLoading" class="source-list">
-                    <div class="source-group-head">
-                      <div class="source-group-title">{{ t("chat.sourceDocs") }}</div>
-                      <div class="source-group-meta">{{ documentCandidates.length }} / {{ sourceDocLimit }}</div>
-                    </div>
-                    <button
-                      v-for="doc in documentCandidates"
-                      :key="doc.id"
-                      class="source-option"
-                      type="button"
-                      @click="addSourceChip('doc', doc.id, doc.title || doc.file_name)"
-                    >
-                      <i class="i-ep-document"></i>
-                      <span>{{ doc.title || doc.file_name }}</span>
-                    </button>
-                    <button type="button" class="source-more-btn" @click="loadMoreSources('doc')">{{ t("chat.sourceLoadMore") }}</button>
-                    <div class="source-group-head">
-                      <div class="source-group-title">{{ t("chat.sourceImages") }}</div>
-                      <div class="source-group-meta">{{ imageCandidates.length }} / {{ sourceImageLimit }}</div>
-                    </div>
-                    <button
-                      v-for="image in imageCandidates"
-                      :key="image.id"
-                      class="source-option"
-                      type="button"
-                      @click="addSourceChip('image', image.id, image.title || image.id)"
-                    >
-                      <i class="i-ep-picture"></i>
-                      <span>{{ image.title || image.id }}</span>
-                    </button>
-                    <button type="button" class="source-more-btn" @click="loadMoreSources('image')">{{ t("chat.sourceLoadMore") }}</button>
-                  </div>
-                </div>
-              </el-popover>
-              <el-input
-                ref="composerInputRef"
-                v-model="query"
-                :placeholder="dynamicInputPlaceholder"
-                class="chat-input"
-                :class="{ 'slash-active': isSlashMode, 'slash-invalid': hasInvalidSlashCommand }"
-                type="textarea"
-                :autosize="{ minRows: 1, maxRows: 5 }"
-                resize="none"
-                :disabled="isCurrentSessionPending"
-                @keydown="handleInputKeydown"
-              />
-              <el-button type="primary" class="send-btn" :loading="isCurrentSessionPending" @click="doChat">
-                <el-icon v-if="!isCurrentSessionPending"><Promotion /></el-icon>
-              </el-button>
-            </div>
-            <div v-if="selectedSources.length > 0 || effectiveExecutionHint || visibleSlashCommands.length > 0 || isSlashMode" class="composer-tools">
-              <div class="composer-tools-head">{{ t("chat.composerTools") }}</div>
-              <div v-if="selectedSources.length > 0 || effectiveExecutionHint" class="input-context-row">
-                <el-tag
-                  v-if="effectiveExecutionHint"
-                  type="warning"
-                  effect="plain"
-                  round
+            <div class="composer-main">
+              <div v-if="showCompactTemplateChips" class="compact-template-row">
+                <button
+                  v-for="template in questionTemplates"
+                  :key="template.id"
+                  type="button"
+                  class="compact-template-chip"
+                  @click="applyQuestionTemplate(template)"
                 >
-                  {{ t("chat.activeMode") }}：{{ effectiveExecutionHint }}
-                </el-tag>
+                  {{ template.title }}
+                </button>
+              </div>
+              <div class="input-row">
+                <div class="input-actions">
+                  <el-upload :auto-upload="false" :show-file-list="false" :on-change="onImageChange">
+                    <el-button text class="attach-btn primary-action"><i class="i-ep-plus"></i></el-button>
+                  </el-upload>
+                </div>
+                <div class="chat-input-shell">
+                  <el-input
+                    ref="composerInputRef"
+                    v-model="query"
+                    :placeholder="dynamicInputPlaceholder"
+                    class="chat-input"
+                    :class="{ 'slash-active': isSlashMode, 'slash-invalid': hasInvalidSlashCommand }"
+                    type="textarea"
+                    :autosize="{ minRows: 1, maxRows: 5 }"
+                    resize="none"
+                    :disabled="isCurrentSessionPending"
+                    @keydown="handleInputKeydown"
+                  />
+                </div>
+                <el-button type="primary" class="send-btn" :loading="isCurrentSessionPending" @click="doChat">
+                  <el-icon v-if="!isCurrentSessionPending"><Promotion /></el-icon>
+                </el-button>
+              </div>
+            </div>
+            <el-popover v-model:visible="sourcePanelOpen" placement="top-start" width="360" trigger="manual" popper-class="source-popover">
+              <template #reference>
+                <span class="source-popover-anchor" aria-hidden="true"></span>
+              </template>
+              <div class="source-picker">
+                <el-input
+                  v-model="sourceQuery"
+                  :placeholder="t('chat.sourceSearchPlaceholder')"
+                  clearable
+                  @input="loadSourceCandidates(sourceQuery)"
+                />
+                <div v-loading="sourceLoading" class="source-list">
+                  <div class="source-group-head">
+                    <div class="source-group-title">{{ t("chat.sourceDocs") }}</div>
+                    <div class="source-group-meta">{{ documentCandidates.length }} / {{ sourceDocLimit }}</div>
+                  </div>
+                  <button
+                    v-for="doc in documentCandidates"
+                    :key="doc.id"
+                    class="source-option"
+                    type="button"
+                    @click="addSourceChip('doc', doc.id, doc.title || doc.file_name)"
+                  >
+                    <i class="i-ep-document"></i>
+                    <span>{{ doc.title || doc.file_name }}</span>
+                  </button>
+                  <button type="button" class="source-more-btn" @click="loadMoreSources('doc')">{{ t("chat.sourceLoadMore") }}</button>
+                  <div class="source-group-head">
+                    <div class="source-group-title">{{ t("chat.sourceImages") }}</div>
+                    <div class="source-group-meta">{{ imageCandidates.length }} / {{ sourceImageLimit }}</div>
+                  </div>
+                  <button
+                    v-for="image in imageCandidates"
+                    :key="image.id"
+                    class="source-option"
+                    type="button"
+                    @click="addSourceChip('image', image.id, image.title || image.id)"
+                  >
+                    <i class="i-ep-picture"></i>
+                    <span>{{ image.title || image.id }}</span>
+                  </button>
+                  <button type="button" class="source-more-btn" @click="loadMoreSources('image')">{{ t("chat.sourceLoadMore") }}</button>
+                </div>
+              </div>
+            </el-popover>
+            <div v-if="selectedSources.length > 0 || visibleSlashCommands.length > 0 || isSlashMode" class="composer-tools">
+              <div v-if="selectedSources.length > 0" class="input-context-row">
                 <el-tag
                   v-for="(source, index) in selectedSources"
                   :key="`${source.type}-${source.id}`"
@@ -471,14 +479,6 @@
                 <span v-if="activeSlashCommand">{{ t("chat.commandPreview", { command: activeSlashCommand.command }) }} {{ activeSlashCommand.description }}</span>
                 <span v-else>{{ t("chat.commandInvalidHint") }}</span>
               </div>
-            </div>
-            <div class="input-hint">{{ t("chat.inputHint") }}</div>
-            <div class="settings-toggle-row">
-              <el-button text class="settings-toggle" @click="settingsPanelOpen = !settingsPanelOpen">
-                <i :class="settingsPanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
-                <span>{{ t("chat.retrievalSettings") }}</span>
-                <span class="settings-summary">{{ settingsSummary }}</span>
-              </el-button>
             </div>
             <el-collapse-transition>
               <div v-show="settingsPanelOpen" class="settings-panel">
@@ -853,10 +853,10 @@ const hasInvalidSlashCommand = computed(() => isSlashMode.value && !slashParseRe
 const settingsSummary = computed(() => {
   const parts: string[] = [];
   if (chatTopK.value !== chatDefaultTopK.value) {
-    parts.push(t("chat.activeTopK", { count: chatTopK.value }));
+    parts.push(`TopK ${chatTopK.value}`);
   }
   if (chatEnableScoreFilter.value && (chatEnableScoreFilter.value !== chatDefaultEnableScoreFilter.value || chatMinRelevanceScore.value !== chatDefaultMinRelevanceScore.value)) {
-    parts.push(`${t("chat.activeRerankFilter")} ≥ ${formatNumeric(chatMinRelevanceScore.value)}`);
+    parts.push(`${t("chat.minRelevanceScore")} ≥ ${formatNumeric(chatMinRelevanceScore.value)}`);
   }
   return parts.length > 0 ? parts.join(" / ") : t("chat.defaultSettings");
 });
@@ -883,15 +883,6 @@ const composerSourceLabel = computed(() => {
   return t("chat.contextScopedSources", { docs: docCount, images: imageCount });
 });
 
-const composerAttachmentLabel = computed(() => attachedImage.value ? t("chat.contextHasAttachment") : t("chat.contextNoAttachment"));
-
-const composerRetrievalLabel = computed(() => {
-  if (!chatEnableScoreFilter.value) {
-    return t("chat.contextRetrievalSummary", { topK: chatTopK.value, filter: t("chat.processDisabled") });
-  }
-  return t("chat.contextRetrievalSummary", { topK: chatTopK.value, filter: `≥ ${formatNumeric(chatMinRelevanceScore.value)}` });
-});
-
 const composerWarnings = computed(() => {
   const warnings: string[] = [];
   if (effectiveExecutionHint.value === "direct_llm" && selectedSources.value.length > 0) {
@@ -912,7 +903,7 @@ const dynamicInputPlaceholder = computed(() => {
   if (attachedImage.value && attachmentMode.value === "uploaded_image_qa") return t("chat.inputPlaceholderAskImage");
   if (attachedImage.value && attachmentMode.value === "image_similarity") return t("chat.inputPlaceholderFindSimilar");
   if (attachedImage.value && attachmentMode.value === "save_uploaded_image") return t("chat.inputPlaceholderSaveImage");
-  return t("chat.inputPlaceholder");
+  return "Enter 发送，Shift + Enter 换行";
 });
 
 const questionTemplates = computed<QuestionTemplate[]>(() => [
@@ -952,6 +943,13 @@ const questionTemplates = computed<QuestionTemplate[]>(() => [
     executionHint: "save_uploaded_image",
   },
 ]);
+
+const showLargeTemplateCards = computed(() => questionTemplates.value.length > 0 && messages.value.length === 0);
+const showCompactTemplateChips = computed(() =>
+  questionTemplates.value.length > 0
+  && messages.value.length > 0
+  && query.value.trim().length === 0,
+);
 
 watch([chatTopK, chatEnableScoreFilter, chatMinRelevanceScore], () => {
   settingsPanelOpen.value =
@@ -2884,20 +2882,20 @@ onBeforeUnmount(() => {
 .composer-status-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .composer-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 34px;
-  padding: 0 12px;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.26);
-  background: rgba(248, 250, 252, 0.92);
+  background: rgba(248, 250, 252, 0.82);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
 }
@@ -2908,30 +2906,42 @@ onBeforeUnmount(() => {
   background: rgba(239, 246, 255, 0.96);
 }
 
-.composer-status-pill.passive {
-  cursor: default;
+.composer-status-pill.weak {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(248, 250, 252, 0.58);
+  color: var(--text-tertiary);
 }
 
-.composer-status-pill.passive:hover {
-  border-color: rgba(148, 163, 184, 0.26);
-  color: var(--text-secondary);
-  background: rgba(248, 250, 252, 0.92);
+.composer-status-pill.weak:hover,
+.composer-status-pill.weak.active {
+  border-color: rgba(37, 99, 235, 0.22);
+  background: rgba(239, 246, 255, 0.78);
+  color: var(--accent-primary);
 }
 
 .composer-warning-stack {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .composer-warning {
-  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .question-template-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .question-template-chip {
@@ -2939,8 +2949,8 @@ onBeforeUnmount(() => {
   min-width: 0;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 14px;
-  border-radius: 16px;
+  padding: 10px 14px;
+  border-radius: 14px;
   border: 1px solid rgba(148, 163, 184, 0.2);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.94) 100%);
   text-align: left;
@@ -2966,10 +2976,43 @@ onBeforeUnmount(() => {
   color: var(--text-secondary);
 }
 
+.composer-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compact-template-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compact-template-chip {
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
 .input-row {
   display: flex;
   gap: 10px;
-  align-items: flex-end;
+  align-items: flex-start;
+}
+
+.input-actions {
+  display: flex;
+  align-items: flex-start;
+  flex: 0 0 auto;
+}
+
+.input-actions :deep(.el-upload) {
+  display: flex;
 }
 
 .composer-tools {
@@ -2978,17 +3021,9 @@ onBeforeUnmount(() => {
   gap: 6px;
   margin-top: 0;
   padding: 8px 10px;
-  border-radius: 14px;
-  border: 1px solid var(--border-color);
-  background: rgba(248, 250, 252, 0.92);
-}
-
-.composer-tools-head {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(248, 250, 252, 0.76);
 }
 
 .input-context-row {
@@ -3082,10 +3117,10 @@ onBeforeUnmount(() => {
 
 .attach-btn {
   color: var(--text-secondary);
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 12px;
-  background: var(--bg-tertiary);
+  background: rgba(248, 250, 252, 0.9);
   border: 1px solid var(--border-color);
 }
 
@@ -3094,16 +3129,31 @@ onBeforeUnmount(() => {
   background: var(--bg-accent-soft);
 }
 
+.source-popover-anchor {
+  display: inline-block;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chat-input-shell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .chat-input {
   flex: 1;
 }
 
 .chat-input :deep(.el-input__wrapper) {
-  background: var(--bg-tertiary);
+  min-height: 42px;
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid var(--border-color);
   box-shadow: none;
-  padding: 8px 12px;
-  border-radius: 14px;
+  padding: 6px 14px;
+  border-radius: 12px;
 }
 
 .chat-input :deep(.el-input__wrapper:focus-within) {
@@ -3122,52 +3172,25 @@ onBeforeUnmount(() => {
 }
 
 .chat-input :deep(textarea.el-textarea__inner) {
-  line-height: 1.6;
+  min-height: 28px;
+  line-height: 1.68;
   color: var(--text-primary);
 }
 
 .send-btn {
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 14px;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  border-radius: 12px;
   background: var(--accent-gradient);
   border: none;
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.16);
 }
 
 .send-btn:hover {
   opacity: 0.95;
-}
-
-.input-hint {
-  font-size: 12px;
-  color: var(--text-tertiary);
-}
-
-.settings-toggle-row {
-  margin-top: 2px;
-}
-
-.settings-toggle {
-  width: 100%;
-  justify-content: space-between;
-  border-radius: 12px;
-  padding: 8px 10px;
-  color: var(--text-secondary);
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-}
-
-.settings-toggle:hover {
-  color: var(--accent-primary);
-  background: var(--bg-accent-soft);
-}
-
-.settings-summary {
-  margin-left: auto;
-  color: var(--text-tertiary);
-  font-size: 11px;
-  text-align: right;
 }
 
 .settings-panel {
@@ -3213,14 +3236,14 @@ onBeforeUnmount(() => {
 
 .attached-preview {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 12px;
   margin-top: 4px;
-  padding: 10px;
-  border-radius: 14px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-tertiary);
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(248, 250, 252, 0.76);
 }
 
 .attached-preview img {
@@ -3453,6 +3476,11 @@ onBeforeUnmount(() => {
 
   .input-row {
     align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .input-actions {
+    width: 100%;
   }
 
   .message-item {
@@ -3479,8 +3507,14 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 
+  .compact-template-row {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .composer-status-pill,
-  .question-template-chip {
+  .question-template-chip,
+  .chat-input-shell {
     width: 100%;
   }
 
