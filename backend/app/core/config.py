@@ -136,6 +136,18 @@ class Settings(BaseSettings):
     SEARCH_ENABLE_SCORE_FILTER: bool = False
     SEARCH_MIN_RELEVANCE_SCORE: float = 0.0
     CHAT_DEFAULT_TOP_K: int = 5
+    CHAT_FAST_DEFAULT_TOP_K: int = 2
+    CHAT_FAST_DISABLE_QUERY_REWRITE: bool = True
+    CHAT_FAST_DISABLE_RERANK: bool = True
+    CHAT_FAST_DISABLE_CONTEXT_COMPRESSION: bool = True
+    CHAT_FAST_FORCE_TRUE_STREAMING: bool = True
+    CHAT_EXPERT_DEFAULT_TOP_K: int = 8
+    CHAT_EXPERT_RERANK_CANDIDATE_K: int = 40
+    CHAT_EXPERT_QUERY_MULTI_COUNT: int = 5
+    CHAT_EXPERT_FORCE_QUERY_REWRITE: bool = True
+    CHAT_EXPERT_FORCE_RERANK: bool = True
+    CHAT_EXPERT_FORCE_CONTEXT_COMPRESSION: bool = True
+    CHAT_EXPERT_FORCE_TRUE_STREAMING: bool = True
     CHAT_ENABLE_SCORE_FILTER: bool = False
     CHAT_MIN_RELEVANCE_SCORE: float = 0.0
 
@@ -152,6 +164,7 @@ class Settings(BaseSettings):
 
     # P3 升级：Agentic RAG
     AGENTIC_RAG_ENABLED: bool = False  # 默认关闭，需手动启用
+    CHAT_EXPERT_FORCE_AGENTIC_RAG: bool = True
 
     # 生成器评估器模型配置（OpenAI 兼容格式）
     EVAL_BASE_URL: Optional[str] = None

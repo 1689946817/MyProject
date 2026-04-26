@@ -25,7 +25,7 @@ from app.core.config import settings
 from app.core.timing import timing_stage
 from app.langchain_integration.models import get_multimodal_chat_model, MultimodalChatModel
 from app.langchain_integration.vectorstores import ChromaVectorStore, get_vector_store
-from app.retrieval.rerank import cross_encoder_rerank, simple_rerank
+from app.retrieval.rerank import rerank_with_strategy, simple_rerank
 from app.retrieval.relevance import annotate_relevance, filter_by_relevance
 from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
 
@@ -87,6 +87,7 @@ async def _multi_query_hybrid_search(
     candidate_k: int,
     *,
     enable_query_rewrite: bool = True,
+    query_rewrite_count: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     """
     Multi-Query + 混合检索：
@@ -102,7 +103,7 @@ async def _multi_query_hybrid_search(
             try:
                 from app.langchain_integration.query_transform import get_query_rewriter
                 rewriter = get_query_rewriter()
-                queries = await rewriter.expand(query)
+                queries = await rewriter.expand(query, n=query_rewrite_count)
             except Exception as e:
                 logger.warning(f"[Retriever] 查询扩展失败，使用原始查询: {e}")
                 queries = [query]
@@ -165,6 +166,10 @@ class MultimodalRetriever:
         fast: bool = False,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        candidate_k: Optional[int] = None,
+        enable_query_rewrite: Optional[bool] = None,
+        query_rewrite_count: Optional[int] = None,
+        enable_rerank: bool = True,
     ) -> List[Document]:
         """
         文本到图像检索（完整 P0 流程）
@@ -173,24 +178,37 @@ class MultimodalRetriever:
         """
         k = top_k or self.top_k
         use_fast_path = fast and settings.IMAGE_FAST_RETRIEVAL_ENABLED
-        candidate_k = settings.RERANK_CANDIDATE_K
+        resolved_candidate_k = candidate_k or settings.RERANK_CANDIDATE_K
         if use_fast_path:
-            candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
+            resolved_candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
+        resolved_enable_query_rewrite = not use_fast_path if enable_query_rewrite is None else bool(enable_query_rewrite)
 
         with timing_stage(
             "text_to_image_search_internal",
-            meta={"top_k": k, "candidate_k": candidate_k, "fast_path": use_fast_path},
+            meta={
+                "top_k": k,
+                "candidate_k": resolved_candidate_k,
+                "fast_path": use_fast_path,
+                "enable_query_rewrite": resolved_enable_query_rewrite,
+                "enable_rerank": enable_rerank,
+            },
         ):
             candidates = await _multi_query_hybrid_search(
                 query,
                 self.vector_store,
-                candidate_k,
-                enable_query_rewrite=not use_fast_path,
+                resolved_candidate_k,
+                enable_query_rewrite=resolved_enable_query_rewrite,
+                query_rewrite_count=query_rewrite_count,
             )
             candidates = filter_enabled_image_hit_dicts(candidates)
 
             with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
-                reranked = cross_encoder_rerank(query, candidates, top_k=len(candidates))
+                reranked = rerank_with_strategy(
+                    query,
+                    candidates,
+                    top_k=len(candidates),
+                    enable_rerank=enable_rerank,
+                )
                 reranked = _prefer_table_crops(reranked)
             reranked = filter_by_relevance(
                 reranked,
@@ -219,6 +237,10 @@ class MultimodalRetriever:
         fast: bool = False,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        candidate_k: Optional[int] = None,
+        enable_query_rewrite: Optional[bool] = None,
+        query_rewrite_count: Optional[int] = None,
+        enable_rerank: bool = True,
     ) -> Tuple[List[Document], str]:
         """图像到图像检索：先生成描述，再走文本检索路径。"""
         k = top_k or self.top_k
@@ -239,6 +261,10 @@ class MultimodalRetriever:
                 fast=fast,
                 enable_score_filter=enable_score_filter,
                 min_relevance_score=min_relevance_score,
+                candidate_k=candidate_k,
+                enable_query_rewrite=enable_query_rewrite,
+                query_rewrite_count=query_rewrite_count,
+                enable_rerank=enable_rerank,
             )
             return documents, description
 
@@ -248,6 +274,8 @@ class MultimodalRetriever:
         top_k: Optional[int] = None,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        candidate_k: Optional[int] = None,
+        enable_rerank: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         同步检索并返回字典格式结果（兼容旧接口）。
@@ -256,11 +284,13 @@ class MultimodalRetriever:
         此处使用混合检索 + CrossEncoder 精排。
         """
         k = top_k or self.top_k
-        candidate_k = settings.RERANK_CANDIDATE_K
+        resolved_candidate_k = candidate_k or settings.RERANK_CANDIDATE_K
 
-        candidates = _hybrid_search_sync(query, self.vector_store, candidate_k)
+        candidates = _hybrid_search_sync(query, self.vector_store, resolved_candidate_k)
         candidates = filter_enabled_image_hit_dicts(candidates)
-        reranked = _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=len(candidates)))
+        reranked = _prefer_table_crops(
+            rerank_with_strategy(query, candidates, top_k=len(candidates), enable_rerank=enable_rerank)
+        )
         return filter_by_relevance(
             reranked,
             enabled=enable_score_filter,
@@ -274,29 +304,48 @@ class MultimodalRetriever:
         fast: bool = False,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        candidate_k: Optional[int] = None,
+        enable_query_rewrite: Optional[bool] = None,
+        query_rewrite_count: Optional[int] = None,
+        enable_rerank: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         异步检索并返回字典格式结果（完整 P0 管线：Multi-Query + 混合检索 + 精排）。
         """
         k = top_k or self.top_k
         use_fast_path = fast and settings.IMAGE_FAST_RETRIEVAL_ENABLED
-        candidate_k = settings.RERANK_CANDIDATE_K
+        resolved_candidate_k = candidate_k or settings.RERANK_CANDIDATE_K
         if use_fast_path:
-            candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
+            resolved_candidate_k = max(k, settings.IMAGE_FAST_RETRIEVAL_CANDIDATE_K)
+        resolved_enable_query_rewrite = not use_fast_path if enable_query_rewrite is None else bool(enable_query_rewrite)
 
         with timing_stage(
             "async_search_with_dict_output",
-            meta={"top_k": k, "candidate_k": candidate_k, "fast_path": use_fast_path},
+            meta={
+                "top_k": k,
+                "candidate_k": resolved_candidate_k,
+                "fast_path": use_fast_path,
+                "enable_query_rewrite": resolved_enable_query_rewrite,
+                "enable_rerank": enable_rerank,
+            },
         ):
             candidates = await _multi_query_hybrid_search(
                 query,
                 self.vector_store,
-                candidate_k,
-                enable_query_rewrite=not use_fast_path,
+                resolved_candidate_k,
+                enable_query_rewrite=resolved_enable_query_rewrite,
+                query_rewrite_count=query_rewrite_count,
             )
             candidates = filter_enabled_image_hit_dicts(candidates)
             with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
-                reranked = _prefer_table_crops(cross_encoder_rerank(query, candidates, top_k=len(candidates)))
+                reranked = _prefer_table_crops(
+                    rerank_with_strategy(
+                        query,
+                        candidates,
+                        top_k=len(candidates),
+                        enable_rerank=enable_rerank,
+                    )
+                )
             return filter_by_relevance(
                 reranked,
                 enabled=enable_score_filter,

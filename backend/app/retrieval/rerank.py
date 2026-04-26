@@ -56,6 +56,20 @@ def simple_rerank(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return sorted(results, key=lambda x: x.get("score", 0.0))
 
 
+def rerank_with_strategy(
+    query: str,
+    results: List[Dict[str, Any]],
+    *,
+    top_k: Optional[int] = None,
+    enable_rerank: bool = True,
+) -> List[Dict[str, Any]]:
+    """按开关选择 CrossEncoder 精排或轻量排序。"""
+    if enable_rerank:
+        return cross_encoder_rerank(query, results, top_k=top_k)
+    resolved_top_k = _resolve_top_k(top_k, len(results)) if results else 0
+    return simple_rerank(results)[:resolved_top_k]
+
+
 def cross_encoder_rerank(
     query: str,
     results: List[Dict[str, Any]],

@@ -17,7 +17,7 @@ import os
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple
 
 from fastapi import UploadFile
 from langchain_core.documents import Document as LCDoc
@@ -38,6 +38,7 @@ from app.application.knowledge_management import (
 from app.core.config import settings
 from app.core.timing import get_current_timing_collector, timing_stage
 from app.langchain_integration.agentic_rag import (
+    _rule_based_intent,
     classify_chat_intent,
     prepare_agentic_multimodal_rag_context,
     run_agentic_multimodal_rag,
@@ -75,6 +76,7 @@ _TRANSIENT_EXTERNAL_ERROR_MARKERS = (
     "timed out",
     "ssl",
 )
+ChatMode = Literal["fast", "default", "expert"]
 
 
 class LangChainAdapter:
@@ -106,6 +108,31 @@ class LangChainAdapter:
         self.vector_store = get_vector_store()
         self.retriever = get_multimodal_retriever()
         self.document_vector_store = get_document_vector_store()
+
+    def _build_chat_mode_profile(self, chat_mode: ChatMode) -> Optional[Dict[str, Any]]:
+        if chat_mode == "fast":
+            return {
+                "chat_mode": "fast",
+                "enable_query_rewrite": not settings.CHAT_FAST_DISABLE_QUERY_REWRITE,
+                "query_rewrite_count": None,
+                "enable_rerank": not settings.CHAT_FAST_DISABLE_RERANK,
+                "enable_context_compression": not settings.CHAT_FAST_DISABLE_CONTEXT_COMPRESSION,
+                "candidate_k": None,
+                "image_fast_path": True,
+                "force_true_streaming": settings.CHAT_FAST_FORCE_TRUE_STREAMING,
+            }
+        if chat_mode == "expert":
+            return {
+                "chat_mode": "expert",
+                "enable_query_rewrite": settings.CHAT_EXPERT_FORCE_QUERY_REWRITE,
+                "query_rewrite_count": settings.CHAT_EXPERT_QUERY_MULTI_COUNT,
+                "enable_rerank": settings.CHAT_EXPERT_FORCE_RERANK,
+                "enable_context_compression": settings.CHAT_EXPERT_FORCE_CONTEXT_COMPRESSION,
+                "candidate_k": settings.CHAT_EXPERT_RERANK_CANDIDATE_K,
+                "image_fast_path": False,
+                "force_true_streaming": settings.CHAT_EXPERT_FORCE_TRUE_STREAMING,
+            }
+        return None
 
     @staticmethod
     def _compute_content_hash(contents: bytes) -> str:
@@ -393,12 +420,36 @@ class LangChainAdapter:
         min_relevance_score: Optional[float] = None,
         execution_hint: Optional[str] = None,
         source_scope: Optional[Dict[str, List[str]]] = None,
+        chat_mode: ChatMode = "default",
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """
         RAG 问答（支持多轮对话历史 + Agentic RAG）
         """
-        with timing_stage("adapter_rag_chat", meta={"top_k": top_k, "has_uploaded_image": image is not None}):
+        with timing_stage(
+            "adapter_rag_chat",
+            meta={"top_k": top_k, "has_uploaded_image": image is not None, "chat_mode": chat_mode},
+        ):
             from app.core.config import settings
+            if chat_mode == "fast":
+                return await self._run_fast_chat(
+                    query=query,
+                    top_k=top_k,
+                    image=image,
+                    chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    source_scope=source_scope,
+                )
+            if chat_mode == "expert":
+                return await self._run_expert_chat(
+                    query=query,
+                    top_k=top_k,
+                    image=image,
+                    chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    source_scope=source_scope,
+                )
             if settings.AGENTIC_RAG_ENABLED:
                 return await self._run_agentic_chat(
                     query=query,
@@ -477,11 +528,26 @@ class LangChainAdapter:
         min_relevance_score: Optional[float] = None,
         execution_hint: Optional[str] = None,
         source_scope: Optional[Dict[str, List[str]]] = None,
+        chat_mode: ChatMode = "default",
     ):
         """
         RAG 问答流式版本。
         """
         from app.core.config import settings
+
+        if chat_mode in {"fast", "expert"}:
+            async for chunk, docs, intent in self._stream_chat_mode_response(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                source_scope=source_scope,
+                chat_mode=chat_mode,
+            ):
+                yield chunk, docs, intent
+            return
 
         if source_scope or execution_hint:
             execution_mode = execution_hint or "multimodal_rag"
@@ -734,7 +800,156 @@ class LangChainAdapter:
                 execution_mode=intent["execution_mode"],
                 presentation_mode=intent["presentation_mode"],
             )
+        return await self._run_intent_chat(
+            intent=intent,
+            query=query,
+            top_k=top_k,
+            image=image,
+            chat_history=chat_history,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+            force_agentic_rag=False,
+        )
+
+    async def _run_fast_chat(
+        self,
+        *,
+        query: str,
+        top_k: int,
+        image: Optional[UploadFile],
+        chat_history: Optional[List[Tuple[str, str]]],
+        enable_score_filter: bool,
+        min_relevance_score: Optional[float],
+        source_scope: Optional[Dict[str, List[str]]] = None,
+    ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
+        retrieval_profile = self._build_chat_mode_profile("fast")
+        intent = _rule_based_intent(query, image is not None)
+        if intent is None:
+            if image is not None:
+                intent = self._build_forced_intent("uploaded_image_qa", True)
+                intent["reason"] = "fast_mode_uploaded_image_fallback"
+            elif source_scope:
+                intent = self._build_forced_intent("multimodal_rag", False)
+                intent["reason"] = "fast_mode_scoped_rag_fallback"
+            else:
+                intent = self._build_forced_intent("direct_llm", False)
+                intent["reason"] = "fast_mode_direct_fallback"
+
+        collector = get_current_timing_collector()
+        if collector is not None:
+            collector.set_metadata(
+                execution_mode=intent["execution_mode"],
+                presentation_mode=intent["presentation_mode"],
+            )
+
+        return await self._run_intent_chat(
+            intent=intent,
+            query=query,
+            top_k=top_k,
+            image=image,
+            chat_history=chat_history,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+            source_scope=source_scope,
+            force_agentic_rag=False,
+            retrieval_profile=retrieval_profile,
+        )
+
+    async def _run_expert_chat(
+        self,
+        *,
+        query: str,
+        top_k: int,
+        image: Optional[UploadFile],
+        chat_history: Optional[List[Tuple[str, str]]],
+        enable_score_filter: bool,
+        min_relevance_score: Optional[float],
+        source_scope: Optional[Dict[str, List[str]]] = None,
+    ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
+        retrieval_profile = self._build_chat_mode_profile("expert")
+        intent = await classify_chat_intent(
+            query=query,
+            has_uploaded_image=image is not None,
+            mode="expert",
+        )
+        collector = get_current_timing_collector()
+        if collector is not None:
+            collector.set_metadata(
+                execution_mode=intent["execution_mode"],
+                presentation_mode=intent["presentation_mode"],
+            )
+        return await self._run_intent_chat(
+            intent=intent,
+            query=query,
+            top_k=top_k,
+            image=image,
+            chat_history=chat_history,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+            source_scope=source_scope,
+            force_agentic_rag=settings.CHAT_EXPERT_FORCE_AGENTIC_RAG,
+            retrieval_profile=retrieval_profile,
+        )
+
+    async def _run_intent_chat(
+        self,
+        *,
+        intent: Dict[str, Any],
+        query: str,
+        top_k: int,
+        image: Optional[UploadFile],
+        chat_history: Optional[List[Tuple[str, str]]],
+        enable_score_filter: bool,
+        min_relevance_score: Optional[float],
+        source_scope: Optional[Dict[str, List[str]]] = None,
+        force_agentic_rag: bool = False,
+        retrieval_profile: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         execution_mode = intent["execution_mode"]
+
+        if retrieval_profile and execution_mode in {"image_similarity", "image_grounded_answer", "multimodal_rag"}:
+            if execution_mode == "multimodal_rag" and force_agentic_rag and image is None and not source_scope:
+                answer, documents, retrieval_steps = await run_agentic_multimodal_rag(
+                    query=query,
+                    top_k=top_k,
+                    chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    rag_chain=self.rag_chain,
+                    retriever=self.retriever,
+                    doc_vector_store=self.document_vector_store,
+                    execution_mode=execution_mode,
+                    presentation_mode=intent["presentation_mode"],
+                    classifier_reason=str(intent.get("reason", "")),
+                    has_uploaded_image=False,
+                    retrieval_profile=retrieval_profile,
+                )
+                intent["retrieval_steps"] = retrieval_steps
+                return answer, documents, intent
+            return await self._run_scoped_chat(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                execution_hint=execution_mode,
+                source_scope=source_scope,
+                retrieval_profile=retrieval_profile,
+            )
+
+        if source_scope and execution_mode in {"multimodal_rag", "image_similarity", "image_grounded_answer"}:
+            return await self._run_scoped_chat(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                execution_hint=execution_mode,
+                source_scope=source_scope,
+                retrieval_profile=retrieval_profile,
+            )
 
         if execution_mode == "direct_llm":
             answer = await self._answer_directly(query=query, chat_history=chat_history)
@@ -755,6 +970,10 @@ class LangChainAdapter:
                 answer = await self._answer_directly(query=query, chat_history=chat_history)
                 fallback_intent = {
                     **intent,
+                    "execution_mode": "direct_llm",
+                    "presentation_mode": "direct_answer",
+                    "use_rag": False,
+                    "wants_images": False,
                     "reason": "uploaded_image_missing_fallback_to_direct",
                     "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
                 }
@@ -791,6 +1010,10 @@ class LangChainAdapter:
                 answer = await self._answer_directly(query=query, chat_history=chat_history)
                 fallback_intent = {
                     **intent,
+                    "execution_mode": "direct_llm",
+                    "presentation_mode": "direct_answer",
+                    "use_rag": False,
+                    "wants_images": False,
                     "reason": "save_uploaded_image_missing_fallback_to_direct",
                     "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
                 }
@@ -884,7 +1107,9 @@ class LangChainAdapter:
                     has_uploaded_image=True,
                     classifier_reason=str(intent.get("reason", "")),
                 )
-            else:
+                return answer, documents, intent
+
+            if force_agentic_rag:
                 answer, documents, retrieval_steps = await run_agentic_multimodal_rag(
                     query=query,
                     top_k=top_k,
@@ -897,9 +1122,32 @@ class LangChainAdapter:
                     execution_mode=execution_mode,
                     presentation_mode=intent["presentation_mode"],
                     classifier_reason=str(intent.get("reason", "")),
-                    has_uploaded_image=False,
-                )
+                has_uploaded_image=False,
+                retrieval_profile=retrieval_profile,
+                    )
                 intent["retrieval_steps"] = retrieval_steps
+                return answer, documents, intent
+
+        if execution_mode == "multimodal_rag":
+            answer, documents = await self.rag_chain.ainvoke(
+                {
+                    "query": query,
+                    "chat_history": chat_history or [],
+                    "top_k": top_k,
+                    "enable_score_filter": enable_score_filter,
+                    "min_relevance_score": min_relevance_score,
+                }
+            )
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                use_rag=True,
+                documents=documents,
+                has_uploaded_image=False,
+                classifier_reason=str(intent.get("reason", "")),
+            )
             return answer, documents, intent
 
         answer = await self._answer_directly(query=query, chat_history=chat_history)
@@ -922,6 +1170,207 @@ class LangChainAdapter:
             classifier_reason=str(fallback_intent.get("reason", "")),
         )
         return answer, [], fallback_intent
+
+    async def _stream_chat_mode_response(
+        self,
+        *,
+        query: str,
+        top_k: int,
+        image: Optional[UploadFile],
+        chat_history: Optional[List[Tuple[str, str]]],
+        enable_score_filter: bool,
+        min_relevance_score: Optional[float],
+        source_scope: Optional[Dict[str, List[str]]],
+        chat_mode: ChatMode,
+    ):
+        retrieval_profile = self._build_chat_mode_profile(chat_mode)
+        if chat_mode == "fast":
+            intent = _rule_based_intent(query, image is not None)
+            if intent is None:
+                if image is not None:
+                    intent = self._build_forced_intent("uploaded_image_qa", True)
+                    intent["reason"] = "fast_mode_uploaded_image_fallback"
+                elif source_scope:
+                    intent = self._build_forced_intent("multimodal_rag", False)
+                    intent["reason"] = "fast_mode_scoped_rag_fallback"
+                else:
+                    intent = self._build_forced_intent("direct_llm", False)
+                    intent["reason"] = "fast_mode_direct_fallback"
+            force_agentic_rag = False
+        else:
+            intent = await classify_chat_intent(
+                query=query,
+                has_uploaded_image=image is not None,
+                mode="expert",
+            )
+            force_agentic_rag = settings.CHAT_EXPERT_FORCE_AGENTIC_RAG
+
+        collector = get_current_timing_collector()
+        if collector is not None:
+            collector.set_metadata(
+                execution_mode=intent["execution_mode"],
+                presentation_mode=intent["presentation_mode"],
+            )
+
+        async for chunk, docs, streamed_intent in self._stream_intent_chat(
+            intent=intent,
+            query=query,
+            top_k=top_k,
+            image=image,
+            chat_history=chat_history,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+            source_scope=source_scope,
+            force_agentic_rag=force_agentic_rag,
+            retrieval_profile=retrieval_profile,
+        ):
+            yield chunk, docs, streamed_intent
+
+    async def _stream_intent_chat(
+        self,
+        *,
+        intent: Dict[str, Any],
+        query: str,
+        top_k: int,
+        image: Optional[UploadFile],
+        chat_history: Optional[List[Tuple[str, str]]],
+        enable_score_filter: bool,
+        min_relevance_score: Optional[float],
+        source_scope: Optional[Dict[str, List[str]]] = None,
+        force_agentic_rag: bool = False,
+        retrieval_profile: Optional[Dict[str, Any]] = None,
+    ):
+        execution_mode = intent["execution_mode"]
+
+        if execution_mode == "direct_llm":
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode="direct_llm",
+                presentation_mode=intent["presentation_mode"],
+                use_rag=False,
+                documents=[],
+                has_uploaded_image=image is not None,
+                classifier_reason=str(intent.get("reason", "")),
+            )
+            async for chunk in self._astream_direct_answer(query=query, chat_history=chat_history):
+                yield chunk, [], intent
+            return
+
+        if execution_mode == "uploaded_image_qa":
+            if image is None:
+                fallback_intent = {
+                    **intent,
+                    "execution_mode": "direct_llm",
+                    "presentation_mode": "direct_answer",
+                    "use_rag": False,
+                    "wants_images": False,
+                    "reason": "uploaded_image_missing_fallback_to_direct",
+                    "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
+                }
+                fallback_intent["retrieval_steps"] = self._build_retrieval_steps(
+                    query=query,
+                    top_k=top_k,
+                    execution_mode="direct_llm",
+                    presentation_mode="direct_answer",
+                    use_rag=False,
+                    documents=[],
+                    has_uploaded_image=False,
+                    classifier_reason=str(fallback_intent.get("reason", "")),
+                )
+                async for chunk in self._astream_direct_answer(query=query, chat_history=chat_history):
+                    yield chunk, [], fallback_intent
+                return
+            intent["retrieval_steps"] = self._build_retrieval_steps(
+                query=query,
+                top_k=top_k,
+                execution_mode="uploaded_image_qa",
+                presentation_mode=intent["presentation_mode"],
+                use_rag=False,
+                documents=[],
+                has_uploaded_image=True,
+                classifier_reason=str(intent.get("reason", "")),
+            )
+            async for chunk in self._astream_uploaded_image_answer(
+                query=query,
+                image=image,
+                chat_history=chat_history,
+            ):
+                yield chunk, [], intent
+            return
+
+        if execution_mode == "multimodal_rag" and force_agentic_rag and image is None and not source_scope:
+            final_state, docs, text_chunks, retrieval_steps = await prepare_agentic_multimodal_rag_context(
+                query=query,
+                top_k=top_k,
+                chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                rag_chain=self.rag_chain,
+                retriever=self.retriever,
+                doc_vector_store=self.document_vector_store,
+                execution_mode=execution_mode,
+                presentation_mode=intent["presentation_mode"],
+                classifier_reason=str(intent.get("reason", "")),
+                has_uploaded_image=False,
+                retrieval_profile=retrieval_profile,
+            )
+            intent["retrieval_steps"] = retrieval_steps
+            async for chunk in self.rag_chain.astream_from_context(
+                query=query,
+                documents=docs,
+                text_chunks=text_chunks,
+                chat_history=chat_history or [],
+            ):
+                yield chunk, docs, intent
+            return
+
+        if execution_mode in {"multimodal_rag", "image_grounded_answer"}:
+            scoped_context = await self._prepare_scoped_chat_context(
+                query=query,
+                top_k=top_k,
+                image=image,
+                chat_history=chat_history,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                execution_hint=execution_mode,
+                source_scope=source_scope,
+                retrieval_profile=retrieval_profile,
+            )
+            if scoped_context["streaming_ready"] and retrieval_profile and retrieval_profile.get("force_true_streaming", False):
+                intent["retrieval_steps"] = self._build_retrieval_steps(
+                    query=scoped_context["scoped_query"],
+                    top_k=top_k,
+                    execution_mode=execution_mode,
+                    presentation_mode=intent["presentation_mode"],
+                    use_rag=True,
+                    documents=scoped_context["combined_documents"],
+                    has_uploaded_image=image is not None,
+                    classifier_reason=str(intent.get("reason", "")),
+                )
+                async for chunk in self.rag_chain.astream_from_context(
+                    query=scoped_context["generation_query"],
+                    documents=scoped_context["generation_documents"],
+                    text_chunks=scoped_context["generation_text_chunks"],
+                    chat_history=scoped_context["generation_history"],
+                ):
+                    yield chunk, scoped_context["combined_documents"], intent
+                return
+
+        answer, docs, final_intent = await self._run_intent_chat(
+            intent=intent,
+            query=query,
+            top_k=top_k,
+            image=image,
+            chat_history=chat_history,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+            source_scope=source_scope,
+            force_agentic_rag=force_agentic_rag,
+            retrieval_profile=retrieval_profile,
+        )
+        for ch in self._iter_answer_chunks(answer):
+            yield ch, docs, final_intent
 
     def _iter_answer_chunks(self, answer: str) -> Iterator[str]:
         """将最终答案切成可回放的小块，供流式接口复用。"""
@@ -989,6 +1438,7 @@ class LangChainAdapter:
         documents: List[Dict[str, Any]],
         chat_history: Optional[List[Tuple[str, str]]],
         source_scope: Optional[Dict[str, List[str]]] = None,
+        retrieval_profile: Optional[Dict[str, Any]] = None,
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[Tuple[str, str]]]:
         """准备 image_grounded_answer 的最终生成上下文。"""
         if not documents:
@@ -1001,10 +1451,20 @@ class LangChainAdapter:
 
         text_chunks: List[Dict[str, Any]] = []
         if settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED and settings.IMAGE_GROUNDED_TEXT_TOP_K > 0:
-            text_chunks = self.document_vector_store.search_with_pipeline(
-                query,
-                top_k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
-            )
+            if retrieval_profile:
+                text_chunks = await self.document_vector_store.async_search_with_pipeline(
+                    query,
+                    top_k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
+                    candidate_k=retrieval_profile.get("candidate_k"),
+                    enable_query_rewrite=bool(retrieval_profile.get("enable_query_rewrite", True)),
+                    query_rewrite_count=retrieval_profile.get("query_rewrite_count"),
+                    enable_rerank=bool(retrieval_profile.get("enable_rerank", True)),
+                )
+            else:
+                text_chunks = self.document_vector_store.search_with_pipeline(
+                    query,
+                    top_k=settings.IMAGE_GROUNDED_TEXT_TOP_K,
+                )
             text_chunks = self._filter_text_chunks_by_source_scope(text_chunks, source_scope or {})
 
         return grounded_documents, text_chunks, grounded_history
@@ -1020,6 +1480,7 @@ class LangChainAdapter:
         min_relevance_score: Optional[float],
         execution_hint: str,
         source_scope: Optional[Dict[str, List[str]]],
+        retrieval_profile: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """准备 scoped chat 的上下文，不执行最终答案生成。"""
         intent = self._build_forced_intent(execution_hint, image is not None)
@@ -1040,6 +1501,7 @@ class LangChainAdapter:
                 top_k=max(top_k * 4, top_k),
                 enable_score_filter=enable_score_filter,
                 min_relevance_score=min_relevance_score,
+                retrieval_profile=retrieval_profile,
             )
             documents = self._filter_documents_by_source_scope(documents, scope)
 
@@ -1050,13 +1512,25 @@ class LangChainAdapter:
         streaming_ready = False
 
         if execution_hint == "multimodal_rag":
-            text_chunks = self.document_vector_store.search_with_pipeline(
-                scoped_query,
-                top_k=self.rag_chain.text_top_k,
-                candidate_k=max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-            )
+            if retrieval_profile:
+                text_chunks = await self.document_vector_store.async_search_with_pipeline(
+                    scoped_query,
+                    top_k=self.rag_chain.text_top_k,
+                    candidate_k=retrieval_profile.get("candidate_k") or max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    enable_query_rewrite=bool(retrieval_profile.get("enable_query_rewrite", True)),
+                    query_rewrite_count=retrieval_profile.get("query_rewrite_count"),
+                    enable_rerank=bool(retrieval_profile.get("enable_rerank", True)),
+                )
+            else:
+                text_chunks = self.document_vector_store.search_with_pipeline(
+                    scoped_query,
+                    top_k=self.rag_chain.text_top_k,
+                    candidate_k=max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                )
             text_chunks = self._filter_text_chunks_by_source_scope(text_chunks, scope)
             generation_documents = documents
             generation_text_chunks = text_chunks
@@ -1068,9 +1542,20 @@ class LangChainAdapter:
                 documents=documents,
                 chat_history=chat_history,
                 source_scope=scope,
+                retrieval_profile=retrieval_profile,
             )
             combined_documents = generation_documents + generation_text_chunks
             streaming_ready = bool(generation_documents)
+
+        if retrieval_profile and generation_documents:
+            from app.langchain_integration.context_compression import compress_context
+
+            generation_documents = await compress_context(
+                scoped_query,
+                generation_documents,
+                force_enabled=bool(retrieval_profile.get("enable_context_compression", False)),
+            )
+            combined_documents = generation_documents + generation_text_chunks
 
         return {
             "intent": intent,
@@ -1096,6 +1581,7 @@ class LangChainAdapter:
         min_relevance_score: Optional[float],
         execution_hint: str,
         source_scope: Optional[Dict[str, List[str]]],
+        retrieval_profile: Optional[Dict[str, Any]] = None,
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         scoped_context = await self._prepare_scoped_chat_context(
             query=query,
@@ -1106,6 +1592,7 @@ class LangChainAdapter:
             min_relevance_score=min_relevance_score,
             execution_hint=execution_hint,
             source_scope=source_scope,
+            retrieval_profile=retrieval_profile,
         )
         intent = scoped_context["intent"]
         scoped_query = scoped_context["scoped_query"]
@@ -1385,23 +1872,37 @@ class LangChainAdapter:
         top_k: int,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        retrieval_profile: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
         """根据文本或上传图片检索知识库图片。"""
+        use_fast_path = True if retrieval_profile is None else bool(retrieval_profile.get("image_fast_path", False))
+        candidate_k = None if retrieval_profile is None else retrieval_profile.get("candidate_k")
+        enable_query_rewrite = None if retrieval_profile is None else bool(retrieval_profile.get("enable_query_rewrite", True))
+        query_rewrite_count = None if retrieval_profile is None else retrieval_profile.get("query_rewrite_count")
+        enable_rerank = True if retrieval_profile is None else bool(retrieval_profile.get("enable_rerank", True))
         if image is not None:
             documents, _description = await self.image_to_image_search(
                 image,
                 top_k=top_k,
-                fast=True,
+                fast=use_fast_path,
                 enable_score_filter=enable_score_filter,
                 min_relevance_score=min_relevance_score,
+                candidate_k=candidate_k,
+                enable_query_rewrite=enable_query_rewrite,
+                query_rewrite_count=query_rewrite_count,
+                enable_rerank=enable_rerank,
             )
             return documents
         return await self.text_to_image_search(
             query,
             top_k=top_k,
-            fast=True,
+            fast=use_fast_path,
             enable_score_filter=enable_score_filter,
             min_relevance_score=min_relevance_score,
+            candidate_k=candidate_k,
+            enable_query_rewrite=enable_query_rewrite,
+            query_rewrite_count=query_rewrite_count,
+            enable_rerank=enable_rerank,
         )
 
     def _build_image_only_answer(self, documents: List[Dict[str, Any]]) -> str:

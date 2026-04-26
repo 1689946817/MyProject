@@ -327,25 +327,6 @@
               <i class="i-ep-loading"></i>
               <span>{{ t("chat.pendingSession") }}</span>
             </div>
-            <div class="composer-status-bar">
-              <button type="button" class="composer-status-pill" @click="cycleExecutionMode">
-                <i class="i-ep-guide"></i>
-                <span>{{ t("chat.activeMode") }}：{{ composerModeLabel }}</span>
-              </button>
-              <button type="button" class="composer-status-pill" @click="openSourcePanel">
-                <i class="i-ep-collection-tag"></i>
-                <span>{{ composerSourceLabel }}</span>
-              </button>
-              <button
-                type="button"
-                class="composer-status-pill weak"
-                :class="{ active: settingsPanelOpen }"
-                @click="settingsPanelOpen = !settingsPanelOpen"
-              >
-                <i :class="settingsPanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
-                <span>{{ t("chat.retrievalSettings") }}：{{ settingsSummary }}</span>
-              </button>
-            </div>
             <div v-if="composerWarnings.length > 0" class="composer-warning-stack">
               <div
                 v-for="warning in composerWarnings"
@@ -387,18 +368,70 @@
                   </el-upload>
                 </div>
                 <div class="chat-input-shell">
-                  <el-input
-                    ref="composerInputRef"
-                    v-model="query"
-                    :placeholder="dynamicInputPlaceholder"
-                    class="chat-input"
-                    :class="{ 'slash-active': isSlashMode, 'slash-invalid': hasInvalidSlashCommand }"
-                    type="textarea"
-                    :autosize="{ minRows: 1, maxRows: 5 }"
-                    resize="none"
-                    :disabled="isCurrentSessionPending"
-                    @keydown="handleInputKeydown"
-                  />
+                  <div class="chat-input-card">
+                    <el-input
+                      ref="composerInputRef"
+                      v-model="query"
+                      :placeholder="dynamicInputPlaceholder"
+                      class="chat-input"
+                      :class="{ 'slash-active': isSlashMode, 'slash-invalid': hasInvalidSlashCommand }"
+                      type="textarea"
+                      :autosize="{ minRows: 1, maxRows: 5 }"
+                      resize="none"
+                      :disabled="isCurrentSessionPending"
+                      @keydown="handleInputKeydown"
+                    />
+                    <div class="composer-toolbar">
+                      <div class="composer-toolbar-group">
+                        <el-dropdown trigger="click" @command="setChatMode">
+                          <button type="button" class="composer-toolbar-chip primary">
+                            <i class="i-ep-guide"></i>
+                            <span>{{ composerModeLabel }}</span>
+                            <i class="i-ep-arrow-down-bold"></i>
+                          </button>
+                          <template #dropdown>
+                            <el-dropdown-menu>
+                              <el-dropdown-item command="fast">{{ t("chat.chatModeFast") }}</el-dropdown-item>
+                              <el-dropdown-item command="default">{{ t("chat.chatModeDefault") }}</el-dropdown-item>
+                              <el-dropdown-item command="expert">{{ t("chat.chatModeExpert") }}</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </template>
+                        </el-dropdown>
+                        <el-dropdown v-if="isDefaultChatMode" trigger="click" @command="setExecutionHint">
+                          <button type="button" class="composer-toolbar-chip">
+                            <i class="i-ep-switch"></i>
+                            <span>{{ t("chat.executionMode") }}：{{ composerExecutionLabel }}</span>
+                            <i class="i-ep-arrow-down-bold"></i>
+                          </button>
+                          <template #dropdown>
+                            <el-dropdown-menu>
+                              <el-dropdown-item command="multimodal_rag">{{ t("chat.commandModeKb") }}</el-dropdown-item>
+                              <el-dropdown-item command="direct_llm">{{ t("chat.commandModeDirect") }}</el-dropdown-item>
+                              <el-dropdown-item command="image_similarity">{{ t("chat.commandModeImage") }}</el-dropdown-item>
+                              <el-dropdown-item command="image_grounded_answer">{{ t("chat.modeImageGrounded") }}</el-dropdown-item>
+                              <el-dropdown-item command="uploaded_image_qa">{{ t("chat.attachmentModeAskImage") }}</el-dropdown-item>
+                              <el-dropdown-item command="save_uploaded_image">{{ t("chat.attachmentModeSave") }}</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </template>
+                        </el-dropdown>
+                      </div>
+                      <div class="composer-toolbar-group align-right">
+                        <button type="button" class="composer-toolbar-chip" @click="openSourcePanel">
+                          <i class="i-ep-collection-tag"></i>
+                          <span>{{ composerSourceLabel }}</span>
+                        </button>
+                        <button
+                          type="button"
+                          class="composer-toolbar-chip subtle"
+                          :class="{ active: settingsPanelOpen }"
+                          @click="settingsPanelOpen = !settingsPanelOpen"
+                        >
+                          <i :class="settingsPanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
+                          <span>{{ t("chat.retrievalSettings") }}：{{ settingsSummary }}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <el-button type="primary" class="send-btn" :loading="isCurrentSessionPending" @click="doChat">
                   <el-icon v-if="!isCurrentSessionPending"><Promotion /></el-icon>
@@ -496,6 +529,9 @@
                     <el-input-number v-model="chatMinRelevanceScore" :step="0.1" :precision="3" :disabled="!chatEnableScoreFilter" />
                   </div>
                 </div>
+                <div v-if="!isDefaultChatMode" class="settings-mode-note">
+                  {{ t("chat.modeLegacyControlsDisabled") }}
+                </div>
               </div>
             </el-collapse-transition>
             <div v-if="attachedImage" class="attached-preview">
@@ -503,7 +539,7 @@
               <div class="attached-copy">
                 <span class="attached-title">{{ t("chat.attachedImage") }}</span>
                 <span class="attached-desc">{{ attachedImage?.name }}</span>
-                <el-select v-model="attachmentMode" size="small" class="attachment-mode-select">
+                <el-select v-model="attachmentMode" size="small" class="attachment-mode-select" :disabled="!isDefaultChatMode">
                   <el-option
                     v-for="option in attachmentModeOptions"
                     :key="option.value"
@@ -539,7 +575,7 @@ import SessionList from "@/components/SessionList.vue";
 import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
 import QaProcessCard from "@/components/QaProcessCard.vue";
 import ChatMarkdown from "@/components/ChatMarkdown.vue";
-import type { AnswerFeedbackResponse, ChatCitationChunkRef, ChatCitationItem, ChatMessage, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
+import type { AnswerFeedbackResponse, ChatCitationChunkRef, ChatCitationItem, ChatMessage, ChatMode, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -582,6 +618,7 @@ const pendingSessions = ref<Record<string, boolean>>({});
 const attachedImage = ref<File | null>(null);
 const attachedImagePreview = ref("");
 const attachmentMode = ref<"auto" | "uploaded_image_qa" | "image_similarity" | "save_uploaded_image">("auto");
+const selectedChatMode = ref<ChatMode>("default");
 const selectedExecutionHint = ref<ExecutionHint | "auto">("auto");
 const selectedSources = ref<SourceScopeChip[]>([]);
 const sourceQuery = ref("");
@@ -626,7 +663,12 @@ const isCurrentSessionPending = computed(() => {
   return Boolean(pendingSessions.value[currentSessionId.value]);
 });
 
+const isDefaultChatMode = computed(() => selectedChatMode.value === "default");
+
 const effectiveExecutionHint = computed<ExecutionHint | undefined>(() => {
+  if (!isDefaultChatMode.value) {
+    return undefined;
+  }
   if (attachedImage.value && attachmentMode.value !== "auto") {
     return attachmentMode.value;
   }
@@ -742,6 +784,13 @@ const slashCommands = computed<SlashCommand[]>(() => [
   },
 ]);
 
+const modeAwareSlashCommands = computed(() => {
+  if (isDefaultChatMode.value) {
+    return slashCommands.value;
+  }
+  return slashCommands.value.filter((item) => !item.command.startsWith("/mode "));
+});
+
 type ParsedSlashResult = {
   applied: boolean;
   valid: boolean;
@@ -756,6 +805,9 @@ function parseLeadingSlashCommands(input: string, apply = false): ParsedSlashRes
 
   while (rest.startsWith("/")) {
     if (rest.startsWith("/mode ")) {
+      if (!isDefaultChatMode.value) {
+        return { applied, valid: false, remainder: rest, previewCommand: "/mode" };
+      }
       const match = rest.match(/^\/mode\s+(kb|direct|image|auto)(?:\s+|$)/);
       if (!match) return { applied, valid: false, remainder: rest, previewCommand: "/mode" };
       previewCommand = `/mode ${match[1]}`;
@@ -836,7 +888,7 @@ const visibleSlashCommands = computed(() => {
   const normalized = query.value.trim().toLowerCase();
   if (!normalized.startsWith("/")) return [];
   const firstToken = normalized.split(/\s+/).slice(0, 2).join(" ");
-  return slashCommands.value.filter((item) => item.command.startsWith(firstToken) || item.command.startsWith(normalized) || item.label.toLowerCase().includes(normalized.slice(1)));
+  return modeAwareSlashCommands.value.filter((item) => item.command.startsWith(firstToken) || item.command.startsWith(normalized) || item.label.toLowerCase().includes(normalized.slice(1)));
 });
 
 const isSlashMode = computed(() => query.value.trim().startsWith("/"));
@@ -844,7 +896,7 @@ const slashParseResult = computed(() => parseLeadingSlashCommands(query.value, f
 const activeSlashCommand = computed(() => {
   if (visibleSlashCommands.value.length > 0) return visibleSlashCommands.value[0];
   if (slashParseResult.value.previewCommand) {
-    return slashCommands.value.find((item) => item.command.startsWith(slashParseResult.value.previewCommand || ""));
+    return modeAwareSlashCommands.value.find((item) => item.command.startsWith(slashParseResult.value.previewCommand || ""));
   }
   return null;
 });
@@ -852,6 +904,9 @@ const hasInvalidSlashCommand = computed(() => isSlashMode.value && !slashParseRe
 
 const settingsSummary = computed(() => {
   const parts: string[] = [];
+  if (!isDefaultChatMode.value) {
+    parts.push(t("chat.modeAdvancedDisabled"));
+  }
   if (chatTopK.value !== chatDefaultTopK.value) {
     parts.push(`TopK ${chatTopK.value}`);
   }
@@ -862,8 +917,20 @@ const settingsSummary = computed(() => {
 });
 
 const composerModeLabel = computed(() => {
-  const mode = effectiveExecutionHint.value || "multimodal_rag";
-  const modeMap: Record<string, string> = {
+  const modeMap: Record<ChatMode, string> = {
+    fast: t("chat.chatModeFast"),
+    default: t("chat.chatModeDefault"),
+    expert: t("chat.chatModeExpert"),
+  };
+  return modeMap[selectedChatMode.value] || t("chat.chatModeDefault");
+});
+
+const composerExecutionLabel = computed(() => {
+  const mode = effectiveExecutionHint.value;
+  if (!mode) {
+    return t("chat.attachmentModeAuto");
+  }
+  const modeMap: Record<ExecutionHint, string> = {
     direct_llm: t("chat.commandModeDirect"),
     multimodal_rag: t("chat.commandModeKb"),
     image_similarity: t("chat.commandModeImage"),
@@ -871,7 +938,7 @@ const composerModeLabel = computed(() => {
     uploaded_image_qa: t("chat.attachmentModeAskImage"),
     save_uploaded_image: t("chat.attachmentModeSave"),
   };
-  return modeMap[mode] || t("chat.commandModeKb");
+  return modeMap[mode];
 });
 
 const composerSourceLabel = computed(() => {
@@ -885,24 +952,29 @@ const composerSourceLabel = computed(() => {
 
 const composerWarnings = computed(() => {
   const warnings: string[] = [];
+  if (selectedChatMode.value !== "default") {
+    warnings.push(t("chat.modeLegacyControlsDisabled"));
+  }
   if (effectiveExecutionHint.value === "direct_llm" && selectedSources.value.length > 0) {
     warnings.push(t("chat.warningDirectIgnoresSources"));
   }
-  if (!attachedImage.value && attachmentMode.value !== "auto") {
+  if (isDefaultChatMode.value && !attachedImage.value && attachmentMode.value !== "auto") {
     warnings.push(t("chat.warningAttachmentModeWithoutImage"));
   }
-  if (attachedImage.value && selectedExecutionHint.value === "direct_llm") {
+  if (isDefaultChatMode.value && attachedImage.value && selectedExecutionHint.value === "direct_llm") {
     warnings.push(t("chat.warningDirectWithAttachment"));
   }
   return warnings;
 });
 
 const dynamicInputPlaceholder = computed(() => {
+  if (selectedChatMode.value === "fast") return t("chat.inputPlaceholderFast");
+  if (selectedChatMode.value === "expert") return t("chat.inputPlaceholderExpert");
   if (effectiveExecutionHint.value === "direct_llm") return t("chat.inputPlaceholderDirect");
   if (sourceScope.value) return t("chat.inputPlaceholderScoped");
-  if (attachedImage.value && attachmentMode.value === "uploaded_image_qa") return t("chat.inputPlaceholderAskImage");
-  if (attachedImage.value && attachmentMode.value === "image_similarity") return t("chat.inputPlaceholderFindSimilar");
-  if (attachedImage.value && attachmentMode.value === "save_uploaded_image") return t("chat.inputPlaceholderSaveImage");
+  if (attachedImage.value && isDefaultChatMode.value && attachmentMode.value === "uploaded_image_qa") return t("chat.inputPlaceholderAskImage");
+  if (attachedImage.value && isDefaultChatMode.value && attachmentMode.value === "image_similarity") return t("chat.inputPlaceholderFindSimilar");
+  if (attachedImage.value && isDefaultChatMode.value && attachmentMode.value === "save_uploaded_image") return t("chat.inputPlaceholderSaveImage");
   return "Enter 发送，Shift + Enter 换行";
 });
 
@@ -1566,19 +1638,33 @@ function shouldShowSourcesAfterText(msg: Message): boolean {
   return msg.role === "assistant" && !isImageFocusedMode(msg) && getVisibleSources(msg).length > 0;
 }
 
+function getMessageChatMode(msg: Message): ChatMode {
+  const mode = msg.chat_mode || msg.retrieval_params?.chat_mode;
+  if (mode === "fast" || mode === "expert") {
+    return mode;
+  }
+  return "default";
+}
+
 function getModeLabel(msg: Message): string {
+  const modeMap: Record<ChatMode, string> = {
+    fast: t("chat.chatModeFast"),
+    default: t("chat.chatModeDefault"),
+    expert: t("chat.chatModeExpert"),
+  };
+  const chatModeLabel = modeMap[getMessageChatMode(msg)];
   if (msg.execution_mode === "save_uploaded_image") {
-    return "已存入知识库";
+    return `${chatModeLabel} · ${t("chat.modeSavedToKb")}`;
   }
   switch (getPresentationMode(msg)) {
     case "direct_answer":
-      return "直接回答";
+      return `${chatModeLabel} · ${t("chat.modeDirectAnswer")}`;
     case "image_only":
-      return "图片结果";
+      return `${chatModeLabel} · ${t("chat.modeImageOnly")}`;
     case "image_plus_answer":
-      return "图文回答";
+      return `${chatModeLabel} · ${t("chat.modeImageGrounded")}`;
     default:
-      return "知识库回答";
+      return `${chatModeLabel} · ${t("chat.modeKnowledgeAnswer")}`;
   }
 }
 
@@ -1693,29 +1779,47 @@ function shouldShowProcessCard(msg: Message): boolean {
   return Boolean((msg.retrieval_steps && msg.retrieval_steps.length > 0) || msg.timings || msg.retrieval_params?.timings);
 }
 
-function cycleExecutionMode() {
-  const modes: Array<ExecutionHint | "auto"> = [
-    "auto",
-    "multimodal_rag",
-    "direct_llm",
-    "image_similarity",
-  ];
-  const current = selectedExecutionHint.value;
-  const currentIndex = modes.indexOf(current);
-  selectedExecutionHint.value = modes[(currentIndex + 1) % modes.length];
+function setChatMode(mode: string | number | object) {
+  if (mode === "fast" || mode === "default" || mode === "expert") {
+    selectedChatMode.value = mode;
+  }
+}
+
+function applyExecutionHint(mode: ExecutionHint | "auto") {
+  selectedExecutionHint.value = mode;
+  if (mode === "uploaded_image_qa" || mode === "image_similarity" || mode === "save_uploaded_image") {
+    attachmentMode.value = mode;
+  } else {
+    attachmentMode.value = "auto";
+  }
+}
+
+function setExecutionHint(mode: string | number | object) {
+  if (
+    mode === "multimodal_rag"
+    || mode === "direct_llm"
+    || mode === "image_similarity"
+    || mode === "image_grounded_answer"
+    || mode === "uploaded_image_qa"
+    || mode === "save_uploaded_image"
+  ) {
+    applyExecutionHint(mode);
+  }
 }
 
 function applyQuestionTemplate(template: QuestionTemplate) {
   query.value = template.prompt;
-  selectedExecutionHint.value = template.executionHint ?? "auto";
-  if (template.executionHint === "uploaded_image_qa") {
-    attachmentMode.value = "uploaded_image_qa";
-  } else if (template.executionHint === "image_similarity") {
-    attachmentMode.value = "image_similarity";
-  } else if (template.executionHint === "save_uploaded_image") {
-    attachmentMode.value = "save_uploaded_image";
-  } else {
-    attachmentMode.value = "auto";
+  if (isDefaultChatMode.value) {
+    selectedExecutionHint.value = template.executionHint ?? "auto";
+    if (template.executionHint === "uploaded_image_qa") {
+      attachmentMode.value = "uploaded_image_qa";
+    } else if (template.executionHint === "image_similarity") {
+      attachmentMode.value = "image_similarity";
+    } else if (template.executionHint === "save_uploaded_image") {
+      attachmentMode.value = "save_uploaded_image";
+    } else {
+      attachmentMode.value = "auto";
+    }
   }
   focusComposer();
 }
@@ -1723,6 +1827,7 @@ function applyQuestionTemplate(template: QuestionTemplate) {
 type SendChatOptions = {
   userQuery: string;
   requestImage: File | null;
+  requestChatMode: ChatMode;
   requestExecutionHint?: ExecutionHint;
   requestSourceScope?: { doc_ids?: string[]; image_ids?: string[] } | null;
   assistantPromptLabel?: string;
@@ -1756,6 +1861,7 @@ async function sendChat(options: SendChatOptions) {
     session_id: sessionId,
     role: "user",
     content: normalizedQuery,
+    chat_mode: options.requestChatMode,
     created_at: new Date().toISOString(),
     has_image: Boolean(options.requestImage),
     local_image_url: sentImageUrl || undefined,
@@ -1773,6 +1879,7 @@ async function sendChat(options: SendChatOptions) {
     session_id: sessionId,
     role: "assistant",
     content: "",
+    chat_mode: options.requestChatMode,
     created_at: new Date().toISOString(),
     has_image: false,
     sources: [],
@@ -1822,12 +1929,14 @@ async function sendChat(options: SendChatOptions) {
       use_rag?: Message["use_rag"];
       retrieval_steps?: Message["retrieval_steps"];
       timings?: Message["timings"];
+      chat_mode?: Message["chat_mode"];
     }) => {
       const assignPayload = (message: Message) => {
         if (payload.assistant_message_id) {
           message.id = payload.assistant_message_id;
         }
         message.session_id = targetSessionId;
+        message.chat_mode = payload.chat_mode;
         message.sources = payload.sources || [];
         message.citations = payload.citations || [];
         message.presentation_mode = payload.presentation_mode;
@@ -1841,6 +1950,7 @@ async function sendChat(options: SendChatOptions) {
           top_k: chatTopK.value,
           enable_score_filter: chatEnableScoreFilter.value,
           min_relevance_score: chatMinRelevanceScore.value,
+          chat_mode: payload.chat_mode || options.requestChatMode,
           execution_hint: options.requestExecutionHint,
           source_scope: options.requestSourceScope,
           citations: payload.citations || [],
@@ -1864,6 +1974,7 @@ async function sendChat(options: SendChatOptions) {
       {
         query: normalizedQuery,
         sessionId,
+        chatMode: options.requestChatMode,
         topK: chatTopK.value,
         enableScoreFilter: chatEnableScoreFilter.value,
         minRelevanceScore: chatMinRelevanceScore.value,
@@ -1892,6 +2003,7 @@ async function sendChat(options: SendChatOptions) {
             assistant_message_id: event.assistant_message_id,
             sources: event.sources || [],
             citations: event.citations || [],
+            chat_mode: event.chat_mode,
             presentation_mode: event.presentation_mode,
             execution_mode: event.execution_mode,
             use_rag: event.use_rag,
@@ -1947,6 +2059,7 @@ async function doChat() {
   await sendChat({
     userQuery: query.value,
     requestImage: attachedImage.value,
+    requestChatMode: selectedChatMode.value,
     requestExecutionHint: effectiveExecutionHint.value,
     requestSourceScope: sourceScope.value,
   });
@@ -2049,6 +2162,14 @@ function getAssistantExecutionHint(msg: Message): ExecutionHint | undefined {
   return undefined;
 }
 
+function getAssistantChatMode(msg: Message): ChatMode {
+  const mode = msg.chat_mode || msg.retrieval_params?.chat_mode;
+  if (mode === "fast" || mode === "expert") {
+    return mode;
+  }
+  return "default";
+}
+
 async function rerunAssistantMessage(msg: Message, index: number) {
   const sourceMessage = getRelatedUserMessage(index);
   const text = String(sourceMessage?.content || "").trim();
@@ -2059,6 +2180,7 @@ async function rerunAssistantMessage(msg: Message, index: number) {
   await sendChat({
     userQuery: text,
     requestImage: null,
+    requestChatMode: getAssistantChatMode(msg),
     requestExecutionHint: getAssistantExecutionHint(msg),
     requestSourceScope: getAssistantSourceScope(msg),
     assistantPromptLabel: t("chat.retryAnswer"),
@@ -2069,6 +2191,7 @@ async function expandAssistantMessage(msg: Message) {
   await sendChat({
     userQuery: `${t("chat.expandPromptPrefix")}\n\n${msg.content}`,
     requestImage: null,
+    requestChatMode: getAssistantChatMode(msg),
     requestExecutionHint: getAssistantExecutionHint(msg),
     requestSourceScope: getAssistantSourceScope(msg),
     assistantPromptLabel: t("chat.expandAnswer"),
@@ -2079,6 +2202,7 @@ async function summarizeAssistantMessage(msg: Message) {
   await sendChat({
     userQuery: `${t("chat.summarizePromptPrefix")}\n\n${msg.content}`,
     requestImage: null,
+    requestChatMode: getAssistantChatMode(msg),
     requestExecutionHint: getAssistantExecutionHint(msg),
     requestSourceScope: getAssistantSourceScope(msg),
     assistantPromptLabel: t("chat.summarizeAnswer"),
@@ -2879,46 +3003,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.04);
 }
 
-.composer-status-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.composer-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.26);
-  background: rgba(248, 250, 252, 0.82);
-  color: var(--text-secondary);
-  font-size: 11px;
-  cursor: pointer;
-  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
-}
-
-.composer-status-pill:hover {
-  border-color: rgba(37, 99, 235, 0.28);
-  color: var(--accent-primary);
-  background: rgba(239, 246, 255, 0.96);
-}
-
-.composer-status-pill.weak {
-  border-color: rgba(148, 163, 184, 0.18);
-  background: rgba(248, 250, 252, 0.58);
-  color: var(--text-tertiary);
-}
-
-.composer-status-pill.weak:hover,
-.composer-status-pill.weak.active {
-  border-color: rgba(37, 99, 235, 0.22);
-  background: rgba(239, 246, 255, 0.78);
-  color: var(--accent-primary);
-}
-
 .composer-warning-stack {
   display: flex;
   flex-direction: column;
@@ -3143,38 +3227,110 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 
+.chat-input-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
 .chat-input {
   flex: 1;
 }
 
 .chat-input :deep(.el-input__wrapper) {
   min-height: 42px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid var(--border-color);
+  background: transparent;
+  border: none;
   box-shadow: none;
-  padding: 6px 14px;
-  border-radius: 12px;
+  padding: 0;
+  border-radius: 0;
 }
 
 .chat-input :deep(.el-input__wrapper:focus-within) {
-  border-color: var(--accent-primary);
-  box-shadow: var(--shadow-focus);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .chat-input.slash-active :deep(.el-input__wrapper) {
-  border-color: rgba(37, 99, 235, 0.45);
-  background: rgba(37, 99, 235, 0.05);
+  background: transparent;
 }
 
 .chat-input.slash-invalid :deep(.el-input__wrapper) {
-  border-color: rgba(220, 38, 38, 0.45);
-  background: rgba(220, 38, 38, 0.04);
+  background: transparent;
 }
 
 .chat-input :deep(textarea.el-textarea__inner) {
   min-height: 28px;
   line-height: 1.68;
   color: var(--text-primary);
+  padding: 0;
+}
+
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 2px;
+}
+
+.composer-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.composer-toolbar-group.align-right {
+  margin-left: auto;
+}
+
+.composer-toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(248, 250, 252, 0.86);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.composer-toolbar-chip:hover {
+  border-color: rgba(37, 99, 235, 0.24);
+  color: var(--accent-primary);
+  background: rgba(239, 246, 255, 0.94);
+}
+
+.composer-toolbar-chip.primary {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--accent-primary);
+  border-color: rgba(37, 99, 235, 0.18);
+}
+
+.composer-toolbar-chip.subtle {
+  color: var(--text-tertiary);
+}
+
+.composer-toolbar-chip.subtle.active,
+.composer-toolbar-chip.subtle:hover {
+  color: var(--accent-primary);
+  background: rgba(239, 246, 255, 0.9);
+}
+
+.composer-toolbar-chip :deep(.el-icon),
+.composer-toolbar-chip i {
+  font-size: 13px;
 }
 
 .send-btn {
@@ -3507,12 +3663,23 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 
+  .composer-toolbar,
+  .composer-toolbar-group,
+  .composer-toolbar-group.align-right {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .composer-toolbar-group.align-right {
+    justify-content: flex-start;
+  }
+
   .compact-template-row {
     width: 100%;
     flex-wrap: wrap;
   }
 
-  .composer-status-pill,
+  .composer-toolbar-chip,
   .question-template-chip,
   .chat-input-shell {
     width: 100%;

@@ -34,6 +34,7 @@ async def compress_context(
     query: str,
     documents: List[Dict[str, Any]],
     chat_model: Optional[Any] = None,
+    force_enabled: Optional[bool] = None,
 ) -> List[Dict[str, Any]]:
     """
     对检索结果进行上下文压缩，过滤无关内容。
@@ -46,7 +47,8 @@ async def compress_context(
     Returns:
         压缩后的文档列表（过滤掉完全无关的文档）
     """
-    if not settings.CONTEXT_COMPRESSION_ENABLED:
+    compression_enabled = settings.CONTEXT_COMPRESSION_ENABLED if force_enabled is None else bool(force_enabled)
+    if not compression_enabled:
         return documents
 
     if not documents:

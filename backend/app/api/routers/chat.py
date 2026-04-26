@@ -57,6 +57,7 @@ VALID_EXECUTION_HINTS = {
     "uploaded_image_qa",
     "save_uploaded_image",
 }
+VALID_CHAT_MODES = {"fast", "default", "expert"}
 
 
 def _maybe_timings_payload(collector: RequestTimingCollector):
@@ -96,6 +97,17 @@ def _normalize_execution_hint(execution_hint: Optional[str]) -> Optional[str]:
         return None
     if normalized not in VALID_EXECUTION_HINTS:
         raise HTTPException(status_code=422, detail=f"不支持的 execution_hint: {normalized}")
+    return normalized
+
+
+def _normalize_chat_mode(chat_mode: Optional[str]) -> str:
+    if not chat_mode:
+        return "default"
+    normalized = chat_mode.strip().lower()
+    if not normalized:
+        return "default"
+    if normalized not in VALID_CHAT_MODES:
+        raise HTTPException(status_code=422, detail=f"不支持的 chat_mode: {normalized}")
     return normalized
 
 
@@ -409,6 +421,7 @@ def _build_retrieval_params(
     resolved_enable_score_filter: bool,
     resolved_min_relevance_score: Optional[float],
     resolved_execution_hint: Optional[str],
+    resolved_chat_mode: str,
     source_scope: Optional[dict[str, list[str]]],
     intent: dict[str, Any],
     stream: bool,
@@ -420,6 +433,7 @@ def _build_retrieval_params(
         "stream": stream,
         "enable_score_filter": resolved_enable_score_filter,
         "min_relevance_score": resolved_min_relevance_score,
+        "chat_mode": resolved_chat_mode,
         "execution_hint": resolved_execution_hint,
         "source_scope": source_scope,
         "presentation_mode": intent.get("presentation_mode"),
@@ -445,6 +459,7 @@ def _build_chat_response(
         results=_build_results(retrieved),
         sources=sources,
         session_id=session_id,
+        chat_mode=str(intent.get("chat_mode", "default")),
         presentation_mode=intent.get("presentation_mode", "rag_answer"),
         execution_mode=intent.get("execution_mode", "multimodal_rag"),
         use_rag=bool(intent.get("use_rag", True)),
@@ -471,6 +486,7 @@ def _build_results_payload(
         "results": [item.model_dump() for item in _build_results(retrieved)],
         "sources": [source.model_dump() for source in sources],
         "retrieval_steps": intent.get("retrieval_steps") or [],
+        "chat_mode": str(intent.get("chat_mode", "default")),
         "presentation_mode": intent.get("presentation_mode", "rag_answer"),
         "execution_mode": intent.get("execution_mode", "multimodal_rag"),
         "use_rag": bool(intent.get("use_rag", True)),
@@ -498,6 +514,7 @@ async def _prepare_rag_chat_context(
     enable_score_filter: Optional[bool],
     min_relevance_score: Optional[float],
     execution_hint: Optional[str],
+    chat_mode: Optional[str],
     source_scope_json: Optional[str],
     session_id: Optional[str],
     image: Optional[UploadFile],
@@ -509,14 +526,23 @@ async def _prepare_rag_chat_context(
     Any,
     list[tuple[str, str]],
     Optional[str],
+    str,
     Optional[dict[str, list[str]]],
     int,
     bool,
     Optional[float],
 ]:
     resolved_execution_hint = _normalize_execution_hint(execution_hint)
+    resolved_chat_mode = _normalize_chat_mode(chat_mode)
     source_scope = _parse_source_scope_json(source_scope_json)
-    resolved_top_k = top_k or settings.CHAT_DEFAULT_TOP_K
+    if top_k is not None:
+        resolved_top_k = top_k
+    elif resolved_chat_mode == "fast":
+        resolved_top_k = settings.CHAT_FAST_DEFAULT_TOP_K
+    elif resolved_chat_mode == "expert":
+        resolved_top_k = settings.CHAT_EXPERT_DEFAULT_TOP_K
+    else:
+        resolved_top_k = settings.CHAT_DEFAULT_TOP_K
     resolved_enable_score_filter = (
         enable_score_filter
         if enable_score_filter is not None
@@ -533,6 +559,7 @@ async def _prepare_rag_chat_context(
         has_uploaded_image=image is not None,
         enable_score_filter=resolved_enable_score_filter,
         min_relevance_score=resolved_min_relevance_score,
+        chat_mode=resolved_chat_mode,
         execution_hint=resolved_execution_hint,
         source_scope=source_scope,
     )
@@ -550,6 +577,7 @@ async def _prepare_rag_chat_context(
         session,
         history,
         resolved_execution_hint,
+        resolved_chat_mode,
         source_scope,
         resolved_top_k,
         resolved_enable_score_filter,
@@ -589,6 +617,7 @@ def _build_rag_streaming_response(
     session: Any,
     history: list[tuple[str, str]],
     resolved_execution_hint: Optional[str],
+    resolved_chat_mode: str,
     source_scope: Optional[dict[str, list[str]]],
     resolved_top_k: int,
     resolved_enable_score_filter: bool,
@@ -605,6 +634,7 @@ def _build_rag_streaming_response(
                 "has_uploaded_image": image is not None,
                 "enable_score_filter": resolved_enable_score_filter,
                 "min_relevance_score": resolved_min_relevance_score,
+                "chat_mode": resolved_chat_mode,
                 "execution_hint": resolved_execution_hint,
                 "source_scope": source_scope,
             },
@@ -625,6 +655,7 @@ def _build_rag_streaming_response(
                         enable_score_filter=resolved_enable_score_filter,
                         min_relevance_score=resolved_min_relevance_score,
                         execution_hint=resolved_execution_hint,
+                        chat_mode=resolved_chat_mode,
                         source_scope=source_scope,
                     )
                 except TypeError:
@@ -673,6 +704,7 @@ def _build_rag_streaming_response(
                     resolved_enable_score_filter=resolved_enable_score_filter,
                     resolved_min_relevance_score=resolved_min_relevance_score,
                     resolved_execution_hint=resolved_execution_hint,
+                    resolved_chat_mode=resolved_chat_mode,
                     source_scope=source_scope,
                     intent=final_intent,
                     stream=True,
@@ -705,6 +737,7 @@ def _build_rag_streaming_response(
                         citations=citations,
                         intent={
                             **final_intent,
+                            "chat_mode": resolved_chat_mode,
                             "retrieval_steps": retrieval_steps,
                             "has_uploaded_image": image is not None,
                         },
@@ -730,6 +763,7 @@ async def rag_chat_endpoint(
     enable_score_filter: Optional[bool] = Form(None),
     min_relevance_score: Optional[float] = Form(None),
     execution_hint: Optional[str] = Form(None),
+    chat_mode: Optional[str] = Form(None),
     source_scope_json: Optional[str] = Form(None),
     session_id: Optional[str] = Form(None),
     stream: bool = Form(False),
@@ -742,6 +776,7 @@ async def rag_chat_endpoint(
         session,
         history,
         resolved_execution_hint,
+        resolved_chat_mode,
         source_scope,
         resolved_top_k,
         resolved_enable_score_filter,
@@ -752,6 +787,7 @@ async def rag_chat_endpoint(
         enable_score_filter=enable_score_filter,
         min_relevance_score=min_relevance_score,
         execution_hint=execution_hint,
+        chat_mode=chat_mode,
         source_scope_json=source_scope_json,
         session_id=session_id,
         image=image,
@@ -768,6 +804,7 @@ async def rag_chat_endpoint(
             session=session,
             history=history,
             resolved_execution_hint=resolved_execution_hint,
+            resolved_chat_mode=resolved_chat_mode,
             source_scope=source_scope,
             resolved_top_k=resolved_top_k,
             resolved_enable_score_filter=resolved_enable_score_filter,
@@ -784,6 +821,7 @@ async def rag_chat_endpoint(
                 "has_uploaded_image": image is not None,
                 "enable_score_filter": resolved_enable_score_filter,
                 "min_relevance_score": resolved_min_relevance_score,
+                "chat_mode": resolved_chat_mode,
                 "execution_hint": resolved_execution_hint,
                 "source_scope": source_scope,
             },
@@ -797,6 +835,7 @@ async def rag_chat_endpoint(
                 enable_score_filter=resolved_enable_score_filter,
                 min_relevance_score=resolved_min_relevance_score,
                 execution_hint=resolved_execution_hint,
+                chat_mode=resolved_chat_mode,
                 source_scope=source_scope,
             )
             answer, retrieved, intent = _coerce_rag_chat_result(
@@ -817,6 +856,7 @@ async def rag_chat_endpoint(
                 resolved_enable_score_filter=resolved_enable_score_filter,
                 resolved_min_relevance_score=resolved_min_relevance_score,
                 resolved_execution_hint=resolved_execution_hint,
+                resolved_chat_mode=resolved_chat_mode,
                 source_scope=source_scope,
                 intent=intent,
                 stream=False,
@@ -843,6 +883,7 @@ async def rag_chat_endpoint(
                 results=_build_results(retrieved),
                 sources=sources,
                 session_id=session.id,
+                chat_mode=resolved_chat_mode,
                 presentation_mode=intent.get("presentation_mode", "rag_answer"),
                 execution_mode=intent.get("execution_mode", "multimodal_rag"),
                 use_rag=bool(intent.get("use_rag", True)),
@@ -864,6 +905,7 @@ async def rag_chat_stream_endpoint(
     enable_score_filter: Optional[bool] = Form(None),
     min_relevance_score: Optional[float] = Form(None),
     execution_hint: Optional[str] = Form(None),
+    chat_mode: Optional[str] = Form(None),
     source_scope_json: Optional[str] = Form(None),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
@@ -875,6 +917,7 @@ async def rag_chat_stream_endpoint(
         session,
         history,
         resolved_execution_hint,
+        resolved_chat_mode,
         source_scope,
         resolved_top_k,
         resolved_enable_score_filter,
@@ -885,6 +928,7 @@ async def rag_chat_stream_endpoint(
         enable_score_filter=enable_score_filter,
         min_relevance_score=min_relevance_score,
         execution_hint=execution_hint,
+        chat_mode=chat_mode,
         source_scope_json=source_scope_json,
         session_id=session_id,
         image=image,
@@ -900,6 +944,7 @@ async def rag_chat_stream_endpoint(
         session=session,
         history=history,
         resolved_execution_hint=resolved_execution_hint,
+        resolved_chat_mode=resolved_chat_mode,
         source_scope=source_scope,
         resolved_top_k=resolved_top_k,
         resolved_enable_score_filter=resolved_enable_score_filter,

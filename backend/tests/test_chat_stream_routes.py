@@ -13,6 +13,45 @@ from app.api.routers.chat import rag_chat_endpoint
 
 
 class TestChatStreamRoutes(unittest.IsolatedAsyncioTestCase):
+    async def test_rag_chat_endpoint_passes_chat_mode_to_adapter(self):
+        session = SimpleNamespace(id="session-mode")
+        adapter = MagicMock()
+        adapter.rag_chat = AsyncMock(
+            return_value=(
+                "fast answer",
+                [],
+                {
+                    "chat_mode": "fast",
+                    "presentation_mode": "direct_answer",
+                    "execution_mode": "direct_llm",
+                    "use_rag": False,
+                    "retrieval_steps": [],
+                },
+            )
+        )
+
+        with patch("app.api.routers.chat.create_session", return_value=session), \
+             patch("app.api.routers.chat.get_recent_history", return_value=[]), \
+             patch("app.api.routers.chat.get_langchain_adapter", return_value=adapter), \
+             patch("app.api.routers.chat.add_message"), \
+             patch("app.api.routers.chat.settings.EXPOSE_TIMINGS_IN_API", False):
+            response = await rag_chat_endpoint(
+                query="hello",
+                top_k=None,
+                enable_score_filter=None,
+                min_relevance_score=None,
+                execution_hint=None,
+                chat_mode="fast",
+                source_scope_json=None,
+                session_id=None,
+                stream=False,
+                image=None,
+                db=MagicMock(),
+            )
+
+        self.assertEqual(response.chat_mode, "fast")
+        self.assertEqual(adapter.rag_chat.await_args.kwargs["chat_mode"], "fast")
+
     async def test_rag_chat_endpoint_keeps_json_mode_compatible(self):
         session = SimpleNamespace(id="session-json")
         adapter = MagicMock()
@@ -47,6 +86,7 @@ class TestChatStreamRoutes(unittest.IsolatedAsyncioTestCase):
                 enable_score_filter=None,
                 min_relevance_score=None,
                 execution_hint=None,
+                chat_mode=None,
                 source_scope_json=None,
                 session_id=None,
                 stream=False,
@@ -85,6 +125,7 @@ class TestChatStreamRoutes(unittest.IsolatedAsyncioTestCase):
                 enable_score_filter=None,
                 min_relevance_score=None,
                 execution_hint=None,
+                chat_mode=None,
                 source_scope_json=None,
                 session_id=None,
                 stream=True,
@@ -100,6 +141,7 @@ class TestChatStreamRoutes(unittest.IsolatedAsyncioTestCase):
         self.assertIn('"type": "session"', payload)
         self.assertIn('"type": "content"', payload)
         self.assertIn('"type": "results"', payload)
+        self.assertIn('"chat_mode": "default"', payload)
         self.assertIn('"citations"', payload)
         self.assertIn('"source_ids": ["doc-1#chunk-1"]', payload)
         self.assertIn("data: [DONE]", payload)
@@ -139,6 +181,7 @@ class TestChatStreamRoutes(unittest.IsolatedAsyncioTestCase):
                 enable_score_filter=None,
                 min_relevance_score=None,
                 execution_hint=None,
+                chat_mode=None,
                 source_scope_json=None,
                 session_id=None,
                 stream=True,

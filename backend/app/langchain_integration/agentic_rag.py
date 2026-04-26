@@ -41,6 +41,9 @@ class IntentClassification(TypedDict):
     reason: str
 
 
+IntentClassificationMode = Literal["default", "fast", "expert"]
+
+
 class AgenticRAGState(TypedDict):
     """Agentic RAG 状态"""
     query: str
@@ -55,6 +58,7 @@ class AgenticRAGState(TypedDict):
     relevance_score: float
     needs_retry: bool
     retrieval_meta: Dict[str, Any]
+    retrieval_profile: Dict[str, Any]
 
 
 _DIRECT_ANSWER = "direct_answer"
@@ -443,18 +447,40 @@ async def classify_chat_intent(
     query: str,
     has_uploaded_image: bool = False,
     chat_model=None,
+    mode: IntentClassificationMode = "default",
 ) -> IntentClassification:
     """两层输出的聊天意图分类。"""
-    with timing_stage("intent_classification", meta={"has_uploaded_image": has_uploaded_image}):
-        rule_intent = _rule_based_intent(query, has_uploaded_image)
-        if rule_intent is not None:
-            collector = get_current_timing_collector()
+    with timing_stage(
+        "intent_classification",
+        meta={"has_uploaded_image": has_uploaded_image, "mode": mode},
+    ):
+        collector = get_current_timing_collector()
+
+        def _record_intent(intent: IntentClassification) -> IntentClassification:
             if collector is not None:
                 collector.set_metadata(
-                    execution_mode=rule_intent["execution_mode"],
-                    presentation_mode=rule_intent["presentation_mode"],
+                    execution_mode=intent["execution_mode"],
+                    presentation_mode=intent["presentation_mode"],
                 )
-            return rule_intent
+            return intent
+
+        if mode != "expert":
+            rule_intent = _rule_based_intent(query, has_uploaded_image)
+            if rule_intent is not None:
+                return _record_intent(rule_intent)
+
+        if mode == "fast":
+            return _record_intent(
+                _default_intent(
+                    presentation_mode=_DIRECT_ANSWER,
+                    execution_mode="direct_llm",
+                    use_rag=False,
+                    has_uploaded_image=has_uploaded_image,
+                    wants_images=False,
+                    confidence=0.2,
+                    reason="fast_mode_default_fallback",
+                )
+            )
 
         model = chat_model or get_task_text_chat_model()
         prompt = f"""你是一个聊天路由分类器。请根据用户问题判断回答方式，并只返回 JSON。
@@ -487,13 +513,7 @@ async def classify_chat_intent(
             if isinstance(parsed, dict):
                 intent = _coerce_classifier_output(parsed, has_uploaded_image)
                 if intent is not None:
-                    collector = get_current_timing_collector()
-                    if collector is not None:
-                        collector.set_metadata(
-                            execution_mode=intent["execution_mode"],
-                            presentation_mode=intent["presentation_mode"],
-                        )
-                    return intent
+                    return _record_intent(intent)
         except Exception as exc:  # pragma: no cover - network/model failures are best-effort fallback
             logger.warning("[IntentClassifier] LLM classifier failed, fallback to conservative routing: %s", exc)
 
@@ -506,13 +526,7 @@ async def classify_chat_intent(
             confidence=0.35,
             reason="fallback_to_retrieval",
         )
-        collector = get_current_timing_collector()
-        if collector is not None:
-            collector.set_metadata(
-                execution_mode=intent["execution_mode"],
-                presentation_mode=intent["presentation_mode"],
-            )
-        return intent
+        return _record_intent(intent)
 
 
 async def retrieve_documents(
@@ -537,6 +551,11 @@ async def retrieve_documents(
     attempt = int(state.get("retrieval_attempt", 1) or 1)
     enable_score_filter = bool(state.get("enable_score_filter", False))
     min_relevance_score = state.get("min_relevance_score")
+    retrieval_profile = dict(state.get("retrieval_profile", {}))
+    candidate_k = retrieval_profile.get("candidate_k")
+    enable_query_rewrite = retrieval_profile.get("enable_query_rewrite", True)
+    query_rewrite_count = retrieval_profile.get("query_rewrite_count")
+    enable_rerank = retrieval_profile.get("enable_rerank", True)
     stage_name = "agentic_retrieve_initial" if attempt <= 1 else "agentic_retrieve_retry"
 
     with timing_stage(
@@ -554,8 +573,21 @@ async def retrieve_documents(
             fast=False,
             enable_score_filter=enable_score_filter,
             min_relevance_score=min_relevance_score,
+            candidate_k=candidate_k,
+            enable_query_rewrite=enable_query_rewrite,
+            query_rewrite_count=query_rewrite_count,
+            enable_rerank=enable_rerank,
         )
-        text_chunks = doc_vector_store.similarity_search(query, k=text_top_k)
+        text_chunks = await doc_vector_store.async_search_with_pipeline(
+            query,
+            top_k=text_top_k,
+            candidate_k=candidate_k,
+            enable_score_filter=enable_score_filter,
+            min_relevance_score=min_relevance_score,
+            enable_query_rewrite=enable_query_rewrite,
+            query_rewrite_count=query_rewrite_count,
+            enable_rerank=enable_rerank,
+        )
 
     state["documents"] = documents
     state["text_chunks"] = text_chunks
@@ -844,6 +876,7 @@ async def run_agentic_multimodal_rag(
     presentation_mode: str,
     classifier_reason: str,
     has_uploaded_image: bool,
+    retrieval_profile: Optional[Dict[str, Any]] = None,
 ) -> Tuple[str, List[Dict[str, Any]], List[Dict[str, Any]]]:
     """运行最小 LangGraph 主链路，并返回兼容现有 adapter 的结果。"""
     final_state, documents, _text_chunks, retrieval_steps = await prepare_agentic_multimodal_rag_context(
@@ -859,6 +892,7 @@ async def run_agentic_multimodal_rag(
         presentation_mode=presentation_mode,
         classifier_reason=classifier_reason,
         has_uploaded_image=has_uploaded_image,
+        retrieval_profile=retrieval_profile,
     )
 
     generated_state = await generate_answer(final_state, rag_chain=rag_chain)
@@ -879,6 +913,7 @@ async def prepare_agentic_multimodal_rag_context(
     presentation_mode: str,
     classifier_reason: str,
     has_uploaded_image: bool,
+    retrieval_profile: Optional[Dict[str, Any]] = None,
 ) -> Tuple[AgenticRAGState, List[Dict[str, Any]], List[Any], List[Dict[str, Any]]]:
     """运行检索/评分/纠错阶段，返回最终生成前的上下文。"""
     initial_state: AgenticRAGState = {
@@ -894,6 +929,7 @@ async def prepare_agentic_multimodal_rag_context(
         "relevance_score": 0.0,
         "needs_retry": False,
         "retrieval_meta": {},
+        "retrieval_profile": dict(retrieval_profile or {}),
     }
 
     with timing_stage("agentic_graph_total", meta={"top_k": top_k, "execution_mode": execution_mode}):
@@ -914,6 +950,16 @@ async def prepare_agentic_multimodal_rag_context(
 
     documents = list(final_state.get("documents", []))
     text_chunks = list(final_state.get("text_chunks", []))
+    compression_enabled = retrieval_profile.get("enable_context_compression") if retrieval_profile else None
+    if documents and compression_enabled is not None:
+        from app.langchain_integration.context_compression import compress_context
+
+        documents = await compress_context(
+            query,
+            documents,
+            force_enabled=bool(compression_enabled),
+        )
+        final_state["documents"] = documents
     retrieval_steps = _build_agentic_retrieval_steps(
         query=query,
         top_k=top_k,

@@ -251,6 +251,7 @@ class ChatResponse(BaseModel):
     results: List[SearchResultItem] = Field(default_factory=list)  # 检索到的相关图像列表
     sources: List[ChatSourceItem] = Field(default_factory=list)
     session_id: Optional[str] = None  # 会话 ID（多轮对话）
+    chat_mode: str = "default"
     presentation_mode: str = "rag_answer"
     execution_mode: str = "multimodal_rag"
     use_rag: bool = True

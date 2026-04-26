@@ -121,6 +121,7 @@ export interface QaProcessSummaryViewModel {
   retryUsed: boolean
 }
 
+export type ChatMode = "fast" | "default" | "expert"
 export type PresentationMode = "direct_answer" | "rag_answer" | "image_only" | "image_plus_answer"
 export type ExecutionMode =
   | "direct_llm"
@@ -152,6 +153,7 @@ export interface ChatMessage {
   local_image_url?: string
   sources?: ChatSourceItem[]
   citations?: ChatCitationItem[]
+  chat_mode?: ChatMode
   presentation_mode?: PresentationMode
   execution_mode?: ExecutionMode
   use_rag?: boolean

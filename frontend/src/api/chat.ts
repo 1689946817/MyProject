@@ -13,6 +13,7 @@ import type {
   AnswerFeedbackResponse,
   ChatCitationItem,
   ChatMessage,
+  ChatMode,
   RetrievalStepItem,
   ChatSession,
   ChatSourceItem,
@@ -37,6 +38,7 @@ export interface ChatResponse {
   sources: ChatSourceItem[];
   citations?: ChatCitationItem[];
   session_id: string;
+  chat_mode: ChatMode;
   presentation_mode: PresentationMode;
   execution_mode: ExecutionMode;
   use_rag: boolean;
@@ -69,6 +71,7 @@ export interface ChatStreamResultsEvent {
   citations?: ChatCitationItem[];
   assistant_message_id?: number;
   retrieval_steps: RetrievalStepItem[];
+  chat_mode: ChatMode;
   presentation_mode: PresentationMode;
   execution_mode: ExecutionMode;
   use_rag: boolean;
@@ -90,6 +93,7 @@ export type ChatStreamEvent =
 export interface RagChatParams {
   query: string;
   sessionId?: string;
+  chatMode?: ChatMode;
   topK?: number;
   enableScoreFilter?: boolean;
   minRelevanceScore?: number;
@@ -104,6 +108,9 @@ export interface RagChatParams {
 function buildChatFormData(params: RagChatParams, stream = false): FormData {
   const form = new FormData();
   form.append("query", params.query);
+  if (params.chatMode) {
+    form.append("chat_mode", params.chatMode);
+  }
   if (params.topK !== undefined) {
     form.append("top_k", String(params.topK));
   }
