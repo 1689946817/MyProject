@@ -6,6 +6,8 @@ Agentic RAG 模块（基于 LangGraph）
 2. CRAG（Corrective RAG）：检索后评估相关性，必要时重新检索或 Web 搜索
 3. Self-RAG：生成后自我评估，决定是否需要更多检索
 """
+import asyncio
+import inspect
 import json
 import logging
 import re
@@ -15,11 +17,19 @@ from langchain_core.messages import HumanMessage
 from langgraph.graph import END, StateGraph
 
 from app.core.config import settings
+from app.core.memory_cache import TTLMemoryCache
 from app.core.timing import get_current_timing_collector, timing_stage
 from app.langchain_integration.models import get_primary_text_chat_model, get_task_text_chat_model
 
 logger = logging.getLogger(__name__)
 get_chat_model = get_primary_text_chat_model
+
+_INTENT_CACHE_TTL_SECONDS = 10 * 60
+_INTENT_CACHE_MAX_SIZE = 512
+_intent_cache: TTLMemoryCache[tuple[str, bool, str], "IntentClassification"] = TTLMemoryCache(
+    ttl_seconds=_INTENT_CACHE_TTL_SECONDS,
+    max_size=_INTENT_CACHE_MAX_SIZE,
+)
 
 
 class IntentClassification(TypedDict):
@@ -455,6 +465,12 @@ async def classify_chat_intent(
         meta={"has_uploaded_image": has_uploaded_image, "mode": mode},
     ):
         collector = get_current_timing_collector()
+        cache_key = (query, has_uploaded_image, mode)
+        cached_intent = _intent_cache.get(cache_key)
+        if collector is not None:
+            collector.set_metadata(intent_cache_hit=cached_intent is not None)
+        if cached_intent is not None:
+            return cached_intent
 
         def _record_intent(intent: IntentClassification) -> IntentClassification:
             if collector is not None:
@@ -464,13 +480,17 @@ async def classify_chat_intent(
                 )
             return intent
 
+        def _cache_and_record_intent(intent: IntentClassification) -> IntentClassification:
+            _intent_cache.set(cache_key, intent)
+            return _record_intent(intent)
+
         if mode != "expert":
             rule_intent = _rule_based_intent(query, has_uploaded_image)
             if rule_intent is not None:
-                return _record_intent(rule_intent)
+                return _cache_and_record_intent(rule_intent)
 
         if mode == "fast":
-            return _record_intent(
+            return _cache_and_record_intent(
                 _default_intent(
                     presentation_mode=_DIRECT_ANSWER,
                     execution_mode="direct_llm",
@@ -513,7 +533,7 @@ async def classify_chat_intent(
             if isinstance(parsed, dict):
                 intent = _coerce_classifier_output(parsed, has_uploaded_image)
                 if intent is not None:
-                    return _record_intent(intent)
+                    return _cache_and_record_intent(intent)
         except Exception as exc:  # pragma: no cover - network/model failures are best-effort fallback
             logger.warning("[IntentClassifier] LLM classifier failed, fallback to conservative routing: %s", exc)
 
@@ -565,28 +585,60 @@ async def retrieve_documents(
             "top_k": top_k,
             "enable_score_filter": enable_score_filter,
             "retry": attempt > 1,
+            "parallel_retrieval": True,
         },
     ):
-        documents = await retriever.async_search_with_dict_output(
-            query,
-            top_k=top_k,
-            fast=False,
-            enable_score_filter=enable_score_filter,
-            min_relevance_score=min_relevance_score,
-            candidate_k=candidate_k,
-            enable_query_rewrite=enable_query_rewrite,
-            query_rewrite_count=query_rewrite_count,
-            enable_rerank=enable_rerank,
-        )
-        text_chunks = await doc_vector_store.async_search_with_pipeline(
-            query,
-            top_k=text_top_k,
-            candidate_k=candidate_k,
-            enable_score_filter=enable_score_filter,
-            min_relevance_score=min_relevance_score,
-            enable_query_rewrite=enable_query_rewrite,
-            query_rewrite_count=query_rewrite_count,
-            enable_rerank=enable_rerank,
+        async def _retrieve_text_chunks() -> List[Dict[str, Any]]:
+            async_search = getattr(doc_vector_store, "async_search_with_pipeline", None)
+            if callable(async_search):
+                result = async_search(
+                    query,
+                    top_k=text_top_k,
+                    candidate_k=candidate_k,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    enable_query_rewrite=enable_query_rewrite,
+                    query_rewrite_count=query_rewrite_count,
+                    enable_rerank=enable_rerank,
+                )
+                if inspect.isawaitable(result):
+                    return await result
+                if isinstance(result, list):
+                    return result
+
+            sync_search = getattr(doc_vector_store, "search_with_pipeline", None)
+            if callable(sync_search):
+                result = sync_search(
+                    query,
+                    top_k=text_top_k,
+                    candidate_k=candidate_k,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                )
+                if isinstance(result, list):
+                    return result
+
+            similarity_search = getattr(doc_vector_store, "similarity_search", None)
+            if callable(similarity_search):
+                result = similarity_search(query, k=text_top_k)
+                if isinstance(result, list):
+                    return result
+
+            return []
+
+        documents, text_chunks = await asyncio.gather(
+            retriever.async_search_with_dict_output(
+                query,
+                top_k=top_k,
+                fast=False,
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                candidate_k=candidate_k,
+                enable_query_rewrite=enable_query_rewrite,
+                query_rewrite_count=query_rewrite_count,
+                enable_rerank=enable_rerank,
+            ),
+            _retrieve_text_chunks(),
         )
 
     state["documents"] = documents
@@ -596,7 +648,11 @@ async def retrieve_documents(
         "document_count": len(documents),
         "text_chunk_count": len(text_chunks),
         "last_retrieval_attempt": attempt,
+        "parallel_retrieval": True,
     }
+    collector = get_current_timing_collector()
+    if collector is not None:
+        collector.set_metadata(parallel_retrieval=True)
     logger.info("[AgenticGraph] attempt=%s retrieved %s docs", attempt, len(documents))
     return state
 
@@ -973,3 +1029,7 @@ async def prepare_agentic_multimodal_rag_context(
         final_state=final_state,
     )
     return final_state, documents, text_chunks, retrieval_steps
+
+
+def reset_intent_classification_cache() -> None:
+    _intent_cache.clear()

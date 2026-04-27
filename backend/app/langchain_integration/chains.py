@@ -7,6 +7,7 @@ LangChain Chain 集成模块
 
 使用 LCEL 构建可组合的链式流程，遵循 LangChain 最佳实践。
 """
+import asyncio
 import base64
 import logging
 import os
@@ -291,21 +292,32 @@ class RAGChain:
         enable_score_filter = bool(inputs.get("enable_score_filter", False))
         min_relevance_score = inputs.get("min_relevance_score")
 
-        # 异步检索（走完整 Multi-Query 管线）
-        with timing_stage("rag_retrieval", meta={"top_k": retrieval_top_k}):
-            documents = await self.retriever.async_search_with_dict_output(
-                query,
-                top_k=retrieval_top_k,
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-            )
-        with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
-            text_chunks = await self.doc_vector_store.async_search_with_pipeline(
-                query,
-                top_k=self.text_top_k,
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-            )
+        collector = get_current_timing_collector()
+        if collector is not None:
+            collector.set_metadata(parallel_retrieval=True)
+
+        async def _retrieve_documents() -> List[Dict[str, Any]]:
+            with timing_stage("rag_retrieval", meta={"top_k": retrieval_top_k, "parallel_retrieval": True}):
+                return await self.retriever.async_search_with_dict_output(
+                    query,
+                    top_k=retrieval_top_k,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                )
+
+        async def _retrieve_text_chunks() -> List[Dict[str, Any]]:
+            with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k, "parallel_retrieval": True}):
+                return await self.doc_vector_store.async_search_with_pipeline(
+                    query,
+                    top_k=self.text_top_k,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                )
+
+        documents, text_chunks = await asyncio.gather(
+            _retrieve_documents(),
+            _retrieve_text_chunks(),
+        )
 
         # 上下文压缩：过滤无关文档
         from app.langchain_integration.context_compression import compress_context
@@ -331,21 +343,32 @@ class RAGChain:
         enable_score_filter = bool(inputs.get("enable_score_filter", False))
         min_relevance_score = inputs.get("min_relevance_score")
 
-        # 异步检索
-        with timing_stage("rag_retrieval", meta={"top_k": retrieval_top_k}):
-            documents = await self.retriever.async_search_with_dict_output(
-                query,
-                top_k=retrieval_top_k,
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-            )
-        with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k}):
-            text_chunks = await self.doc_vector_store.async_search_with_pipeline(
-                query,
-                top_k=self.text_top_k,
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-            )
+        collector = get_current_timing_collector()
+        if collector is not None:
+            collector.set_metadata(parallel_retrieval=True)
+
+        async def _retrieve_documents() -> List[Dict[str, Any]]:
+            with timing_stage("rag_retrieval", meta={"top_k": retrieval_top_k, "parallel_retrieval": True}):
+                return await self.retriever.async_search_with_dict_output(
+                    query,
+                    top_k=retrieval_top_k,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                )
+
+        async def _retrieve_text_chunks() -> List[Dict[str, Any]]:
+            with timing_stage("document_text_retrieval", meta={"top_k": self.text_top_k, "parallel_retrieval": True}):
+                return await self.doc_vector_store.async_search_with_pipeline(
+                    query,
+                    top_k=self.text_top_k,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                )
+
+        documents, text_chunks = await asyncio.gather(
+            _retrieve_documents(),
+            _retrieve_text_chunks(),
+        )
 
         # 上下文压缩
         from app.langchain_integration.context_compression import compress_context

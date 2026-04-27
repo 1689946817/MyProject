@@ -384,6 +384,10 @@ class LangChainAdapter:
         fast: bool = False,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        candidate_k: Optional[int] = None,
+        enable_query_rewrite: Optional[bool] = None,
+        query_rewrite_count: Optional[int] = None,
+        enable_rerank: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         文本到图像检索
@@ -404,6 +408,10 @@ class LangChainAdapter:
                 "fast_path": fast,
                 "enable_score_filter": enable_score_filter,
                 "min_relevance_score": min_relevance_score,
+                "candidate_k": candidate_k,
+                "enable_query_rewrite": enable_query_rewrite,
+                "query_rewrite_count": query_rewrite_count,
+                "enable_rerank": enable_rerank,
             },
         ):
             documents = await self.retriever.text_to_image_search(
@@ -412,6 +420,10 @@ class LangChainAdapter:
                 fast=fast,
                 enable_score_filter=enable_score_filter,
                 min_relevance_score=min_relevance_score,
+                candidate_k=candidate_k,
+                enable_query_rewrite=enable_query_rewrite,
+                query_rewrite_count=query_rewrite_count,
+                enable_rerank=enable_rerank,
             )
 
         # 转换为字典格式
@@ -435,6 +447,10 @@ class LangChainAdapter:
         fast: bool = False,
         enable_score_filter: bool = False,
         min_relevance_score: Optional[float] = None,
+        candidate_k: Optional[int] = None,
+        enable_query_rewrite: Optional[bool] = None,
+        query_rewrite_count: Optional[int] = None,
+        enable_rerank: bool = True,
     ) -> Tuple[List[Dict[str, Any]], str]:
         """
         图像到图像检索
@@ -455,6 +471,10 @@ class LangChainAdapter:
                 "fast_path": fast,
                 "enable_score_filter": enable_score_filter,
                 "min_relevance_score": min_relevance_score,
+                "candidate_k": candidate_k,
+                "enable_query_rewrite": enable_query_rewrite,
+                "query_rewrite_count": query_rewrite_count,
+                "enable_rerank": enable_rerank,
             },
         ):
             documents, description = await self.retriever.image_to_image_search(
@@ -463,6 +483,10 @@ class LangChainAdapter:
                 fast=fast,
                 enable_score_filter=enable_score_filter,
                 min_relevance_score=min_relevance_score,
+                candidate_k=candidate_k,
+                enable_query_rewrite=enable_query_rewrite,
+                query_rewrite_count=query_rewrite_count,
+                enable_rerank=enable_rerank,
             )
 
         # 转换为字典格式
@@ -2039,17 +2063,6 @@ class LangChainAdapter:
         documents: List[Dict[str, Any]] = []
         text_chunks: List[Dict[str, Any]] = []
 
-        if execution_hint in {"multimodal_rag", "image_similarity", "image_grounded_answer"}:
-            documents = await self._retrieve_images_for_query(
-                query=scoped_query,
-                image=image if execution_hint == "image_similarity" else None,
-                top_k=max(top_k * 4, top_k),
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-                retrieval_profile=retrieval_profile,
-            )
-            documents = self._filter_documents_by_source_scope(documents, scope)
-
         generation_documents: List[Dict[str, Any]] = []
         generation_text_chunks: List[Dict[str, Any]] = []
         generation_history: List[Tuple[str, str]] = chat_history or []
@@ -2057,31 +2070,71 @@ class LangChainAdapter:
         streaming_ready = False
 
         if execution_hint == "multimodal_rag":
-            if retrieval_profile:
-                text_chunks = await self.document_vector_store.async_search_with_pipeline(
-                    scoped_query,
-                    top_k=self.rag_chain.text_top_k,
-                    candidate_k=retrieval_profile.get("candidate_k") or max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
+            collector = get_current_timing_collector()
+            if collector is not None:
+                collector.set_metadata(parallel_retrieval=True)
+
+            async def _retrieve_scoped_documents() -> List[Dict[str, Any]]:
+                return await self._retrieve_images_for_query(
+                    query=scoped_query,
+                    image=None,
+                    top_k=max(top_k * 4, top_k),
                     enable_score_filter=enable_score_filter,
                     min_relevance_score=min_relevance_score,
-                    enable_query_rewrite=bool(retrieval_profile.get("enable_query_rewrite", True)),
-                    query_rewrite_count=retrieval_profile.get("query_rewrite_count"),
-                    enable_rerank=bool(retrieval_profile.get("enable_rerank", True)),
+                    retrieval_profile=retrieval_profile,
                 )
-            else:
-                text_chunks = self.document_vector_store.search_with_pipeline(
+
+            async def _retrieve_scoped_text_chunks() -> List[Dict[str, Any]]:
+                if retrieval_profile:
+                    return await self.document_vector_store.async_search_with_pipeline(
+                        scoped_query,
+                        top_k=self.rag_chain.text_top_k,
+                        candidate_k=retrieval_profile.get("candidate_k") or max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
+                        enable_score_filter=enable_score_filter,
+                        min_relevance_score=min_relevance_score,
+                        enable_query_rewrite=bool(retrieval_profile.get("enable_query_rewrite", True)),
+                        query_rewrite_count=retrieval_profile.get("query_rewrite_count"),
+                        enable_rerank=bool(retrieval_profile.get("enable_rerank", True)),
+                    )
+                return self.document_vector_store.search_with_pipeline(
                     scoped_query,
                     top_k=self.rag_chain.text_top_k,
                     candidate_k=max(self.rag_chain.text_top_k * 4, self.rag_chain.text_top_k),
                     enable_score_filter=enable_score_filter,
                     min_relevance_score=min_relevance_score,
                 )
+
+            documents, text_chunks = await asyncio.gather(
+                _retrieve_scoped_documents(),
+                _retrieve_scoped_text_chunks(),
+            )
+            documents = self._filter_documents_by_source_scope(documents, scope)
             text_chunks = self._filter_text_chunks_by_source_scope(text_chunks, scope)
             generation_documents = documents
             generation_text_chunks = text_chunks
             combined_documents = documents + text_chunks
             streaming_ready = True
+        elif execution_hint == "image_similarity":
+            documents = await self._retrieve_images_for_query(
+                query=scoped_query,
+                image=image,
+                top_k=max(top_k * 4, top_k),
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                retrieval_profile=retrieval_profile,
+            )
+            documents = self._filter_documents_by_source_scope(documents, scope)
+            combined_documents = list(documents)
         elif execution_hint == "image_grounded_answer":
+            documents = await self._retrieve_images_for_query(
+                query=scoped_query,
+                image=None,
+                top_k=max(top_k * 4, top_k),
+                enable_score_filter=enable_score_filter,
+                min_relevance_score=min_relevance_score,
+                retrieval_profile=retrieval_profile,
+            )
+            documents = self._filter_documents_by_source_scope(documents, scope)
             generation_documents, generation_text_chunks, generation_history = await self._prepare_image_grounded_answer_context(
                 query=scoped_query,
                 documents=documents,

@@ -119,6 +119,8 @@ from app.langchain_integration.agentic_rag import (
     generate_answer,
     grade_documents,
     prepare_agentic_multimodal_rag_context,
+    reset_intent_classification_cache,
+    retrieve_documents,
 )
 from app.langchain_integration.context_compression import compress_context
 from app.langchain_integration.mineru_client import MinerUClient, MinerUParseResult
@@ -127,7 +129,9 @@ from app.langchain_integration.models import (
     OpenAIEmbeddingsWrapper,
     _build_httpx_client_kwargs,
 )
+from app.langchain_integration.query_transform import QueryRewriter, reset_query_transform_caches
 from app.core.config import _disable_process_proxy_env
+from app.core.memory_cache import TTLMemoryCache
 from app.retrieval.rerank import cross_encoder_rerank
 from app.retrieval.hybrid import rebuild_bm25_index
 from app.application.schemas import DocumentRecordOut, ImageRecordOut
@@ -873,6 +877,23 @@ class TestStoragePaths(unittest.TestCase):
         self.assertTrue(str(STORAGE_ROOT).endswith("storage"))
 
 
+class TestTTLMemoryCache(unittest.TestCase):
+    def test_ttl_memory_cache_expires_items_and_tracks_stats(self):
+        cache = TTLMemoryCache(ttl_seconds=0.01, max_size=2)
+
+        cache.set("a", "value-a")
+        self.assertEqual(cache.get("a"), "value-a")
+        self.assertEqual(cache.stats()["hits"], 1)
+
+        import time
+        time.sleep(0.02)
+
+        self.assertIsNone(cache.get("a"))
+        stats = cache.stats()
+        self.assertEqual(stats["misses"], 1)
+        self.assertEqual(stats["size"], 0)
+
+
 class TestRAGChain(unittest.TestCase):
     """测试 RAG Chain"""
 
@@ -985,6 +1006,267 @@ class TestRAGChain(unittest.TestCase):
                 "chat_history": [("上一问", "上一答")],
             }
         )
+
+
+class TestLightweightCaches(unittest.IsolatedAsyncioTestCase):
+    def setUp(self):
+        reset_query_transform_caches()
+        reset_intent_classification_cache()
+
+    async def test_query_rewriter_rewrite_hits_memory_cache(self):
+        model = MagicMock()
+        model._agenerate = AsyncMock()
+        model._agenerate.return_value = MagicMock(
+            generations=[MagicMock(message=MagicMock(content="改写后的查询"))]
+        )
+        rewriter = QueryRewriter(chat_model=model)
+
+        first = await rewriter.rewrite("原始查询")
+        second = await rewriter.rewrite("原始查询")
+
+        self.assertEqual(first, "改写后的查询")
+        self.assertEqual(second, "改写后的查询")
+        model._agenerate.assert_awaited_once()
+
+    async def test_query_rewriter_expand_hits_memory_cache(self):
+        model = MagicMock()
+        model._agenerate = AsyncMock()
+        model._agenerate.return_value = MagicMock(
+            generations=[MagicMock(message=MagicMock(content="子查询1\n子查询2\n子查询3"))]
+        )
+        rewriter = QueryRewriter(chat_model=model)
+
+        first = await rewriter.expand("原始查询", n=2)
+        second = await rewriter.expand("原始查询", n=2)
+
+        self.assertEqual(first, ["原始查询", "子查询1", "子查询2"])
+        self.assertEqual(second, ["原始查询", "子查询1", "子查询2"])
+        model._agenerate.assert_awaited_once()
+
+    async def test_intent_classifier_hits_memory_cache(self):
+        model = MagicMock()
+        model._agenerate = AsyncMock()
+        model._agenerate.return_value = MagicMock(
+            generations=[
+                MagicMock(
+                    message=MagicMock(
+                        content='{"presentation_mode":"direct_answer","execution_mode":"direct_llm","use_rag":false,"wants_images":false,"confidence":0.81,"reason":"cached"}'
+                    )
+                )
+            ]
+        )
+
+        first = await classify_chat_intent(
+            "请总结一下这个主题的核心观点",
+            has_uploaded_image=False,
+            chat_model=model,
+            mode="expert",
+        )
+        second = await classify_chat_intent(
+            "请总结一下这个主题的核心观点",
+            has_uploaded_image=False,
+            chat_model=model,
+            mode="expert",
+        )
+
+        self.assertEqual(first["reason"], "cached")
+        self.assertEqual(second["reason"], "cached")
+        model._agenerate.assert_awaited_once()
+
+    async def test_intent_classifier_fallback_result_is_not_cached(self):
+        model = MagicMock()
+        model._agenerate = AsyncMock(side_effect=RuntimeError("boom"))
+
+        first = await classify_chat_intent(
+            "请总结一下这个主题的核心观点",
+            has_uploaded_image=False,
+            chat_model=model,
+            mode="expert",
+        )
+        second = await classify_chat_intent(
+            "请总结一下这个主题的核心观点",
+            has_uploaded_image=False,
+            chat_model=model,
+            mode="expert",
+        )
+
+        self.assertEqual(first["reason"], "fallback_to_retrieval")
+        self.assertEqual(second["reason"], "fallback_to_retrieval")
+        self.assertEqual(model._agenerate.await_count, 2)
+
+
+class TestParallelRetrievalPaths(unittest.IsolatedAsyncioTestCase):
+    async def _wait_for_other_branch(self, result, own_event: asyncio.Event, other_event: asyncio.Event):
+        own_event.set()
+        await asyncio.wait_for(other_event.wait(), timeout=0.2)
+        await asyncio.sleep(0)
+        return result
+
+    async def test_rag_chain_ainvoke_runs_dual_retrieval_in_parallel(self):
+        retriever = MagicMock()
+        doc_store = MagicMock()
+        chain = RAGChain(
+            chat_model=MagicMock(),
+            retriever=retriever,
+            doc_vector_store=doc_store,
+            top_k=3,
+        )
+        doc_started = asyncio.Event()
+        chunk_started = asyncio.Event()
+        async def image_search(*args, **kwargs):
+            return await self._wait_for_other_branch(
+                [{"id": "img-1", "document": "image", "metadata": {}, "score": 0.8}],
+                doc_started,
+                chunk_started,
+            )
+
+        async def chunk_search(*args, **kwargs):
+            return await self._wait_for_other_branch(
+                [{"content": "chunk-1"}],
+                chunk_started,
+                doc_started,
+            )
+
+        retriever.async_search_with_dict_output = AsyncMock(side_effect=image_search)
+        doc_store.async_search_with_pipeline = AsyncMock(side_effect=chunk_search)
+        chain.agenerate_from_context = AsyncMock(return_value="answer")
+
+        with patch("app.langchain_integration.context_compression.compress_context", new=AsyncMock(side_effect=lambda query, docs, force_enabled=None: docs)):
+            answer, documents = await chain.ainvoke({"query": "并行检索测试"})
+
+        self.assertEqual(answer, "answer")
+        self.assertEqual(documents[0]["id"], "img-1")
+        retriever.async_search_with_dict_output.assert_awaited_once()
+        doc_store.async_search_with_pipeline.assert_awaited_once()
+
+    async def test_rag_chain_astream_runs_dual_retrieval_in_parallel(self):
+        retriever = MagicMock()
+        doc_store = MagicMock()
+        chain = RAGChain(
+            chat_model=MagicMock(),
+            retriever=retriever,
+            doc_vector_store=doc_store,
+            top_k=3,
+        )
+        doc_started = asyncio.Event()
+        chunk_started = asyncio.Event()
+        async def image_search(*args, **kwargs):
+            return await self._wait_for_other_branch(
+                [{"id": "img-2", "document": "image", "metadata": {}, "score": 0.8}],
+                doc_started,
+                chunk_started,
+            )
+
+        async def chunk_search(*args, **kwargs):
+            return await self._wait_for_other_branch(
+                [{"content": "chunk-2"}],
+                chunk_started,
+                doc_started,
+            )
+
+        retriever.async_search_with_dict_output = AsyncMock(side_effect=image_search)
+        doc_store.async_search_with_pipeline = AsyncMock(side_effect=chunk_search)
+
+        async def fake_stream_from_context(**kwargs):
+            yield "A"
+            yield "B"
+
+        chain.astream_from_context = fake_stream_from_context
+
+        with patch("app.langchain_integration.context_compression.compress_context", new=AsyncMock(side_effect=lambda query, docs, force_enabled=None: docs)):
+            chunks = [item async for item in chain.astream({"query": "并行流式测试"})]
+
+        self.assertEqual([chunk for chunk, _documents in chunks], ["A", "B"])
+        retriever.async_search_with_dict_output.assert_awaited_once()
+        doc_store.async_search_with_pipeline.assert_awaited_once()
+
+    async def test_agentic_retrieve_documents_runs_dual_retrieval_in_parallel(self):
+        retriever = MagicMock()
+        doc_store = MagicMock()
+        doc_started = asyncio.Event()
+        chunk_started = asyncio.Event()
+        async def image_search(*args, **kwargs):
+            return await self._wait_for_other_branch(
+                [{"id": "img-3", "document": "image", "metadata": {}, "score": 0.7}],
+                doc_started,
+                chunk_started,
+            )
+
+        async def chunk_search(*args, **kwargs):
+            return await self._wait_for_other_branch(
+                [{"content": "chunk-3"}],
+                chunk_started,
+                doc_started,
+            )
+
+        retriever.async_search_with_dict_output = AsyncMock(side_effect=image_search)
+        doc_store.async_search_with_pipeline = AsyncMock(side_effect=chunk_search)
+
+        state = {
+            "query": "agentic 并行",
+            "chat_history": [],
+            "top_k": 3,
+            "enable_score_filter": False,
+            "min_relevance_score": None,
+            "documents": [],
+            "text_chunks": [],
+            "answer": "",
+            "retrieval_attempt": 1,
+            "relevance_score": 0.0,
+            "needs_retry": False,
+            "retrieval_meta": {},
+            "retrieval_profile": {},
+        }
+
+        updated = await retrieve_documents(state, retriever=retriever, doc_vector_store=doc_store, text_top_k=2)
+
+        self.assertEqual(updated["documents"][0]["id"], "img-3")
+        self.assertEqual(updated["text_chunks"][0]["content"], "chunk-3")
+        self.assertTrue(updated["retrieval_meta"]["parallel_retrieval"])
+
+    async def test_scoped_multimodal_context_runs_dual_retrieval_in_parallel(self):
+        adapter = _build_isolated_adapter()
+        doc_started = asyncio.Event()
+        chunk_started = asyncio.Event()
+        async def image_search(**kwargs):
+            return await self._wait_for_other_branch(
+                [{"id": "img-4", "document": "image", "metadata": {}, "score": 0.9}],
+                doc_started,
+                chunk_started,
+            )
+
+        async def chunk_search(*args, **kwargs):
+            return await self._wait_for_other_branch(
+                [{"content": "chunk-4", "metadata": {}}],
+                chunk_started,
+                doc_started,
+            )
+
+        adapter._retrieve_images_for_query = AsyncMock(side_effect=image_search)
+        adapter.document_vector_store.async_search_with_pipeline = AsyncMock(side_effect=chunk_search)
+
+        with patch("app.langchain_integration.context_compression.compress_context", new=AsyncMock(side_effect=lambda query, docs, force_enabled=None: docs)):
+            context = await adapter._prepare_scoped_chat_context(
+                query="scoped 并行",
+                top_k=2,
+                image=None,
+                chat_history=[],
+                enable_score_filter=False,
+                min_relevance_score=None,
+                execution_hint="multimodal_rag",
+                source_scope=None,
+                retrieval_profile={
+                    "candidate_k": 8,
+                    "enable_query_rewrite": True,
+                    "query_rewrite_count": 3,
+                    "enable_rerank": True,
+                    "enable_context_compression": True,
+                },
+            )
+
+        self.assertTrue(context["streaming_ready"])
+        self.assertEqual(context["documents"][0]["id"], "img-4")
+        self.assertEqual(context["text_chunks"][0]["content"], "chunk-4")
 
 
 class TestLangChainAdapter(unittest.TestCase):
