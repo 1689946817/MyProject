@@ -2463,6 +2463,29 @@ class TestRemediationRegressions(unittest.TestCase):
             ["enabled image", "enabled chunk"],
         )
 
+    def test_document_vector_store_bm25_search_self_heals_stale_instance(self):
+        """测试缺少 _bm25 字段的旧实例不会在 BM25 搜索时崩溃。"""
+        from app.langchain_integration.vectorstores import DocumentVectorStore
+
+        collection = MagicMock()
+        collection.get.return_value = {
+            "ids": [],
+            "documents": [],
+            "metadatas": [],
+        }
+        vectorstore = MagicMock()
+        vectorstore._collection = collection
+
+        instance = DocumentVectorStore.__new__(DocumentVectorStore)
+        instance._vectorstore = vectorstore
+
+        results = instance._bm25_search("test query", 5)
+
+        self.assertEqual(results, [])
+        self.assertTrue(hasattr(instance, "_bm25"))
+        self.assertTrue(hasattr(instance, "_bm25_ids"))
+        self.assertTrue(hasattr(instance, "_bm25_docs"))
+
 
 if __name__ == "__main__":
     unittest.main()

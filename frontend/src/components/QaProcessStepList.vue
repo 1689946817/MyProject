@@ -1,10 +1,15 @@
 <template>
-  <div class="qa-process-steps">
+  <div class="qa-process-steps" :class="{ compact }">
     <div v-for="step in steps" :key="step.key" class="qa-process-step">
-      <div class="qa-process-step-marker"></div>
+      <div class="qa-process-step-marker" :class="statusClass(step)"></div>
       <div class="qa-process-step-body">
         <div class="qa-process-step-head">
-          <span class="qa-process-step-label">{{ step.label }}</span>
+          <div class="qa-process-step-head-main">
+            <span class="qa-process-step-label">{{ step.label }}</span>
+            <span v-if="step.status" class="qa-process-step-status" :class="statusClass(step)">
+              {{ formatStatus(step.status) }}
+            </span>
+          </div>
           <span v-if="step.durationMs !== null && step.durationMs !== undefined" class="qa-process-step-time">
             {{ formatDuration(step.durationMs) }}
           </span>
@@ -22,17 +27,36 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import type { QaProcessStepViewModel } from "@/types";
 
 defineProps<{
   steps: QaProcessStepViewModel[];
+  compact?: boolean;
 }>();
+
+const { t } = useI18n();
 
 function formatDuration(value: number): string {
   if (value >= 1000) {
     return `${(value / 1000).toFixed(2)} s`;
   }
   return `${Math.round(value)} ms`;
+}
+
+function formatStatus(status: QaProcessStepViewModel["status"]): string {
+  if (status === "completed") return t("chat.processStatusCompleted");
+  if (status === "skipped") return t("chat.processStatusSkipped");
+  if (status === "failed") return t("chat.processStatusFailed");
+  return t("chat.processStatusRunning");
+}
+
+function statusClass(step: QaProcessStepViewModel): string {
+  if (step.status === "completed") return "is-completed";
+  if (step.status === "skipped") return "is-skipped";
+  if (step.status === "failed") return "is-failed";
+  if (step.isActive || step.status === "started" || step.status === "running") return "is-active";
+  return "is-pending";
 }
 </script>
 
@@ -41,6 +65,10 @@ function formatDuration(value: number): string {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.qa-process-steps.compact {
+  gap: 8px;
 }
 
 .qa-process-step {
@@ -55,8 +83,8 @@ function formatDuration(value: number): string {
   height: 12px;
   margin-top: 6px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.95), rgba(14, 116, 144, 0.95));
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+  background: rgba(148, 163, 184, 0.75);
+  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.14);
 }
 
 .qa-process-step-body {
@@ -66,11 +94,25 @@ function formatDuration(value: number): string {
   background: rgba(255, 255, 255, 0.78);
 }
 
+.qa-process-steps.compact .qa-process-step-body {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.68);
+}
+
 .qa-process-step-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.qa-process-step-head-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .qa-process-step-label {
@@ -87,6 +129,44 @@ function formatDuration(value: number): string {
   color: #0f766e;
   font-size: 12px;
   font-weight: 600;
+}
+
+.qa-process-step-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.qa-process-step-marker.is-active,
+.qa-process-step-status.is-active {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(14, 165, 233, 0.95));
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+  color: #075985;
+}
+
+.qa-process-step-marker.is-completed,
+.qa-process-step-status.is-completed {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.95), rgba(14, 116, 144, 0.95));
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+  color: #0f766e;
+}
+
+.qa-process-step-marker.is-skipped,
+.qa-process-step-status.is-skipped {
+  background: rgba(148, 163, 184, 0.18);
+  box-shadow: none;
+  color: var(--text-tertiary);
+}
+
+.qa-process-step-marker.is-failed,
+.qa-process-step-status.is-failed {
+  background: rgba(220, 38, 38, 0.15);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
 }
 
 .qa-process-step-summary {

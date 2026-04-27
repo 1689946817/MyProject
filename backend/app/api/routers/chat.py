@@ -589,6 +589,40 @@ def _build_sse_chunk(payload: Any) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
+def _build_progress_payload(
+    *,
+    phase: str,
+    status: str,
+    title: str,
+    collector: RequestTimingCollector,
+    detail: Optional[str] = None,
+    chat_mode: str = "default",
+    execution_mode: Optional[str] = None,
+    use_rag: Optional[bool] = None,
+    step_key: Optional[str] = None,
+    meta: Optional[dict[str, Any]] = None,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "type": "progress",
+        "phase": phase,
+        "status": status,
+        "title": title,
+        "elapsed_ms": collector.snapshot().get("total_ms"),
+        "chat_mode": chat_mode,
+    }
+    if detail:
+        payload["detail"] = detail
+    if execution_mode:
+        payload["execution_mode"] = execution_mode
+    if use_rag is not None:
+        payload["use_rag"] = use_rag
+    if step_key:
+        payload["step_key"] = step_key
+    if meta:
+        payload["meta"] = meta
+    return payload
+
+
 def _normalize_stream_text_chunk(chunk: Any) -> str:
     if chunk is None:
         return ""
@@ -645,6 +679,51 @@ def _build_rag_streaming_response(
                 full_answer = ""
                 retrieved_docs: List[dict] = []
                 final_intent: Optional[dict[str, Any]] = None
+                progress_state: dict[str, Any] = {
+                    "execution_mode": None,
+                    "use_rag": None,
+                }
+
+                def emit_progress(
+                    *,
+                    phase: str,
+                    status: str,
+                    title: str,
+                    detail: Optional[str] = None,
+                    execution_mode: Optional[str] = None,
+                    use_rag: Optional[bool] = None,
+                    step_key: Optional[str] = None,
+                    meta: Optional[dict[str, Any]] = None,
+                ) -> str:
+                    resolved_execution_mode = execution_mode or progress_state.get("execution_mode")
+                    resolved_use_rag = progress_state.get("use_rag") if use_rag is None else use_rag
+                    if execution_mode:
+                        progress_state["execution_mode"] = execution_mode
+                    if use_rag is not None:
+                        progress_state["use_rag"] = use_rag
+                    return _build_sse_chunk(
+                        _build_progress_payload(
+                            phase=phase,
+                            status=status,
+                            title=title,
+                            detail=detail,
+                            collector=collector,
+                            chat_mode=resolved_chat_mode,
+                            execution_mode=resolved_execution_mode,
+                            use_rag=resolved_use_rag,
+                            step_key=step_key,
+                            meta=meta,
+                        )
+                    )
+
+                yield emit_progress(
+                    phase="routing",
+                    status="started",
+                    title="routing",
+                    detail="Preparing chat route",
+                    step_key="intent",
+                    meta={"source_scope_enabled": bool(source_scope)},
+                )
 
                 try:
                     stream = adapter.rag_chat_stream(
@@ -657,6 +736,7 @@ def _build_rag_streaming_response(
                         execution_hint=resolved_execution_hint,
                         chat_mode=resolved_chat_mode,
                         source_scope=source_scope,
+                        emit_progress=True,
                     )
                 except TypeError:
                     stream = adapter.rag_chat_stream(
@@ -669,6 +749,13 @@ def _build_rag_streaming_response(
 
                 first_chunk_sent = False
                 async for event in stream:
+                    if isinstance(event, dict) and event.get("type") == "progress":
+                        if event.get("execution_mode") or event.get("use_rag") is not None:
+                            progress_state["execution_mode"] = event.get("execution_mode") or progress_state.get("execution_mode")
+                            if event.get("use_rag") is not None:
+                                progress_state["use_rag"] = bool(event.get("use_rag"))
+                        yield _build_sse_chunk(event)
+                        continue
                     if len(event) == 3:
                         chunk, docs, intent = event
                     elif len(event) == 2:
@@ -682,6 +769,8 @@ def _build_rag_streaming_response(
                     retrieved_docs = docs
                     if intent is not None:
                         final_intent = intent
+                        progress_state["execution_mode"] = intent.get("execution_mode")
+                        progress_state["use_rag"] = bool(intent.get("use_rag"))
                         collector.set_metadata(
                             execution_mode=intent.get("execution_mode"),
                             presentation_mode=intent.get("presentation_mode"),
@@ -693,6 +782,15 @@ def _build_rag_streaming_response(
                         yield _build_sse_chunk({"type": "content", "content": chunk})
 
                 final_intent = final_intent or _build_default_stream_intent(has_uploaded_image=image is not None)
+                yield emit_progress(
+                    phase="complete",
+                    status="completed",
+                    title="complete",
+                    detail="Answer pipeline completed",
+                    execution_mode=final_intent.get("execution_mode"),
+                    use_rag=bool(final_intent.get("use_rag", True)),
+                    step_key="generate",
+                )
                 collector.set_metadata(
                     execution_mode=final_intent.get("execution_mode"),
                     presentation_mode=final_intent.get("presentation_mode"),
@@ -748,6 +846,13 @@ def _build_rag_streaming_response(
                     )
                 )
             except Exception as exc:
+                yield emit_progress(
+                    phase="complete",
+                    status="failed",
+                    title="complete",
+                    detail=str(exc),
+                    step_key="generate",
+                )
                 yield _build_sse_chunk({"type": "error", "detail": str(exc)})
             finally:
                 yield "data: [DONE]\n\n"

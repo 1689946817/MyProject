@@ -84,6 +84,32 @@ export interface RetrievalStepItem {
   details?: Record<string, any>
 }
 
+export type ChatProgressPhase =
+  | "routing"
+  | "rewrite"
+  | "retrieve"
+  | "rerank"
+  | "compress"
+  | "agentic"
+  | "generate"
+  | "complete"
+
+export type ChatProgressStatus = "started" | "running" | "completed" | "skipped" | "failed"
+
+export interface ChatProgressEvent {
+  type?: "progress"
+  phase: ChatProgressPhase
+  status: ChatProgressStatus
+  title: string
+  detail?: string
+  elapsed_ms?: number
+  chat_mode?: ChatMode
+  execution_mode?: ExecutionMode
+  use_rag?: boolean
+  step_key?: string
+  meta?: Record<string, any>
+}
+
 export interface TimingStage {
   name: string
   elapsed_ms: number
@@ -105,6 +131,8 @@ export interface QaProcessStepViewModel {
   key: string
   label: string
   summary?: string
+  status?: ChatProgressStatus
+  isActive?: boolean
   durationMs?: number | null
   details: Array<{
     key: string
@@ -114,9 +142,13 @@ export interface QaProcessStepViewModel {
 }
 
 export interface QaProcessSummaryViewModel {
+  chatMode?: ChatMode
   executionMode: string
   presentationMode: string
   useRag: boolean
+  isLive?: boolean
+  activeStatus?: ChatProgressStatus | null
+  activeTitle?: string | null
   totalMs?: number | null
   retryUsed: boolean
 }
@@ -161,6 +193,11 @@ export interface ChatMessage {
   retrieval_params?: Record<string, any> | null
   feedback?: AnswerFeedbackResponse | null
   timings?: TimingSummary | null
+  live_progress?: ChatProgressEvent | null
+  live_progress_steps?: ChatProgressEvent[]
+  live_progress_started_at?: string | null
+  live_progress_active_phase?: ChatProgressPhase | null
+  live_progress_done?: boolean
   created_at: string
 }
 

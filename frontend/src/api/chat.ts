@@ -14,6 +14,7 @@ import type {
   ChatCitationItem,
   ChatMessage,
   ChatMode,
+  ChatProgressEvent,
   RetrievalStepItem,
   ChatSession,
   ChatSourceItem,
@@ -64,6 +65,10 @@ export interface ChatStreamContentEvent {
   content: string;
 }
 
+export interface ChatStreamProgressEvent extends ChatProgressEvent {
+  type: "progress";
+}
+
 export interface ChatStreamResultsEvent {
   type: "results";
   results: SearchResultItem[];
@@ -86,6 +91,7 @@ export interface ChatStreamErrorEvent {
 
 export type ChatStreamEvent =
   | ChatStreamSessionEvent
+  | ChatStreamProgressEvent
   | ChatStreamContentEvent
   | ChatStreamResultsEvent
   | ChatStreamErrorEvent;
@@ -216,6 +222,7 @@ export async function ragChatStream(
   params: RagChatParams,
   handlers: {
     onSession?: (event: ChatStreamSessionEvent) => void;
+    onProgress?: (event: ChatStreamProgressEvent) => void;
     onContent?: (event: ChatStreamContentEvent) => void;
     onResults?: (event: ChatStreamResultsEvent) => void;
     onDone?: () => void;
@@ -259,6 +266,10 @@ export async function ragChatStream(
       }
       if (parsed.type === "content") {
         handlers.onContent?.(parsed);
+        return;
+      }
+      if (parsed.type === "progress") {
+        handlers.onProgress?.(parsed);
         return;
       }
       if (parsed.type === "results") {

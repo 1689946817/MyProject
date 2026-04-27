@@ -92,58 +92,108 @@
                         <span class="user-attachment-hint">{{ t("chat.attachedImageHint") }}</span>
                       </div>
                     </div>
-                    <div v-if="shouldShowSourcesFirst(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg) }">
-                      <div class="sources-heading">{{ t("chat.sourceReferences") }}</div>
-                      <div
-                        v-for="source in getVisibleSources(msg)"
-                        :key="source.source_id"
-                        :ref="(el) => setSourceCardRef(String(msg.id), source.source_id, el)"
-                        class="source-card"
-                        :class="{ active: isSourceHighlighted(msg, source), clickable: getSourceCitationCount(msg, source) > 0 }"
-                        @click="toggleSourceHighlight(msg, source)"
-                      >
-                        <div class="source-card-main">
-                          <div v-if="isImageSource(source)" class="source-card-visual" @click.stop="showPreview(source)">
-                            <img :src="getSourceImageSrc(source)" @error="onImgError" />
-                          </div>
-                          <div class="source-card-copy">
-                            <div class="source-card-head">
-                              <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
-                              <div class="source-card-head-badges">
-                                <span v-if="getSourceCitationCount(msg, source) > 0" class="source-card-refcount">{{ getSourceCitationCount(msg, source) }}</span>
-                                <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                    <div v-if="shouldShowSourcesFirst(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg), collapsed: !isSourcePanelExpanded(msg) }">
+                      <button type="button" class="sources-heading sources-heading-button" @click="toggleSourcePanel(msg)">
+                        <span>{{ t("chat.sourceReferences") }}</span>
+                        <span class="sources-heading-meta">{{ getVisibleSources(msg).length }}</span>
+                        <span class="sources-heading-toggle">{{ isSourcePanelExpanded(msg) ? t("chat.processCollapse") : t("chat.processExpand") }}</span>
+                      </button>
+                      <template v-if="isSourcePanelExpanded(msg)">
+                        <div
+                          v-for="source in getVisibleSources(msg)"
+                          :key="source.source_id"
+                          :ref="(el) => setSourceCardRef(String(msg.id), source.source_id, el)"
+                          class="source-card"
+                          :class="{ active: isSourceHighlighted(msg, source), clickable: getSourceCitationCount(msg, source) > 0 }"
+                          @click="toggleSourceHighlight(msg, source)"
+                        >
+                          <div class="source-card-main">
+                            <div v-if="isImageSource(source)" class="source-card-visual" @click.stop="showPreview(source)">
+                              <img :src="getSourceImageSrc(source)" @error="onImgError" />
+                            </div>
+                            <div class="source-card-copy">
+                              <div class="source-card-head">
+                                <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
+                                <div class="source-card-head-badges">
+                                  <span v-if="getSourceCitationCount(msg, source) > 0" class="source-card-refcount">{{ getSourceCitationCount(msg, source) }}</span>
+                                  <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                                </div>
                               </div>
+                              <div class="source-card-meta">
+                                <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
+                                <span v-if="getSourceChunkLabel(source)">{{ getSourceChunkLabel(source) }}</span>
+                                <span v-if="getSourceScoreLabel(source)">{{ getSourceScoreLabel(source) }}</span>
+                              </div>
+                              <p v-if="getSourceSummary(source)" class="source-card-summary">{{ getSourceSummary(source) }}</p>
                             </div>
-                            <div class="source-card-meta">
-                              <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
-                              <span v-if="getSourceChunkLabel(source)">{{ getSourceChunkLabel(source) }}</span>
-                              <span v-if="getSourceScoreLabel(source)">{{ getSourceScoreLabel(source) }}</span>
-                            </div>
-                            <p v-if="getSourceSummary(source)" class="source-card-summary">{{ getSourceSummary(source) }}</p>
+                          </div>
+                          <div class="source-card-actions-row">
+                            <button
+                              v-if="isImageSource(source)"
+                              type="button"
+                              class="message-action-btn compact"
+                              @click.stop="showPreview(source)"
+                            >
+                              <i class="i-ep-zoom-in"></i>
+                              <span>{{ t("chat.previewImage") }}</span>
+                            </button>
+                            <button
+                              v-if="canOpenSourceDocument(source)"
+                              type="button"
+                              class="message-action-btn compact"
+                              @click.stop="openSourceDocument(source)"
+                            >
+                              <i class="i-ep-document"></i>
+                              <span>{{ t("chat.openSourceDoc") }}</span>
+                            </button>
                           </div>
                         </div>
-                        <div class="source-card-actions-row">
-                          <button
-                            v-if="isImageSource(source)"
-                            type="button"
-                            class="message-action-btn compact"
-                            @click.stop="showPreview(source)"
-                          >
-                            <i class="i-ep-zoom-in"></i>
-                            <span>{{ t("chat.previewImage") }}</span>
-                          </button>
-                          <button
-                            v-if="canOpenSourceDocument(source)"
-                            type="button"
-                            class="message-action-btn compact"
-                            @click.stop="openSourceDocument(source)"
-                          >
-                            <i class="i-ep-document"></i>
-                            <span>{{ t("chat.openSourceDoc") }}</span>
-                          </button>
+                      </template>
+                    </div>
+                    <div v-if="shouldShowLiveProcessText(msg)" class="live-process-wrap">
+                      <button
+                        type="button"
+                        class="live-process-text"
+                        :class="{ expanded: isLiveProcessDetailsOpen(msg) }"
+                        @click="toggleLiveProcessDetails(msg)"
+                      >
+                        <span class="live-process-dot" aria-hidden="true"></span>
+                        <span class="live-process-text-main">{{ getLiveProcessText(msg) }}</span>
+                        <span class="live-process-ellipsis" aria-hidden="true"><span></span><span></span><span></span></span>
+                        <span v-if="getLiveProcessSubtext(msg)" class="live-process-text-sub">{{ getLiveProcessSubtext(msg) }}</span>
+                        <span class="live-process-toggle">{{ isLiveProcessDetailsOpen(msg) ? t("chat.processCollapse") : t("chat.processExpand") }}</span>
+                      </button>
+                      <div v-if="shouldShowLiveProcessDetails(msg)" class="live-process-details">
+                        <div class="live-process-section">
+                          <div class="live-process-section-title">{{ t("chat.processCurrentStep") }}</div>
+                          <div class="live-process-current-line">
+                            <span class="live-process-current-name">{{ getLiveProcessCurrentStepLabel(msg) }}</span>
+                            <span class="live-process-current-status">{{ getLiveProcessCurrentStepStatus(msg) }}</span>
+                          </div>
+                          <div v-if="getLiveProcessCurrentStepSummary(msg)" class="live-process-current-summary">
+                            {{ getLiveProcessCurrentStepSummary(msg) }}
+                          </div>
+                          <div v-if="getLiveProcessCurrentStepDetailItems(msg).length > 0" class="live-process-meta-list">
+                            <div v-for="item in getLiveProcessCurrentStepDetailItems(msg)" :key="item.key" class="live-process-meta-item">
+                              <span class="live-process-meta-label">{{ item.label }}</span>
+                              <span class="live-process-meta-value">{{ item.value }}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="live-process-section">
+                          <div class="live-process-section-title">{{ t("chat.processCompletedSteps") }}</div>
+                          <div v-if="getLiveProcessCompletedSteps(msg).length > 0" class="live-process-completed-list">
+                            <div v-for="step in getLiveProcessCompletedSteps(msg)" :key="step.key" class="live-process-completed-item">
+                              <span class="live-process-completed-name">{{ step.label }}</span>
+                              <span class="live-process-completed-summary">{{ step.summary }}</span>
+                              <span v-if="step.elapsed" class="live-process-completed-time">{{ step.elapsed }}</span>
+                            </div>
+                          </div>
+                          <div v-else class="live-process-empty">{{ t("chat.processCompletedStepsEmpty") }}</div>
                         </div>
                       </div>
                     </div>
+                    <QaProcessCard v-if="shouldShowProcessCard(msg)" :message="msg" />
                     <ChatMarkdown
                       v-if="msg.role === 'assistant' && msg.content"
                       class="assistant-markdown"
@@ -168,58 +218,63 @@
                       show-icon
                       class="message-notice"
                     />
-                    <QaProcessCard v-if="shouldShowProcessCard(msg)" :message="msg" />
-                    <div v-if="shouldShowSourcesAfterText(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg) }">
-                      <div class="sources-heading">{{ t("chat.sourceReferences") }}</div>
-                      <div
-                        v-for="source in getVisibleSources(msg)"
-                        :key="source.source_id"
-                        :ref="(el) => setSourceCardRef(String(msg.id), source.source_id, el)"
-                        class="source-card"
-                        :class="{ active: isSourceHighlighted(msg, source), clickable: getSourceCitationCount(msg, source) > 0 }"
-                        @click="toggleSourceHighlight(msg, source)"
-                      >
-                        <div class="source-card-main">
-                          <div v-if="isImageSource(source)" class="source-card-visual" @click.stop="showPreview(source)">
-                            <img :src="getSourceImageSrc(source)" @error="onImgError" />
-                          </div>
-                          <div class="source-card-copy">
-                            <div class="source-card-head">
-                              <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
-                              <div class="source-card-head-badges">
-                                <span v-if="getSourceCitationCount(msg, source) > 0" class="source-card-refcount">{{ getSourceCitationCount(msg, source) }}</span>
-                                <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                    <div v-if="shouldShowSourcesAfterText(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg), collapsed: !isSourcePanelExpanded(msg) }">
+                      <button type="button" class="sources-heading sources-heading-button" @click="toggleSourcePanel(msg)">
+                        <span>{{ t("chat.sourceReferences") }}</span>
+                        <span class="sources-heading-meta">{{ getVisibleSources(msg).length }}</span>
+                        <span class="sources-heading-toggle">{{ isSourcePanelExpanded(msg) ? t("chat.processCollapse") : t("chat.processExpand") }}</span>
+                      </button>
+                      <template v-if="isSourcePanelExpanded(msg)">
+                        <div
+                          v-for="source in getVisibleSources(msg)"
+                          :key="source.source_id"
+                          :ref="(el) => setSourceCardRef(String(msg.id), source.source_id, el)"
+                          class="source-card"
+                          :class="{ active: isSourceHighlighted(msg, source), clickable: getSourceCitationCount(msg, source) > 0 }"
+                          @click="toggleSourceHighlight(msg, source)"
+                        >
+                          <div class="source-card-main">
+                            <div v-if="isImageSource(source)" class="source-card-visual" @click.stop="showPreview(source)">
+                              <img :src="getSourceImageSrc(source)" @error="onImgError" />
+                            </div>
+                            <div class="source-card-copy">
+                              <div class="source-card-head">
+                                <span class="source-card-title">{{ getSourceDisplayTitle(source) }}</span>
+                                <div class="source-card-head-badges">
+                                  <span v-if="getSourceCitationCount(msg, source) > 0" class="source-card-refcount">{{ getSourceCitationCount(msg, source) }}</span>
+                                  <span v-if="getSourceAssetLabel(source)" class="source-card-badge">{{ getSourceAssetLabel(source) }}</span>
+                                </div>
                               </div>
+                              <div class="source-card-meta">
+                                <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
+                                <span v-if="getSourceChunkLabel(source)">{{ getSourceChunkLabel(source) }}</span>
+                                <span v-if="getSourceScoreLabel(source)">{{ getSourceScoreLabel(source) }}</span>
+                              </div>
+                              <p v-if="getSourceSummary(source)" class="source-card-summary">{{ getSourceSummary(source) }}</p>
                             </div>
-                            <div class="source-card-meta">
-                              <span v-if="getSourcePageLabel(source)">{{ getSourcePageLabel(source) }}</span>
-                              <span v-if="getSourceChunkLabel(source)">{{ getSourceChunkLabel(source) }}</span>
-                              <span v-if="getSourceScoreLabel(source)">{{ getSourceScoreLabel(source) }}</span>
-                            </div>
-                            <p v-if="getSourceSummary(source)" class="source-card-summary">{{ getSourceSummary(source) }}</p>
+                          </div>
+                          <div class="source-card-actions-row">
+                            <button
+                              v-if="isImageSource(source)"
+                              type="button"
+                              class="message-action-btn compact"
+                              @click.stop="showPreview(source)"
+                            >
+                              <i class="i-ep-zoom-in"></i>
+                              <span>{{ t("chat.previewImage") }}</span>
+                            </button>
+                            <button
+                              v-if="canOpenSourceDocument(source)"
+                              type="button"
+                              class="message-action-btn compact"
+                              @click.stop="openSourceDocument(source)"
+                            >
+                              <i class="i-ep-document"></i>
+                              <span>{{ t("chat.openSourceDoc") }}</span>
+                            </button>
                           </div>
                         </div>
-                        <div class="source-card-actions-row">
-                          <button
-                            v-if="isImageSource(source)"
-                            type="button"
-                            class="message-action-btn compact"
-                            @click.stop="showPreview(source)"
-                          >
-                            <i class="i-ep-zoom-in"></i>
-                            <span>{{ t("chat.previewImage") }}</span>
-                          </button>
-                          <button
-                            v-if="canOpenSourceDocument(source)"
-                            type="button"
-                            class="message-action-btn compact"
-                            @click.stop="openSourceDocument(source)"
-                          >
-                            <i class="i-ep-document"></i>
-                            <span>{{ t("chat.openSourceDoc") }}</span>
-                          </button>
-                        </div>
-                      </div>
+                      </template>
                     </div>
                   </div>
                   <div class="message-footer">
@@ -575,7 +630,7 @@ import SessionList from "@/components/SessionList.vue";
 import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
 import QaProcessCard from "@/components/QaProcessCard.vue";
 import ChatMarkdown from "@/components/ChatMarkdown.vue";
-import type { AnswerFeedbackResponse, ChatCitationChunkRef, ChatCitationItem, ChatMessage, ChatMode, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
+import type { AnswerFeedbackResponse, ChatCitationChunkRef, ChatCitationItem, ChatMessage, ChatMode, ChatProgressEvent, ChatSourceItem, DocumentRecord, ImageRecord } from "@/types";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -583,6 +638,7 @@ const router = useRouter();
 type SourceItem = ChatSourceItem;
 type Message = ChatMessage;
 type CitationItem = ChatCitationItem;
+type ProgressEvent = ChatProgressEvent;
 type ExecutionHint =
   | "direct_llm"
   | "multimodal_rag"
@@ -607,6 +663,17 @@ type QuestionTemplate = {
   description: string;
   prompt: string;
   executionHint?: ExecutionHint | "auto";
+};
+type LiveProcessDetailItem = {
+  key: string;
+  label: string;
+  value: string;
+};
+type LiveProcessCompletedItem = {
+  key: string;
+  label: string;
+  summary: string;
+  elapsed: string;
 };
 
 const sessions = ref<ChatSession[]>([]);
@@ -651,11 +718,15 @@ const sourceCardRefs = new Map<string, HTMLElement>();
 const activeCitationMessageId = ref<string | null>(null);
 const activeCitationSourceIds = ref<string[]>([]);
 const activeCitationParagraphKeys = ref<string[]>([]);
+const expandedSourcePanels = ref<Record<string, boolean>>({});
 const feedbackPopoverId = ref<string | null>(null);
 const feedbackSubmittingId = ref<string | null>(null);
 const feedbackForms = ref<Record<string, { issue_types: string[]; comment: string }>>({});
+const liveProcessExpanded = ref<Record<string, boolean>>({});
+const liveProcessNow = ref(Date.now());
 let loadSessionToken = 0;
 let scrollToBottomRaf = 0;
+let liveProcessTimer = 0;
 
 const hasPendingSessions = computed(() => Object.keys(pendingSessions.value).length > 0);
 const isCurrentSessionPending = computed(() => {
@@ -1374,7 +1445,55 @@ function cloneMessage(message: Message): Message {
     retrieval_params: message.retrieval_params ? { ...message.retrieval_params, citations: normalizedCitations } : null,
     feedback: message.feedback ? { ...message.feedback, issue_types: [...message.feedback.issue_types] } : null,
     timings: message.timings ? { ...message.timings, stages: [...message.timings.stages] } : null,
+    live_progress: message.live_progress ? { ...message.live_progress, meta: message.live_progress.meta ? { ...message.live_progress.meta } : undefined } : null,
+    live_progress_steps: message.live_progress_steps ? message.live_progress_steps.map((step) => ({ ...step, meta: step.meta ? { ...step.meta } : undefined })) : [],
+    live_progress_started_at: message.live_progress_started_at || null,
+    live_progress_active_phase: message.live_progress_active_phase || null,
+    live_progress_done: Boolean(message.live_progress_done),
   };
+}
+
+function mergeProgressSteps(existing: ProgressEvent[], incoming: ProgressEvent): ProgressEvent[] {
+  const key = incoming.step_key || incoming.phase;
+  const nextSteps = [...existing];
+  const index = nextSteps.findIndex((step) => (step.step_key || step.phase) === key);
+  if (index >= 0) {
+    nextSteps[index] = {
+      ...nextSteps[index],
+      ...incoming,
+      meta: {
+        ...(nextSteps[index].meta || {}),
+        ...(incoming.meta || {}),
+      },
+    };
+    return nextSteps;
+  }
+  nextSteps.push(incoming);
+  return nextSteps;
+}
+
+function updateLiveAssistantProgress(targetSessionId: string, assistantId: string, event: ProgressEvent) {
+  const applyProgress = (message: Message) => {
+    const nextEvent: ProgressEvent = {
+      ...event,
+      meta: event.meta ? { ...event.meta } : undefined,
+    };
+    message.live_progress_started_at = message.live_progress_started_at || new Date().toISOString();
+    message.live_progress = nextEvent;
+    message.live_progress_steps = mergeProgressSteps(message.live_progress_steps || [], nextEvent);
+    message.live_progress_active_phase = event.status === "completed" ? null : event.phase;
+    message.live_progress_done = event.phase === "complete" || event.status === "failed";
+  };
+
+  if (currentSessionId.value === targetSessionId) {
+    const target = messages.value.find((message) => String(message.id) === assistantId);
+    if (target) {
+      applyProgress(target);
+      saveSessionDraft(targetSessionId);
+    }
+  } else {
+    updateDraftMessage(targetSessionId, assistantId, applyProgress);
+  }
 }
 
 function revokeMessageUrls(list: Message[]) {
@@ -1546,6 +1665,29 @@ function getActiveSourceIds(msg: Message): string[] {
   return activeCitationMessageId.value === String(msg.id) ? activeCitationSourceIds.value : [];
 }
 
+function isSourcePanelExpanded(msg: Message): boolean {
+  return Boolean(expandedSourcePanels.value[String(msg.id)]);
+}
+
+function toggleSourcePanel(msg: Message): void {
+  const key = String(msg.id);
+  expandedSourcePanels.value = {
+    ...expandedSourcePanels.value,
+    [key]: !expandedSourcePanels.value[key],
+  };
+}
+
+function expandSourcePanel(msg: Message): void {
+  const key = String(msg.id);
+  if (expandedSourcePanels.value[key]) {
+    return;
+  }
+  expandedSourcePanels.value = {
+    ...expandedSourcePanels.value,
+    [key]: true,
+  };
+}
+
 function setSourceCardRef(messageId: string, sourceId: string, element: Element | { $el?: Element } | null) {
   const key = `${messageId}::${sourceId}`;
   const actualElement = element instanceof HTMLElement
@@ -1588,6 +1730,7 @@ function handleParagraphSelect(msg: Message, citation: CitationItem) {
   activeCitationParagraphKeys.value = [citation.paragraph_key];
   activeCitationSourceIds.value = [...citation.source_ids];
   if (citation.source_ids.length > 0) {
+    expandSourcePanel(msg);
     nextTick(() => scrollToHighlightedSource(messageId, citation.source_ids[0]));
   }
 }
@@ -1614,6 +1757,7 @@ function toggleSourceHighlight(msg: Message, source: SourceItem) {
   activeCitationMessageId.value = messageId;
   activeCitationSourceIds.value = [source.source_id];
   activeCitationParagraphKeys.value = relatedParagraphKeys;
+  expandSourcePanel(msg);
   nextTick(() => scrollToHighlightedSource(messageId, source.source_id));
 }
 
@@ -1776,7 +1920,215 @@ function shouldShowProcessCard(msg: Message): boolean {
   if (msg.role !== "assistant") {
     return false;
   }
-  return Boolean((msg.retrieval_steps && msg.retrieval_steps.length > 0) || msg.timings || msg.retrieval_params?.timings);
+  return Boolean(
+    (!msg.live_progress_steps || msg.live_progress_steps.length === 0)
+    && ((msg.retrieval_steps && msg.retrieval_steps.length > 0)
+    || msg.timings
+    || msg.retrieval_params?.timings),
+  );
+}
+
+function shouldShowLiveProcessText(msg: Message): boolean {
+  return msg.role === "assistant" && Boolean(msg.live_progress_steps && msg.live_progress_steps.length > 0);
+}
+
+function getLiveProcessMessageKey(msg: Message): string {
+  return String(msg.id);
+}
+
+function isLiveProcessDetailsOpen(msg: Message): boolean {
+  return Boolean(liveProcessExpanded.value[getLiveProcessMessageKey(msg)]);
+}
+
+function toggleLiveProcessDetails(msg: Message): void {
+  const key = getLiveProcessMessageKey(msg);
+  liveProcessExpanded.value = {
+    ...liveProcessExpanded.value,
+    [key]: !liveProcessExpanded.value[key],
+  };
+}
+
+function shouldShowLiveProcessDetails(msg: Message): boolean {
+  return shouldShowLiveProcessText(msg) && isLiveProcessDetailsOpen(msg);
+}
+
+function getLatestLiveProgress(msg: Message): ProgressEvent | null {
+  return msg.live_progress || msg.live_progress_steps?.[msg.live_progress_steps.length - 1] || null;
+}
+
+function getLiveProcessText(msg: Message): string {
+  const latest = getLatestLiveProgress(msg);
+  if (!latest) {
+    return t("chat.thinking");
+  }
+  if (latest.phase === "routing") return t("chat.thinkingRouting");
+  if (latest.phase === "rewrite") return t("chat.thinkingRewrite");
+  if (latest.phase === "retrieve") return t("chat.thinkingRetrieve");
+  if (latest.phase === "rerank") return t("chat.thinkingRerank");
+  if (latest.phase === "compress") return t("chat.thinkingCompress");
+  if (latest.phase === "agentic") return t("chat.thinkingAgentic");
+  if (latest.phase === "generate") return t("chat.thinkingGenerate");
+  return t("chat.thinking");
+}
+
+function getLiveProcessSubtext(msg: Message): string {
+  const latest = getLatestLiveProgress(msg);
+  if (!latest) {
+    return "";
+  }
+  const detail = String(latest.detail || "").trim();
+  if (detail) {
+    return detail;
+  }
+  let elapsed = typeof latest.elapsed_ms === "number" ? latest.elapsed_ms : null;
+  if (elapsed === null && msg.live_progress_started_at) {
+    elapsed = Math.max(0, liveProcessNow.value - new Date(msg.live_progress_started_at).getTime());
+  }
+  if (elapsed === null) {
+    return "";
+  }
+  if (elapsed >= 1000) {
+    return `${(elapsed / 1000).toFixed(1)} s`;
+  }
+  return `${Math.round(elapsed)} ms`;
+}
+
+function getLiveProcessCurrentStepLabel(msg: Message): string {
+  const latest = getLatestLiveProgress(msg);
+  if (!latest) {
+    return t("chat.thinking");
+  }
+  if (latest.phase === "routing") return t("chat.processIntent");
+  if (latest.phase === "rewrite") return t("chat.processRewrite");
+  if (latest.phase === "retrieve") return t("chat.processRetrieve");
+  if (latest.phase === "rerank") return t("chat.processRerank");
+  if (latest.phase === "compress") return t("chat.processCompression");
+  if (latest.phase === "agentic") return t("chat.processAgentic");
+  if (latest.phase === "generate") return t("chat.processGenerate");
+  return t("chat.processComplete");
+}
+
+function getLiveProcessCurrentStepStatus(msg: Message): string {
+  const latest = getLatestLiveProgress(msg);
+  if (!latest) {
+    return t("chat.processStatusRunning");
+  }
+  if (latest.status === "completed") return t("chat.processStatusCompleted");
+  if (latest.status === "skipped") return t("chat.processStatusSkipped");
+  if (latest.status === "failed") return t("chat.processStatusFailed");
+  return t("chat.processStatusRunning");
+}
+
+function getLiveProcessCurrentStepSummary(msg: Message): string {
+  const latest = getLatestLiveProgress(msg);
+  if (!latest) {
+    return "";
+  }
+  const detail = String(latest.detail || "").trim();
+  if (detail) {
+    return detail;
+  }
+  if (typeof latest.elapsed_ms === "number") {
+    return `${t("chat.processTotal")} ${formatLiveProcessElapsed(latest.elapsed_ms)}`;
+  }
+  return "";
+}
+
+function getLiveProcessCurrentStepDetailItems(msg: Message): LiveProcessDetailItem[] {
+  const latest = getLatestLiveProgress(msg);
+  if (!latest) {
+    return [];
+  }
+  const detailItems: LiveProcessDetailItem[] = [];
+  const pushItem = (key: string, label: string, value: string | null | undefined) => {
+    const normalized = String(value ?? "").trim();
+    if (!normalized) {
+      return;
+    }
+    detailItems.push({ key, label, value: normalized });
+  };
+  const boolState = (value: unknown, enabledDisabled = true): string => {
+    if (value === true) {
+      return enabledDisabled ? t("chat.processEnabled") : t("chat.processYes");
+    }
+    if (value === false) {
+      return enabledDisabled ? t("chat.processSkipped") : t("chat.processNo");
+    }
+    return "";
+  };
+  const meta = (latest.meta || {}) as Record<string, unknown>;
+  pushItem("chat_mode", t("chat.processChatMode"), formatChatModeLabel(latest.chat_mode));
+  pushItem("execution_mode", t("chat.processExecutionMode"), latest.execution_mode || "");
+  pushItem("knowledge_route", t("chat.processKnowledgeRoute"), typeof latest.use_rag === "boolean" ? (latest.use_rag ? t("chat.processEnabled") : t("chat.processDisabled")) : "");
+  pushItem("source_scope_enabled", t("chat.processSourceScope"), boolState(meta.source_scope_enabled));
+  pushItem("query_rewrite_enabled", t("chat.processQueryRewrite"), boolState(meta.query_rewrite_enabled));
+  pushItem("retrieved_candidates", t("chat.processCandidateCount"), formatScalarValue(meta.retrieved_candidates));
+  pushItem("top_k", t("chat.processTopK"), formatScalarValue(meta.top_k));
+  pushItem("rerank_enabled", t("chat.processRerank"), boolState(meta.rerank_enabled));
+  pushItem("compression_enabled", t("chat.processCompression"), boolState(meta.compression_enabled));
+  pushItem("agentic_enabled", t("chat.processAgentic"), boolState(meta.agentic_enabled));
+  pushItem("retry_used", t("chat.processRetryUsed"), boolState(meta.retry_used, false));
+  pushItem("generation_started", t("chat.processGenerationStatus"), boolState(meta.generation_started, false));
+  pushItem("classifier", t("chat.processClassifier"), formatScalarValue(meta.classifier));
+  pushItem("has_uploaded_image", t("chat.processUploadedImage"), boolState(meta.has_uploaded_image, false));
+  return detailItems;
+}
+
+function getLiveProcessCompletedSteps(msg: Message): LiveProcessCompletedItem[] {
+  if (!msg.live_progress_steps || msg.live_progress_steps.length <= 1) {
+    return [];
+  }
+  return msg.live_progress_steps
+    .slice(0, -1)
+    .filter((step) => step.status === "completed" || step.status === "skipped" || step.status === "failed")
+    .map((step, index) => ({
+      key: `${step.phase}-${index}`,
+      label: getLiveProcessLabelByPhase(step.phase),
+      summary: String(step.detail || getLiveProcessStatusText(step.status)).trim(),
+      elapsed: typeof step.elapsed_ms === "number" ? formatLiveProcessElapsed(step.elapsed_ms) : "",
+    }));
+}
+
+function getLiveProcessLabelByPhase(phase: ProgressEvent["phase"]): string {
+  if (phase === "routing") return t("chat.processIntent");
+  if (phase === "rewrite") return t("chat.processRewrite");
+  if (phase === "retrieve") return t("chat.processRetrieve");
+  if (phase === "rerank") return t("chat.processRerank");
+  if (phase === "compress") return t("chat.processCompression");
+  if (phase === "agentic") return t("chat.processAgentic");
+  if (phase === "generate") return t("chat.processGenerate");
+  return t("chat.processComplete");
+}
+
+function getLiveProcessStatusText(status: ProgressEvent["status"]): string {
+  if (status === "completed") return t("chat.processStepCompleted");
+  if (status === "skipped") return t("chat.processStepSkipped");
+  if (status === "failed") return t("chat.processStepFailed");
+  return t("chat.processStepRunning");
+}
+
+function formatLiveProcessElapsed(elapsedMs: number): string {
+  if (elapsedMs >= 1000) {
+    return `${(elapsedMs / 1000).toFixed(1)} s`;
+  }
+  return `${Math.round(elapsedMs)} ms`;
+}
+
+function formatChatModeLabel(mode?: ChatMode): string {
+  if (mode === "fast") return t("chat.chatModeFast");
+  if (mode === "expert") return t("chat.chatModeExpert");
+  if (mode === "default") return t("chat.chatModeDefault");
+  return "";
+}
+
+function formatScalarValue(value: unknown): string {
+  if (value === undefined || value === null) {
+    return "";
+  }
+  if (typeof value === "string") {
+    return value.trim();
+  }
+  return String(value);
 }
 
 function setChatMode(mode: string | number | object) {
@@ -1887,6 +2239,11 @@ async function sendChat(options: SendChatOptions) {
     retrieval_steps: [],
     retrieval_params: null,
     timings: null,
+    live_progress: null,
+    live_progress_steps: [],
+    live_progress_started_at: null,
+    live_progress_active_phase: null,
+    live_progress_done: false,
   };
   let effectiveSessionId = sessionId;
   let streamCompleted = false;
@@ -1957,6 +2314,11 @@ async function sendChat(options: SendChatOptions) {
           timings: payload.timings || null,
         };
         message.timings = payload.timings || null;
+        message.live_progress = null;
+        message.live_progress_steps = [];
+        message.live_progress_started_at = null;
+        message.live_progress_active_phase = null;
+        message.live_progress_done = true;
       };
 
       if (currentSessionId.value === targetSessionId) {
@@ -1994,6 +2356,9 @@ async function sendChat(options: SendChatOptions) {
             currentSessionId.value = effectiveSessionId;
           }
           saveSessionDraft(effectiveSessionId);
+        },
+        onProgress: (event) => {
+          updateLiveAssistantProgress(effectiveSessionId, assistantMessageId, event);
         },
         onContent: (event) => {
           appendAssistantContent(effectiveSessionId, event.content);
@@ -2235,6 +2600,9 @@ async function loadChatDefaults() {
 onMounted(async () => {
   updateViewportState();
   window.addEventListener("resize", updateViewportState);
+  liveProcessTimer = window.setInterval(() => {
+    liveProcessNow.value = Date.now();
+  }, 250);
   await loadChatDefaults();
   await loadSessions();
   if (!currentSessionId.value && sessions.value.length > 0) {
@@ -2244,6 +2612,10 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("resize", updateViewportState);
+  if (liveProcessTimer) {
+    window.clearInterval(liveProcessTimer);
+    liveProcessTimer = 0;
+  }
   if (scrollToBottomRaf) {
     window.cancelAnimationFrame(scrollToBottomRaf);
     scrollToBottomRaf = 0;
@@ -2629,6 +3001,162 @@ onBeforeUnmount(() => {
   margin-top: 12px;
 }
 
+.live-process-wrap {
+  margin: 2px 0 10px;
+}
+
+.live-process-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(15, 23, 42, 0.36);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.live-process-text.expanded {
+  margin-bottom: 8px;
+}
+
+.live-process-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.68);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+  animation: live-process-pulse 1.25s ease-in-out infinite;
+}
+
+.live-process-text-main {
+  color: rgba(15, 23, 42, 0.46);
+  font-weight: 500;
+}
+
+.live-process-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 18px;
+}
+
+.live-process-ellipsis span {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.68);
+  animation: live-process-dot-wave 1.2s ease-in-out infinite;
+}
+
+.live-process-ellipsis span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.live-process-ellipsis span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.live-process-text-sub {
+  color: rgba(100, 116, 139, 0.74);
+}
+
+.live-process-toggle {
+  color: rgba(100, 116, 139, 0.58);
+  transition: color 0.18s ease;
+}
+
+.live-process-text:hover .live-process-toggle,
+.live-process-text:hover .live-process-text-main {
+  color: rgba(15, 23, 42, 0.56);
+}
+
+.live-process-details {
+  padding-left: 15px;
+  border-left: 1px solid rgba(148, 163, 184, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.live-process-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.live-process-section-title {
+  color: rgba(100, 116, 139, 0.72);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.live-process-current-line,
+.live-process-completed-item,
+.live-process-meta-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.live-process-current-name,
+.live-process-completed-name,
+.live-process-meta-label {
+  color: rgba(15, 23, 42, 0.48);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.live-process-current-status,
+.live-process-completed-time,
+.live-process-meta-value {
+  color: rgba(100, 116, 139, 0.78);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.live-process-current-summary,
+.live-process-completed-summary,
+.live-process-empty {
+  color: rgba(71, 85, 105, 0.72);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.live-process-completed-list,
+.live-process-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@keyframes live-process-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.7;
+  }
+}
+
+@keyframes live-process-dot-wave {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-1px);
+    opacity: 1;
+  }
+}
+
 .user-attachment-card {
   display: flex;
   align-items: center;
@@ -2860,10 +3388,46 @@ onBeforeUnmount(() => {
   color: var(--text-secondary);
 }
 
+.sources-heading-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sources-heading-meta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  color: rgba(37, 99, 235, 0.8);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.sources-heading-toggle {
+  margin-left: auto;
+  color: rgba(100, 116, 139, 0.72);
+  font-size: 12px;
+}
+
 .source-card-list {
   display: grid;
   gap: 10px;
   margin-top: 12px;
+}
+
+.source-card-list.collapsed {
+  gap: 0;
 }
 
 .source-card-list.prominent {

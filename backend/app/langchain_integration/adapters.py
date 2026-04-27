@@ -17,7 +17,7 @@ import os
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, Union
 
 from fastapi import UploadFile
 from langchain_core.documents import Document as LCDoc
@@ -77,6 +77,9 @@ _TRANSIENT_EXTERNAL_ERROR_MARKERS = (
     "ssl",
 )
 ChatMode = Literal["fast", "default", "expert"]
+StreamProgressEvent = Dict[str, Any]
+StreamChunkEvent = Tuple[Any, List[Dict[str, Any]], Optional[Dict[str, Any]]]
+StreamEvent = Union[StreamProgressEvent, StreamChunkEvent]
 
 
 class LangChainAdapter:
@@ -133,6 +136,72 @@ class LangChainAdapter:
                 "force_true_streaming": settings.CHAT_EXPERT_FORCE_TRUE_STREAMING,
             }
         return None
+
+    @staticmethod
+    def _build_progress_event(
+        *,
+        phase: str,
+        status: str,
+        title: str,
+        chat_mode: ChatMode,
+        execution_mode: Optional[str] = None,
+        use_rag: Optional[bool] = None,
+        step_key: Optional[str] = None,
+        detail: Optional[str] = None,
+        meta: Optional[Dict[str, Any]] = None,
+    ) -> StreamProgressEvent:
+        payload: StreamProgressEvent = {
+            "type": "progress",
+            "phase": phase,
+            "status": status,
+            "title": title,
+            "chat_mode": chat_mode,
+        }
+        if execution_mode:
+            payload["execution_mode"] = execution_mode
+        if use_rag is not None:
+            payload["use_rag"] = use_rag
+        if step_key:
+            payload["step_key"] = step_key
+        if detail:
+            payload["detail"] = detail
+        if meta:
+            payload["meta"] = meta
+        return payload
+
+    @staticmethod
+    def _progress_meta(
+        *,
+        source_scope: Optional[Dict[str, List[str]]] = None,
+        query_rewrite_enabled: Optional[bool] = None,
+        rerank_enabled: Optional[bool] = None,
+        compression_enabled: Optional[bool] = None,
+        agentic_enabled: Optional[bool] = None,
+        retrieved_candidates: Optional[int] = None,
+        generation_started: Optional[bool] = None,
+        retry_used: Optional[bool] = None,
+        classifier: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        meta: Dict[str, Any] = {}
+        if source_scope is not None:
+            meta["source_scope_enabled"] = bool(source_scope)
+        if query_rewrite_enabled is not None:
+            meta["query_rewrite_enabled"] = query_rewrite_enabled
+        if rerank_enabled is not None:
+            meta["rerank_enabled"] = rerank_enabled
+        if compression_enabled is not None:
+            meta["compression_enabled"] = compression_enabled
+        if agentic_enabled is not None:
+            meta["agentic_enabled"] = agentic_enabled
+        if retrieved_candidates is not None:
+            meta["retrieved_candidates"] = retrieved_candidates
+        if generation_started is not None:
+            meta["generation_started"] = generation_started
+        if retry_used is not None:
+            meta["retry_used"] = retry_used
+        if classifier:
+            meta["classifier"] = classifier
+        return meta
 
     @staticmethod
     def _compute_content_hash(contents: bytes) -> str:
@@ -529,14 +598,18 @@ class LangChainAdapter:
         execution_hint: Optional[str] = None,
         source_scope: Optional[Dict[str, List[str]]] = None,
         chat_mode: ChatMode = "default",
+        emit_progress: bool = False,
     ):
         """
         RAG 问答流式版本。
         """
         from app.core.config import settings
+        default_query_rewrite_enabled = settings.QUERY_REWRITE_ENABLED
+        default_rerank_enabled = settings.RERANK_TOP_K > 0 and settings.RERANK_CANDIDATE_K > 0
+        default_compression_enabled = settings.CONTEXT_COMPRESSION_ENABLED
 
         if chat_mode in {"fast", "expert"}:
-            async for chunk, docs, intent in self._stream_chat_mode_response(
+            async for event in self._stream_chat_mode_response(
                 query=query,
                 top_k=top_k,
                 image=image,
@@ -545,100 +618,29 @@ class LangChainAdapter:
                 min_relevance_score=min_relevance_score,
                 source_scope=source_scope,
                 chat_mode=chat_mode,
+                emit_progress=emit_progress,
             ):
-                yield chunk, docs, intent
+                yield event
             return
 
         if source_scope or execution_hint:
             execution_mode = execution_hint or "multimodal_rag"
-            if execution_mode == "direct_llm":
-                intent = self._build_forced_intent("direct_llm", image is not None)
-                intent["retrieval_steps"] = self._build_retrieval_steps(
-                    query=query,
-                    top_k=top_k,
-                    execution_mode="direct_llm",
-                    presentation_mode=intent["presentation_mode"],
-                    use_rag=False,
-                    documents=[],
-                    has_uploaded_image=image is not None,
-                    classifier_reason=str(intent.get("reason", "")),
-                )
-                async for chunk in self._astream_direct_answer(query=query, chat_history=chat_history):
-                    yield chunk, [], intent
-                return
-
-            if execution_mode == "uploaded_image_qa":
-                if image is None:
-                    intent = {
-                        **self._build_forced_intent("direct_llm", False),
-                        "reason": "uploaded_image_missing_fallback_to_direct",
-                    }
-                    intent["retrieval_steps"] = self._build_retrieval_steps(
-                        query=query,
-                        top_k=top_k,
-                        execution_mode="direct_llm",
-                        presentation_mode=intent["presentation_mode"],
-                        use_rag=False,
-                        documents=[],
-                        has_uploaded_image=False,
-                        classifier_reason=str(intent.get("reason", "")),
-                    )
-                    async for chunk in self._astream_direct_answer(query=query, chat_history=chat_history):
-                        yield chunk, [], intent
-                    return
-
-                intent = self._build_forced_intent("uploaded_image_qa", True)
-                intent["retrieval_steps"] = self._build_retrieval_steps(
-                    query=query,
-                    top_k=top_k,
-                    execution_mode="uploaded_image_qa",
-                    presentation_mode=intent["presentation_mode"],
-                    use_rag=False,
-                    documents=[],
-                    has_uploaded_image=True,
-                    classifier_reason=str(intent.get("reason", "")),
-                )
-                async for chunk in self._astream_uploaded_image_answer(
-                    query=query,
-                    image=image,
-                    chat_history=chat_history,
-                ):
-                    yield chunk, [], intent
-                return
-
-            scoped_context = await self._prepare_scoped_chat_context(
+            intent = self._build_forced_intent(execution_mode, image is not None)
+            async for event in self._stream_intent_chat(
+                intent=intent,
                 query=query,
                 top_k=top_k,
                 image=image,
                 chat_history=chat_history,
                 enable_score_filter=enable_score_filter,
                 min_relevance_score=min_relevance_score,
-                execution_hint=execution_mode,
                 source_scope=source_scope,
-            )
-            if execution_mode in {"multimodal_rag", "image_grounded_answer"} and scoped_context["streaming_ready"]:
-                async for chunk in self.rag_chain.astream_from_context(
-                    query=scoped_context["generation_query"],
-                    documents=scoped_context["generation_documents"],
-                    text_chunks=scoped_context["generation_text_chunks"],
-                    chat_history=scoped_context["generation_history"],
-                ):
-                    yield chunk, scoped_context["combined_documents"], scoped_context["intent"]
-                return
-
-            # These modes still fall back to replayed chunks until model-level streaming is available.
-            answer, docs, intent = await self._run_scoped_chat(
-                query=query,
-                top_k=top_k,
-                image=image,
-                chat_history=chat_history,
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-                execution_hint=execution_mode,
-                source_scope=source_scope,
-            )
-            for ch in self._iter_answer_chunks(answer):
-                yield ch, docs, intent
+                retrieval_profile=None,
+                force_agentic_rag=False,
+                chat_mode=chat_mode,
+                emit_progress=emit_progress,
+            ):
+                yield event
             return
 
         if settings.AGENTIC_RAG_ENABLED:
@@ -649,8 +651,86 @@ class LangChainAdapter:
                     execution_mode=intent["execution_mode"],
                     presentation_mode=intent["presentation_mode"],
                 )
+            if emit_progress:
+                yield self._build_progress_event(
+                    phase="routing",
+                    status="completed",
+                    title="routing",
+                    chat_mode=chat_mode,
+                    execution_mode=intent["execution_mode"],
+                    use_rag=bool(intent.get("use_rag", True)),
+                    step_key="intent",
+                    detail="Routing decided by classifier",
+                    meta=self._progress_meta(
+                        source_scope=source_scope,
+                        classifier="llm",
+                        agentic_enabled=intent["execution_mode"] == "multimodal_rag" and image is None,
+                    ),
+                )
 
             if intent["execution_mode"] == "multimodal_rag" and image is None:
+                if emit_progress:
+                    if default_query_rewrite_enabled:
+                        yield self._build_progress_event(
+                            phase="rewrite",
+                            status="started",
+                            title="rewrite",
+                            chat_mode=chat_mode,
+                            execution_mode=intent["execution_mode"],
+                            use_rag=True,
+                            step_key="query",
+                            meta=self._progress_meta(query_rewrite_enabled=True),
+                        )
+                    else:
+                        yield self._build_progress_event(
+                            phase="rewrite",
+                            status="skipped",
+                            title="rewrite",
+                            chat_mode=chat_mode,
+                            execution_mode=intent["execution_mode"],
+                            use_rag=True,
+                            step_key="query",
+                            meta=self._progress_meta(query_rewrite_enabled=False),
+                        )
+                    yield self._build_progress_event(
+                        phase="retrieve",
+                        status="started",
+                        title="retrieve",
+                        chat_mode=chat_mode,
+                        execution_mode=intent["execution_mode"],
+                        use_rag=True,
+                        step_key="retrieve",
+                    )
+                    yield self._build_progress_event(
+                        phase="rerank",
+                        status="started" if default_rerank_enabled else "skipped",
+                        title="rerank",
+                        chat_mode=chat_mode,
+                        execution_mode=intent["execution_mode"],
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(rerank_enabled=default_rerank_enabled),
+                    )
+                    yield self._build_progress_event(
+                        phase="compress",
+                        status="started" if default_compression_enabled else "skipped",
+                        title="compress",
+                        chat_mode=chat_mode,
+                        execution_mode=intent["execution_mode"],
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(compression_enabled=default_compression_enabled),
+                    )
+                    yield self._build_progress_event(
+                        phase="agentic",
+                        status="started",
+                        title="agentic",
+                        chat_mode=chat_mode,
+                        execution_mode=intent["execution_mode"],
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(agentic_enabled=True),
+                    )
                 _final_state, docs, text_chunks, retrieval_steps = await prepare_agentic_multimodal_rag_context(
                     query=query,
                     top_k=top_k,
@@ -666,6 +746,70 @@ class LangChainAdapter:
                     has_uploaded_image=False,
                 )
                 intent["retrieval_steps"] = retrieval_steps
+                if emit_progress:
+                    if default_query_rewrite_enabled:
+                        yield self._build_progress_event(
+                            phase="rewrite",
+                            status="completed",
+                            title="rewrite",
+                            chat_mode=chat_mode,
+                            execution_mode=intent["execution_mode"],
+                            use_rag=True,
+                            step_key="query",
+                            meta=self._progress_meta(query_rewrite_enabled=True),
+                        )
+                    yield self._build_progress_event(
+                        phase="retrieve",
+                        status="completed",
+                        title="retrieve",
+                        chat_mode=chat_mode,
+                        execution_mode=intent["execution_mode"],
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(retrieved_candidates=len(docs) + len(text_chunks)),
+                    )
+                    if default_rerank_enabled:
+                        yield self._build_progress_event(
+                            phase="rerank",
+                            status="completed",
+                            title="rerank",
+                            chat_mode=chat_mode,
+                            execution_mode=intent["execution_mode"],
+                            use_rag=True,
+                            step_key="retrieve",
+                            meta=self._progress_meta(rerank_enabled=True),
+                        )
+                    if default_compression_enabled:
+                        yield self._build_progress_event(
+                            phase="compress",
+                            status="completed",
+                            title="compress",
+                            chat_mode=chat_mode,
+                            execution_mode=intent["execution_mode"],
+                            use_rag=True,
+                            step_key="retrieve",
+                            meta=self._progress_meta(compression_enabled=True),
+                        )
+                    yield self._build_progress_event(
+                        phase="agentic",
+                        status="completed",
+                        title="agentic",
+                        chat_mode=chat_mode,
+                        execution_mode=intent["execution_mode"],
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(agentic_enabled=True),
+                    )
+                    yield self._build_progress_event(
+                        phase="generate",
+                        status="started",
+                        title="generate",
+                        chat_mode=chat_mode,
+                        execution_mode=intent["execution_mode"],
+                        use_rag=True,
+                        step_key="generate",
+                        meta=self._progress_meta(generation_started=True),
+                    )
                 async for chunk in self.rag_chain.astream_from_context(
                     query=query,
                     documents=docs,
@@ -676,62 +820,53 @@ class LangChainAdapter:
                 return
 
             if intent["execution_mode"] == "direct_llm":
-                intent["retrieval_steps"] = self._build_retrieval_steps(
+                async for event in self._stream_intent_chat(
+                    intent=intent,
                     query=query,
                     top_k=top_k,
-                    execution_mode="direct_llm",
-                    presentation_mode=intent["presentation_mode"],
-                    use_rag=False,
-                    documents=[],
-                    has_uploaded_image=False,
-                    classifier_reason=str(intent.get("reason", "")),
-                )
-                async for chunk in self._astream_direct_answer(query=query, chat_history=chat_history):
-                    yield chunk, [], intent
+                    image=image,
+                    chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    source_scope=source_scope,
+                    retrieval_profile=None,
+                    force_agentic_rag=False,
+                    chat_mode=chat_mode,
+                    emit_progress=emit_progress,
+                ):
+                    yield event
                 return
 
             if intent["execution_mode"] == "uploaded_image_qa":
-                if image is None:
-                    fallback_intent = {
-                        **intent,
-                        "execution_mode": "direct_llm",
-                        "presentation_mode": "direct_answer",
-                        "reason": "uploaded_image_missing_fallback_to_direct",
-                        "confidence": min(float(intent.get("confidence", 0.5)), 0.6),
-                    }
-                    fallback_intent["retrieval_steps"] = self._build_retrieval_steps(
-                        query=query,
-                        top_k=top_k,
-                        execution_mode="direct_llm",
-                        presentation_mode="direct_answer",
-                        use_rag=False,
-                        documents=[],
-                        has_uploaded_image=False,
-                        classifier_reason=str(fallback_intent.get("reason", "")),
-                    )
-                    async for chunk in self._astream_direct_answer(query=query, chat_history=chat_history):
-                        yield chunk, [], fallback_intent
-                    return
-
-                intent["retrieval_steps"] = self._build_retrieval_steps(
+                async for event in self._stream_intent_chat(
+                    intent=intent,
                     query=query,
                     top_k=top_k,
-                    execution_mode="uploaded_image_qa",
-                    presentation_mode=intent["presentation_mode"],
-                    use_rag=False,
-                    documents=[],
-                    has_uploaded_image=True,
-                    classifier_reason=str(intent.get("reason", "")),
-                )
-                async for chunk in self._astream_uploaded_image_answer(
-                    query=query,
                     image=image,
                     chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    source_scope=source_scope,
+                    retrieval_profile=None,
+                    force_agentic_rag=False,
+                    chat_mode=chat_mode,
+                    emit_progress=emit_progress,
                 ):
-                    yield chunk, [], intent
+                    yield event
                 return
 
             # Non-RAG or model-specific agentic modes keep replayed streaming for compatibility.
+            if emit_progress:
+                yield self._build_progress_event(
+                    phase="generate",
+                    status="started",
+                    title="generate",
+                    chat_mode=chat_mode,
+                    execution_mode=intent["execution_mode"],
+                    use_rag=bool(intent.get("use_rag", True)),
+                    step_key="generate",
+                    meta=self._progress_meta(generation_started=True),
+                )
             answer, docs, _intent = await self._run_agentic_chat(
                 query=query,
                 top_k=top_k,
@@ -747,6 +882,37 @@ class LangChainAdapter:
             return
 
         if image is not None:
+            if emit_progress:
+                yield self._build_progress_event(
+                    phase="routing",
+                    status="completed",
+                    title="routing",
+                    chat_mode=chat_mode,
+                    execution_mode="multimodal_rag",
+                    use_rag=True,
+                    step_key="intent",
+                    detail="Default multimodal RAG route",
+                    meta=self._progress_meta(source_scope=source_scope, classifier="default"),
+                )
+                yield self._build_progress_event(
+                    phase="retrieve",
+                    status="started",
+                    title="retrieve",
+                    chat_mode=chat_mode,
+                    execution_mode="multimodal_rag",
+                    use_rag=True,
+                    step_key="retrieve",
+                )
+                yield self._build_progress_event(
+                    phase="generate",
+                    status="started",
+                    title="generate",
+                    chat_mode=chat_mode,
+                    execution_mode="multimodal_rag",
+                    use_rag=True,
+                    step_key="generate",
+                    meta=self._progress_meta(generation_started=True),
+                )
             async for chunk, docs in self.rag_chain.astream_with_image(
                 query=query,
                 image=image,
@@ -758,6 +924,37 @@ class LangChainAdapter:
                 yield chunk, docs, None
             return
 
+        if emit_progress:
+            yield self._build_progress_event(
+                phase="routing",
+                status="completed",
+                title="routing",
+                chat_mode=chat_mode,
+                execution_mode="multimodal_rag",
+                use_rag=True,
+                step_key="intent",
+                detail="Default RAG route",
+                meta=self._progress_meta(source_scope=source_scope, classifier="default"),
+            )
+            yield self._build_progress_event(
+                phase="retrieve",
+                status="started",
+                title="retrieve",
+                chat_mode=chat_mode,
+                execution_mode="multimodal_rag",
+                use_rag=True,
+                step_key="retrieve",
+            )
+            yield self._build_progress_event(
+                phase="generate",
+                status="started",
+                title="generate",
+                chat_mode=chat_mode,
+                execution_mode="multimodal_rag",
+                use_rag=True,
+                step_key="generate",
+                meta=self._progress_meta(generation_started=True),
+            )
         async for chunk, docs in self.rag_chain.astream(
             {
                 "query": query,
@@ -1182,6 +1379,7 @@ class LangChainAdapter:
         min_relevance_score: Optional[float],
         source_scope: Optional[Dict[str, List[str]]],
         chat_mode: ChatMode,
+        emit_progress: bool = False,
     ):
         retrieval_profile = self._build_chat_mode_profile(chat_mode)
         if chat_mode == "fast":
@@ -1212,7 +1410,7 @@ class LangChainAdapter:
                 presentation_mode=intent["presentation_mode"],
             )
 
-        async for chunk, docs, streamed_intent in self._stream_intent_chat(
+        async for event in self._stream_intent_chat(
             intent=intent,
             query=query,
             top_k=top_k,
@@ -1223,8 +1421,10 @@ class LangChainAdapter:
             source_scope=source_scope,
             force_agentic_rag=force_agentic_rag,
             retrieval_profile=retrieval_profile,
+            chat_mode=chat_mode,
+            emit_progress=emit_progress,
         ):
-            yield chunk, docs, streamed_intent
+            yield event
 
     async def _stream_intent_chat(
         self,
@@ -1239,10 +1439,70 @@ class LangChainAdapter:
         source_scope: Optional[Dict[str, List[str]]] = None,
         force_agentic_rag: bool = False,
         retrieval_profile: Optional[Dict[str, Any]] = None,
+        chat_mode: ChatMode = "default",
+        emit_progress: bool = False,
     ):
         execution_mode = intent["execution_mode"]
+        query_rewrite_enabled = (
+            settings.QUERY_REWRITE_ENABLED
+            if retrieval_profile is None
+            else bool(retrieval_profile.get("enable_query_rewrite", True))
+        )
+        rerank_enabled = (
+            settings.RERANK_TOP_K > 0 and settings.RERANK_CANDIDATE_K > 0
+            if retrieval_profile is None
+            else bool(retrieval_profile.get("enable_rerank", True))
+        )
+        compression_enabled = (
+            False
+            if retrieval_profile is None
+            else bool(retrieval_profile.get("enable_context_compression", False))
+        )
+
+        if emit_progress:
+            yield self._build_progress_event(
+                phase="routing",
+                status="completed",
+                title="routing",
+                chat_mode=chat_mode,
+                execution_mode=execution_mode,
+                use_rag=bool(intent.get("use_rag", execution_mode in {"multimodal_rag", "image_grounded_answer"})),
+                step_key="intent",
+                detail="Route resolved",
+                meta=self._progress_meta(
+                    source_scope=source_scope,
+                    classifier="rule" if chat_mode == "fast" else ("llm" if chat_mode == "expert" else "manual"),
+                    agentic_enabled=force_agentic_rag and execution_mode == "multimodal_rag" and image is None and not source_scope,
+                ),
+            )
 
         if execution_mode == "direct_llm":
+            if emit_progress:
+                for phase in ("rewrite", "retrieve", "rerank", "compress"):
+                    yield self._build_progress_event(
+                        phase=phase,
+                        status="skipped",
+                        title=phase,
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=False,
+                        step_key="query" if phase == "rewrite" else "retrieve",
+                        meta=self._progress_meta(
+                            query_rewrite_enabled=False if phase == "rewrite" else None,
+                            rerank_enabled=False if phase == "rerank" else None,
+                            compression_enabled=False if phase == "compress" else None,
+                        ),
+                    )
+                yield self._build_progress_event(
+                    phase="generate",
+                    status="started",
+                    title="generate",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=False,
+                    step_key="generate",
+                    meta=self._progress_meta(generation_started=True),
+                )
             intent["retrieval_steps"] = self._build_retrieval_steps(
                 query=query,
                 top_k=top_k,
@@ -1278,9 +1538,61 @@ class LangChainAdapter:
                     has_uploaded_image=False,
                     classifier_reason=str(fallback_intent.get("reason", "")),
                 )
+                if emit_progress:
+                    for phase in ("rewrite", "retrieve", "rerank", "compress"):
+                        yield self._build_progress_event(
+                            phase=phase,
+                            status="skipped",
+                            title=phase,
+                            chat_mode=chat_mode,
+                            execution_mode="direct_llm",
+                            use_rag=False,
+                            step_key="query" if phase == "rewrite" else "retrieve",
+                            meta=self._progress_meta(
+                                query_rewrite_enabled=False if phase == "rewrite" else None,
+                                rerank_enabled=False if phase == "rerank" else None,
+                                compression_enabled=False if phase == "compress" else None,
+                            ),
+                        )
+                    yield self._build_progress_event(
+                        phase="generate",
+                        status="started",
+                        title="generate",
+                        chat_mode=chat_mode,
+                        execution_mode="direct_llm",
+                        use_rag=False,
+                        step_key="generate",
+                        meta=self._progress_meta(generation_started=True),
+                    )
                 async for chunk in self._astream_direct_answer(query=query, chat_history=chat_history):
                     yield chunk, [], fallback_intent
                 return
+            if emit_progress:
+                for phase in ("rewrite", "retrieve", "rerank", "compress"):
+                    yield self._build_progress_event(
+                        phase=phase,
+                        status="skipped",
+                        title=phase,
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=False,
+                        step_key="query" if phase == "rewrite" else "retrieve",
+                        meta=self._progress_meta(
+                            query_rewrite_enabled=False if phase == "rewrite" else None,
+                            rerank_enabled=False if phase == "rerank" else None,
+                            compression_enabled=False if phase == "compress" else None,
+                        ),
+                    )
+                yield self._build_progress_event(
+                    phase="generate",
+                    status="started",
+                    title="generate",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=False,
+                    step_key="generate",
+                    meta=self._progress_meta(generation_started=True),
+                )
             intent["retrieval_steps"] = self._build_retrieval_steps(
                 query=query,
                 top_k=top_k,
@@ -1300,6 +1612,56 @@ class LangChainAdapter:
             return
 
         if execution_mode == "multimodal_rag" and force_agentic_rag and image is None and not source_scope:
+            if emit_progress:
+                yield self._build_progress_event(
+                    phase="rewrite",
+                    status="started" if query_rewrite_enabled else "skipped",
+                    title="rewrite",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="query",
+                    meta=self._progress_meta(query_rewrite_enabled=query_rewrite_enabled),
+                )
+                yield self._build_progress_event(
+                    phase="retrieve",
+                    status="started",
+                    title="retrieve",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                )
+                yield self._build_progress_event(
+                    phase="rerank",
+                    status="started" if rerank_enabled else "skipped",
+                    title="rerank",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(rerank_enabled=rerank_enabled),
+                )
+                yield self._build_progress_event(
+                    phase="compress",
+                    status="started" if compression_enabled else "skipped",
+                    title="compress",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(compression_enabled=compression_enabled),
+                )
+                yield self._build_progress_event(
+                    phase="agentic",
+                    status="started",
+                    title="agentic",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(agentic_enabled=True),
+                )
             final_state, docs, text_chunks, retrieval_steps = await prepare_agentic_multimodal_rag_context(
                 query=query,
                 top_k=top_k,
@@ -1316,6 +1678,70 @@ class LangChainAdapter:
                 retrieval_profile=retrieval_profile,
             )
             intent["retrieval_steps"] = retrieval_steps
+            if emit_progress:
+                if query_rewrite_enabled:
+                    yield self._build_progress_event(
+                        phase="rewrite",
+                        status="completed",
+                        title="rewrite",
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=True,
+                        step_key="query",
+                        meta=self._progress_meta(query_rewrite_enabled=True),
+                    )
+                yield self._build_progress_event(
+                    phase="retrieve",
+                    status="completed",
+                    title="retrieve",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(retrieved_candidates=len(docs) + len(text_chunks)),
+                )
+                if rerank_enabled:
+                    yield self._build_progress_event(
+                        phase="rerank",
+                        status="completed",
+                        title="rerank",
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(rerank_enabled=True),
+                    )
+                if compression_enabled:
+                    yield self._build_progress_event(
+                        phase="compress",
+                        status="completed",
+                        title="compress",
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(compression_enabled=True),
+                    )
+                yield self._build_progress_event(
+                    phase="agentic",
+                    status="completed",
+                    title="agentic",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(agentic_enabled=True),
+                )
+                yield self._build_progress_event(
+                    phase="generate",
+                    status="started",
+                    title="generate",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="generate",
+                    meta=self._progress_meta(generation_started=True),
+                )
             async for chunk in self.rag_chain.astream_from_context(
                 query=query,
                 documents=docs,
@@ -1326,6 +1752,36 @@ class LangChainAdapter:
             return
 
         if execution_mode in {"multimodal_rag", "image_grounded_answer"}:
+            if emit_progress:
+                yield self._build_progress_event(
+                    phase="rewrite",
+                    status="started" if query_rewrite_enabled else "skipped",
+                    title="rewrite",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="query",
+                    meta=self._progress_meta(query_rewrite_enabled=query_rewrite_enabled),
+                )
+                yield self._build_progress_event(
+                    phase="retrieve",
+                    status="started",
+                    title="retrieve",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                )
+                yield self._build_progress_event(
+                    phase="rerank",
+                    status="started" if rerank_enabled else "skipped",
+                    title="rerank",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(rerank_enabled=rerank_enabled),
+                )
             scoped_context = await self._prepare_scoped_chat_context(
                 query=query,
                 top_k=top_k,
@@ -1337,7 +1793,56 @@ class LangChainAdapter:
                 source_scope=source_scope,
                 retrieval_profile=retrieval_profile,
             )
-            if scoped_context["streaming_ready"] and retrieval_profile and retrieval_profile.get("force_true_streaming", False):
+            if emit_progress:
+                if query_rewrite_enabled:
+                    yield self._build_progress_event(
+                        phase="rewrite",
+                        status="completed",
+                        title="rewrite",
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=True,
+                        step_key="query",
+                        meta=self._progress_meta(query_rewrite_enabled=True),
+                    )
+                yield self._build_progress_event(
+                    phase="retrieve",
+                    status="completed",
+                    title="retrieve",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(
+                        retrieved_candidates=len(scoped_context["combined_documents"]),
+                        source_scope=source_scope,
+                    ),
+                )
+                if rerank_enabled:
+                    yield self._build_progress_event(
+                        phase="rerank",
+                        status="completed",
+                        title="rerank",
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=True,
+                        step_key="retrieve",
+                        meta=self._progress_meta(rerank_enabled=True),
+                    )
+                yield self._build_progress_event(
+                    phase="compress",
+                    status="completed" if compression_enabled and scoped_context["generation_documents"] else "skipped",
+                    title="compress",
+                    chat_mode=chat_mode,
+                    execution_mode=execution_mode,
+                    use_rag=True,
+                    step_key="retrieve",
+                    meta=self._progress_meta(compression_enabled=compression_enabled and bool(scoped_context["generation_documents"])),
+                )
+            if scoped_context["streaming_ready"] and (
+                retrieval_profile is None
+                or retrieval_profile.get("force_true_streaming", False)
+            ):
                 intent["retrieval_steps"] = self._build_retrieval_steps(
                     query=scoped_context["scoped_query"],
                     top_k=top_k,
@@ -1348,6 +1853,17 @@ class LangChainAdapter:
                     has_uploaded_image=image is not None,
                     classifier_reason=str(intent.get("reason", "")),
                 )
+                if emit_progress:
+                    yield self._build_progress_event(
+                        phase="generate",
+                        status="started",
+                        title="generate",
+                        chat_mode=chat_mode,
+                        execution_mode=execution_mode,
+                        use_rag=True,
+                        step_key="generate",
+                        meta=self._progress_meta(generation_started=True),
+                    )
                 async for chunk in self.rag_chain.astream_from_context(
                     query=scoped_context["generation_query"],
                     documents=scoped_context["generation_documents"],
@@ -1369,6 +1885,17 @@ class LangChainAdapter:
             force_agentic_rag=force_agentic_rag,
             retrieval_profile=retrieval_profile,
         )
+        if emit_progress:
+            yield self._build_progress_event(
+                phase="generate",
+                status="started",
+                title="generate",
+                chat_mode=chat_mode,
+                execution_mode=final_intent.get("execution_mode", execution_mode),
+                use_rag=bool(final_intent.get("use_rag", execution_mode in {"multimodal_rag", "image_grounded_answer"})),
+                step_key="generate",
+                meta=self._progress_meta(generation_started=True),
+            )
         for ch in self._iter_answer_chunks(answer):
             yield ch, docs, final_intent
 

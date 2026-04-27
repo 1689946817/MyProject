@@ -104,6 +104,16 @@ class TestChatStreamRoutes(unittest.IsolatedAsyncioTestCase):
         adapter = MagicMock()
 
         async def _stream(**_kwargs):
+            yield {
+                "type": "progress",
+                "phase": "routing",
+                "status": "completed",
+                "title": "routing",
+                "chat_mode": "default",
+                "execution_mode": "multimodal_rag",
+                "use_rag": True,
+                "step_key": "intent",
+            }
             yield ("保修流程", [{"doc_id": "doc-1", "chunk_index": 1, "content": "保修流程需要先提交报修入口表单", "metadata": {"file_path": "/tmp/a.pdf", "file_name": "a.pdf", "page_number": 2}}], None)
             yield ("需要先提交报修入口表单", [{"doc_id": "doc-1", "chunk_index": 1, "content": "保修流程需要先提交报修入口表单", "metadata": {"file_path": "/tmp/a.pdf", "file_name": "a.pdf", "page_number": 2}}], {
                 "presentation_mode": "rag_answer",
@@ -139,6 +149,7 @@ class TestChatStreamRoutes(unittest.IsolatedAsyncioTestCase):
         payload = "".join(chunks)
         self.assertEqual(response.media_type, "text/event-stream")
         self.assertIn('"type": "session"', payload)
+        self.assertIn('"type": "progress"', payload)
         self.assertIn('"type": "content"', payload)
         self.assertIn('"type": "results"', payload)
         self.assertIn('"chat_mode": "default"', payload)
