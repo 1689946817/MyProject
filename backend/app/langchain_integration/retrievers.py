@@ -101,9 +101,10 @@ async def _multi_query_hybrid_search(
     ):
         if enable_query_rewrite and settings.QUERY_REWRITE_ENABLED:
             try:
-                from app.langchain_integration.query_transform import get_query_rewriter
-                rewriter = get_query_rewriter()
-                queries = await rewriter.expand(query, n=query_rewrite_count)
+                with timing_stage("chat_rewrite", meta={"query_rewrite_count": query_rewrite_count}):
+                    from app.langchain_integration.query_transform import get_query_rewriter
+                    rewriter = get_query_rewriter()
+                    queries = await rewriter.expand(query, n=query_rewrite_count)
             except Exception as e:
                 logger.warning(f"[Retriever] 查询扩展失败，使用原始查询: {e}")
                 queries = [query]
@@ -112,21 +113,22 @@ async def _multi_query_hybrid_search(
 
         all_results: Dict[str, Dict[str, Any]] = {}
 
-        loop = asyncio.get_event_loop()
-        tasks = [
-            loop.run_in_executor(None, _hybrid_search_sync, q, vector_store, candidate_k)
-            for q in queries
-        ]
-        all_hits = await asyncio.gather(*tasks)
+        with timing_stage("chat_retrieve", meta={"query_count": len(queries), "candidate_k": candidate_k}):
+            loop = asyncio.get_event_loop()
+            tasks = [
+                loop.run_in_executor(None, _hybrid_search_sync, q, vector_store, candidate_k)
+                for q in queries
+            ]
+            all_hits = await asyncio.gather(*tasks)
 
-        for hits in all_hits:
-            for hit in hits:
-                doc_id = hit["id"]
-                new_score = hit.get("rrf_score", hit.get("score", 0.0))
-                existing_score = all_results.get(doc_id, {}).get("rrf_score", -1)
-                if doc_id not in all_results or new_score > existing_score:
-                    hit["rrf_score"] = new_score
-                    all_results[doc_id] = hit
+            for hits in all_hits:
+                for hit in hits:
+                    doc_id = hit["id"]
+                    new_score = hit.get("rrf_score", hit.get("score", 0.0))
+                    existing_score = all_results.get(doc_id, {}).get("rrf_score", -1)
+                    if doc_id not in all_results or new_score > existing_score:
+                        hit["rrf_score"] = new_score
+                        all_results[doc_id] = hit
 
         merged = sorted(
             all_results.values(),
@@ -203,13 +205,14 @@ class MultimodalRetriever:
             candidates = filter_enabled_image_hit_dicts(candidates)
 
             with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
-                reranked = rerank_with_strategy(
-                    query,
-                    candidates,
-                    top_k=len(candidates),
-                    enable_rerank=enable_rerank,
-                )
-                reranked = _prefer_table_crops(reranked)
+                with timing_stage("chat_rerank", meta={"candidate_count": len(candidates), "top_k": k}):
+                    reranked = rerank_with_strategy(
+                        query,
+                        candidates,
+                        top_k=len(candidates),
+                        enable_rerank=enable_rerank,
+                    )
+                    reranked = _prefer_table_crops(reranked)
             reranked = filter_by_relevance(
                 reranked,
                 enabled=enable_score_filter,
@@ -250,10 +253,11 @@ class MultimodalRetriever:
             b64_image = base64.b64encode(contents).decode("utf-8")
 
             with timing_stage("image_query_description_generation"):
-                description = await self.chat_model.agenerate_description(
-                    image_b64=b64_image,
-                    prompt=IMAGE_DESCRIPTION_PROMPT,
-                )
+                with timing_stage("chat_retrieve", meta={"step": "image_query_description"}):
+                    description = await self.chat_model.agenerate_description(
+                        image_b64=b64_image,
+                        prompt=IMAGE_DESCRIPTION_PROMPT,
+                    )
 
             documents = await self.text_to_image_search(
                 description,
@@ -338,14 +342,15 @@ class MultimodalRetriever:
             )
             candidates = filter_enabled_image_hit_dicts(candidates)
             with timing_stage("rerank", meta={"candidate_count": len(candidates), "top_k": k}):
-                reranked = _prefer_table_crops(
-                    rerank_with_strategy(
-                        query,
-                        candidates,
-                        top_k=len(candidates),
-                        enable_rerank=enable_rerank,
+                with timing_stage("chat_rerank", meta={"candidate_count": len(candidates), "top_k": k}):
+                    reranked = _prefer_table_crops(
+                        rerank_with_strategy(
+                            query,
+                            candidates,
+                            top_k=len(candidates),
+                            enable_rerank=enable_rerank,
+                        )
                     )
-                )
             return filter_by_relevance(
                 reranked,
                 enabled=enable_score_filter,

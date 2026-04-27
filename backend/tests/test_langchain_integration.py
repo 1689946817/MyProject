@@ -507,6 +507,7 @@ class TestMultimodalRetriever(unittest.TestCase):
             self.mock_vector_store,
             9,
             enable_query_rewrite=False,
+            query_rewrite_count=None,
         )
 
     def test_text_to_image_search_fast_path_can_be_disabled_by_config(self):
@@ -540,6 +541,7 @@ class TestMultimodalRetriever(unittest.TestCase):
             self.mock_vector_store,
             20,
             enable_query_rewrite=True,
+            query_rewrite_count=None,
         )
 
     def test_text_to_image_search_filters_disabled_hits_before_rerank(self):
@@ -570,15 +572,15 @@ class TestMultimodalRetriever(unittest.TestCase):
                     side_effect=lambda docs: docs,
                 ) as mock_filter_docs:
                     with patch(
-                    "app.langchain_integration.retrievers.cross_encoder_rerank",
-                    return_value=[active_hit],
+                        "app.langchain_integration.retrievers.rerank_with_strategy",
+                        return_value=[active_hit],
                     ) as mock_rerank:
                         results = asyncio.run(self.retriever.text_to_image_search("cat", top_k=2))
 
         self.assertEqual(len(results), 1)
         mock_filter.assert_called_once()
         mock_filter_docs.assert_called_once()
-        mock_rerank.assert_called_once_with("cat", [active_hit], top_k=2)
+        mock_rerank.assert_called_once_with("cat", [active_hit], top_k=1, enable_rerank=True)
 
     async def test_image_to_image_search(self):
         """测试图像到图像检索"""
@@ -1281,7 +1283,7 @@ class TestLangChainAdapter(unittest.TestCase):
                 return_value=[page_hit, crop_hit],
             ):
                 with patch(
-                    "app.langchain_integration.retrievers.cross_encoder_rerank",
+                    "app.langchain_integration.retrievers.rerank_with_strategy",
                     return_value=[page_hit, crop_hit],
                 ):
                     with patch(
@@ -1602,9 +1604,10 @@ class TestLangChainAdapter(unittest.TestCase):
             classifier_reason="internal_knowledge",
         )
 
-        self.assertEqual([step["key"] for step in steps], ["intent", "query", "retrieval", "grading"])
-        self.assertIn("平均分 0.750", steps[-1]["summary"])
-        self.assertEqual(steps[-1]["details"]["max_rerank_score"], 0.9)
+        self.assertEqual([step["key"] for step in steps], ["intent", "query", "retrieval", "grading", "generate"])
+        self.assertIn("平均分 0.750", steps[-2]["summary"])
+        self.assertEqual(steps[-2]["details"]["max_rerank_score"], 0.9)
+        self.assertEqual(steps[-1]["summary"], "已生成最终回答")
 
 
 class TestRemediationRegressions(unittest.TestCase):
@@ -1834,11 +1837,12 @@ class TestRemediationRegressions(unittest.TestCase):
     def test_rag_chat_text_uses_multimodal_rag_for_grounded_questions(self):
         """测试知识库问题统一走 multimodal_rag"""
         self.adapter = _build_isolated_adapter()
-        self.adapter.retriever.async_search_with_dict_output = AsyncMock(
-            return_value=[{"id": "img-2", "rerank_score": 0.84, "metadata": {"asset_type": "table_crop"}}]
+        self.adapter.rag_chain.ainvoke = AsyncMock(
+            return_value=(
+                "Grounded answer",
+                [{"id": "img-2", "rerank_score": 0.84, "metadata": {"asset_type": "table_crop"}}],
+            )
         )
-        self.adapter.document_vector_store.similarity_search = MagicMock(return_value=[{"document": "chunk"}])
-        self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="Grounded answer")
 
         with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
             with patch(
@@ -1860,9 +1864,9 @@ class TestRemediationRegressions(unittest.TestCase):
         self.assertEqual(answer, "Grounded answer")
         self.assertEqual(documents[0]["id"], "img-2")
         self.assertEqual(intent["execution_mode"], "multimodal_rag")
-        self.assertEqual(intent["retrieval_steps"][2]["key"], "retrieve")
+        self.assertEqual(intent["retrieval_steps"][2]["key"], "retrieval")
         self.assertEqual(intent["retrieval_steps"][-1]["key"], "generate")
-        self.adapter.rag_chain.agenerate_from_context.assert_awaited_once()
+        self.adapter.rag_chain.ainvoke.assert_awaited_once()
 
     def test_rag_chat_text_uses_agentic_graph_runner_for_multimodal_rag(self):
         """测试启用 Agentic RAG 后，文本 multimodal_rag 主路径走 graph 运行器而不是直接 ainvoke。"""
@@ -2037,6 +2041,10 @@ class TestRemediationRegressions(unittest.TestCase):
             fast=True,
             enable_score_filter=False,
             min_relevance_score=None,
+            candidate_k=None,
+            enable_query_rewrite=None,
+            query_rewrite_count=None,
+            enable_rerank=True,
         )
 
     def test_rag_chat_uses_fast_image_retrieval_for_image_grounded_answer(self):
@@ -2073,6 +2081,10 @@ class TestRemediationRegressions(unittest.TestCase):
             fast=True,
             enable_score_filter=False,
             min_relevance_score=None,
+            candidate_k=None,
+            enable_query_rewrite=None,
+            query_rewrite_count=None,
+            enable_rerank=True,
         )
 
     def test_rag_chat_uses_uploaded_image_qa_for_uploaded_image_question(self):

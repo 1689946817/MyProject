@@ -532,18 +532,21 @@ class LangChainAdapter:
                 )
 
             if source_scope or execution_hint:
-                return await self._run_scoped_chat(
-                    query=query,
-                    top_k=top_k,
-                    image=image,
-                    chat_history=chat_history,
-                    enable_score_filter=enable_score_filter,
-                    min_relevance_score=min_relevance_score,
-                    execution_hint=execution_hint or "multimodal_rag",
-                    source_scope=source_scope,
-                )
+                with timing_stage("chat_routing", meta={"classifier": "manual", "chat_mode": chat_mode}):
+                    return await self._run_scoped_chat(
+                        query=query,
+                        top_k=top_k,
+                        image=image,
+                        chat_history=chat_history,
+                        enable_score_filter=enable_score_filter,
+                        min_relevance_score=min_relevance_score,
+                        execution_hint=execution_hint or "multimodal_rag",
+                        source_scope=source_scope,
+                    )
 
             if image is not None:
+                with timing_stage("chat_routing", meta={"classifier": "default", "chat_mode": chat_mode}):
+                    pass
                 answer, documents = await self.rag_chain.ainvoke_with_image(
                     query,
                     image,
@@ -565,6 +568,8 @@ class LangChainAdapter:
                 )
                 return answer, documents, intent
 
+            with timing_stage("chat_routing", meta={"classifier": "default", "chat_mode": chat_mode}):
+                pass
             answer, documents = await self.rag_chain.ainvoke(
                 {
                     "query": query,
@@ -625,7 +630,8 @@ class LangChainAdapter:
 
         if source_scope or execution_hint:
             execution_mode = execution_hint or "multimodal_rag"
-            intent = self._build_forced_intent(execution_mode, image is not None)
+            with timing_stage("chat_routing", meta={"classifier": "manual", "chat_mode": chat_mode}):
+                intent = self._build_forced_intent(execution_mode, image is not None)
             async for event in self._stream_intent_chat(
                 intent=intent,
                 query=query,
@@ -644,7 +650,8 @@ class LangChainAdapter:
             return
 
         if settings.AGENTIC_RAG_ENABLED:
-            intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
+            with timing_stage("chat_routing", meta={"classifier": "llm", "chat_mode": chat_mode}):
+                intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
             collector = get_current_timing_collector()
             if collector is not None:
                 collector.set_metadata(
@@ -882,6 +889,8 @@ class LangChainAdapter:
             return
 
         if image is not None:
+            with timing_stage("chat_routing", meta={"classifier": "default", "chat_mode": chat_mode}):
+                pass
             if emit_progress:
                 yield self._build_progress_event(
                     phase="routing",
@@ -925,6 +934,8 @@ class LangChainAdapter:
             return
 
         if emit_progress:
+            with timing_stage("chat_routing", meta={"classifier": "default", "chat_mode": chat_mode}):
+                pass
             yield self._build_progress_event(
                 phase="routing",
                 status="completed",
@@ -979,18 +990,20 @@ class LangChainAdapter:
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         """执行带智能意图识别的 Agentic Chat 核心流程。"""
         if source_scope or execution_hint:
-            return await self._run_scoped_chat(
-                query=query,
-                top_k=top_k,
-                image=image,
-                chat_history=chat_history,
-                enable_score_filter=enable_score_filter,
-                min_relevance_score=min_relevance_score,
-                execution_hint=execution_hint or "multimodal_rag",
-                source_scope=source_scope,
-            )
+            with timing_stage("chat_routing", meta={"classifier": "manual", "chat_mode": "default"}):
+                return await self._run_scoped_chat(
+                    query=query,
+                    top_k=top_k,
+                    image=image,
+                    chat_history=chat_history,
+                    enable_score_filter=enable_score_filter,
+                    min_relevance_score=min_relevance_score,
+                    execution_hint=execution_hint or "multimodal_rag",
+                    source_scope=source_scope,
+                )
 
-        intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
+        with timing_stage("chat_routing", meta={"classifier": "llm", "chat_mode": "default"}):
+            intent = await classify_chat_intent(query=query, has_uploaded_image=image is not None)
         collector = get_current_timing_collector()
         if collector is not None:
             collector.set_metadata(
@@ -1020,17 +1033,18 @@ class LangChainAdapter:
         source_scope: Optional[Dict[str, List[str]]] = None,
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         retrieval_profile = self._build_chat_mode_profile("fast")
-        intent = _rule_based_intent(query, image is not None)
-        if intent is None:
-            if image is not None:
-                intent = self._build_forced_intent("uploaded_image_qa", True)
-                intent["reason"] = "fast_mode_uploaded_image_fallback"
-            elif source_scope:
-                intent = self._build_forced_intent("multimodal_rag", False)
-                intent["reason"] = "fast_mode_scoped_rag_fallback"
-            else:
-                intent = self._build_forced_intent("direct_llm", False)
-                intent["reason"] = "fast_mode_direct_fallback"
+        with timing_stage("chat_routing", meta={"classifier": "rule", "chat_mode": "fast"}):
+            intent = _rule_based_intent(query, image is not None)
+            if intent is None:
+                if image is not None:
+                    intent = self._build_forced_intent("uploaded_image_qa", True)
+                    intent["reason"] = "fast_mode_uploaded_image_fallback"
+                elif source_scope:
+                    intent = self._build_forced_intent("multimodal_rag", False)
+                    intent["reason"] = "fast_mode_scoped_rag_fallback"
+                else:
+                    intent = self._build_forced_intent("direct_llm", False)
+                    intent["reason"] = "fast_mode_direct_fallback"
 
         collector = get_current_timing_collector()
         if collector is not None:
@@ -1064,11 +1078,12 @@ class LangChainAdapter:
         source_scope: Optional[Dict[str, List[str]]] = None,
     ) -> Tuple[str, List[Dict[str, Any]], Dict[str, Any]]:
         retrieval_profile = self._build_chat_mode_profile("expert")
-        intent = await classify_chat_intent(
-            query=query,
-            has_uploaded_image=image is not None,
-            mode="expert",
-        )
+        with timing_stage("chat_routing", meta={"classifier": "llm", "chat_mode": "expert"}):
+            intent = await classify_chat_intent(
+                query=query,
+                has_uploaded_image=image is not None,
+                mode="expert",
+            )
         collector = get_current_timing_collector()
         if collector is not None:
             collector.set_metadata(
@@ -1383,24 +1398,26 @@ class LangChainAdapter:
     ):
         retrieval_profile = self._build_chat_mode_profile(chat_mode)
         if chat_mode == "fast":
-            intent = _rule_based_intent(query, image is not None)
-            if intent is None:
-                if image is not None:
-                    intent = self._build_forced_intent("uploaded_image_qa", True)
-                    intent["reason"] = "fast_mode_uploaded_image_fallback"
-                elif source_scope:
-                    intent = self._build_forced_intent("multimodal_rag", False)
-                    intent["reason"] = "fast_mode_scoped_rag_fallback"
-                else:
-                    intent = self._build_forced_intent("direct_llm", False)
-                    intent["reason"] = "fast_mode_direct_fallback"
+            with timing_stage("chat_routing", meta={"classifier": "rule", "chat_mode": "fast"}):
+                intent = _rule_based_intent(query, image is not None)
+                if intent is None:
+                    if image is not None:
+                        intent = self._build_forced_intent("uploaded_image_qa", True)
+                        intent["reason"] = "fast_mode_uploaded_image_fallback"
+                    elif source_scope:
+                        intent = self._build_forced_intent("multimodal_rag", False)
+                        intent["reason"] = "fast_mode_scoped_rag_fallback"
+                    else:
+                        intent = self._build_forced_intent("direct_llm", False)
+                        intent["reason"] = "fast_mode_direct_fallback"
             force_agentic_rag = False
         else:
-            intent = await classify_chat_intent(
-                query=query,
-                has_uploaded_image=image is not None,
-                mode="expert",
-            )
+            with timing_stage("chat_routing", meta={"classifier": "llm", "chat_mode": "expert"}):
+                intent = await classify_chat_intent(
+                    query=query,
+                    has_uploaded_image=image is not None,
+                    mode="expert",
+                )
             force_agentic_rag = settings.CHAT_EXPERT_FORCE_AGENTIC_RAG
 
         collector = get_current_timing_collector()
@@ -2015,7 +2032,8 @@ class LangChainAdapter:
         scoped_query = query
 
         if image is not None and execution_hint in {"multimodal_rag", "image_similarity", "image_grounded_answer"}:
-            scoped_query = await self.image_description_chain.ainvoke_from_uploadfile(image)
+            with timing_stage("chat_retrieve", meta={"step": "image_description_from_upload"}):
+                scoped_query = await self.image_description_chain.ainvoke_from_uploadfile(image)
             await image.seek(0)
 
         documents: List[Dict[str, Any]] = []
@@ -2077,11 +2095,12 @@ class LangChainAdapter:
         if retrieval_profile and generation_documents:
             from app.langchain_integration.context_compression import compress_context
 
-            generation_documents = await compress_context(
-                scoped_query,
-                generation_documents,
-                force_enabled=bool(retrieval_profile.get("enable_context_compression", False)),
-            )
+            with timing_stage("chat_compress", meta={"document_count": len(generation_documents)}):
+                generation_documents = await compress_context(
+                    scoped_query,
+                    generation_documents,
+                    force_enabled=bool(retrieval_profile.get("enable_context_compression", False)),
+                )
             combined_documents = generation_documents + generation_text_chunks
 
         return {
@@ -2296,6 +2315,18 @@ class LangChainAdapter:
                     },
                 }
             )
+        steps.append(
+            {
+                "key": "generate",
+                "label": "生成",
+                "summary": "已生成最终回答",
+                "details": {
+                    "use_rag": use_rag,
+                    "has_uploaded_image": has_uploaded_image,
+                    "document_count": len(documents),
+                },
+            }
+        )
         return steps
 
     async def _answer_directly(
@@ -2310,10 +2341,11 @@ class LangChainAdapter:
 对话历史：
 {history_text}
 
-用户问题：{query}
+        用户问题：{query}
 """
         model = get_primary_text_chat_model()
-        result = await model._agenerate([HumanMessage(content=prompt)])
+        with timing_stage("chat_generate", meta={"execution_mode": "direct_llm"}):
+            result = await model._agenerate([HumanMessage(content=prompt)])
         return result.generations[0].message.content
 
     async def _astream_direct_answer(
@@ -2328,13 +2360,14 @@ class LangChainAdapter:
 对话历史：
 {history_text}
 
-用户问题：{query}
+        用户问题：{query}
 """
         model = get_primary_text_chat_model()
-        async for chunk in model._astream([HumanMessage(content=prompt)]):
-            text = self._extract_stream_chunk_text(chunk)
-            if text:
-                yield text
+        with timing_stage("chat_generate", meta={"execution_mode": "direct_llm", "streaming": True}):
+            async for chunk in model._astream([HumanMessage(content=prompt)]):
+                text = self._extract_stream_chunk_text(chunk)
+                if text:
+                    yield text
 
     async def _answer_with_uploaded_image(
         self,
@@ -2360,7 +2393,8 @@ class LangChainAdapter:
             ]
         )
         model = get_multimodal_chat_model()
-        result = await model._agenerate([message])
+        with timing_stage("chat_generate", meta={"execution_mode": "uploaded_image_qa"}):
+            result = await model._agenerate([message])
         return result.generations[0].message.content
 
     async def _astream_uploaded_image_answer(
@@ -2387,10 +2421,11 @@ class LangChainAdapter:
             ]
         )
         model = get_multimodal_chat_model()
-        async for chunk in model._astream([message]):
-            text = self._extract_stream_chunk_text(chunk)
-            if text:
-                yield text
+        with timing_stage("chat_generate", meta={"execution_mode": "uploaded_image_qa", "streaming": True}):
+            async for chunk in model._astream([message]):
+                text = self._extract_stream_chunk_text(chunk)
+                if text:
+                    yield text
 
     async def _retrieve_images_for_query(
         self,
@@ -2434,9 +2469,10 @@ class LangChainAdapter:
 
     def _build_image_only_answer(self, documents: List[Dict[str, Any]]) -> str:
         """为纯找图请求生成简短说明。"""
-        if not documents:
-            return "未找到相关图片。"
-        return f"为你找到 {len(documents)} 张相关图片。"
+        with timing_stage("chat_generate", meta={"execution_mode": "image_similarity", "document_count": len(documents)}):
+            if not documents:
+                return "未找到相关图片。"
+            return f"为你找到 {len(documents)} 张相关图片。"
 
     async def _save_uploaded_image_to_kb(
         self,
@@ -2454,7 +2490,8 @@ class LangChainAdapter:
             )
 
         title = record.title or Path(record.file_path).stem
-        answer = f"图片“{title}”已存在，已复用现有知识库记录。" if deduplicated else f"已将图片“{title}”存入图片知识库。"
+        with timing_stage("chat_generate", meta={"execution_mode": "save_uploaded_image", "deduplicated": deduplicated}):
+            answer = f"图片“{title}”已存在，已复用现有知识库记录。" if deduplicated else f"已将图片“{title}”存入图片知识库。"
         return answer, [
             {
                 "id": record.id,

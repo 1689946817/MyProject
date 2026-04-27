@@ -309,7 +309,8 @@ class RAGChain:
 
         # 上下文压缩：过滤无关文档
         from app.langchain_integration.context_compression import compress_context
-        documents = await compress_context(query, documents)
+        with timing_stage("chat_compress", meta={"document_count": len(documents)}):
+            documents = await compress_context(query, documents)
 
         answer = await self.agenerate_from_context(
             query=query,
@@ -348,7 +349,8 @@ class RAGChain:
 
         # 上下文压缩
         from app.langchain_integration.context_compression import compress_context
-        documents = await compress_context(query, documents)
+        with timing_stage("chat_compress", meta={"document_count": len(documents)}):
+            documents = await compress_context(query, documents)
 
         # 流式生成
         async for chunk in self.astream_from_context(
@@ -471,7 +473,11 @@ class RAGChain:
             "final_answer_generation",
             meta={"document_count": len(documents), "text_chunk_count": len(text_chunks or [])},
         ):
-            return await self._chain.ainvoke(inputs)
+            with timing_stage(
+                "chat_generate",
+                meta={"document_count": len(documents), "text_chunk_count": len(text_chunks or [])},
+            ):
+                return await self._chain.ainvoke(inputs)
 
     async def astream_from_context(
         self,
@@ -487,8 +493,12 @@ class RAGChain:
             "text_chunks": text_chunks or [],
             "chat_history": chat_history or [],
         }
-        async for chunk in self._chain.astream(inputs):
-            yield chunk
+        with timing_stage(
+            "chat_generate",
+            meta={"document_count": len(documents), "text_chunk_count": len(text_chunks or [])},
+        ):
+            async for chunk in self._chain.astream(inputs):
+                yield chunk
 
 
 # 全局 Chain 实例缓存

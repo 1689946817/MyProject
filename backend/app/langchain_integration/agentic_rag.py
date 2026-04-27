@@ -623,48 +623,49 @@ async def grade_documents(state: AgenticRAGState) -> AgenticRAGState:
     documents = state["documents"]
 
     with timing_stage("agentic_grade", meta={"document_count": len(documents)}):
-        top_documents = documents[: min(3, len(documents))]
-        rerank_scores = [
-            float(doc["rerank_score"])
-            for doc in top_documents
-            if isinstance(doc, dict) and doc.get("rerank_score") is not None
-        ]
-        if rerank_scores:
-            relevance_score = sum(rerank_scores) / len(rerank_scores)
-        else:
-            rrf_scores = [
-                float(doc["rrf_score"])
+        with timing_stage("chat_agentic", meta={"document_count": len(documents)}):
+            top_documents = documents[: min(3, len(documents))]
+            rerank_scores = [
+                float(doc["rerank_score"])
                 for doc in top_documents
-                if isinstance(doc, dict) and doc.get("rrf_score") is not None
+                if isinstance(doc, dict) and doc.get("rerank_score") is not None
             ]
-            relevance_score = (sum(rrf_scores) / len(rrf_scores)) if rrf_scores else 0.0
+            if rerank_scores:
+                relevance_score = sum(rerank_scores) / len(rerank_scores)
+            else:
+                rrf_scores = [
+                    float(doc["rrf_score"])
+                    for doc in top_documents
+                    if isinstance(doc, dict) and doc.get("rrf_score") is not None
+                ]
+                relevance_score = (sum(rrf_scores) / len(rrf_scores)) if rrf_scores else 0.0
 
-        has_rerank_score = bool(rerank_scores)
-        top_source_ids = [
-            str(doc.get("id") or (doc.get("metadata") or {}).get("id"))
-            for doc in top_documents
-            if isinstance(doc, dict)
-        ]
-        asset_types = sorted(
-            {
-                str((doc.get("metadata") or {}).get("asset_type") or "image")
-                for doc in documents
+            has_rerank_score = bool(rerank_scores)
+            top_source_ids = [
+                str(doc.get("id") or (doc.get("metadata") or {}).get("id"))
+                for doc in top_documents
                 if isinstance(doc, dict)
-            }
-        )
-        retrieval_attempt = int(state.get("retrieval_attempt", 1) or 1)
+            ]
+            asset_types = sorted(
+                {
+                    str((doc.get("metadata") or {}).get("asset_type") or "image")
+                    for doc in documents
+                    if isinstance(doc, dict)
+                }
+            )
+            retrieval_attempt = int(state.get("retrieval_attempt", 1) or 1)
 
-        state["relevance_score"] = relevance_score
-        state["needs_retry"] = len(documents) == 0 or (
-            has_rerank_score and relevance_score < 0.35 and retrieval_attempt < 2
-        )
-        state["retrieval_meta"] = {
-            **dict(state.get("retrieval_meta", {})),
-            "document_count": len(documents),
-            "has_rerank_score": has_rerank_score,
-            "top_source_ids": top_source_ids,
-            "asset_types": asset_types,
-        }
+            state["relevance_score"] = relevance_score
+            state["needs_retry"] = len(documents) == 0 or (
+                has_rerank_score and relevance_score < 0.35 and retrieval_attempt < 2
+            )
+            state["retrieval_meta"] = {
+                **dict(state.get("retrieval_meta", {})),
+                "document_count": len(documents),
+                "has_rerank_score": has_rerank_score,
+                "top_source_ids": top_source_ids,
+                "asset_types": asset_types,
+            }
 
     logger.info(
         "[AgenticGraph] grade score=%.3f retry=%s docs=%s",
@@ -954,11 +955,12 @@ async def prepare_agentic_multimodal_rag_context(
     if documents and compression_enabled is not None:
         from app.langchain_integration.context_compression import compress_context
 
-        documents = await compress_context(
-            query,
-            documents,
-            force_enabled=bool(compression_enabled),
-        )
+        with timing_stage("chat_compress", meta={"document_count": len(documents)}):
+            documents = await compress_context(
+                query,
+                documents,
+                force_enabled=bool(compression_enabled),
+            )
         final_state["documents"] = documents
     retrieval_steps = _build_agentic_retrieval_steps(
         query=query,

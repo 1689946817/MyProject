@@ -79,8 +79,13 @@ const timingSummary = computed<TimingSummary | null>(() => {
     || null;
 });
 
-const timingStageMap = computed<Record<string, TimingStage>>(() => {
-  return Object.fromEntries((timingSummary.value?.stages || []).map((stage) => [stage.name, stage]));
+const timingStageMap = computed<Record<string, TimingStage[]>>(() => {
+  return (timingSummary.value?.stages || []).reduce<Record<string, TimingStage[]>>((acc, stage) => {
+    const bucket = acc[stage.name] || [];
+    bucket.push(stage);
+    acc[stage.name] = bucket;
+    return acc;
+  }, {});
 });
 
 const liveMeta = computed<Record<string, unknown>>(() => {
@@ -257,20 +262,35 @@ function resolveProgressSummary(status: ChatProgressEvent["status"]): string {
 }
 
 function lookupDuration(stepKey: string): number | null {
-  const names = timingStageNames(stepKey);
-  for (const name of names) {
-    const stage = timingStageMap.value[name];
-    if (stage) return stage.elapsed_ms;
+  const candidateGroups = timingStageNames(stepKey);
+  for (const names of candidateGroups) {
+    let total = 0;
+    let matched = false;
+    for (const name of names) {
+      const stageEntries = timingStageMap.value[name] || [];
+      if (stageEntries.length > 0) {
+        matched = true;
+        total += stageEntries.reduce((sum, stage) => sum + (stage.elapsed_ms || 0), 0);
+      }
+    }
+    if (matched) {
+      return total;
+    }
   }
   return null;
 }
 
-function timingStageNames(stepKey: string): string[] {
-  if (stepKey === "intent") return ["intent_classification"];
-  if (stepKey === "retrieve" || stepKey === "retrieval") return ["agentic_retrieve_initial"];
-  if (stepKey === "grade" || stepKey === "grading") return ["agentic_grade"];
-  if (stepKey === "retry") return ["agentic_retrieve_retry"];
-  if (stepKey === "generate") return ["agentic_generate"];
+function timingStageNames(stepKey: string): string[][] {
+  if (stepKey === "intent") return [["chat_routing"], ["intent_classification"]];
+  if (stepKey === "query") return [["chat_rewrite"]];
+  if (stepKey === "retrieve" || stepKey === "retrieval") return [
+    ["chat_retrieve"],
+    ["agentic_retrieve_initial", "agentic_retrieve_retry"],
+    ["rag_retrieval", "document_text_retrieval", "image_retrieval"],
+  ];
+  if (stepKey === "grade" || stepKey === "grading") return [["chat_rerank"], ["agentic_grade"], ["rerank"]];
+  if (stepKey === "retry") return [["agentic_retrieve_retry"]];
+  if (stepKey === "generate") return [["chat_generate"], ["agentic_generate"], ["final_answer_generation"]];
   return [];
 }
 
