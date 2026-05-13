@@ -5,6 +5,7 @@
  */
 import { http } from "./http";
 import type {
+  ConfigRestartResponse,
   ConfigResponse,
   ConfigUpdatePayload,
 } from "@/types";
@@ -13,6 +14,7 @@ export type {
   ConfigGroup,
   ConfigItem,
   ConfigOption,
+  ConfigRestartResponse,
   ConfigResponse,
   ConfigUpdatePayload,
   ConfigValidationError,
@@ -38,5 +40,14 @@ export async function updateSystemConfig(payload: ConfigUpdatePayload): Promise<
   restart_required: boolean
 }> {
   const { data } = await http.put("/api/admin/config", payload);
+  return data;
+}
+
+/**
+ * 重启后端服务
+ * @returns 重启调度结果
+ */
+export async function restartBackend(): Promise<ConfigRestartResponse> {
+  const { data } = await http.post<ConfigRestartResponse>("/api/admin/restart");
   return data;
 }

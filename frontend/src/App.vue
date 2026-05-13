@@ -237,9 +237,7 @@ onUnmounted(() => {
 }
 
 .sidebar {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.68)),
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 24%);
+  background: var(--surface-sidebar);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
@@ -312,7 +310,7 @@ onUnmounted(() => {
 }
 
 .sidebar-menu :deep(.el-menu-item:hover) {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--nav-hover-bg);
   transform: translateX(2px);
 }
 
@@ -373,7 +371,7 @@ onUnmounted(() => {
   color: var(--text-secondary);
   padding: 6px 8px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.56);
+  background: var(--surface-control);
   border: 1px solid var(--border-color);
 }
 
@@ -391,7 +389,7 @@ onUnmounted(() => {
 
 .main-header {
   height: 54px;
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--surface-header);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -402,7 +400,7 @@ onUnmounted(() => {
 }
 
 .is-dark .main-header {
-  background: rgba(17, 28, 51, 0.78);
+  background: var(--surface-header);
 }
 
 .header-left,
@@ -418,13 +416,13 @@ onUnmounted(() => {
   color: var(--text-secondary);
   font-size: 12px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.46);
+  background: var(--surface-control);
   border: 1px solid transparent;
 }
 
 .header-btn:hover {
   color: var(--accent-primary);
-  background: rgba(255, 255, 255, 0.76);
+  background: var(--surface-control-hover);
   border-color: var(--border-color);
 }
 

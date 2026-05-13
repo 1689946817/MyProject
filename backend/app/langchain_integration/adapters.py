@@ -2005,6 +2005,7 @@ class LangChainAdapter:
         query: str,
         documents: List[Dict[str, Any]],
         chat_history: Optional[List[Tuple[str, str]]],
+        display_top_k: Optional[int] = None,
         source_scope: Optional[Dict[str, List[str]]] = None,
         retrieval_profile: Optional[Dict[str, Any]] = None,
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[Tuple[str, str]]]:
@@ -2012,7 +2013,9 @@ class LangChainAdapter:
         if not documents:
             return [], [], []
 
-        max_images = max(1, settings.IMAGE_GROUNDED_MAX_IMAGES)
+        configured_max_images = max(1, settings.IMAGE_GROUNDED_MAX_IMAGES)
+        requested_max_images = max(1, display_top_k) if display_top_k is not None else configured_max_images
+        max_images = min(configured_max_images, requested_max_images)
         max_history_turns = max(0, settings.IMAGE_GROUNDED_MAX_HISTORY_TURNS)
         grounded_documents = documents[:max_images]
         grounded_history = (chat_history or [])[-max_history_turns:] if max_history_turns else []
@@ -2124,7 +2127,7 @@ class LangChainAdapter:
                 retrieval_profile=retrieval_profile,
             )
             documents = self._filter_documents_by_source_scope(documents, scope)
-            combined_documents = list(documents)
+            combined_documents = list(documents[:top_k])
         elif execution_hint == "image_grounded_answer":
             documents = await self._retrieve_images_for_query(
                 query=scoped_query,
@@ -2139,6 +2142,7 @@ class LangChainAdapter:
                 query=scoped_query,
                 documents=documents,
                 chat_history=chat_history,
+                display_top_k=top_k,
                 source_scope=scope,
                 retrieval_profile=retrieval_profile,
             )

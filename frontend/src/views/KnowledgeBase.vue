@@ -577,9 +577,13 @@ function statusLabel(status: string) {
 }
 
 .dark-table {
-  --el-table-bg-color: var(--bg-secondary);
-  --el-table-tr-bg-color: var(--bg-secondary);
+  --el-table-bg-color: var(--surface-card);
+  --el-table-tr-bg-color: var(--surface-card);
   --el-table-header-bg-color: var(--bg-tertiary);
+  --el-table-header-text-color: var(--text-primary);
+  --el-table-text-color: var(--text-secondary);
+  --el-table-row-hover-bg-color: var(--bg-accent-soft);
+  --el-table-border-color: var(--border-color);
 }
 
 .images-card :deep(.el-card__body) {
@@ -651,7 +655,7 @@ function statusLabel(status: string) {
 .image-stage {
   padding: 18px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-panel-muted);
   border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -679,7 +683,7 @@ function statusLabel(status: string) {
 .version-hint {
   padding: 14px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-card);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
 }

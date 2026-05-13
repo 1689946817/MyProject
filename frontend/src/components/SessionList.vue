@@ -159,7 +159,7 @@ defineExpose({
   width: 40px;
   height: 40px;
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--surface-control);
   color: var(--text-secondary);
   border-radius: 14px;
   cursor: pointer;
@@ -199,13 +199,13 @@ defineExpose({
   cursor: pointer;
   position: relative;
   transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-card);
   border: 1px solid var(--border-color);
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
 }
 
 .session-item:hover {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--surface-control-hover);
   border-color: var(--border-strong);
   transform: translateY(-1px);
 }
@@ -255,7 +255,7 @@ defineExpose({
   width: 30px;
   height: 30px;
   border: none;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-control);
   color: var(--text-secondary);
   border-radius: 10px;
   cursor: pointer;

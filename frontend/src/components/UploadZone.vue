@@ -187,7 +187,7 @@ defineExpose({
   transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
   background:
     radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 24%),
-    rgba(255, 255, 255, 0.72);
+    var(--surface-panel);
   backdrop-filter: blur(12px);
 }
 
@@ -205,7 +205,7 @@ defineExpose({
 .upload-zone.is-compact {
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--surface-panel);
 }
 
 .upload-toolbar {
@@ -286,7 +286,7 @@ defineExpose({
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--surface-card);
   font-size: 12px;
   color: var(--text-primary);
 }
@@ -310,7 +310,7 @@ defineExpose({
   gap: 6px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--surface-card);
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 600;
@@ -375,7 +375,7 @@ defineExpose({
   display: flex;
   align-items: center;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--surface-card);
   border-radius: 14px;
   border: 1px solid var(--border-color);
   font-size: 13px;

@@ -562,7 +562,7 @@ onMounted(() => {
   padding: 4px;
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  background: rgba(248, 250, 252, 0.88);
+  background: var(--surface-panel-muted);
 }
 
 .subpage-tab {
@@ -582,7 +582,7 @@ onMounted(() => {
 }
 
 .subpage-tab.active {
-  background: #ffffff;
+  background: var(--surface-card);
   color: var(--accent-primary);
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
 }
@@ -600,7 +600,7 @@ onMounted(() => {
   border-radius: 16px;
   border: 1px solid var(--border-color);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78)),
+    var(--surface-card-muted),
     radial-gradient(circle at top left, rgba(37, 99, 235, 0.06), transparent 30%);
 }
 
@@ -621,7 +621,7 @@ onMounted(() => {
   padding: 6px;
   border-radius: 14px;
   border: 1px solid var(--border-color);
-  background: rgba(248, 250, 252, 0.88);
+  background: var(--surface-panel-muted);
 }
 
 .entry-actions {
@@ -650,7 +650,7 @@ onMounted(() => {
   border-radius: 16px;
   padding: 12px 14px;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.74);
+  background: var(--surface-control);
   border: 1px solid var(--border-color);
 }
 
@@ -677,7 +677,7 @@ onMounted(() => {
   margin-top: 2px;
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-panel-muted);
   border: 1px solid var(--border-color);
 }
 
@@ -786,7 +786,7 @@ onMounted(() => {
 .query-desc-card {
   margin-bottom: 16px;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.74);
+  background: var(--surface-card);
   border-radius: 16px;
   border: 1px solid var(--border-color);
 }
@@ -811,7 +811,7 @@ onMounted(() => {
   min-height: 260px;
   border: 1px dashed var(--border-color);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--surface-panel-muted);
   display: flex;
   flex-direction: column;
   align-items: center;

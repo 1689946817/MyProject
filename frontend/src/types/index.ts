@@ -383,6 +383,10 @@ export interface ChatMessage {
   has_image?: boolean
   /** 用户上传图片的本地预览 URL */
   local_image_url?: string
+  /** 后端持久化的上传图片预览路径 */
+  uploaded_image_path?: string | null
+  /** 用户上传图片的原始文件名 */
+  uploaded_image_name?: string | null
   /** RAG 检索到的引用来源列表 */
   sources?: ChatSourceItem[]
   /** 回答中的引用锚点列表 */
@@ -628,6 +632,20 @@ export interface ConfigResponse {
 export interface ConfigUpdatePayload {
   /** 待更新的配置键值对 */
   values: Record<string, string | number | boolean>
+}
+
+/**
+ * 配置重启响应
+ *
+ * 后端接收重启请求后的返回结构。
+ */
+export interface ConfigRestartResponse {
+  /** 是否成功接收重启请求 */
+  success: boolean
+  /** 响应提示消息 */
+  message: string
+  /** 是否已调度重启 */
+  restart_scheduled: boolean
 }
 
 /**

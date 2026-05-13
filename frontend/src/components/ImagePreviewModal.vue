@@ -191,7 +191,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-primary);
+  background: var(--surface-panel-muted);
   padding: 20px;
   min-width: 400px;
   max-width: 60vw;
@@ -245,7 +245,7 @@ onUnmounted(() => {
 .id-text {
   font-family: monospace;
   font-size: 12px !important;
-  background: var(--bg-tertiary);
+  background: var(--surface-panel-muted);
   padding: 8px;
   border-radius: 4px;
 }
@@ -259,7 +259,7 @@ onUnmounted(() => {
 .score-bar-large {
   flex: 1;
   height: 8px;
-  background: var(--bg-tertiary);
+  background: var(--surface-panel-muted);
   border-radius: 4px;
   overflow: hidden;
 }

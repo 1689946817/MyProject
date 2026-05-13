@@ -34,6 +34,8 @@ RAG 聊天 API 路由模块（LangChain 版本）。
 """
 import json
 import os
+import uuid
+from pathlib import Path
 from typing import Any, List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
@@ -72,6 +74,7 @@ from app.core.config import settings
 from app.core.timing import RequestTimingCollector, bind_timing_collector
 from app.data.chat_models import ChatMessage
 from app.data.database import get_db
+from app.data.storage import get_chat_upload_path
 from app.langchain_integration.adapters import get_langchain_adapter
 from app.retrieval.relevance import annotate_relevance
 
@@ -91,6 +94,14 @@ VALID_EXECUTION_HINTS = {
     "save_uploaded_image",
 }
 VALID_CHAT_MODES = {"fast", "default", "expert"}
+CHAT_UPLOAD_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
+CHAT_UPLOAD_CONTENT_TYPE_SUFFIXES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+    "image/bmp": ".bmp",
+}
 
 
 # ---- 参数校验/工具函数 ----
@@ -151,6 +162,27 @@ def _normalize_execution_hint(execution_hint: Optional[str]) -> Optional[str]:
     if normalized not in VALID_EXECUTION_HINTS:
         raise HTTPException(status_code=422, detail=f"不支持的 execution_hint: {normalized}")
     return normalized
+
+
+def _safe_chat_upload_suffix(image: UploadFile) -> str:
+    """根据上传文件名和 MIME 类型选择安全的图片扩展名。"""
+    suffix = Path(image.filename or "").suffix.lower()
+    if suffix in CHAT_UPLOAD_IMAGE_SUFFIXES:
+        return suffix
+    return CHAT_UPLOAD_CONTENT_TYPE_SUFFIXES.get((image.content_type or "").lower(), ".jpg")
+
+
+async def _persist_uploaded_chat_image(image: Optional[UploadFile]) -> tuple[Optional[str], Optional[str]]:
+    """保存聊天上传图，返回可由 /static 访问的文件路径和原始文件名。"""
+    if image is None:
+        return None, None
+
+    suffix = _safe_chat_upload_suffix(image)
+    storage_path = get_chat_upload_path(str(uuid.uuid4()), suffix)
+    contents = await image.read()
+    storage_path.write_bytes(contents)
+    await image.seek(0)
+    return str(storage_path), image.filename or storage_path.name
 
 
 def _normalize_chat_mode(chat_mode: Optional[str]) -> str:
@@ -334,7 +366,11 @@ def _to_chat_message_out(message) -> ChatMessageOut:
     retrieval_steps = load_json_list(getattr(message, "retrieval_steps_json", None))
     feedback = get_feedback_for_message(message._sa_instance_state.session, message.id)
     citations = []
+    uploaded_image_path = None
+    uploaded_image_name = None
     if isinstance(retrieval_params, dict):
+        uploaded_image_path = retrieval_params.get("uploaded_image_path")
+        uploaded_image_name = retrieval_params.get("uploaded_image_name")
         citations = [
             ChatCitationItem.model_validate(item)
             for item in retrieval_params.get("citations", [])
@@ -346,6 +382,8 @@ def _to_chat_message_out(message) -> ChatMessageOut:
         role=message.role,
         content=message.content,
         has_image=message.has_image,
+        uploaded_image_path=uploaded_image_path,
+        uploaded_image_name=uploaded_image_name,
         sources=sources,
         citations=citations,
         retrieval_params=retrieval_params,
@@ -553,13 +591,15 @@ def _build_retrieval_params(
     source_scope: Optional[dict[str, list[str]]],
     intent: dict[str, Any],
     stream: bool,
+    uploaded_image_path: Optional[str] = None,
+    uploaded_image_name: Optional[str] = None,
 ) -> dict[str, Any]:
     """构建检索参数字典，用于持久化到消息记录中。
 
     汇总本次请求的所有参数（top_k、过滤阈值、execution_hint、chat_mode、
     source_scope）以及从 intent 中提取的分类器决策信息。
     """
-    return {
+    params = {
         "top_k": resolved_top_k,
         "has_image": image is not None,
         "query": query,
@@ -575,6 +615,11 @@ def _build_retrieval_params(
         "classifier_reason": intent.get("reason"),
         "classifier_confidence": intent.get("confidence"),
     }
+    if uploaded_image_path:
+        params["uploaded_image_path"] = uploaded_image_path
+    if uploaded_image_name:
+        params["uploaded_image_name"] = uploaded_image_name
+    return params
 
 
 # ---- 响应构建器 ----
@@ -934,6 +979,12 @@ def _build_rag_streaming_response(
                     meta={"source_scope_enabled": bool(source_scope)},
                 )
 
+                uploaded_image_path: Optional[str] = None
+                uploaded_image_name: Optional[str] = None
+                if image is not None:
+                    with collector.stage("chat_upload_persist"):
+                        uploaded_image_path, uploaded_image_name = await _persist_uploaded_chat_image(image)
+
                 try:
                     stream = adapter.rag_chat_stream(
                         query=query,
@@ -1015,6 +1066,8 @@ def _build_rag_streaming_response(
                     source_scope=source_scope,
                     intent=final_intent,
                     stream=True,
+                    uploaded_image_path=uploaded_image_path,
+                    uploaded_image_name=uploaded_image_name,
                 )
                 sources = _normalize_chat_sources(retrieved_docs)
                 citations = build_chat_citations(full_answer, sources)
@@ -1149,6 +1202,11 @@ async def rag_chat_endpoint(
             },
         ):
             adapter = get_langchain_adapter()
+            uploaded_image_path: Optional[str] = None
+            uploaded_image_name: Optional[str] = None
+            if image is not None:
+                with collector.stage("chat_upload_persist"):
+                    uploaded_image_path, uploaded_image_name = await _persist_uploaded_chat_image(image)
             result = await adapter.rag_chat(
                 query=query,
                 top_k=resolved_top_k,
@@ -1182,6 +1240,8 @@ async def rag_chat_endpoint(
                 source_scope=source_scope,
                 intent=intent,
                 stream=False,
+                uploaded_image_path=uploaded_image_path,
+                uploaded_image_name=uploaded_image_name,
             )
             with collector.stage("chat_message_persist"):
                 add_message(db, session, "user", query, has_image=image is not None, retrieval_params=retrieval_params)

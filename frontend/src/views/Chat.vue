@@ -86,11 +86,27 @@
                       <span class="assistant-name">{{ t("chat.assistantName") }}</span>
                       <span class="assistant-mode-badge">{{ getModeLabel(msg) }}</span>
                     </div>
-                    <div v-if="msg.role === 'user' && (msg.local_image_url || msg.has_image)" class="user-attachment-card">
-                      <img v-if="msg.local_image_url" :src="msg.local_image_url" class="user-attachment-image" />
+                    <div
+                      v-if="hasUserAttachment(msg)"
+                      class="user-attachment-card"
+                      :class="{ 'has-preview': Boolean(getUserAttachmentPreviewSrc(msg)) }"
+                    >
+                      <button
+                        v-if="getUserAttachmentPreviewSrc(msg)"
+                        type="button"
+                        class="user-attachment-preview"
+                        @click="showUserAttachmentPreview(msg)"
+                      >
+                        <img
+                          :src="getUserAttachmentPreviewSrc(msg)"
+                          :alt="getUserAttachmentName(msg) || t('chat.attachedImage')"
+                          class="user-attachment-image"
+                          @error="onImgError"
+                        />
+                      </button>
                       <div class="user-attachment-meta">
                         <span class="user-attachment-label">{{ t("chat.attachedImage") }}</span>
-                        <span class="user-attachment-hint">{{ t("chat.attachedImageHint") }}</span>
+                        <span class="user-attachment-hint">{{ getUserAttachmentName(msg) || t("chat.attachedImageHint") }}</span>
                       </div>
                     </div>
                     <div v-if="shouldShowSourcesFirst(msg)" class="source-card-list" :class="{ prominent: isImageFocusedMode(msg), collapsed: !isSourcePanelExpanded(msg) }">
@@ -461,6 +477,7 @@
                           </button>
                           <template #dropdown>
                             <el-dropdown-menu>
+                              <el-dropdown-item command="auto">{{ t("chat.attachmentModeAuto") }}</el-dropdown-item>
                               <el-dropdown-item command="multimodal_rag">{{ t("chat.commandModeKb") }}</el-dropdown-item>
                               <el-dropdown-item command="direct_llm">{{ t("chat.commandModeDirect") }}</el-dropdown-item>
                               <el-dropdown-item command="image_similarity">{{ t("chat.commandModeImage") }}</el-dropdown-item>
@@ -595,14 +612,6 @@
               <div class="attached-copy">
                 <span class="attached-title">{{ t("chat.attachedImage") }}</span>
                 <span class="attached-desc">{{ attachedImage?.name }}</span>
-                <el-select v-model="attachmentMode" size="small" class="attachment-mode-select" :disabled="!isDefaultChatMode">
-                  <el-option
-                    v-for="option in attachmentModeOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
               </div>
               <button class="remove-attached" @click="removeAttached"><i class="i-ep-close"></i></button>
             </div>
@@ -702,7 +711,6 @@ const pendingSessions = ref<Record<string, boolean>>({});
 // 附件与图片上传状态
 const attachedImage = ref<File | null>(null);
 const attachedImagePreview = ref("");
-const attachmentMode = ref<"auto" | "uploaded_image_qa" | "image_similarity" | "save_uploaded_image">("auto");
 
 // 聊天模式与执行模式状态
 const selectedChatMode = ref<ChatMode>("default");
@@ -790,9 +798,6 @@ const effectiveExecutionHint = computed<ExecutionHint | undefined>(() => {
   if (!isDefaultChatMode.value) {
     return undefined;
   }
-  if (attachedImage.value && attachmentMode.value !== "auto") {
-    return attachmentMode.value;
-  }
   if (selectedExecutionHint.value !== "auto") {
     return selectedExecutionHint.value;
   }
@@ -811,14 +816,6 @@ const sourceScope = computed(() => {
     image_ids: imageIds,
   };
 });
-
-/** 附件处理模式选项（自动/问答/找相似/保存到知识库） */
-const attachmentModeOptions = computed(() => [
-  { label: t("chat.attachmentModeAuto"), value: "auto" },
-  { label: t("chat.attachmentModeAskImage"), value: "uploaded_image_qa" },
-  { label: t("chat.attachmentModeFindSimilar"), value: "image_similarity" },
-  { label: t("chat.attachmentModeSave"), value: "save_uploaded_image" },
-]);
 
 /** 反馈问题类型选项（检索错误/幻觉/缺少引用/无帮助） */
 const feedbackIssueOptions = computed(() => [
@@ -1003,7 +1000,6 @@ function parseLeadingSlashCommands(input: string, apply = false): ParsedSlashRes
         chatTopK.value = chatDefaultTopK.value;
         chatEnableScoreFilter.value = chatDefaultEnableScoreFilter.value;
         chatMinRelevanceScore.value = chatDefaultMinRelevanceScore.value;
-        attachmentMode.value = "auto";
         ElMessage.success(t("chat.commandApplied", { command: previewCommand }));
       }
       applied = true;
@@ -1101,7 +1097,7 @@ const composerWarnings = computed(() => {
   if (effectiveExecutionHint.value === "direct_llm" && selectedSources.value.length > 0) {
     warnings.push(t("chat.warningDirectIgnoresSources"));
   }
-  if (isDefaultChatMode.value && !attachedImage.value && attachmentMode.value !== "auto") {
+  if (isDefaultChatMode.value && !attachedImage.value && (selectedExecutionHint.value === "uploaded_image_qa" || selectedExecutionHint.value === "save_uploaded_image")) {
     warnings.push(t("chat.warningAttachmentModeWithoutImage"));
   }
   if (isDefaultChatMode.value && attachedImage.value && selectedExecutionHint.value === "direct_llm") {
@@ -1116,9 +1112,9 @@ const dynamicInputPlaceholder = computed(() => {
   if (selectedChatMode.value === "expert") return t("chat.inputPlaceholderExpert");
   if (effectiveExecutionHint.value === "direct_llm") return t("chat.inputPlaceholderDirect");
   if (sourceScope.value) return t("chat.inputPlaceholderScoped");
-  if (attachedImage.value && isDefaultChatMode.value && attachmentMode.value === "uploaded_image_qa") return t("chat.inputPlaceholderAskImage");
-  if (attachedImage.value && isDefaultChatMode.value && attachmentMode.value === "image_similarity") return t("chat.inputPlaceholderFindSimilar");
-  if (attachedImage.value && isDefaultChatMode.value && attachmentMode.value === "save_uploaded_image") return t("chat.inputPlaceholderSaveImage");
+  if (attachedImage.value && isDefaultChatMode.value && selectedExecutionHint.value === "uploaded_image_qa") return t("chat.inputPlaceholderAskImage");
+  if (attachedImage.value && isDefaultChatMode.value && selectedExecutionHint.value === "image_similarity") return t("chat.inputPlaceholderFindSimilar");
+  if (attachedImage.value && isDefaultChatMode.value && selectedExecutionHint.value === "save_uploaded_image") return t("chat.inputPlaceholderSaveImage");
   return "Enter 发送，Shift + Enter 换行";
 });
 
@@ -1304,6 +1300,36 @@ function handleInputKeydown(event: KeyboardEvent) {
 /** 获取消息作者显示名称 */
 function getMessageAuthor(msg: Message): string {
   return msg.role === "assistant" ? t("chat.assistantName") : t("chat.userName");
+}
+
+/** 获取用户消息中的上传图预览地址，优先使用本地 Object URL，历史消息回退到后端静态路径 */
+function getUserAttachmentPreviewSrc(msg: Message): string {
+  if (msg.local_image_url) {
+    return msg.local_image_url;
+  }
+  const path = msg.uploaded_image_path || (typeof msg.retrieval_params?.uploaded_image_path === "string" ? msg.retrieval_params.uploaded_image_path : "");
+  return path ? imgSrc(path) : "";
+}
+
+/** 获取用户上传图文件名 */
+function getUserAttachmentName(msg: Message): string {
+  const name = msg.uploaded_image_name || (typeof msg.retrieval_params?.uploaded_image_name === "string" ? msg.retrieval_params.uploaded_image_name : "");
+  return String(name || "").trim();
+}
+
+/** 判断用户消息是否包含附件 */
+function hasUserAttachment(msg: Message): boolean {
+  return msg.role === "user" && (Boolean(msg.has_image) || Boolean(getUserAttachmentPreviewSrc(msg)));
+}
+
+/** 打开用户上传图预览弹窗 */
+function showUserAttachmentPreview(msg: Message) {
+  const src = getUserAttachmentPreviewSrc(msg);
+  if (!src) return;
+  previewSrc.value = src;
+  previewTitle.value = getUserAttachmentName(msg) || t("chat.attachedImage");
+  previewDescription.value = String(msg.content || "");
+  previewVisible.value = true;
 }
 
 /** 获取消息的可复制纯文本 */
@@ -1538,7 +1564,6 @@ function revokeAttachedPreview() {
 /** 移除已附加的图片 */
 function removeAttached() {
   attachedImage.value = null;
-  attachmentMode.value = "auto";
   revokeAttachedPreview();
 }
 
@@ -2305,16 +2330,12 @@ function setChatMode(mode: string | number | object) {
 
 function applyExecutionHint(mode: ExecutionHint | "auto") {
   selectedExecutionHint.value = mode;
-  if (mode === "uploaded_image_qa" || mode === "image_similarity" || mode === "save_uploaded_image") {
-    attachmentMode.value = mode;
-  } else {
-    attachmentMode.value = "auto";
-  }
 }
 
 function setExecutionHint(mode: string | number | object) {
   if (
-    mode === "multimodal_rag"
+    mode === "auto"
+    || mode === "multimodal_rag"
     || mode === "direct_llm"
     || mode === "image_similarity"
     || mode === "image_grounded_answer"
@@ -2329,15 +2350,6 @@ function applyQuestionTemplate(template: QuestionTemplate) {
   query.value = template.prompt;
   if (isDefaultChatMode.value) {
     selectedExecutionHint.value = template.executionHint ?? "auto";
-    if (template.executionHint === "uploaded_image_qa") {
-      attachmentMode.value = "uploaded_image_qa";
-    } else if (template.executionHint === "image_similarity") {
-      attachmentMode.value = "image_similarity";
-    } else if (template.executionHint === "save_uploaded_image") {
-      attachmentMode.value = "save_uploaded_image";
-    } else {
-      attachmentMode.value = "auto";
-    }
   }
   focusComposer();
 }
@@ -2932,9 +2944,7 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow: visible;
   padding: 10px 14px 18px;
-  background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.45) 100%);
+  background: var(--chat-canvas);
 }
 
 .empty-chat {
@@ -3101,14 +3111,14 @@ onBeforeUnmount(() => {
 }
 
 .message-item.user .message-bubble {
-  background: #f2f6ff;
+  background: var(--chat-user-bubble);
   color: var(--text-primary);
   border-color: rgba(37, 99, 235, 0.14);
   border-bottom-right-radius: 6px;
 }
 
 .message-item.assistant .message-bubble {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--chat-assistant-bubble);
   color: var(--text-primary);
   border-bottom-left-radius: 8px;
   box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
@@ -3325,27 +3335,51 @@ onBeforeUnmount(() => {
 
 .user-attachment-card {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 12px;
   padding: 10px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--surface-panel-muted);
   border: 1px solid rgba(37, 99, 235, 0.1);
+  max-width: min(100%, 280px);
+}
+
+.user-attachment-card.has-preview {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px;
+  background: var(--surface-panel-muted);
+}
+
+.user-attachment-preview {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 220px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 14px;
+  background: var(--surface-panel-muted);
+  cursor: zoom-in;
 }
 
 .user-attachment-image {
-  width: 72px;
-  height: 72px;
-  border-radius: 12px;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid rgba(37, 99, 235, 0.12);
 }
 
 .user-attachment-meta {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
+  padding: 0 2px 2px;
 }
 
 .user-attachment-label {
@@ -3357,6 +3391,9 @@ onBeforeUnmount(() => {
 .user-attachment-hint {
   font-size: 12px;
   color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mode-text-image_only {
@@ -3607,7 +3644,7 @@ onBeforeUnmount(() => {
   padding: 12px;
   border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.24);
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.92) 100%);
+  background: var(--surface-card-muted);
 }
 
 .source-card.clickable {
@@ -3617,7 +3654,7 @@ onBeforeUnmount(() => {
 .source-card.active {
   border-color: rgba(14, 165, 233, 0.34);
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16);
-  background: linear-gradient(180deg, rgba(240, 249, 255, 0.96) 0%, rgba(224, 242, 254, 0.92) 100%);
+  background: var(--surface-active);
 }
 
 .source-card-main {
@@ -3633,7 +3670,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border-radius: 14px;
   border: 1px solid rgba(148, 163, 184, 0.24);
-  background: rgba(226, 232, 240, 0.55);
+  background: var(--surface-panel-muted);
   cursor: pointer;
 }
 
@@ -3746,7 +3783,7 @@ onBeforeUnmount(() => {
   min-height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(248, 250, 252, 0.92);
+  background: var(--surface-panel-muted);
   border: 1px solid rgba(148, 163, 184, 0.16);
   color: var(--text-secondary);
   font-size: 12px;
@@ -3766,7 +3803,7 @@ onBeforeUnmount(() => {
   padding: 10px 14px;
   border-radius: 14px;
   border: 1px solid rgba(148, 163, 184, 0.2);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.94) 100%);
+  background: var(--surface-card-muted);
   text-align: left;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
@@ -3807,7 +3844,7 @@ onBeforeUnmount(() => {
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.18);
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface-control);
   color: var(--text-secondary);
   font-size: 12px;
   cursor: pointer;
@@ -3837,7 +3874,7 @@ onBeforeUnmount(() => {
   padding: 8px 10px;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.16);
-  background: rgba(248, 250, 252, 0.76);
+  background: var(--surface-panel-muted);
 }
 
 .input-context-row {
@@ -3869,7 +3906,7 @@ onBeforeUnmount(() => {
   gap: 12px;
   width: 100%;
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--surface-card);
   border-radius: 12px;
   padding: 10px 12px;
   text-align: left;
@@ -3934,7 +3971,7 @@ onBeforeUnmount(() => {
   width: 34px;
   height: 34px;
   border-radius: 12px;
-  background: rgba(248, 250, 252, 0.9);
+  background: var(--surface-control);
   border: 1px solid var(--border-color);
 }
 
@@ -3964,7 +4001,7 @@ onBeforeUnmount(() => {
   padding: 10px 12px 12px;
   border-radius: 18px;
   border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--surface-card);
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
 }
 
@@ -4029,7 +4066,7 @@ onBeforeUnmount(() => {
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.22);
-  background: rgba(248, 250, 252, 0.86);
+  background: var(--surface-control);
   color: var(--text-secondary);
   font-size: 12px;
   cursor: pointer;
@@ -4129,7 +4166,7 @@ onBeforeUnmount(() => {
   padding: 8px 10px;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.16);
-  background: rgba(248, 250, 252, 0.76);
+  background: var(--surface-panel-muted);
 }
 
 .attached-preview img {
@@ -4146,11 +4183,6 @@ onBeforeUnmount(() => {
   gap: 2px;
   min-width: 0;
   padding-right: 28px;
-}
-
-.attachment-mode-select {
-  margin-top: 6px;
-  width: 180px;
 }
 
 .attached-title {
@@ -4247,7 +4279,7 @@ onBeforeUnmount(() => {
 
 .message-action-btn.compact {
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-control);
   border-color: rgba(148, 163, 184, 0.18);
   font-size: 12px;
 }
@@ -4381,6 +4413,10 @@ onBeforeUnmount(() => {
 
   .message-bubble {
     padding: 14px;
+  }
+
+  .user-attachment-card {
+    max-width: 100%;
   }
 
   .message-footer {

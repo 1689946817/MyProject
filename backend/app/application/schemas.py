@@ -323,6 +323,8 @@ class ChatMessageOut(BaseModel):
     role: str
     content: str
     has_image: bool = False
+    uploaded_image_path: Optional[str] = None
+    uploaded_image_name: Optional[str] = None
     sources: List[ChatSourceItem] = Field(default_factory=list)
     citations: List[ChatCitationItem] = Field(default_factory=list)
     retrieval_params: Optional[dict[str, Any]] = None
@@ -412,6 +414,14 @@ class AdminConfigUpdateResponse(BaseModel):
     success: bool  # 是否成功
     message: str  # 结果信息
     restart_required: bool = True  # 是否需要重启生效
+
+
+class AdminRestartResponse(BaseModel):
+    """管理后台重启响应。"""
+
+    success: bool  # 是否成功接收重启请求
+    message: str  # 结果信息
+    restart_scheduled: bool = True  # 是否已调度重启
 
 
 class AdminConfigErrorDetail(BaseModel):

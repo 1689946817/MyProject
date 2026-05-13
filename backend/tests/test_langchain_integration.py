@@ -1387,6 +1387,35 @@ class TestLangChainAdapter(unittest.TestCase):
             chat_history=[("q2", "a2"), ("q3", "a3")],
         )
 
+    def test_prepare_scoped_image_grounded_answer_respects_requested_top_k(self):
+        """测试图文回答最终生成与展示来源数量受用户 TopK 限制。"""
+        self.adapter = _build_isolated_adapter()
+        self.adapter._retrieve_images_for_query = AsyncMock(
+            return_value=[{"id": "img-1"}, {"id": "img-2"}, {"id": "img-3"}]
+        )
+        self.adapter.document_vector_store = MagicMock()
+
+        with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED", False):
+            with patch("app.langchain_integration.adapters.settings.IMAGE_GROUNDED_MAX_IMAGES", 3):
+                context = asyncio.run(
+                    self.adapter._prepare_scoped_chat_context(
+                        query="解释这些图片",
+                        top_k=1,
+                        image=None,
+                        chat_history=[],
+                        enable_score_filter=False,
+                        min_relevance_score=None,
+                        execution_hint="image_grounded_answer",
+                        source_scope=None,
+                    )
+                )
+
+        self.adapter._retrieve_images_for_query.assert_awaited_once()
+        self.assertEqual(self.adapter._retrieve_images_for_query.await_args.kwargs["top_k"], 4)
+        self.assertEqual(context["documents"], [{"id": "img-1"}, {"id": "img-2"}, {"id": "img-3"}])
+        self.assertEqual(context["generation_documents"], [{"id": "img-1"}])
+        self.assertEqual(context["combined_documents"], [{"id": "img-1"}])
+
     def test_process_pdf_upload_uses_structured_pdf_outputs_and_page_metadata(self):
         """测试 PDF 上传会消费结构化解析结果并把页码 metadata 写入向量库"""
         self.adapter = _build_isolated_adapter()

@@ -7,10 +7,10 @@
         <p class="page-subtitle">{{ t("settings.subtitle") }}</p>
       </div>
       <div class="page-intro-actions">
-        <el-button :disabled="!isDirty || saving" @click="resetChanges">
+        <el-button :disabled="!isDirty || saving || restarting" @click="resetChanges">
           {{ t("settings.reset") }}
         </el-button>
-        <el-button type="primary" :loading="saving" :disabled="!isDirty" @click="saveChanges">
+        <el-button type="primary" :loading="saving" :disabled="!isDirty || restarting" @click="saveChanges">
           {{ t("settings.save") }}
         </el-button>
       </div>
@@ -21,10 +21,10 @@
       type="warning"
       :closable="false"
       show-icon
-      :title="serverMessage || t('settings.restartHint')"
+      :title="restarting ? t('settings.restartInProgress') : (serverMessage || t('settings.restartHint'))"
     />
 
-    <div v-loading="loading" class="settings-groups">
+    <div v-loading="loading || restarting" class="settings-groups">
       <el-card
         v-for="group in groupedItems"
         :key="group.key"
@@ -132,11 +132,13 @@ import { onBeforeRouteLeave } from "vue-router";
 import { AxiosError } from "axios";
 import {
   getSystemConfig,
+  restartBackend,
   updateSystemConfig,
   type ConfigGroup,
   type ConfigItem,
   type ConfigValidationError,
 } from "@/api/settings";
+import { getLiveHealth } from "@/api/ops";
 
 // ---- 类型定义 ----
 
@@ -151,10 +153,15 @@ const { t } = useI18n();
 // ---- 响应式状态 ----
 const loading = ref(false);
 const saving = ref(false);
+const restarting = ref(false);
 const groups = ref<ConfigGroup[]>([]);
 const items = ref<ConfigFormItem[]>([]);
 const initialSnapshot = ref("{}");
 const serverMessage = ref("");
+
+const RESTART_POLL_DELAY_MS = 1500;
+const RESTART_POLL_INTERVAL_MS = 1000;
+const RESTART_POLL_ATTEMPTS = 30;
 
 // ---- 计算属性 ----
 
@@ -222,6 +229,65 @@ function resetChanges() {
   loadConfig();
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function waitForBackendLive() {
+  await sleep(RESTART_POLL_DELAY_MS);
+  for (let attempt = 0; attempt < RESTART_POLL_ATTEMPTS; attempt += 1) {
+    try {
+      const health = await getLiveHealth();
+      if (health.status === "ok") {
+        return true;
+      }
+    } catch {
+      // The backend is expected to be unavailable while the process restarts.
+    }
+    await sleep(RESTART_POLL_INTERVAL_MS);
+  }
+  return false;
+}
+
+async function restartBackendWithFeedback() {
+  try {
+    restarting.value = true;
+    const response = await restartBackend();
+    serverMessage.value = response.message || t("settings.restartInProgress");
+    ElMessage.info(serverMessage.value);
+    const recovered = await waitForBackendLive();
+    if (recovered) {
+      ElMessage.success(t("settings.restartSuccess"));
+      await loadConfig();
+    } else {
+      ElMessage.warning(t("settings.restartPending"));
+    }
+  } catch (error) {
+    console.error("重启后端失败:", error);
+    ElMessage.error(t("settings.restartFailed"));
+  } finally {
+    restarting.value = false;
+  }
+}
+
+async function confirmRestartIfNeeded(restartRequired: boolean) {
+  if (!restartRequired) return;
+  try {
+    await ElMessageBox.confirm(
+      t("settings.restartConfirm"),
+      t("settings.restartConfirmTitle"),
+      {
+        confirmButtonText: t("settings.restartNow"),
+        cancelButtonText: t("settings.restartLater"),
+        type: "warning",
+      }
+    );
+  } catch {
+    return;
+  }
+  await restartBackendWithFeedback();
+}
+
 /** 保存配置修改到后端，处理字段级校验错误 */
 async function saveChanges() {
   try {
@@ -235,6 +301,8 @@ async function saveChanges() {
     serverMessage.value = response.message;
     initialSnapshot.value = currentSnapshot.value;
     ElMessage.success(t("settings.saveSuccess"));
+    saving.value = false;
+    await confirmRestartIfNeeded(response.restart_required);
   } catch (error) {
     const axiosError = error as AxiosError<{ detail?: ConfigValidationError }>;
     const detail = axiosError.response?.data?.detail;

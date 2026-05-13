@@ -471,7 +471,7 @@ onMounted(async () => {
   margin-bottom: 12px;
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-card);
   border: 1px solid var(--border-color);
 }
 
@@ -488,7 +488,7 @@ onMounted(async () => {
   gap: 6px;
   padding: 14px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-card);
   border: 1px solid var(--border-color);
 }
 
@@ -542,9 +542,17 @@ onMounted(async () => {
 }
 
 .dark-table {
-  --el-table-bg-color: var(--bg-secondary);
-  --el-table-tr-bg-color: var(--bg-secondary);
+  --el-table-bg-color: var(--surface-card);
+  --el-table-tr-bg-color: var(--surface-card);
   --el-table-header-bg-color: var(--bg-tertiary);
+  --el-table-header-text-color: var(--text-primary);
+  --el-table-text-color: var(--text-secondary);
+  --el-table-row-hover-bg-color: var(--bg-accent-soft);
+  --el-table-border-color: var(--border-color);
+}
+
+.dark-table :deep(.el-table__row--striped td.el-table__cell) {
+  background: var(--surface-panel-muted);
 }
 
 @media (max-width: 1100px) {

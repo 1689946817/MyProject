@@ -10,20 +10,23 @@
 
 2. **系统配置管理**：
    - 获取当前运行配置（`GET /config`），用于前端配置页面渲染。
-   - 更新配置项（`PUT /config`），写入 `.env` 文件并即时生效。
+   - 更新配置项（`PUT /config`），写入 `.env` 文件。
+   - 调度后端重启（`POST /restart`），使已保存配置重新加载。
 
 注意：这些端点目前未做鉴权保护，仅应在受信内网或反向代理鉴权层之后暴露。
 """
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.application.schemas import (
     AdminConfigResponse,
     AdminConfigUpdateRequest,
     AdminConfigUpdateResponse,
+    AdminRestartResponse,
 )
 from app.core.config_admin import ConfigValidationError, ConfigAdminService, get_config_admin_service
+from app.core.restart import schedule_backend_restart
 
 logger = logging.getLogger(__name__)
 
@@ -136,3 +139,22 @@ async def update_config(
                 "message": exc.message,
             },
         ) from exc
+
+
+@router.post(
+    "/restart",
+    response_model=AdminRestartResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def restart_backend():
+    """调度后端服务重启。
+
+    接口先返回 202 响应，再由后台线程延迟重启当前 Python 进程，
+    避免请求尚未完成时连接被立即中断。
+    """
+    schedule_backend_restart()
+    return {
+        "success": True,
+        "message": "后端正在重启，请稍后刷新页面。",
+        "restart_scheduled": True,
+    }

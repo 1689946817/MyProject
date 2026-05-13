@@ -109,7 +109,7 @@ select {
   padding: 8px 10px;
   border-radius: 16px;
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.42);
+  background: var(--surface-panel);
   backdrop-filter: blur(12px);
 }
 
@@ -289,12 +289,33 @@ select {
   padding: 14px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.56);
+  background: var(--surface-panel);
   backdrop-filter: blur(14px);
 }
 
 .field-surface :where(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-input-number__wrapper) {
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-control);
+}
+
+:root.dark {
+  --el-input-bg-color: var(--surface-control);
+  --el-input-text-color: var(--text-primary);
+  --el-input-placeholder-color: var(--text-tertiary);
+  --el-fill-color-blank: var(--surface-control);
+  --el-fill-color-light: var(--surface-panel-muted);
+}
+
+:root.dark :where(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-input-number__wrapper) {
+  background-color: var(--surface-control);
+  box-shadow: 0 0 0 1px var(--border-color) inset;
+}
+
+:root.dark :where(.el-input__inner, .el-textarea__inner) {
+  color: var(--text-primary);
+}
+
+:root.dark :where(.el-input__inner::placeholder, .el-textarea__inner::placeholder) {
+  color: var(--text-tertiary);
 }
 
 @media (max-width: 1100px) {
