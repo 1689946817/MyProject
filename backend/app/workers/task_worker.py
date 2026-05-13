@@ -1,5 +1,10 @@
 """
 轻量级数据库轮询 worker。
+
+以固定间隔轮询数据库中的待处理任务（document_parse / document_reprocess），
+调用 LangChainAdapter 执行解析，完成后标记任务状态。
+
+启动方式：python -m app.workers.task_worker
 """
 from __future__ import annotations
 
@@ -19,11 +24,12 @@ from app.data.database import SessionLocal
 from app.langchain_integration.adapters import get_langchain_adapter
 
 
-POLL_SECONDS = float(os.getenv("JOB_WORKER_POLL_SECONDS", "2"))
-WORKER_ID = os.getenv("JOB_WORKER_ID", f"{socket.gethostname()}-worker")
+POLL_SECONDS = float(os.getenv("JOB_WORKER_POLL_SECONDS", "2"))  # 轮询间隔（秒）
+WORKER_ID = os.getenv("JOB_WORKER_ID", f"{socket.gethostname()}-worker")  # worker 唯一标识
 
 
 async def process_once() -> bool:
+    """尝试领取并处理一个任务。无待处理任务时返回 False。"""
     adapter = get_langchain_adapter()
     with SessionLocal() as db:
         ensure_knowledge_management_columns(db)
@@ -34,6 +40,7 @@ async def process_once() -> bool:
         payload = load_json_dict(job.payload_json)
         doc_id = str(payload.get("doc_id", "")).strip()
         try:
+            # 根据任务类型分发处理
             if job.job_type == "document_parse":
                 await adapter.process_document_record_task(doc_id)
             elif job.job_type == "document_reprocess":
@@ -48,6 +55,7 @@ async def process_once() -> bool:
 
 
 async def main() -> None:
+    """无限循环轮询：处理任务 → 等待 → 再次轮询。"""
     while True:
         did_work = await process_once()
         if not did_work:

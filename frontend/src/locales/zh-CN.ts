@@ -78,6 +78,11 @@ export default {
     subtitle: '支持文本搜图、图搜图与结果比对，帮助用户快速定位相关视觉证据。',
     textToImage: '文本 → 图像检索',
     imageToImage: '图像 → 图像检索',
+    textMode: '文本检索',
+    imageMode: '图片检索',
+    results: '结果',
+    textHint: '输入描述后查看匹配图片',
+    imageHint: '上传图片后查看相似图片',
     textQueryPlaceholder: '输入要检索的图像内容，如：一个在草地上玩球的小孩',
     imageQueryPlaceholder: '拖拽或点击上传待检索的图片',
     searchBtn: '检索',
@@ -458,6 +463,9 @@ export default {
     edit: '编辑',
     save: '保存',
     rename: '重命名',
-    confirmDelete: '确认删除？'
+    confirmDelete: '确认删除？',
+    chooseFiles: '选择文件',
+    noFileSelected: '未选择文件',
+    dragDropOptional: '支持拖拽上传'
   }
 }

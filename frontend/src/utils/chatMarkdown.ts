@@ -1,21 +1,41 @@
+/**
+ * 聊天 Markdown 渲染工具模块
+ *
+ * 将 Markdown 文本渲染为安全的 HTML，支持代码高亮、任务列表、表格、
+ * 复制代码按钮等功能，并通过 DOMPurify 进行 XSS 防护。
+ */
 import DOMPurify from "dompurify";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 
+/** 渲染选项 */
 type RenderOptions = {
+  /** 复制代码按钮的显示文本（如 "复制"） */
   copyCodeLabel: string;
 };
 
+/** 聊天 Markdown 块（用于流式渲染时的分块输出） */
 export type ChatMarkdownBlock = {
+  /** 块唯一键（如 "p-0"） */
   key: string;
+  /** 块序号 */
   index: number;
+  /** 块的原始 Markdown 文本 */
   raw: string;
 };
 
+/** 渲染结果 LRU 缓存 */
 const renderCache = new Map<string, string>();
+/** 缓存最大容量 */
 const MAX_CACHE_SIZE = 120;
+/** MarkdownIt 工具方法（用于 HTML 转义等） */
 const markdownUtils = new MarkdownIt().utils;
 
+/**
+ * 转义 HTML 属性值中的特殊字符
+ * @param value 原始字符串
+ * @returns 转义后的安全字符串
+ */
 function escapeHtmlAttribute(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -24,6 +44,11 @@ function escapeHtmlAttribute(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
+/**
+ * 将字符串编码为 Base64（使用 UTF-8 编码）
+ * @param value 原始字符串
+ * @returns Base64 编码字符串
+ */
 function encodeBase64(value: string): string {
   const bytes = new TextEncoder().encode(value);
   let binary = "";
@@ -33,12 +58,24 @@ function encodeBase64(value: string): string {
   return btoa(binary);
 }
 
+/**
+ * 将 Base64 字符串解码为字符串（使用 UTF-8 解码）
+ * @param value Base64 编码字符串
+ * @returns 解码后的原始字符串
+ */
 function decodeBase64(value: string): string {
   const binary = atob(value);
   const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
   return new TextDecoder().decode(bytes);
 }
 
+/**
+ * 渲染代码块为 HTML（含语法高亮和复制按钮）
+ * @param code 代码文本
+ * @param language 编程语言标识
+ * @param copyCodeLabel 复制按钮显示文本
+ * @returns 代码块 HTML 字符串
+ */
 function renderCodeBlock(code: string, language: string, copyCodeLabel: string): string {
   const normalizedLanguage = language && hljs.getLanguage(language) ? language : "text";
   const highlighted = normalizedLanguage !== "text"
@@ -63,6 +100,13 @@ function renderCodeBlock(code: string, language: string, copyCodeLabel: string):
   `.trim();
 }
 
+/**
+ * 创建配置好的 MarkdownIt 解析器实例
+ *
+ * 禁用原始 HTML、启用换行转换和自动链接，并自定义链接渲染（新窗口打开 + 安全属性）。
+ * @param copyCodeLabel 复制代码按钮文本
+ * @returns MarkdownIt 实例
+ */
 function createMarkdownParser(copyCodeLabel: string): MarkdownIt {
   const markdown = new MarkdownIt({
     html: false,
@@ -85,6 +129,10 @@ function createMarkdownParser(copyCodeLabel: string): MarkdownIt {
   return markdown;
 }
 
+/**
+ * 为容器内的所有表格添加横向滚动包裹层
+ * @param container DOM 容器元素
+ */
 function wrapTables(container: HTMLElement) {
   container.querySelectorAll("table").forEach((table) => {
     if (table.parentElement?.classList.contains("chat-table-wrap")) {
@@ -97,6 +145,10 @@ function wrapTables(container: HTMLElement) {
   });
 }
 
+/**
+ * 增强任务列表：将 [ ] / [x] 语法转换为带复选框的列表项
+ * @param container DOM 容器元素
+ */
 function enhanceTaskLists(container: HTMLElement) {
   container.querySelectorAll("li").forEach((item) => {
     const contentRoot = item.firstElementChild?.tagName === "P"
@@ -125,6 +177,10 @@ function enhanceTaskLists(container: HTMLElement) {
   });
 }
 
+/**
+ * 规范化链接：移除 javascript: 协议，添加新窗口打开和安全属性
+ * @param container DOM 容器元素
+ */
 function normalizeLinks(container: HTMLElement) {
   container.querySelectorAll("a[href]").forEach((link) => {
     const href = (link.getAttribute("href") || "").trim();
@@ -137,6 +193,11 @@ function normalizeLinks(container: HTMLElement) {
   });
 }
 
+/**
+ * 对渲染后的 HTML 进行后处理（包裹表格、增强任务列表、规范化链接）
+ * @param html 原始 HTML 字符串
+ * @returns 后处理后的 HTML 字符串
+ */
 function postProcessRenderedHtml(html: string): string {
   const container = document.createElement("div");
   container.innerHTML = html;
@@ -146,6 +207,11 @@ function postProcessRenderedHtml(html: string): string {
   return container.innerHTML;
 }
 
+/**
+ * 使用 DOMPurify 净化 HTML，仅保留安全的标签和属性
+ * @param html 待净化的 HTML 字符串
+ * @returns 净化后的安全 HTML
+ */
 function sanitizeRenderedHtml(html: string): string {
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [
@@ -194,8 +260,16 @@ function sanitizeRenderedHtml(html: string): string {
   });
 }
 
+/** 代码围栏（``` 或 ~~~）的匹配正则 */
 const fencePattern = /^\s*(```|~~~)/;
 
+/**
+ * 将 Markdown 内容按空行分块（代码围栏内的空行不分割）
+ *
+ * 用于流式渲染时将回答分段，每段独立渲染和插入 DOM。
+ * @param content 原始 Markdown 文本
+ * @returns 分块列表，每块包含原始 Markdown 和序号
+ */
 export function splitChatMarkdownBlocks(content: string): ChatMarkdownBlock[] {
   const normalizedContent = String(content || "")
     .replace(/<br\s*\/?>/gi, "\n")
@@ -238,6 +312,14 @@ export function splitChatMarkdownBlocks(content: string): ChatMarkdownBlock[] {
   }));
 }
 
+/**
+ * 将 Markdown 内容渲染为安全的 HTML（带缓存）
+ *
+ * 流程：规范化 → 解析 Markdown → 后处理 → 净化 → 缓存。
+ * @param content 原始 Markdown 文本
+ * @param options 渲染选项（复制按钮文本）
+ * @returns 安全的 HTML 字符串
+ */
 export function renderChatMarkdown(content: string, options: RenderOptions): string {
   const normalizedContent = String(content || "")
     .replace(/<br\s*\/?>/gi, "\n");
@@ -266,6 +348,11 @@ export function renderChatMarkdown(content: string, options: RenderOptions): str
   return sanitized;
 }
 
+/**
+ * 解码复制按钮中的 Base64 编码代码
+ * @param encoded Base64 编码的代码字符串
+ * @returns 解码后的原始代码
+ */
 export function decodeCopiedCode(encoded: string): string {
   return decodeBase64(encoded);
 }

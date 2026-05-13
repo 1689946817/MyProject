@@ -1,11 +1,16 @@
 """
-Baseline C：基于 OCR 与文档结构解析的多模态 RAG 流程。
+Baseline C：基于 OCR 文本提取的向量检索方法。
 
 核心思路：
   对图像进行 OCR 识别，提取图中实际存在的文字，将其向量化后存入
-  独立的 ChromaDB 集合 `images_ocr_text`，检索时同样走文本向量检索。
+  独立的 ChromaDB 集合 `images_ocr_text`，检索时走文本向量检索路径。
 
-局限性（预期效果差，用于衬托本项目方法的优势）：
+OCR 引擎策略：
+  - 主引擎：PaddleOCR（精度更高，但需 PaddlePaddle 环境）
+  - 备用引擎：RapidOCR（ONNX 推理，无需 PaddlePaddle）
+  - 通过子进程隔离运行，避免 PaddleOCR 在同一进程中重复初始化 PDX
+
+局限性（预期效果差，用于衬托本项目 Proposed 方法的优势）：
   - MS-COCO 是自然场景图像，图中文字极少，OCR 提取内容非常有限
   - 对于无文字图像，OCR 结果为空，检索退化为随机
   - 无法理解图像语义内容，只能匹配字面文字
@@ -13,7 +18,7 @@ Baseline C：基于 OCR 与文档结构解析的多模态 RAG 流程。
 依赖：
   pip install paddlepaddle paddleocr
   或
-  pip install pytesseract Pillow  （需额外安装 Tesseract 可执行文件）
+  pip install rapidocr_onnxruntime
 
 向量库使用独立的 ChromaDB 集合：`images_ocr_text`
 """
@@ -43,22 +48,35 @@ from evaluation.methods._ocr_common import (  # noqa: E402
     validate_ocr_python,
 )
 
-# 初始化 ChromaDB 客户端和集合
+# 初始化持久化 ChromaDB 客户端
 _client = chromadb.Client(
     ChromaSettings(
         is_persistent=True,
         persist_directory=settings.CHROMA_PERSIST_DIR,
     )
 )
+# OCR baseline 使用独立集合，避免与其他方法混淆
 _collection_name = "images_ocr_text"
+
 def _run_ocr_subprocess(image_paths: list[str]) -> dict[str, str]:
     """
     在独立子进程中批量执行 OCR，返回 {image_path: ocr_text} 映射。
 
-    PaddleOCR 3.4.0 在 import 时初始化 PDX，同一进程不能重复初始化，
-    因此将 OCR 隔离到子进程中运行。
+    PaddleOCR 3.4.0 在 import 时初始化 PDX 框架，同一进程不能重复初始化，
+    因此将 OCR 推理隔离到子进程中运行，避免与主进程的其他模块冲突。
+
+    执行流程：
+    1. 优先使用 PaddleOCR 批量识别
+    2. PaddleOCR 失败时自动降级到 RapidOCR
+    3. 解析子进程 stdout 的 JSON 输出
+
+    Args:
+        image_paths: 待识别的图像文件路径列表。
+
+    Returns:
+        dict[str, str]: {图像绝对路径: OCR 识别文本}，空结果返回 ""。
     """
-    # 内联子进程脚本
+    # 内联子进程脚本：直接通过 stdin 传入图片路径列表
     script = """
 import json, os, sys, types
 os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "True")
@@ -122,8 +140,10 @@ except Exception as exc:
     results = _run_rapid(paths)
 print(json.dumps(results, ensure_ascii=True))
 """
+    # 获取 PaddleOCR 专用 Python 解释器路径，未设置则使用当前解释器
     paddle_python = os.environ.get("PADDLEOCR_PYTHON") or sys.executable
     validate_ocr_python(paddle_python)
+    # 启动子进程执行 OCR 脚本，通过 sys.argv[1] 传入图片路径 JSON
     proc = subprocess.run(
         [paddle_python, "-c", script, json.dumps(image_paths)],
         capture_output=True,
@@ -148,12 +168,14 @@ def retrieve(query: str, top_k: int = 10) -> List[str]:
     """
     基于文本查询 OCR 向量集合，返回预测的图像 ID 列表。
 
+    检索路径：查询文本 → Embedding → ChromaDB 余弦相似度检索。
+
     Args:
-        query: 查询文本
-        top_k: 返回的 top-k 结果数量
+        query: 查询文本。
+        top_k: 返回的 top-k 结果数量，默认 10。
 
     Returns:
-        List[str]: top_k 个预测图像 ID 列表
+        List[str]: top_k 个预测图像 ID 列表，按相似度降序排列。
     """
     embedder = get_embedding_model()
     emb = embedder.embed_query(query)
@@ -167,14 +189,17 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
     """
     构建 OCR 文本向量索引。
 
-    对每张图像执行 OCR，将提取的文字向量化后存入 ChromaDB。
-    需要在运行评估前调用此函数构建向量库。
+    对每张图像执行 OCR（子进程隔离），将提取的文字通过 Embedding 模型
+    向量化后存入 ChromaDB 集合 `images_ocr_text`。
+
+    健康性检查：调用 _ocr_common 的统计函数验证 OCR 结果是否有效，
+    避免将全空或全相同的异常索引提交到 ChromaDB。
 
     Args:
         image_records: 图像记录列表，每个记录应包含：
             - id: 图像 ID（字符串）
             - file_path: 图像文件路径
-        fallback_text: OCR 结果为空时的替代文本，默认为 "[no text]"
+        fallback_text: OCR 结果为空时的替代文本，默认为 "[no text]"。
     """
     if fallback_text is None:
         fallback_text = "[no text]"
@@ -239,11 +264,21 @@ def build_ocr_index(image_records: List[dict], fallback_text: Optional[str] = No
 
 
 def check_ocr_index() -> bool:
-    """检查 OCR 向量索引是否已构建。"""
+    """检查 OCR 向量索引是否已构建且健康。
+
+    从 ChromaDB 集合中抽样 10 条文档，检查：
+    1. 集合非空
+    2. 抽样文档不全为 fallback 文本
+    3. 抽样文档不完全相同
+
+    Returns:
+        bool: True 表示索引已构建且健康。
+    """
     collection = _client.get_or_create_collection(name=_collection_name)
     if collection.count() == 0:
         return False
 
+    # 抽样检查索引内容质量
     sample = collection.peek(limit=10)
     documents = sample.get("documents") or []
     return is_ocr_index_healthy(documents, fallback_text="[no text]")

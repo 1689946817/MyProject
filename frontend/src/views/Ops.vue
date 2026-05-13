@@ -1,3 +1,4 @@
+<!-- 运维管理页面：支持图片/文档批量导入、后台任务队列监控、系统健康状态查看 -->
 <template>
   <div class="ops-page">
     <div class="page-intro">
@@ -15,30 +16,27 @@
 
     <el-tabs v-model="importTab" class="ops-tabs">
       <el-tab-pane :label="t('ops.imageImportTitle')" name="images">
-        <el-card class="glass-card">
-          <template #header>
-            <div class="card-header">
-              <span>{{ t("ops.imageImportTitle") }}</span>
-              <el-tag size="small" effect="plain">{{ t("ops.imageImportHint") }}</el-tag>
-            </div>
-          </template>
-          <UploadZone
-            v-model:files="imageImportFiles"
-            :text="t('ops.imageImportArea')"
-            :hint="t('ops.imageImportDesc')"
-            :accept="'image/*'"
-            :multiple="true"
-          />
-          <el-button
-            type="primary"
-            class="upload-btn"
-            :loading="imageImporting"
-            :disabled="imageImportFiles.length === 0"
-            @click="submitImageImport"
-          >
-            <i class="i-ep-upload mr-2"></i>
-            {{ t("ops.startImport") }}
-          </el-button>
+        <el-card class="glass-card upload-entry-card">
+          <div class="upload-entry-row">
+            <UploadZone
+              v-model:files="imageImportFiles"
+              :text="t('ops.imageImportArea')"
+              :hint="t('ops.imageImportDesc')"
+              :accept="'image/*'"
+              :multiple="true"
+              compact
+            />
+            <el-button
+              type="primary"
+              class="upload-btn"
+              :loading="imageImporting"
+              :disabled="imageImportFiles.length === 0"
+              @click="submitImageImport"
+            >
+              <i class="i-ep-upload mr-2"></i>
+              {{ t("ops.startImport") }}
+            </el-button>
+          </div>
           <el-alert
             v-if="imageImportSummary"
             :title="imageImportSummary"
@@ -51,30 +49,27 @@
       </el-tab-pane>
 
       <el-tab-pane :label="t('ops.docImportTitle')" name="documents">
-        <el-card class="glass-card">
-          <template #header>
-            <div class="card-header">
-              <span>{{ t("ops.docImportTitle") }}</span>
-              <el-tag size="small" type="warning" effect="plain">{{ t("ops.docImportHint") }}</el-tag>
-            </div>
-          </template>
-          <UploadZone
-            v-model:files="documentImportFiles"
-            :text="t('ops.docImportArea')"
-            :hint="t('ops.docImportDesc')"
-            :accept="'.pdf'"
-            :multiple="true"
-          />
-          <el-button
-            type="primary"
-            class="upload-btn"
-            :loading="documentImporting"
-            :disabled="documentImportFiles.length === 0"
-            @click="submitDocumentImport"
-          >
-            <i class="i-ep-upload mr-2"></i>
-            {{ t("ops.startImport") }}
-          </el-button>
+        <el-card class="glass-card upload-entry-card">
+          <div class="upload-entry-row">
+            <UploadZone
+              v-model:files="documentImportFiles"
+              :text="t('ops.docImportArea')"
+              :hint="t('ops.docImportDesc')"
+              :accept="'.pdf'"
+              :multiple="true"
+              compact
+            />
+            <el-button
+              type="primary"
+              class="upload-btn"
+              :loading="documentImporting"
+              :disabled="documentImportFiles.length === 0"
+              @click="submitDocumentImport"
+            >
+              <i class="i-ep-upload mr-2"></i>
+              {{ t("ops.startImport") }}
+            </el-button>
+          </div>
           <el-alert
             v-if="documentImportMessage"
             :title="documentImportMessage"
@@ -202,6 +197,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入 ----
 import { computed, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
@@ -220,6 +216,7 @@ import type { HealthStatus, JobTask, MetricsSummary } from "@/types";
 
 const { t } = useI18n();
 
+// ---- 批量导入状态 ----
 const importTab = ref<"images" | "documents">("documents");
 const imageImportFiles = ref<File[]>([]);
 const documentImportFiles = ref<File[]>([]);
@@ -228,9 +225,13 @@ const documentImporting = ref(false);
 const imageImportSummary = ref("");
 const documentImportMessage = ref("");
 const activeBatchId = ref("");
+
+// ---- 后台任务队列状态 ----
 const jobsLoading = ref(false);
 const jobs = ref<JobTask[]>([]);
 const jobStatusFilter = ref<string>("");
+
+// ---- 系统健康状态 ----
 const liveHealth = ref<HealthStatus | null>(null);
 const depsHealth = ref<HealthStatus | null>(null);
 const readyHealth = ref<HealthStatus | null>(null);
@@ -245,6 +246,9 @@ const metrics = ref<MetricsSummary>({
   latestWorkerHeartbeat: null,
 });
 
+// ---- 计算属性 ----
+
+/** 根据当前活跃批次 ID 过滤任务列表 */
 const filteredJobs = computed(() => {
   let list = jobs.value;
   if (activeBatchId.value) {
@@ -253,11 +257,13 @@ const filteredJobs = computed(() => {
   return list;
 });
 
+/** 活跃 Worker 数量（优先取依赖健康检查数据，回退到指标数据） */
 const workerCount = computed(() => {
   const fromDeps = Number(depsHealth.value?.checks?.workers?.active_workers ?? 0);
   return fromDeps || metrics.value.activeWorkers;
 });
 
+/** 最近一次 Worker 心跳的时间显示文本 */
 const latestHeartbeatLabel = computed(() => {
   if (!metrics.value.latestWorkerHeartbeat) {
     return t("ops.unknownHeartbeat");
@@ -265,11 +271,15 @@ const latestHeartbeatLabel = computed(() => {
   return formatDateTime(metrics.value.latestWorkerHeartbeat);
 });
 
+// ---- 工具函数 ----
+
+/** 将日期时间字符串格式化为本地显示格式 */
 function formatDateTime(value?: string | null): string {
   if (!value) return "-";
   return new Date(value).toLocaleString();
 }
 
+/** 将健康检查状态映射为 Element Plus Tag 类型 */
 function healthTagType(status?: string): "success" | "warning" | "danger" | "info" {
   if (status === "ok") return "success";
   if (status === "degraded") return "warning";
@@ -277,6 +287,7 @@ function healthTagType(status?: string): "success" | "warning" | "danger" | "inf
   return "info";
 }
 
+/** 将任务状态映射为 Element Plus Tag 类型 */
 function jobStatusType(status: string): "success" | "warning" | "danger" | "info" {
   if (status === "completed") return "success";
   if (status === "failed") return "danger";
@@ -284,14 +295,19 @@ function jobStatusType(status: string): "success" | "warning" | "danger" | "info
   return "info";
 }
 
+/** 判断任务是否允许重试（仅 failed 和 completed 状态可重试） */
 function canRetryJob(job: JobTask): boolean {
   return job.status === "failed" || job.status === "completed";
 }
 
+/** 清除批次过滤，显示全部任务 */
 function clearBatchFilter() {
   activeBatchId.value = "";
 }
 
+// ---- 数据加载方法 ----
+
+/** 加载后台任务列表，支持按状态过滤 */
 async function loadJobs() {
   try {
     jobsLoading.value = true;
@@ -307,6 +323,7 @@ async function loadJobs() {
   }
 }
 
+/** 并行加载系统健康检查（存活/依赖/就绪）和指标摘要 */
 async function loadHealth() {
   try {
     const [live, deps, ready, metricsData] = await Promise.all([
@@ -325,10 +342,14 @@ async function loadHealth() {
   }
 }
 
+/** 刷新所有数据（任务列表 + 健康状态） */
 async function refreshAll() {
   await Promise.all([loadJobs(), loadHealth()]);
 }
 
+// ---- 批量导入与任务操作 ----
+
+/** 批量导入图片到知识库 */
 async function submitImageImport() {
   if (imageImportFiles.value.length === 0) return;
   try {
@@ -347,6 +368,7 @@ async function submitImageImport() {
   }
 }
 
+/** 批量导入文档到知识库，创建后台任务批次并刷新任务和健康数据 */
 async function submitDocumentImport() {
   if (documentImportFiles.value.length === 0) return;
   try {
@@ -368,6 +390,7 @@ async function submitDocumentImport() {
   }
 }
 
+/** 重试指定任务，刷新任务列表和健康状态 */
 async function handleRetryJob(jobId: string) {
   try {
     await retryJob(jobId);
@@ -379,6 +402,8 @@ async function handleRetryJob(jobId: string) {
     ElMessage.error(t("ops.retryFailed"));
   }
 }
+
+// ---- 生命周期 ----
 
 onMounted(async () => {
   await refreshAll();
@@ -405,11 +430,23 @@ onMounted(async () => {
   background: var(--border-color);
 }
 
+.upload-entry-card :deep(.el-card__body) {
+  padding: 14px 18px;
+}
+
+.upload-entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
 .upload-btn {
-  width: 100%;
-  min-height: 44px;
-  margin-top: 16px;
-  border-radius: 14px;
+  min-width: 180px;
+  min-height: 38px;
+  padding: 0 18px;
+  margin-top: 0;
+  border-radius: 12px;
 }
 
 .result-alert {
@@ -458,6 +495,16 @@ onMounted(async () => {
 .metric-card strong {
   font-size: 24px;
   color: var(--text-primary);
+}
+
+@media (max-width: 960px) {
+  .upload-entry-row {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-btn {
+    width: 100%;
+  }
 }
 
 .metric-label {

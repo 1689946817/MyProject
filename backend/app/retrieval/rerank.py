@@ -12,7 +12,8 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# 尝试加载 FlagEmbedding
+# ---- 全局状态 ----
+# FlagReranker 懒加载单例，避免启动时加载大模型
 _reranker = None
 _reranker_load_attempted = False
 
@@ -27,7 +28,11 @@ def _resolve_top_k(top_k: Optional[int], result_count: int) -> int:
 
 
 def _get_reranker():
-    """懒加载 FlagReranker 单例"""
+    """懒加载 FlagReranker 单例。
+
+    首次调用时尝试加载 FlagEmbedding 模型（使用 fp16 加速）。
+    加载失败时返回 None，后续会降级为 simple_rerank。
+    """
     global _reranker, _reranker_load_attempted
     if _reranker_load_attempted:
         return _reranker

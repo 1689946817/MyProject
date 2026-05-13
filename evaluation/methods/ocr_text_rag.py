@@ -1,12 +1,23 @@
 """
-OCR-Text-RAG 基线：用 OCR 文字向量检索图片，但只将 OCR 识别出的文字
-作为上下文传给 LLM，不传原始图片。
+OCR-Text-RAG 基线方法。
 
-对比对象：
-- baseline_ocr：同样用 OCR 检索，但最终传原始图片给 LLM
-- ocr_text_rag（本文件）：同样用 OCR 检索，但最终传 OCR 文字给 LLM
+用 OCR 文字向量检索图片（与 baseline_ocr 共享相同的 OCR 索引），
+但生成阶段只将 OCR 识别出的文字作为上下文传给 LLM，不传原始图片。
+
+对比实验设计：
+- baseline_ocr_rag：用 OCR 检索 → 传原始图片给 LLM
+- ocr_text_rag（本文件）：用 OCR 检索 → 传 OCR 文字给 LLM
 
 用途：验证"OCR 文字作为上下文"与"原始图片作为上下文"的生成质量差异。
+如果 OCR 文字方法效果明显差于传原始图片，说明原始图片中包含了
+OCR 未提取的视觉语义信息（如布局、图表、颜色等）。
+
+返回格式：
+    {
+        "generated_answer": str,   # LLM 生成的回答
+        "context": str,            # 拼接的 OCR 文字
+        "images": [],              # 不传图片，列表为空
+    }
 """
 
 from __future__ import annotations
@@ -24,14 +35,17 @@ from app.core.config import settings  # noqa: E402
 from app.langchain_integration.models import get_chat_model, get_embedding_model  # noqa: E402
 from langchain_core.messages import HumanMessage  # noqa: E402
 
+# 初始化持久化 ChromaDB 客户端，使用与后端相同的存储目录
 _client = chromadb.Client(
     ChromaSettings(
         is_persistent=True,
         persist_directory=settings.CHROMA_PERSIST_DIR,
     )
 )
+# 使用 OCR 基线构建的向量集合（与 baseline_ocr_rag 共享）
 _collection = _client.get_or_create_collection(name="images_ocr_text")
 
+# 提示词模板：要求 LLM 仅基于 OCR 文字回答，信息不足时明确说明
 _PROMPT = (
     "你是一个多模态知识库问答助手。以下是从知识库中检索到的图像 OCR 文字信息，"
     "请基于这些文字内容回答用户的问题。\n\n"

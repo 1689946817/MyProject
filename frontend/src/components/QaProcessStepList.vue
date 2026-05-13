@@ -1,3 +1,8 @@
+<!--
+  QaProcessStepList - RAG 处理步骤列表
+  功能：以时间线样式展示 RAG 处理过程中的各个步骤（如检索、重排、生成等），
+  每个步骤包含状态标记、耗时、摘要和详细参数。支持紧凑（compact）模式用于流式展示。
+-->
 <template>
   <div class="qa-process-steps" :class="{ compact }">
     <div v-for="step in steps" :key="step.key" class="qa-process-step">
@@ -27,16 +32,22 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入依赖 ----
 import { useI18n } from "vue-i18n";
 import type { QaProcessStepViewModel } from "@/types";
 
+// ---- Props ----
 defineProps<{
+  /** 步骤视图模型列表 */
   steps: QaProcessStepViewModel[];
+  /** 是否使用紧凑模式（省略卡片背景，间距更小） */
   compact?: boolean;
 }>();
 
 const { t } = useI18n();
 
+// ---- 工具函数 ----
+/** 将毫秒数格式化为 "X.XX s" 或 "X ms" 格式 */
 function formatDuration(value: number): string {
   if (value >= 1000) {
     return `${(value / 1000).toFixed(2)} s`;
@@ -44,6 +55,7 @@ function formatDuration(value: number): string {
   return `${Math.round(value)} ms`;
 }
 
+/** 将步骤状态枚举映射为国际化文本 */
 function formatStatus(status: QaProcessStepViewModel["status"]): string {
   if (status === "completed") return t("chat.processStatusCompleted");
   if (status === "skipped") return t("chat.processStatusSkipped");
@@ -51,6 +63,7 @@ function formatStatus(status: QaProcessStepViewModel["status"]): string {
   return t("chat.processStatusRunning");
 }
 
+/** 根据步骤状态和 isActive 标记返回对应的 CSS 类名 */
 function statusClass(step: QaProcessStepViewModel): string {
   if (step.status === "completed") return "is-completed";
   if (step.status === "skipped") return "is-skipped";

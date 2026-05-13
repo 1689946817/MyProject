@@ -1,5 +1,9 @@
 """
 聊天回答的段落级引用对齐。
+
+提供轻量级的引用构建能力：将 RAG 生成的回答按 Markdown 段落切分，
+通过词频余弦相似度将每个段落映射到高置信度的检索来源，
+最终输出段落级引用列表供前端展示。
 """
 from __future__ import annotations
 
@@ -11,14 +15,14 @@ from typing import Iterable, List
 from app.application.schemas import ChatCitationChunkRef, ChatCitationItem, ChatSourceItem
 
 
-_ASCII_TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9_\-/.]{1,}")
-_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
-_FENCE_RE = re.compile(r"^\s*(```|~~~)")
+_ASCII_TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9_\-/.]{1,}")  # ASCII 词元正则（字母/数字/下划线/连字符）
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")  # CJK 统一汉字范围正则
+_FENCE_RE = re.compile(r"^\s*(```|~~~)")  # Markdown 围栏代码块边界正则
 
-_MIN_PARAGRAPH_TEXT_LEN = 12
-_MIN_OVERLAP = 2
-_MIN_CONFIDENCE = 0.22
-_MAX_SOURCE_IDS_PER_PARAGRAPH = 2
+_MIN_PARAGRAPH_TEXT_LEN = 12  # 段落最小文本长度（低于此值不生成引用）
+_MIN_OVERLAP = 2  # 段落与来源的最小重叠词元数
+_MIN_CONFIDENCE = 0.22  # 置信度阈值（低于此值不生成引用）
+_MAX_SOURCE_IDS_PER_PARAGRAPH = 2  # 每个段落最多关联来源数
 
 
 def split_markdown_blocks(content: str) -> list[str]:
@@ -52,6 +56,7 @@ def split_markdown_blocks(content: str) -> list[str]:
 
 
 def _normalize_text(value: str) -> str:
+    """将文本统一转为小写并移除 Markdown 标记符号，用于词频比较。"""
     normalized = str(value or "").lower()
     normalized = re.sub(r"[*_`>#\-\[\](){}|]", " ", normalized)
     normalized = re.sub(r"\s+", " ", normalized).strip()
@@ -59,6 +64,7 @@ def _normalize_text(value: str) -> str:
 
 
 def _collect_cjk_ngrams(text: str) -> Iterable[str]:
+    """提取文本中的 CJK 汉字二元组和三元组，用于中文文本相似度计算。"""
     chars = [char for char in text if _CJK_RE.match(char)]
     for size in (2, 3):
         for index in range(0, max(len(chars) - size + 1, 0)):
@@ -66,6 +72,11 @@ def _collect_cjk_ngrams(text: str) -> Iterable[str]:
 
 
 def _build_term_counter(text: str) -> Counter[str]:
+    """构建文本的词频统计器。
+
+    ASCII 词元要求长度 >= 3，CJK 词元取二元组和三元组。
+    用于后续的余弦相似度计算。
+    """
     normalized = _normalize_text(text)
     terms: Counter[str] = Counter()
     for token in _ASCII_TOKEN_RE.findall(normalized):
@@ -77,6 +88,7 @@ def _build_term_counter(text: str) -> Counter[str]:
 
 
 def _build_source_text(source: ChatSourceItem) -> str:
+    """从来源对象提取用于匹配的文本（标题、内容、元数据字段拼接）。"""
     metadata = source.metadata or {}
     parts = [
         source.title or "",
@@ -90,6 +102,15 @@ def _build_source_text(source: ChatSourceItem) -> str:
 
 
 def _cosine_similarity(left: Counter[str], right: Counter[str]) -> tuple[float, int]:
+    """计算两个词频向量的余弦相似度。
+
+    参数:
+        left: 左侧词频统计。
+        right: 右侧词频统计。
+
+    返回:
+        (相似度, 重叠词元数) 元组；无重叠时返回 (0.0, 0)。
+    """
     if not left or not right:
         return 0.0, 0
 
@@ -106,6 +127,10 @@ def _cosine_similarity(left: Counter[str], right: Counter[str]) -> tuple[float, 
 
 
 def _build_chunk_refs(source: ChatSourceItem) -> list[ChatCitationChunkRef]:
+    """从来源元数据中构建文档片段定位引用。
+
+    仅当元数据同时包含 doc_id 和 chunk_index 时才生成引用。
+    """
     metadata = source.metadata or {}
     doc_id = metadata.get("doc_id")
     chunk_index = metadata.get("chunk_index")

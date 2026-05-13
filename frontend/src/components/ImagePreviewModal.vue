@@ -1,3 +1,9 @@
+<!--
+  ImagePreviewModal - 图片预览弹窗组件
+  功能：以模态弹窗形式全屏预览图片，展示图片详情（标题、描述、ID、上传时间、相似度）。
+  使用 teleport 到 body 避免层叠上下文问题，支持 ESC 键关闭和点击遮罩关闭。
+  打开时锁定页面滚动，关闭时恢复。
+-->
 <template>
   <teleport to="body">
     <transition name="modal-fade">
@@ -54,43 +60,60 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入依赖 ----
 import { watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatDate } from '@/utils/image'
 
 const { t } = useI18n()
 
+// ---- Props ----
 const props = defineProps<{
+  /** 弹窗是否可见（v-model 双向绑定） */
   visible: boolean
+  /** 图片 URL 地址 */
   src: string
+  /** 图片标题 */
   title?: string
+  /** 图片描述 */
   description?: string
+  /** 图片记录 ID */
   id?: string
+  /** 上传时间 */
   uploadTime?: string
+  /** 相似度分数（0-1） */
   score?: number
+  /** 自定义相似度标签文本 */
   scoreLabel?: string
 }>()
 
+// ---- 事件定义 ----
 const emit = defineEmits<{
+  /** 更新弹窗可见状态（v-model:visible） */
   'update:visible': [boolean]
 }>()
 
+// ---- 方法 ----
+/** 关闭弹窗 */
 function close() {
   emit('update:visible', false)
 }
 
+/** 图片加载失败时替换为 SVG 占位图 */
 function onImgError(e: Event) {
   const img = e.target as HTMLImageElement
   img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect fill="%231a1a2e" width="200" height="200"/><text fill="%23666" font-size="14" text-anchor="middle" x="100" y="100">Image not available</text></svg>'
 }
 
-// ESC 关闭
+/** 监听 ESC 键关闭弹窗 */
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape' && props.visible) {
     close()
   }
 }
 
+// ---- 生命周期 ----
+/** 监听弹窗可见性变化，打开时锁定页面滚动，关闭时恢复 */
 watch(() => props.visible, (val) => {
   if (val) {
     document.body.style.overflow = 'hidden'

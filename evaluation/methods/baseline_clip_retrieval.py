@@ -1,11 +1,16 @@
 """
 Baseline B：跨模态嵌入（qwen3-vl-embedding）检索。
 
-使用 qwen3-vl-embedding 多模态融合向量模型，支持：
-- 文本→图像检索（文本编码 + 图像向量库）
-- 图像→图像检索（图像编码 + 图像向量库）
+使用 qwen3-vl-embedding 多模态融合向量模型进行检索，
+该模型将文本和图像映射到同一向量空间，支持跨模态相似度计算。
+
+支持两种检索模式：
+- 文本→图像检索（retrieve_text）：将查询文本编码为向量，在图像向量库中检索
+- 图像→图像检索（retrieve_image）：将查询图像编码为向量，在图像向量库中检索
 
 向量库使用独立的 ChromaDB 集合：`images_multimodal_embedding`
+
+离线评估时仅评估文本→图像检索性能（retrieve 函数调用 retrieve_text）。
 """
 
 from __future__ import annotations
@@ -24,13 +29,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 from app.core.config import settings  # noqa: E402
 from app.langchain_integration.models import get_multimodal_embedding_model  # noqa: E402
 
-# 初始化 ChromaDB 客户端和集合
+# 初始化持久化 ChromaDB 客户端
 _client = chromadb.Client(
     ChromaSettings(
         is_persistent=True,
         persist_directory=settings.CHROMA_PERSIST_DIR,
     )
 )
+# CLIP baseline 使用独立的集合，避免与其他方法的向量库混淆
 _collection_name = "images_multimodal_embedding"
 _collection = _client.get_or_create_collection(name=_collection_name)
 

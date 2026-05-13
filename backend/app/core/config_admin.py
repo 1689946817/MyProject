@@ -1,4 +1,15 @@
-"""配置管理服务。"""
+"""
+管理端配置服务模块。
+
+本模块负责后台管理界面的配置项管理，提供以下核心功能：
+- 定义所有可管理配置项的元数据（字段类型、分组、校验规则等）
+- 从 .env 文件读取配置值并序列化为前端可用的结构
+- 接收前端提交的配置更新，校验后写回 .env 文件
+- 支持多种数据类型解析：字符串、布尔值、整数、浮点数、CSV、URL、路径
+
+配置项按分组组织（基础信息、基础设施、文档解析、模型服务、RAG 功能、检索与排序、评测），
+管理端前端据此渲染分组表单。
+"""
 
 from __future__ import annotations
 
@@ -10,35 +21,49 @@ from typing import Any, Literal, Optional
 
 from app.core.config import _BACKEND_DIR
 
+# 配置值的解析类型，决定如何将字符串值转换为 Python 类型
 ParseAs = Literal["string", "bool", "int", "float", "csv", "url", "path"]
+# 前端表单控件类型，决定管理界面渲染何种输入组件
 InputType = Literal["text", "textarea", "password", "switch", "number", "select"]
 
 
 class ConfigValidationError(Exception):
-    """配置校验异常。"""
+    """配置校验异常。
+
+    当前端提交的配置值存在一个或多个字段校验错误时抛出。
+    属性 field_errors 记录每个出错字段的错误描述。
+    """
 
     def __init__(self, field_errors: dict[str, str], message: str = "配置校验失败") -> None:
         super().__init__(message)
+        # 字段名 → 错误描述的映射
         self.field_errors = field_errors
         self.message = message
 
 
 @dataclass(frozen=True)
 class ConfigFieldMeta:
-    key: str
-    group: str
-    label: str
-    description: str
-    parse_as: ParseAs = "string"
-    input_type: InputType = "text"
-    sensitive: bool = False
-    required: bool = False
-    restart_required: bool = True
-    placeholder: Optional[str] = None
-    options: Optional[list[dict[str, str]]] = None
-    default: Any = None
+    """配置字段元数据。
+
+    描述单个可管理配置项的全部属性，用于前端表单渲染和后端值解析。
+    使用 frozen=True 保证实例不可变，防止运行时被意外修改。
+    """
+
+    key: str                                         # .env 中的变量名，如 "MLLM_BASE_URL"
+    group: str                                       # 所属分组 key，对应 CONFIG_GROUPS
+    label: str                                       # 前端展示名称
+    description: str                                 # 前端展示的说明文字
+    parse_as: ParseAs = "string"                     # 值解析类型
+    input_type: InputType = "text"                   # 前端控件类型
+    sensitive: bool = False                          # 是否为敏感信息（密钥等），前端做脱敏展示
+    required: bool = False                           # 是否必填
+    restart_required: bool = True                    # 修改后是否需要重启后端
+    placeholder: Optional[str] = None                # 输入框占位提示
+    options: Optional[list[dict[str, str]]] = None   # select 控件的选项列表
+    default: Any = None                              # 默认值
 
 
+# 配置分组定义，前端据此渲染分组 Tab 或折叠面板
 CONFIG_GROUPS: list[dict[str, str]] = [
     {"key": "basic", "label": "基础信息", "description": "系统名称与对外展示相关配置。"},
     {"key": "infra", "label": "基础设施", "description": "存储、数据库、路径与代理相关基础配置。"},
@@ -51,9 +76,12 @@ CONFIG_GROUPS: list[dict[str, str]] = [
 
 
 def _select_options(values: list[str]) -> list[dict[str, str]]:
+    """将字符串列表转换为前端 select 控件的 options 格式。"""
     return [{"label": value, "value": value} for value in values]
 
 
+# 全部可管理配置项的元数据列表
+# 每一项对应 .env 中的一个环境变量，管理端前端据此渲染表单
 CONFIG_FIELDS: list[ConfigFieldMeta] = [
     ConfigFieldMeta("APP_NAME", "basic", "系统名称", "网页与后端服务使用的系统显示名称。", default="Multimodal RAG Base"),
     ConfigFieldMeta(
@@ -164,16 +192,27 @@ CONFIG_FIELDS: list[ConfigFieldMeta] = [
     ConfigFieldMeta("EVAL_MODEL", "eval", "评测模型名", "离线评测使用的模型名称。"),
 ]
 
+# 按 key 建立快速索引，用于校验前端提交的字段名是否合法
 CONFIG_FIELD_MAP = {field.key: field for field in CONFIG_FIELDS}
 
 
 class ConfigAdminService:
-    """后台配置管理服务。"""
+    """后台配置管理服务。
+
+    负责 .env 文件的读写操作，将配置项元数据与 .env 中的实际值结合，
+    为管理端前端提供结构化的配置数据，并接收前端提交的更新写回 .env。
+    """
 
     def __init__(self, env_path: Optional[Path] = None) -> None:
+        # 默认使用 backend/.env 文件
         self.env_path = env_path or Path(_BACKEND_DIR) / ".env"
 
     def get_config_payload(self) -> dict[str, Any]:
+        """构建前端配置表单所需的完整载荷。
+
+        读取 .env 中的原始值，逐个序列化为前端可用的结构（含类型、控件类型、当前值等）。
+        返回分组列表 + 字段列表 + 重启提示信息。
+        """
         raw_values = self._read_env_file()
         items = [self._serialize_item(field, raw_values.get(field.key)) for field in CONFIG_FIELDS]
         return {
@@ -184,6 +223,12 @@ class ConfigAdminService:
         }
 
     def update_config_values(self, values: dict[str, Any]) -> dict[str, Any]:
+        """接收前端提交的配置更新，校验后写回 .env 文件。
+
+        逐个字段校验：未知字段记录为错误，类型转换失败也记录为错误。
+        若有任何错误则整体拒绝，抛出 ConfigValidationError。
+        全部通过后将更新后的值写入 .env，保留未修改的行不变。
+        """
         normalized: dict[str, str] = {}
         field_errors: dict[str, str] = {}
 
@@ -197,6 +242,7 @@ class ConfigAdminService:
             except ValueError as exc:
                 field_errors[key] = str(exc)
                 continue
+            # 将解析后的值格式化为 .env 文件中的字符串形式
             normalized[key] = self._format_for_env(field, parsed_value)
 
         if field_errors:
@@ -210,8 +256,14 @@ class ConfigAdminService:
         }
 
     def _serialize_item(self, field: ConfigFieldMeta, raw_value: Optional[str]) -> dict[str, Any]:
+        """将单个配置字段序列化为前端可用的字典结构。
+
+        包含 key、分组、标签、描述、控件类型、当前解析值等信息。
+        CSV 类型且控件为 text 时自动升级为 textarea。
+        """
         parsed = self._coerce_value(field, raw_value) if raw_value is not None else self._default_value(field)
         input_type = field.input_type
+        # CSV 类型默认使用 textarea 控件，方便用户输入多行地址
         if field.parse_as == "csv" and input_type == "text":
             input_type = "textarea"
         return {
@@ -230,6 +282,10 @@ class ConfigAdminService:
         }
 
     def _default_value(self, field: ConfigFieldMeta) -> Any:
+        """获取配置字段的默认值。
+
+        优先使用字段定义的 default；若未定义则根据 parse_as 类型返回零值（False/0/0.0/""）。
+        """
         if field.default is not None:
             return field.default
         if field.parse_as == "bool":
@@ -241,6 +297,17 @@ class ConfigAdminService:
         return ""
 
     def _coerce_value(self, field: ConfigFieldMeta, value: Any) -> Any:
+        """将任意输入值按字段定义的 parse_as 类型转换为 Python 原生类型。
+
+        支持的转换：
+        - bool: 接受 bool、"true"/"false"/"1"/"0"/"yes"/"no"/"on"/"off" 字符串
+        - int: 接受 int 或可解析的字符串
+        - float: 接受 int/float 或可解析的字符串
+        - csv: 列表用逗号拼接，字符串直接 trim
+        - 其余类型: 转为字符串
+
+        转换失败时抛出 ValueError，由调用方捕获并记录为字段错误。
+        """
         if field.parse_as == "bool":
             if isinstance(value, bool):
                 return value
@@ -279,11 +346,18 @@ class ConfigAdminService:
                 return ""
             return str(value).strip()
 
+        # string / url / path 等类型直接转字符串
         if value is None:
             return ""
         return str(value)
 
     def _format_for_env(self, field: ConfigFieldMeta, value: Any) -> str:
+        """将解析后的 Python 值格式化为 .env 文件中使用的字符串。
+
+        - bool: "true"/"false"
+        - int/float: 转为字符串，浮点数去除尾随零
+        - 其余: 直接 str()
+        """
         if field.parse_as == "bool":
             return "true" if value else "false"
         if field.parse_as == "int":
@@ -295,6 +369,12 @@ class ConfigAdminService:
         return str(value)
 
     def _read_env_file(self) -> dict[str, str]:
+        """读取 .env 文件，返回 key=value 字典。
+
+        跳过空行和注释行（以 # 开头）。
+        仅按第一个 "=" 分割，值中允许包含 "="。
+        若文件不存在则返回空字典。
+        """
         if not self.env_path.exists():
             return {}
         values: dict[str, str] = {}
@@ -307,10 +387,18 @@ class ConfigAdminService:
         return values
 
     def _write_env_file(self, updates: dict[str, str]) -> None:
+        """将更新写回 .env 文件，保留原有注释和未修改的行。
+
+        策略：
+        1. 逐行扫描原文件，遇到待更新的 key 则替换为新值
+        2. 原文件中不存在的 key 追加到文件末尾（按 CONFIG_FIELDS 定义顺序）
+        3. 保留注释行和空行的原始格式
+        """
         original_lines: list[str] = []
         if self.env_path.exists():
             original_lines = self.env_path.read_text(encoding="utf-8").splitlines()
 
+        # 待写入的更新，每处理一个就 pop，剩余的追加到末尾
         remaining = dict(updates)
         new_lines: list[str] = []
         for line in original_lines:
@@ -319,13 +407,17 @@ class ConfigAdminService:
                 key, _ = line.split("=", 1)
                 normalized_key = key.strip()
                 if normalized_key in remaining:
+                    # 替换为新值
                     new_lines.append(f"{normalized_key}={remaining.pop(normalized_key)}")
                     continue
+            # 保留注释行、空行和未修改的配置行
             new_lines.append(line)
 
+        # 追加原文件中不存在的新配置项
         if remaining:
             if new_lines and new_lines[-1] != "":
                 new_lines.append("")
+            # 按 CONFIG_FIELDS 定义顺序追加，保持 .env 文件有序
             for field in CONFIG_FIELDS:
                 if field.key in remaining:
                     new_lines.append(f"{field.key}={remaining.pop(field.key)}")
@@ -334,4 +426,5 @@ class ConfigAdminService:
 
 
 def get_config_admin_service() -> ConfigAdminService:
+    """工厂函数：创建 ConfigAdminService 实例。"""
     return ConfigAdminService()

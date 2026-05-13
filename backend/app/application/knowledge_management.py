@@ -1,4 +1,15 @@
-"""知识库管理服务。"""
+"""知识库管理服务。
+
+架构角色：应用层知识资产管理，提供图片/文档记录的管理列自动迁移、
+启用/禁用过滤、安全文件删除、标签/元数据序列化等能力。
+
+核心导出：
+- 迁移工具：ensure_knowledge_management_columns（确保管理字段存在）
+- 过滤服务：filter_enabled_image_hit_dicts, filter_enabled_image_documents,
+            filter_enabled_text_chunk_hits
+- 查询工具：get_image_record_or_raise, get_document_record_or_raise, get_document_image_records
+- 文件清理：safe_unlink（带路径白名单的安全删除）
+"""
 import json
 import logging
 from pathlib import Path
@@ -17,10 +28,19 @@ from app.data.storage import BASE_STORAGE_DIR, DOC_STORAGE_DIR
 
 logger = logging.getLogger(__name__)
 
-ALLOWED_DOCUMENT_TYPES = {"pdf", "markdown"}
+ALLOWED_DOCUMENT_TYPES = {"pdf", "markdown"}  # 支持的文档类型白名单
 
+
+# ---- Schema 迁移：自动补全管理字段 ----
 
 def ensure_image_management_columns(db: Session) -> None:
+    """确保 image_records 表包含所有知识管理所需字段。
+
+    通过检查当前表结构，对缺失字段执行 ALTER TABLE ADD COLUMN。
+    补充的字段包括：title, notes, enabled, custom_metadata, parent_doc_id,
+    content_hash, logical_asset_id, version_number, is_latest。
+    已存在的字段会被跳过，避免重复 DDL 错误。
+    """
     inspector = inspect(db.bind)
     columns = {column["name"] for column in inspector.get_columns("image_records")}
     statements = {
@@ -42,6 +62,12 @@ def ensure_image_management_columns(db: Session) -> None:
 
 
 def ensure_document_management_columns(db: Session) -> None:
+    """确保 document_records 表包含所有知识管理所需字段。
+
+    补充的字段包括：title, document_type, tags, notes, enabled, custom_metadata,
+    parse_backend, parse_stage, progress_percent, progress_message,
+    content_hash, logical_asset_id, version_number, is_latest。
+    """
     inspector = inspect(db.bind)
     columns = {column["name"] for column in inspector.get_columns("document_records")}
     statements = {
@@ -68,11 +94,15 @@ def ensure_document_management_columns(db: Session) -> None:
 
 
 def ensure_knowledge_management_columns(db: Session) -> None:
+    """统一入口：同时确保图片和文档两张表的管理字段完整。"""
     ensure_image_management_columns(db)
     ensure_document_management_columns(db)
 
 
+# ---- 标签与 JSON 序列化工具 ----
+
 def dump_tags(tags: Optional[Iterable[str]]) -> Optional[str]:
+    """将标签迭代器序列化为逗号分隔字符串，过滤空白标签。None 返回 None。"""
     if tags is None:
         return None
     normalized = [str(tag).strip() for tag in tags if str(tag).strip()]
@@ -80,18 +110,21 @@ def dump_tags(tags: Optional[Iterable[str]]) -> Optional[str]:
 
 
 def load_tags(tags: Optional[str]) -> list[str]:
+    """将逗号分隔的标签字符串还原为列表，过滤空白项。"""
     if not tags:
         return []
     return [item.strip() for item in tags.split(",") if item.strip()]
 
 
 def dump_json_dict(data: Optional[dict[str, Any]]) -> Optional[str]:
+    """将字典序列化为 JSON 字符串。None 返回 None。"""
     if data is None:
         return None
     return json.dumps(data, ensure_ascii=False)
 
 
 def load_json_dict(data: Optional[str]) -> dict[str, Any]:
+    """将 JSON 字符串解析为字典；解析失败或类型不匹配时返回空字典。"""
     if not data:
         return {}
     try:
@@ -102,6 +135,11 @@ def load_json_dict(data: Optional[str]) -> dict[str, Any]:
 
 
 def validate_document_type(document_type: Optional[str]) -> Optional[str]:
+    """校验文档类型是否在白名单内，返回标准化后的小写类型名。
+
+    Raises:
+        ValueError: 文档类型不在 ALLOWED_DOCUMENT_TYPES 中
+    """
     if document_type is None:
         return None
     normalized = document_type.strip().lower()
@@ -110,7 +148,10 @@ def validate_document_type(document_type: Optional[str]) -> Optional[str]:
     return normalized
 
 
+# ---- 记录查询工具 ----
+
 def get_image_record_or_raise(db: Session, image_id: str) -> ImageRecord:
+    """查询图片记录，不存在时抛出 LookupError。查询前自动确保管理字段存在。"""
     ensure_knowledge_management_columns(db)
     record = db.query(ImageRecord).filter(ImageRecord.id == image_id).first()
     if record is None:
@@ -119,6 +160,7 @@ def get_image_record_or_raise(db: Session, image_id: str) -> ImageRecord:
 
 
 def get_document_record_or_raise(db: Session, doc_id: str) -> DocumentRecord:
+    """查询文档记录，不存在时抛出 LookupError。"""
     ensure_knowledge_management_columns(db)
     record = db.query(DocumentRecord).filter(DocumentRecord.id == doc_id).first()
     if record is None:
@@ -127,6 +169,11 @@ def get_document_record_or_raise(db: Session, doc_id: str) -> DocumentRecord:
 
 
 def get_document_image_records(db: Session, doc_id: str) -> list[ImageRecord]:
+    """查询指定文档关联的所有图片记录。
+
+    优先通过 parent_doc_id 精确匹配；若无结果，则回退到在 extra_metadata JSON
+    中查找 "doc_id" 字段匹配的记录（兼容旧数据）。
+    """
     ensure_knowledge_management_columns(db)
     explicit_matches = db.query(ImageRecord).filter(ImageRecord.parent_doc_id == doc_id).all()
     if explicit_matches:
@@ -140,7 +187,23 @@ def get_document_image_records(db: Session, doc_id: str) -> list[ImageRecord]:
     return related
 
 
+# ---- 安全文件删除 ----
+
 def safe_unlink(path_str: Optional[str]) -> bool:
+    """安全删除文件，仅允许删除存储目录内的文件。
+
+    路径必须位于 BASE_STORAGE_DIR 或 DOC_STORAGE_DIR 内，
+    否则抛出 ValueError 防止目录穿越攻击。
+
+    Args:
+        path_str: 文件路径字符串
+
+    Returns:
+        True 表示删除成功，False 表示路径为空或文件不存在
+
+    Raises:
+        ValueError: 路径不在允许的存储目录内
+    """
     if not path_str:
         return False
     path = Path(path_str)
@@ -159,7 +222,22 @@ def safe_unlink(path_str: Optional[str]) -> bool:
     return True
 
 
+# ---- 启用/禁用过滤服务 ----
+
 def filter_enabled_image_hit_dicts(hits: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """过滤检索结果中的图片命中，仅保留启用状态的图片。
+
+    过滤逻辑：
+    1. 查询所有命中的 ImageRecord，检查 enabled 字段
+    2. 对有 parent_doc_id 的图片，检查父文档是否启用
+    3. 被禁用的图片或其父文档被禁用的图片均会被过滤掉
+
+    Args:
+        hits: 检索返回的图片命中字典列表，每个字典需包含 "id" 字段
+
+    Returns:
+        过滤后的命中列表，仅包含启用状态的图片
+    """
     if not hits:
         return []
 
@@ -207,6 +285,10 @@ def filter_enabled_image_hit_dicts(hits: list[dict[str, Any]]) -> list[dict[str,
 
 
 def filter_enabled_image_documents(documents: list[Document]) -> list[Document]:
+    """过滤 LangChain Document 列表中的图片文档，仅保留启用状态的。
+
+    将 Document 转换为 hit dict 格式后复用 filter_enabled_image_hit_dicts 逻辑。
+    """
     if not documents:
         return []
     hits = [
@@ -223,6 +305,11 @@ def filter_enabled_image_documents(documents: list[Document]) -> list[Document]:
 
 
 def filter_enabled_text_chunk_hits(hits: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """过滤文本分块检索结果，仅保留所属文档为启用状态的命中。
+
+    每个 hit 需包含 "doc_id" 字段用于关联父文档。
+    若无 doc_id 字段则原样返回（无法关联文档状态）。
+    """
     if not hits:
         return []
     doc_ids = {

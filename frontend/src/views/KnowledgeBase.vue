@@ -1,3 +1,4 @@
+<!-- 图片知识库管理页面：支持图片上传、列表浏览（网格/表格）、筛选、详情查看、版本管理和编辑 -->
 <template>
   <div class="kb-page">
     <div class="page-intro">
@@ -6,29 +7,26 @@
         <p class="page-subtitle">{{ t("kb.subtitle") }}</p>
       </div>
     </div>
-    <el-card class="upload-card glass-card">
-      <template #header>
-        <div class="card-header">
-          <span>{{ t("kb.title") }}</span>
-        </div>
-      </template>
+    <el-card class="upload-card upload-entry-card glass-card">
+      <div class="upload-entry-row">
+        <UploadZone
+          v-model:files="fileList"
+          :text="t('kb.uploadArea')"
+          :accept="'image/*'"
+          :multiple="true"
+          compact
+        />
 
-      <UploadZone
-        v-model:files="fileList"
-        :text="t('kb.uploadArea')"
-        :accept="'image/*'"
-        :multiple="true"
-      />
-
-      <el-button
-        type="primary"
-        class="upload-btn"
-        :loading="uploading"
-        @click="doUpload"
-      >
-        <i class="i-ep-upload mr-2"></i>
-        {{ t("kb.uploadBtn") }}
-      </el-button>
+        <el-button
+          type="primary"
+          class="upload-btn"
+          :loading="uploading"
+          @click="doUpload"
+        >
+          <i class="i-ep-upload mr-2"></i>
+          {{ t("kb.uploadBtn") }}
+        </el-button>
+      </div>
     </el-card>
 
     <el-card class="images-card glass-card">
@@ -237,6 +235,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入 ----
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
@@ -257,6 +256,7 @@ import { imgSrc } from "@/utils/image";
 
 const { t } = useI18n();
 
+// ---- 上传与列表状态 ----
 const fileList = ref<File[]>([]);
 const images = ref<ImageRecord[]>([]);
 const uploading = ref(false);
@@ -265,14 +265,19 @@ const saving = ref(false);
 const versionUploading = ref(false);
 const versionsLoading = ref(false);
 const viewMode = ref<"grid" | "table">("grid");
+
+// ---- 详情抽屉状态 ----
 const detailVisible = ref(false);
 const detailLoading = ref(false);
 const activeImage = ref<ImageRecord | null>(null);
 const imageVersions = ref<ImageRecord[]>([]);
 const detailTab = ref<"overview" | "versions">("overview");
+
+// ---- 编辑弹窗状态 ----
 const editVisible = ref(false);
 const currentImageId = ref<string>("");
 
+// ---- 图片列表过滤条件 ----
 const filters = reactive({
   keyword: "",
   status: "",
@@ -280,6 +285,7 @@ const filters = reactive({
   tag: "",
 });
 
+// ---- 编辑表单数据 ----
 const editForm = reactive({
   title: "",
   tagsText: "",
@@ -288,24 +294,31 @@ const editForm = reactive({
   source_dataset: "",
 });
 
+// ---- 工具函数 ----
+
+/** 将文件路径转换为可显示的图片 URL */
 function getImageSrc(filePath: string): string {
   return imgSrc(filePath);
 }
 
+/** 将标签数组格式化为逗号分隔字符串 */
 function formatTags(tags?: string[]) {
   return tags?.length ? tags.join(", ") : "-";
 }
 
+/** 将日期时间字符串格式化为本地显示格式 */
 function formatDateTime(value?: string | null): string {
   if (!value) return "-";
   return new Date(value).toLocaleString();
 }
 
+/** 截断并缩写哈希值用于展示 */
 function shortenHash(value?: string | null): string {
   if (!value) return "-";
   return value.length > 16 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value;
 }
 
+/** 加载指定图片的所有版本记录 */
 async function loadImageVersions(imageId: string) {
   try {
     versionsLoading.value = true;
@@ -318,6 +331,7 @@ async function loadImageVersions(imageId: string) {
   }
 }
 
+/** 打开图片详情抽屉，加载版本列表并定位到最新版本 */
 async function openDetails(img: ImageRecord) {
   detailVisible.value = true;
   detailLoading.value = true;
@@ -332,6 +346,7 @@ async function openDetails(img: ImageRecord) {
   }
 }
 
+/** 打开图片编辑弹窗，填充当前图片信息 */
 function openEdit(img: ImageRecord) {
   currentImageId.value = img.id;
   editForm.title = img.title || "";
@@ -342,6 +357,9 @@ function openEdit(img: ImageRecord) {
   editVisible.value = true;
 }
 
+// ---- 核心操作方法 ----
+
+/** 根据过滤条件加载图片列表 */
 async function loadImages() {
   try {
     loading.value = true;
@@ -359,8 +377,10 @@ async function loadImages() {
   }
 }
 
+// ---- 生命周期 ----
 onMounted(loadImages);
 
+/** 上传选中的图片文件，成功后刷新列表 */
 async function doUpload() {
   if (!fileList.value.length) {
     ElMessage.warning(t("kb.selectFiles"));
@@ -380,6 +400,7 @@ async function doUpload() {
   }
 }
 
+/** 提交图片编辑（标题、标签、备注、启用状态、数据来源） */
 async function submitEdit() {
   try {
     saving.value = true;
@@ -405,6 +426,7 @@ async function submitEdit() {
   }
 }
 
+/** 删除图片（含二次确认），同时关闭已打开的详情抽屉 */
 async function handleDelete(img: ImageRecord) {
   await ElMessageBox.confirm(
     t("kb.deleteConfirm", { title: img.title || img.id }),
@@ -426,6 +448,7 @@ async function handleDelete(img: ImageRecord) {
   }
 }
 
+/** 重新处理图片（触发后端重新生成描述和向量） */
 async function handleReprocess(img: ImageRecord) {
   try {
     await reprocessImage(img.id);
@@ -440,6 +463,7 @@ async function handleReprocess(img: ImageRecord) {
   }
 }
 
+/** 上传图片新版本文件，刷新版本列表并切换到最新版本 */
 async function handleVersionFileChange(uploadFile: { raw?: File }) {
   if (!uploadFile.raw || !activeImage.value) return;
   try {
@@ -458,12 +482,14 @@ async function handleVersionFileChange(uploadFile: { raw?: File }) {
   }
 }
 
+/** 将图片处理状态映射为 Element Plus Tag 类型 */
 function statusTagType(status: string) {
   if (status === "Completed") return "success";
   if (status === "Failed") return "danger";
   return "warning";
 }
 
+/** 将状态枚举值翻译为国际化显示文本 */
 function statusLabel(status: string) {
   switch (status) {
     case "Processing": return t("kb.processing");
@@ -485,11 +511,23 @@ function statusLabel(status: string) {
   margin-bottom: 0;
 }
 
+.upload-entry-card :deep(.el-card__body) {
+  padding: 14px 18px;
+}
+
+.upload-entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
 .upload-btn {
-  margin-top: 16px;
-  width: 100%;
-  min-height: 44px;
-  border-radius: 14px;
+  margin-top: 0;
+  min-width: 196px;
+  min-height: 38px;
+  padding: 0 18px;
+  border-radius: 12px;
 }
 
 .images-card {
@@ -544,9 +582,18 @@ function statusLabel(status: string) {
   --el-table-header-bg-color: var(--bg-tertiary);
 }
 
-.images-card :deep(.el-card__body),
-.upload-card :deep(.el-card__body) {
+.images-card :deep(.el-card__body) {
   padding: 22px;
+}
+
+@media (max-width: 960px) {
+  .upload-entry-row {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-btn {
+    width: 100%;
+  }
 }
 
 .pulse-dot {

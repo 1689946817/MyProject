@@ -1,7 +1,27 @@
 """
 UniDoc-Bench Proposed 方法：MLLM 描述 + 文本向量检索。
 
-集合命名：unidoc_{domain}_proposed
+核心流程：
+  1. 对每张图像调用 MLLM 生成结构化文本描述
+  2. 将描述文本通过 Embedding 模型向量化
+  3. 存入 ChromaDB 集合（命名规则：unidoc_{domain}_proposed）
+  4. 检索时将查询文本 Embedding，在向量库中执行余弦相似度检索
+
+缓存策略：
+  - 描述结果以 JSONL 格式持久化到本地文件（data/cache/unidoc_proposed/）
+  - 缓存记录包含完整的身份签名（model_name、prompt_hash、generation_config_hash、file_hash）
+  - 签名不匹配的缓存不会被复用，确保模型/Prompt 变更后自动重新生成
+  - 支持跨数据集缓存复用（reuse_cache_dataset_names），同一图片无需重复生成描述
+
+断点续传：
+  - 每条描述生成后立即追加到 JSONL 文件并 fsync，进程中断不丢失已完成的记录
+  - resume=True 时跳过已有成功缓存的图片
+  - retry_failed=True 时重试之前失败的记录
+
+图片压缩：
+  - 当图片 base64 编码超过 9.5MB 时，自动进行尺寸/质量压缩
+  - 压缩梯度：max_side=[1800, 1600, 1280] × quality=[85, 75, 65]
+  - 超过最小压缩仍超限时抛出 ValueError
 """
 
 from __future__ import annotations
@@ -22,6 +42,7 @@ import chromadb
 from chromadb.config import Settings as ChromaSettings
 from PIL import Image
 
+# 项目根目录（evaluation/ 的上两级）
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 
@@ -29,6 +50,7 @@ from app.core.config import settings  # noqa: E402
 from app.langchain_integration.chains import get_image_description_chain  # noqa: E402
 from app.langchain_integration.models import get_embedding_model, guess_image_mime_type  # noqa: E402
 
+# 初始化持久化 ChromaDB 客户端，使用后端配置的存储目录
 _client = chromadb.Client(
     ChromaSettings(
         is_persistent=True,
@@ -38,14 +60,40 @@ _client = chromadb.Client(
 
 
 def _collection_name(domain: str) -> str:
+    """生成 ChromaDB 集合名称，命名规则：unidoc_{domain}_proposed。
+
+    Args:
+        domain: 领域名称（如 finance、healthcare 等）。
+
+    Returns:
+        str: 集合名称。
+    """
     return f"unidoc_{domain}_proposed"
 
 
 def _sha256_text(text: str) -> str:
+    """计算文本的 SHA-256 哈希值，用于 prompt_hash 和缓存签名。
+
+    Args:
+        text: 待哈希的文本字符串。
+
+    Returns:
+        str: 64 位十六进制哈希字符串。
+    """
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def _sha256_file(file_path: str) -> str:
+    """计算文件的 SHA-256 哈希值，用于检测文件内容是否变更。
+
+    分块读取文件（每块 1MB），避免大文件一次性加载到内存。
+
+    Args:
+        file_path: 文件路径。
+
+    Returns:
+        str: 64 位十六进制哈希字符串。
+    """
     digest = hashlib.sha256()
     with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
@@ -54,18 +102,49 @@ def _sha256_file(file_path: str) -> str:
 
 
 def _stable_hash(payload: Dict[str, Any]) -> str:
+    """对字典进行确定性序列化后计算 SHA-256，用于 generation_config_hash。
+
+    使用 sort_keys=True 确保相同内容的字典总是产生相同的哈希值。
+
+    Args:
+        payload: 待哈希的字典（如生成配置参数）。
+
+    Returns:
+        str: 64 位十六进制哈希字符串。
+    """
     return _sha256_text(json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
 
 
 def _utc_now_iso() -> str:
+    """获取当前 UTC 时间的 ISO 8601 字符串（不含微秒），用于缓存记录时间戳。"""
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
 def _resolve_cache_file(cache_dir: str | Path, dataset_name: str, domain: str) -> Path:
+    """解析缓存文件路径，结构：cache_dir / dataset_name / domain / descriptions.jsonl。
+
+    Args:
+        cache_dir: 缓存根目录。
+        dataset_name: 数据集名称（如 UniDoc-Bench-subset）。
+        domain: 领域名称。
+
+    Returns:
+        Path: 缓存文件的完整路径。
+    """
     return Path(cache_dir) / dataset_name / domain / "descriptions.jsonl"
 
 
 def _estimate_base64_size(raw_size: int) -> int:
+    """估算原始二进制数据 base64 编码后的字节数。
+
+    base64 编码将每 3 字节扩展为 4 字符，向上取整。
+
+    Args:
+        raw_size: 原始二进制数据字节数。
+
+    Returns:
+        int: base64 编码后的近似字节数。
+    """
     return ((raw_size + 2) // 3) * 4
 
 
@@ -74,6 +153,27 @@ def _prepare_image_payload(
     *,
     max_base64_bytes: int = 9_500_000,
 ) -> tuple[str, str]:
+    """准备 MLLM 请求的图片 payload（base64 编码 + MIME 类型）。
+
+    如果图片 base64 编码超过 max_base64_bytes 限制，
+    自动进行多级压缩（尺寸×质量组合），直到满足大小要求。
+
+    压缩梯度：
+    - max_side: 1800 → 1600 → 1280（长边像素）
+    - quality: 85 → 75 → 65（JPEG 质量）
+
+    Args:
+        file_path: 图片文件路径。
+        max_base64_bytes: base64 编码后的最大字节数，默认 9.5MB。
+
+    Returns:
+        tuple[str, str]: (base64 编码字符串, MIME 类型)。
+            原始图片未压缩时 MIME 类型由文件后缀决定；
+            压缩后统一为 "image/jpeg"。
+
+    Raises:
+        ValueError: 图片即使经过最小压缩仍超过大小限制。
+    """
     with open(file_path, "rb") as f:
         image_data = f.read()
 
@@ -123,6 +223,17 @@ def _prepare_image_payload(
 
 
 def _is_non_retryable_payload_error(error_message: str) -> bool:
+    """判断错误消息是否属于不可重试的 payload 错误（HTTP 400）。
+
+    当错误是 400 Bad Request 且涉及 payload/base64/image/size 等关键词时，
+    说明请求体本身有问题（如图片太大、格式不支持），重试无法解决。
+
+    Args:
+        error_message: 异常消息字符串。
+
+    Returns:
+        bool: True 表示不可重试，应立即停止对该图片的尝试。
+    """
     normalized = error_message.lower()
     if "400" not in normalized and "bad request" not in normalized:
         return False
@@ -141,6 +252,16 @@ def _is_non_retryable_payload_error(error_message: str) -> bool:
 
 
 def _load_cache_records(cache_file: Path) -> List[Dict[str, Any]]:
+    """从 JSONL 缓存文件加载所有记录。
+
+    JSONL 格式：每行一个 JSON 对象，空行和格式错误的行会被跳过。
+
+    Args:
+        cache_file: 缓存文件路径（descriptions.jsonl）。
+
+    Returns:
+        List[Dict[str, Any]]: 所有有效记录的列表。
+    """
     if not cache_file.exists():
         return []
 
@@ -163,6 +284,17 @@ def _load_cache_records(cache_file: Path) -> List[Dict[str, Any]]:
 
 
 def _append_cache_record(cache_file: Path, record: Dict[str, Any]) -> None:
+    """将单条记录追加到 JSONL 缓存文件，并立即 fsync 确保持久化。
+
+    追加模式（而非覆盖写入）确保断点续传：
+    - 每条描述生成后立即写入磁盘
+    - 调用 os.fsync 强制刷盘，避免进程崩溃时数据丢失
+    - 父目录不存在时自动创建
+
+    Args:
+        cache_file: 缓存文件路径。
+        record: 待追加的记录字典。
+    """
     cache_file.parent.mkdir(parents=True, exist_ok=True)
     with cache_file.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -171,6 +303,19 @@ def _append_cache_record(cache_file: Path, record: Dict[str, Any]) -> None:
 
 
 def _clone_record_for_dataset(cache_record: Dict[str, Any], *, dataset_name: str, file_path: str) -> Dict[str, Any]:
+    """克隆缓存记录并更新数据集信息，用于跨数据集缓存复用。
+
+    当 reuse_cache_dataset_names 中的历史缓存记录被复用到当前数据集时，
+    需要更新 dataset_name、file_path 和 updated_at 字段。
+
+    Args:
+        cache_record: 原始缓存记录。
+        dataset_name: 当前数据集名称。
+        file_path: 当前数据集中的文件路径。
+
+    Returns:
+        Dict[str, Any]: 更新后的记录副本。
+    """
     cloned = dict(cache_record)
     cloned["dataset_name"] = dataset_name
     cloned["file_path"] = file_path
@@ -179,6 +324,17 @@ def _clone_record_for_dataset(cache_record: Dict[str, Any], *, dataset_name: str
 
 
 def _build_records_by_image_id(records: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    """将缓存记录列表按 image_id 分组，构建索引字典。
+
+    同一 image_id 可能有多条记录（重试、不同配置等），
+    保留所有记录并按时间顺序排列，查找时从后往前取最新。
+
+    Args:
+        records: 缓存记录列表。
+
+    Returns:
+        Dict[str, List[Dict[str, Any]]]: {image_id: [记录列表]} 的分组字典。
+    """
     grouped: Dict[str, List[Dict[str, Any]]] = {}
     for record in records:
         image_id = str(record.get("image_id", "")).strip()
@@ -195,6 +351,28 @@ def _identity_matches(
     allow_dataset_name_mismatch: bool = False,
     allow_domain_mismatch: bool = False,
 ) -> bool:
+    """检查缓存记录的身份签名是否与当前运行配置匹配。
+
+    身份签名包含 6 个字段：
+    - dataset_name: 数据集名称
+    - domain: 领域名称
+    - image_id: 图像 ID
+    - file_hash: 图像文件的 SHA-256 哈希（检测文件内容变更）
+    - model_name: MLLM 模型名称
+    - prompt_hash: Prompt 的 SHA-256 哈希（检测 Prompt 变更）
+    - generation_config_hash: 生成参数的哈希（检测温度、max_tokens 等变更）
+
+    跨数据集复用时可允许 dataset_name 和 domain 不匹配。
+
+    Args:
+        cache_record: 缓存记录。
+        current_identity: 当前运行的身份签名。
+        allow_dataset_name_mismatch: 是否允许 dataset_name 不匹配。
+        allow_domain_mismatch: 是否允许 domain 不匹配。
+
+    Returns:
+        bool: True 表示身份匹配，可以复用该缓存。
+    """
     required_keys = [
         "domain",
         "image_id",
@@ -217,6 +395,20 @@ def _find_latest_matching_record(
     allow_dataset_name_mismatch: bool = False,
     allow_domain_mismatch: bool = False,
 ) -> Dict[str, Any] | None:
+    """查找与当前身份签名匹配的最新缓存记录。
+
+    从 image_id 对应的记录列表中从后往前搜索（最新记录优先），
+    返回第一个身份签名完全匹配的记录。
+
+    Args:
+        records_by_image_id: 按 image_id 分组的缓存记录索引。
+        current_identity: 当前运行的身份签名。
+        allow_dataset_name_mismatch: 是否允许跨数据集复用。
+        allow_domain_mismatch: 是否允许跨领域复用。
+
+    Returns:
+        Dict[str, Any] | None: 匹配的缓存记录，未找到返回 None。
+    """
     candidates = records_by_image_id.get(current_identity["image_id"], [])
     for record in reversed(candidates):
         if _identity_matches(
@@ -234,6 +426,22 @@ def _summarize_cache_warnings(
     current_signature: Dict[str, str],
     current_file_hashes: Dict[str, str],
 ) -> List[str]:
+    """生成缓存签名变更的警告信息列表。
+
+    检查以下变更情况：
+    1. dataset_name / domain / model_name / prompt_hash / generation_config_hash 变更
+    2. 同 image_id 的文件内容变更（file_hash 不同）
+
+    警告仅用于提示用户，不阻止流程继续执行（不匹配的缓存不会被复用）。
+
+    Args:
+        cache_records: 已加载的缓存记录列表。
+        current_signature: 当前运行的签名字段。
+        current_file_hashes: {image_id: file_sha256} 的当前文件哈希映射。
+
+    Returns:
+        List[str]: 警告消息列表。
+    """
     warnings: List[str] = []
     signature_fields = [
         "dataset_name",
@@ -277,6 +485,25 @@ def _generate_description_with_retry(
     max_retries: int = 3,
     base_backoff_seconds: float = 2.0,
 ) -> tuple[str, str | None, int]:
+    """调用 MLLM 生成图像描述，支持自动重试和指数退避。
+
+    重试策略：
+    - 最多重试 max_retries 次（共 max_retries+1 次尝试）
+    - 退避时间 = base_backoff_seconds * 2^(attempt-1)，呈指数增长
+    - 遇到 400 payload 错误（图片太大等）立即停止，不重试
+
+    Args:
+        chain: ImageDescriptionChain 实例。
+        file_path: 图像文件路径。
+        max_retries: 最大重试次数，默认 3。
+        base_backoff_seconds: 退避基准秒数，默认 2.0。
+
+    Returns:
+        tuple[str, str | None, int]:
+            - 描述文本（失败时为空字符串）
+            - 错误消息（成功时为 None）
+            - 实际尝试次数
+    """
     try:
         b64, mime_type = _prepare_image_payload(file_path)
     except Exception as e:
@@ -321,7 +548,25 @@ def build_index(
     force_refresh: bool = False,
     reuse_cache_dataset_names: List[str] | None = None,
 ) -> None:
-    """构建 MLLM 描述向量索引，支持本地缓存与断点续传。"""
+    """构建 MLLM 描述向量索引，支持本地缓存与断点续传。
+
+    完整流程：
+    1. 验证图片文件是否存在，跳过缺失文件
+    2. 计算当前运行的身份签名（模型、Prompt、生成参数、文件哈希）
+    3. 加载本地缓存，检查签名匹配性
+    4. 对每张图片：命中缓存则复用，否则调用 MLLM 生成描述
+    5. 将成功生成的描述向量化，存入 ChromaDB 集合
+
+    Args:
+        domain: 领域名称，影响集合命名 unidoc_{domain}_proposed。
+        image_records: 图像记录列表，每条需包含 id 和 file_path。
+        dataset_name: 数据集名称，影响缓存目录和集合元数据。
+        cache_dir: 缓存根目录，默认 data/cache/unidoc_proposed/。
+        resume: 是否启用断点续传（跳过已有成功缓存）。
+        retry_failed: 是否重试之前失败的记录。
+        force_refresh: 是否强制重新生成所有描述（忽略缓存）。
+        reuse_cache_dataset_names: 可复用的历史数据集缓存名称列表。
+    """
     chain = get_image_description_chain()
     embedder = get_embedding_model()
 
@@ -548,6 +793,18 @@ def build_index(
 
 
 def retrieve(query: str, domain: str, top_k: int = 10) -> List[str]:
+    """使用 Proposed 方法检索图像。
+
+    检索路径：查询文本 → Embedding 模型编码 → ChromaDB 余弦相似度检索。
+
+    Args:
+        query: 查询文本。
+        domain: 领域名称，决定检索哪个集合。
+        top_k: 返回的检索结果数量，默认 10。
+
+    Returns:
+        List[str]: top_k 个预测图像 ID 列表，按相似度降序排列。
+    """
     embedder = get_embedding_model()
     emb = embedder.embed_query(query)
     col = _client.get_or_create_collection(name=_collection_name(domain))
@@ -556,5 +813,13 @@ def retrieve(query: str, domain: str, top_k: int = 10) -> List[str]:
 
 
 def check_index(domain: str) -> bool:
+    """检查指定领域的 Proposed 索引是否已构建且非空。
+
+    Args:
+        domain: 领域名称。
+
+    Returns:
+        bool: True 表示索引包含至少一条记录。
+    """
     col = _client.get_or_create_collection(name=_collection_name(domain))
     return col.count() > 0

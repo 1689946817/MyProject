@@ -1,14 +1,22 @@
 """
-OpenAI评估器模块
+OpenAI（GPT-4o）评估器模块。
 
-本模块包含基于GPT-4V模型的各类评估器实现，用于评估RAG系统的输出质量。
+本模块包含基于 OpenAI GPT-4o 模型的各类评估器实现，用于评估 RAG 系统的输出质量。
+所有评估器继承 BaseEvaluator，通过 get_prompt 构建包含文本/图像的多模态 HumanMessage，
+由 BaseEvaluator 的评估链自动完成 LLM 调用、JSON 解析和评分转换。
+
 支持的评估指标：
-- Text Context Relevancy: 文本上下文相关性
-- Image Context Relevancy: 图像上下文相关性
-- Answer Relevancy: 答案相关性
-- Answer Correctness: 答案正确性
-- Image Faithfulness: 图像忠实度
-- Text Faithfulness: 文本忠实度
+- Text Context Relevancy: 检索到的文本是否与用户问题相关
+- Image Context Relevancy: 检索到的图像是否与用户问题相关
+- Answer Relevancy: 生成的答案是否与用户问题相关
+- Answer Correctness: 生成的答案是否与标准答案一致
+- Image Faithfulness: 生成的答案是否忠实于图像内容（检测图像幻觉）
+- Text Faithfulness: 生成的答案是否忠实于文本上下文（检测文本幻觉）
+
+与 LLaVA 评估器的区别：
+  - 返回 HumanMessage 列表（而非 dict），直接传给 ChatOpenAI 模型
+  - 支持 base64 图像通过 image_url content block 嵌入提示词
+  - 无需手动解析 JSON，由 BaseEvaluator 的 json_parser 自动处理
 """
 
 from langchain_core.messages import HumanMessage
@@ -16,10 +24,16 @@ from evaluation.evaluators.base_evaluator import BaseEvaluator
 
 
 class TextContextRelevancyEvaluator(BaseEvaluator):
+    """文本上下文相关性评估器（OpenAI 版）。
+
+    评估检索到的文本上下文是否与用户问题相关。
+    纯文本评估，不涉及图像。
+    """
     def __init__(self, user_query: str, context: str):
         super().__init__(user_query=user_query, context=context)
 
     def get_prompt(self, inputs: dict):
+        """构建纯文本评估提示词，返回 HumanMessage 列表。"""
         message = {
             "type": "text",
             "text": (
@@ -38,10 +52,16 @@ class TextContextRelevancyEvaluator(BaseEvaluator):
 
 
 class ImageContextRelevancyEvaluator(BaseEvaluator):
+    """图像上下文相关性评估器（OpenAI 版）。
+
+    评估检索到的图像是否与用户问题相关。
+    图像以 base64 编码通过 image_url content block 传入 GPT-4o。
+    """
     def __init__(self, user_query: str, image: str):
         super().__init__(user_query=user_query, image=[image])
 
     def get_prompt(self, inputs: dict):
+        """构建包含图像的多模态评估提示词。图像置于文本之前，符合 GPT-4o 的视觉输入习惯。"""
         messages = []
         for image in inputs["image"]:
             messages.append({
@@ -66,10 +86,16 @@ class ImageContextRelevancyEvaluator(BaseEvaluator):
 
 
 class AnswerRelevancyEvaluator(BaseEvaluator):
+    """答案相关性评估器（OpenAI 版）。
+
+    评估生成的答案是否与用户问题相关，即是否回应了用户的意图。
+    纯文本评估，不涉及图像。
+    """
     def __init__(self, user_query: str, generated_answer: str):
         super().__init__(user_query=user_query, generated_answer=generated_answer)
 
     def get_prompt(self, inputs: dict):
+        """构建纯文本评估提示词。"""
         message = {
             "type": "text",
             "text": (
@@ -88,10 +114,21 @@ class AnswerRelevancyEvaluator(BaseEvaluator):
 
 
 class AnswerCorrectnessEvaluator(BaseEvaluator):
+    """答案正确性评估器（OpenAI 版）。
+
+    将生成答案与标准答案进行对比，采用"教师批改"角色扮演方式。
+    允许答案包含额外信息，只要不与标准答案冲突。
+
+    属性:
+        user_query: 用户问题
+        generated_answer: RAG 系统生成的答案（学生答案）
+        reference_answer: 标准答案（ground truth）
+    """
     def __init__(self, user_query: str, generated_answer: str, reference_answer: str):
         super().__init__(user_query=user_query, generated_answer=generated_answer, reference_answer=reference_answer)
 
     def get_prompt(self, inputs: dict):
+        """构建教师批改式评估提示词。"""
         message = {
             "type": "text",
             "text": (
@@ -111,10 +148,16 @@ class AnswerCorrectnessEvaluator(BaseEvaluator):
 
 
 class ImageFaithfulnessEvaluator(BaseEvaluator):
+    """图像忠实度评估器（OpenAI 版）。
+
+    评估生成答案是否忠实于检索到的图像内容，检测图像幻觉。
+    如果没有图像输入，返回 None 跳过评估。
+    """
     def __init__(self, user_query: str, generated_answer: str, image: str):
         super().__init__(user_query=user_query, generated_answer=generated_answer, image=[image])
 
     def get_prompt(self, inputs: dict):
+        """构建图像忠实度评估提示词。无图像时返回 None 表示跳过。"""
         if not inputs["image"]:
             return None
         messages = []
@@ -142,10 +185,16 @@ class ImageFaithfulnessEvaluator(BaseEvaluator):
 
 
 class TextFaithfulnessEvaluator(BaseEvaluator):
+    """文本忠实度评估器（OpenAI 版）。
+
+    评估生成答案是否忠实于检索到的文本上下文，检测文本幻觉。
+    纯文本评估，不涉及图像。
+    """
     def __init__(self, user_query: str, generated_answer: str, context: str):
         super().__init__(user_query=user_query, generated_answer=generated_answer, context=context)
 
     def get_prompt(self, inputs: dict):
+        """构建文本忠实度评估提示词。"""
         message = {
             "type": "text",
             "text": (

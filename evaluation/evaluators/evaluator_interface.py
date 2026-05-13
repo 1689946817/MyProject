@@ -1,18 +1,21 @@
 """
-评估器接口模块
+评估器接口模块。
 
-本模块定义了LLM评估器的抽象接口，为所有评估器类提供统一的规范。
+本模块定义了 LLM 评估器的抽象接口，为所有评估器类提供统一的规范。
 采用抽象基类（ABC）模式，确保所有评估器都实现必要的方法。
 
 接口设计遵循依赖倒置原则：
-- 高层模块（EvaluationModule）依赖抽象接口
-- 低层模块（具体评估器）实现抽象接口
+- 高层模块（评估流程）依赖抽象接口 EvaluatorInterface
+- 低层模块（具体评估器如 GPT-4V、LLaVA）实现抽象接口
 
-主要组件：
-- EvaluatorInterface: 评估器抽象基类，定义评估器的标准接口
+所有评估器必须实现：
+- run_evaluation(): 执行评估并返回 {grade: 0|1, reason: str}
+- get_prompt(inputs): 根据输入参数构建评估提示词
 
-作者: [项目作者]
-日期: [创建日期]
+子类包括：
+- evaluators_openai.py: 基于 GPT-4V 的评估器（通过 LangChain HumanMessage）
+- evaluators_llava.py: 基于 LLaVA 的评估器（支持图像输入）
+- evaluators_agentic.py: Agentic RAG 专用评估器（重试率、接地率）
 """
 
 from abc import ABC, abstractmethod
@@ -20,24 +23,24 @@ from abc import ABC, abstractmethod
 
 class EvaluatorInterface(ABC):
     """
-    LLM评估器抽象基类。
-    
+    LLM 评估器抽象基类。
+
     该类定义了所有评估器必须实现的接口方法，作为评估器家族的统一规范。
-    任何继承此类的评估器都必须实现run_evaluation和get_prompt方法。
-    
+    任何继承此类的评估器都必须实现 run_evaluation 和 get_prompt 方法。
+
     设计模式：
     - 接口模式：定义评估器的标准行为契约
-    - 抽象工厂模式：为创建不同类型的评估器提供统一接口
-    
+    - 模板方法模式：子类实现具体的提示词构建和评估逻辑
+
     使用场景：
     当需要创建新的评估器时，应继承此接口并实现所有抽象方法。
     这确保了所有评估器具有一致的行为，便于在评估模块中统一调用。
-    
+
     子类实现示例:
         >>> class MyEvaluator(EvaluatorInterface):
         ...     def run_evaluation(self) -> dict:
         ...         return {'grade': 1, 'reason': '评估通过'}
-        ...     
+        ...
         ...     def get_prompt(self, inputs: dict):
         ...         return f"Evaluate: {inputs['query']}"
     """

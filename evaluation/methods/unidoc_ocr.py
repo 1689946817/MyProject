@@ -1,7 +1,17 @@
 """
 UniDoc-Bench Baseline OCR：OCR 文本向量检索。
 
-集合命名：unidoc_{domain}_ocr
+对每张图像执行 OCR 文字识别，将识别出的文本通过 Embedding 模型向量化后
+存入 ChromaDB 集合（命名规则：unidoc_{domain}_ocr），
+检索时将查询文本 Embedding，在向量库中执行余弦相似度检索。
+
+OCR 引擎策略（子进程隔离执行）：
+  - 主引擎：PaddleOCR（精度更高）
+  - 备用引擎：RapidOCR（无需 PaddlePaddle 环境）
+  - 通过 PADDLEOCR_PYTHON 环境变量指定专用 Python 解释器
+
+集合命名规则：unidoc_{domain}_ocr
+例如：unidoc_clip_ocr、unidoc_healthcare_ocr
 """
 
 from __future__ import annotations
@@ -28,6 +38,7 @@ from evaluation.methods._ocr_common import (  # noqa: E402
     validate_ocr_python,
 )
 
+# 初始化持久化 ChromaDB 客户端
 _client = chromadb.Client(
     ChromaSettings(
         is_persistent=True,
@@ -35,6 +46,8 @@ _client = chromadb.Client(
     )
 )
 
+# OCR 子进程内联脚本：通过 stdin 接收图片路径 JSON，stdout 输出识别结果 JSON
+# 优先使用 PaddleOCR，失败时自动降级到 RapidOCR
 _OCR_SCRIPT = """
 import json, os, sys, types
 os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "True")
@@ -101,6 +114,17 @@ print(json.dumps(results, ensure_ascii=True))
 
 
 def _run_ocr_subprocess(image_paths: list[str]) -> dict[str, str]:
+    """在独立子进程中批量执行 OCR 识别。
+
+    子进程通过 stdin 接收图片路径列表的 JSON，stdout 输出 {path: text} JSON。
+    使用 PADDLEOCR_PYTHON 环境变量指定的 Python 解释器运行。
+
+    Args:
+        image_paths: 待识别的图像文件路径列表。
+
+    Returns:
+        dict[str, str]: {图像路径: OCR 识别文本} 映射。
+    """
     paddle_python = os.environ.get("PADDLEOCR_PYTHON") or sys.executable
     validate_ocr_python(paddle_python)
     proc = subprocess.run(
@@ -125,11 +149,24 @@ def _run_ocr_subprocess(image_paths: list[str]) -> dict[str, str]:
 
 
 def _collection_name(domain: str) -> str:
+    """生成 ChromaDB 集合名称，命名规则：unidoc_{domain}_ocr。"""
     return f"unidoc_{domain}_ocr"
 
 
 def build_index(domain: str, image_records: List[dict], fallback_text: str = "[no text]") -> None:
-    """构建 OCR 文本向量索引。"""
+    """构建 OCR 文本向量索引。
+
+    对每张图像执行 OCR（子进程隔离），将提取的文字通过 Embedding 模型
+    向量化后存入 ChromaDB 集合 unidoc_{domain}_ocr。
+
+    健康性检查：调用 _ocr_common 的统计函数验证 OCR 结果是否有效，
+    避免将全空或全相同的异常索引提交到 ChromaDB。
+
+    Args:
+        domain: 领域名称，影响集合命名和元数据。
+        image_records: 图像记录列表，每条需包含 id 和 file_path。
+        fallback_text: OCR 结果为空时的替代文本，默认 "[no text]"。
+    """
     embedder = get_embedding_model()
 
     valid_records = [r for r in image_records if os.path.exists(r["file_path"])]
@@ -184,6 +221,18 @@ def build_index(domain: str, image_records: List[dict], fallback_text: str = "[n
 
 
 def retrieve(query: str, domain: str, top_k: int = 10) -> List[str]:
+    """使用 OCR 方法检索图像。
+
+    检索路径：查询文本 → Embedding → ChromaDB 余弦相似度检索。
+
+    Args:
+        query: 查询文本。
+        domain: 领域名称，决定检索哪个集合。
+        top_k: 返回的检索结果数量，默认 10。
+
+    Returns:
+        List[str]: top_k 个预测图像 ID 列表。
+    """
     embedder = get_embedding_model()
     emb = embedder.embed_query(query)
     col = _client.get_or_create_collection(name=_collection_name(domain))
@@ -192,10 +241,21 @@ def retrieve(query: str, domain: str, top_k: int = 10) -> List[str]:
 
 
 def check_index(domain: str) -> bool:
+    """检查指定领域的 OCR 索引是否已构建且健康。
+
+    抽样 10 条文档检查：非空、不全为 fallback、不完全相同。
+
+    Args:
+        domain: 领域名称。
+
+    Returns:
+        bool: True 表示索引健康。
+    """
     col = _client.get_or_create_collection(name=_collection_name(domain))
     if col.count() == 0:
         return False
 
+    # 抽样检查索引内容质量
     sample = col.peek(limit=10)
     documents = sample.get("documents") or []
     return is_ocr_index_healthy(documents, fallback_text="[no text]")

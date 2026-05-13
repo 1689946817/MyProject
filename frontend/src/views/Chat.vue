@@ -1,3 +1,4 @@
+<!-- 聊天页面组件：RAG 智能问答，支持多会话管理、流式响应、检索源可视化 -->
 <template>
   <div class="chat-page page-shell">
     <div class="chat-shell">
@@ -615,6 +616,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入 ----
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
@@ -635,10 +637,16 @@ import type { AnswerFeedbackResponse, ChatCitationChunkRef, ChatCitationItem, Ch
 const { t } = useI18n();
 const router = useRouter();
 
+// ---- 类型定义 ----
+/** 检索源条目（图片或文档片段） */
 type SourceItem = ChatSourceItem;
+/** 聊天消息 */
 type Message = ChatMessage;
+/** 引用条目（段落-来源映射） */
 type CitationItem = ChatCitationItem;
+/** 流式进度事件 */
 type ProgressEvent = ChatProgressEvent;
+/** 执行模式提示：控制后端走哪种检索/生成路径 */
 type ExecutionHint =
   | "direct_llm"
   | "multimodal_rag"
@@ -646,17 +654,20 @@ type ExecutionHint =
   | "image_grounded_answer"
   | "uploaded_image_qa"
   | "save_uploaded_image";
+/** 用户 @ 引用的来源标签（文档或图片） */
 type SourceScopeChip = {
   type: "doc" | "image";
   id: string;
   title: string;
 };
+/** 斜杠命令定义 */
 type SlashCommand = {
   command: string;
   label: string;
   description: string;
   apply: () => void;
 };
+/** 问题模板（快捷提问） */
 type QuestionTemplate = {
   id: string;
   title: string;
@@ -664,11 +675,13 @@ type QuestionTemplate = {
   prompt: string;
   executionHint?: ExecutionHint | "auto";
 };
+/** 实时推理过程中的元数据条目 */
 type LiveProcessDetailItem = {
   key: string;
   label: string;
   value: string;
 };
+/** 实时推理过程中已完成的步骤 */
 type LiveProcessCompletedItem = {
   key: string;
   label: string;
@@ -676,17 +689,26 @@ type LiveProcessCompletedItem = {
   elapsed: string;
 };
 
+// ---- 响应式状态 ----
+
+// 会话管理状态
 const sessions = ref<ChatSession[]>([]);
 const currentSessionId = ref<string | undefined>();
 const currentSessionTitle = ref("");
 const messages = ref<Message[]>([]);
 const query = ref("");
 const pendingSessions = ref<Record<string, boolean>>({});
+
+// 附件与图片上传状态
 const attachedImage = ref<File | null>(null);
 const attachedImagePreview = ref("");
 const attachmentMode = ref<"auto" | "uploaded_image_qa" | "image_similarity" | "save_uploaded_image">("auto");
+
+// 聊天模式与执行模式状态
 const selectedChatMode = ref<ChatMode>("default");
 const selectedExecutionHint = ref<ExecutionHint | "auto">("auto");
+
+// 来源引用面板状态（@ 搜索选择的文档/图片）
 const selectedSources = ref<SourceScopeChip[]>([]);
 const sourceQuery = ref("");
 const sourcePanelOpen = ref(false);
@@ -695,7 +717,11 @@ const sourceDocLimit = ref(8);
 const sourceImageLimit = ref(8);
 const documentCandidates = ref<DocumentRecord[]>([]);
 const imageCandidates = ref<ImageRecord[]>([]);
+
+// 流式响应标识
 const streamingId = ref("");
+
+// 检索参数设置（TopK、分数过滤等）
 const chatTopK = ref(5);
 const chatEnableScoreFilter = ref(false);
 const chatMinRelevanceScore = ref(0);
@@ -703,39 +729,63 @@ const chatDefaultTopK = ref(5);
 const chatDefaultEnableScoreFilter = ref(false);
 const chatDefaultMinRelevanceScore = ref(0);
 const settingsPanelOpen = ref(false);
+
+// UI 面板状态
 const historyDrawerOpen = ref(false);
 const isMobile = ref(false);
+
+// 组件引用
 const sessionListRef = ref<InstanceType<typeof SessionList>>();
 const composerInputRef = ref<InputInstance>();
+const messagesEndRef = ref<HTMLElement>();
+
+// 会话草稿（切换会话时缓存未提交的消息）
 const sessionDrafts = ref<Record<string, { messages: Message[]; title: string }>>({});
+
+// 对象 URL 追踪（用于释放 createObjectURL 创建的临时 URL）
 const objectUrls = new Set<string>();
+
+// 图片预览弹窗状态
 const previewVisible = ref(false);
 const previewSrc = ref("");
 const previewTitle = ref("");
 const previewDescription = ref("");
-const messagesEndRef = ref<HTMLElement>();
+
+// 引用高亮与来源卡片 DOM 引用
 const sourceCardRefs = new Map<string, HTMLElement>();
 const activeCitationMessageId = ref<string | null>(null);
 const activeCitationSourceIds = ref<string[]>([]);
 const activeCitationParagraphKeys = ref<string[]>([]);
 const expandedSourcePanels = ref<Record<string, boolean>>({});
+
+// 用户反馈弹窗状态
 const feedbackPopoverId = ref<string | null>(null);
 const feedbackSubmittingId = ref<string | null>(null);
 const feedbackForms = ref<Record<string, { issue_types: string[]; comment: string }>>({});
+
+// 实时推理过程展开状态与计时器
 const liveProcessExpanded = ref<Record<string, boolean>>({});
 const liveProcessNow = ref(Date.now());
+
+// 防抖与竞态控制令牌
 let loadSessionToken = 0;
 let scrollToBottomRaf = 0;
 let liveProcessTimer = 0;
 
+// ---- 计算属性 ----
+
+/** 是否存在正在等待响应的会话 */
 const hasPendingSessions = computed(() => Object.keys(pendingSessions.value).length > 0);
+/** 当前会话是否正在等待响应（阻止重复发送） */
 const isCurrentSessionPending = computed(() => {
   if (!currentSessionId.value) return false;
   return Boolean(pendingSessions.value[currentSessionId.value]);
 });
 
+/** 是否为默认聊天模式（非 fast/expert） */
 const isDefaultChatMode = computed(() => selectedChatMode.value === "default");
 
+/** 综合计算后的执行模式：考虑附件模式和用户手动选择 */
 const effectiveExecutionHint = computed<ExecutionHint | undefined>(() => {
   if (!isDefaultChatMode.value) {
     return undefined;
@@ -749,6 +799,7 @@ const effectiveExecutionHint = computed<ExecutionHint | undefined>(() => {
   return undefined;
 });
 
+/** 用户选择的来源范围（限定检索的文档/图片 ID 集合） */
 const sourceScope = computed(() => {
   const docIds = selectedSources.value.filter((item) => item.type === "doc").map((item) => item.id);
   const imageIds = selectedSources.value.filter((item) => item.type === "image").map((item) => item.id);
@@ -761,6 +812,7 @@ const sourceScope = computed(() => {
   };
 });
 
+/** 附件处理模式选项（自动/问答/找相似/保存到知识库） */
 const attachmentModeOptions = computed(() => [
   { label: t("chat.attachmentModeAuto"), value: "auto" },
   { label: t("chat.attachmentModeAskImage"), value: "uploaded_image_qa" },
@@ -768,6 +820,7 @@ const attachmentModeOptions = computed(() => [
   { label: t("chat.attachmentModeSave"), value: "save_uploaded_image" },
 ]);
 
+/** 反馈问题类型选项（检索错误/幻觉/缺少引用/无帮助） */
 const feedbackIssueOptions = computed(() => [
   { value: "wrong_retrieval", label: t("chat.feedbackIssueWrongRetrieval") },
   { value: "hallucination", label: t("chat.feedbackIssueHallucination") },
@@ -775,6 +828,7 @@ const feedbackIssueOptions = computed(() => [
   { value: "not_helpful", label: t("chat.feedbackIssueNotHelpful") },
 ]);
 
+/** 斜杠命令列表：支持 /mode、/topk、/score、/trace、/clear_scope、/reset */
 const slashCommands = computed<SlashCommand[]>(() => [
   {
     command: "/mode kb",
@@ -855,6 +909,7 @@ const slashCommands = computed<SlashCommand[]>(() => [
   },
 ]);
 
+/** 根据当前聊天模式过滤可用的斜杠命令（非 default 模式隐藏 /mode 命令） */
 const modeAwareSlashCommands = computed(() => {
   if (isDefaultChatMode.value) {
     return slashCommands.value;
@@ -862,6 +917,7 @@ const modeAwareSlashCommands = computed(() => {
   return slashCommands.value.filter((item) => !item.command.startsWith("/mode "));
 });
 
+/** 斜杠命令解析结果 */
 type ParsedSlashResult = {
   applied: boolean;
   valid: boolean;
@@ -869,6 +925,12 @@ type ParsedSlashResult = {
   previewCommand: string | null;
 };
 
+/**
+ * 解析输入字符串开头的斜杠命令
+ * @param input - 用户输入文本
+ * @param apply - 是否实际执行命令（为 false 时仅验证）
+ * @returns 解析结果，包含是否成功、剩余文本和命中的命令
+ */
 function parseLeadingSlashCommands(input: string, apply = false): ParsedSlashResult {
   let rest = input.trim();
   let applied = false;
@@ -955,6 +1017,7 @@ function parseLeadingSlashCommands(input: string, apply = false): ParsedSlashRes
   return { applied, valid: true, remainder: rest, previewCommand };
 }
 
+/** 根据当前输入过滤出匹配的斜杠命令候选项 */
 const visibleSlashCommands = computed(() => {
   const normalized = query.value.trim().toLowerCase();
   if (!normalized.startsWith("/")) return [];
@@ -962,8 +1025,11 @@ const visibleSlashCommands = computed(() => {
   return modeAwareSlashCommands.value.filter((item) => item.command.startsWith(firstToken) || item.command.startsWith(normalized) || item.label.toLowerCase().includes(normalized.slice(1)));
 });
 
+/** 当前输入是否以斜杠开头（触发命令模式） */
 const isSlashMode = computed(() => query.value.trim().startsWith("/"));
+/** 当前输入的斜杠命令解析结果（只读预览模式） */
 const slashParseResult = computed(() => parseLeadingSlashCommands(query.value, false));
+/** 当前激活的斜杠命令（用于面板高亮） */
 const activeSlashCommand = computed(() => {
   if (visibleSlashCommands.value.length > 0) return visibleSlashCommands.value[0];
   if (slashParseResult.value.previewCommand) {
@@ -971,8 +1037,10 @@ const activeSlashCommand = computed(() => {
   }
   return null;
 });
+/** 输入中是否存在无效的斜杠命令 */
 const hasInvalidSlashCommand = computed(() => isSlashMode.value && !slashParseResult.value.valid);
 
+/** 检索设置摘要文本（显示在工具栏按钮上） */
 const settingsSummary = computed(() => {
   const parts: string[] = [];
   if (!isDefaultChatMode.value) {
@@ -987,6 +1055,7 @@ const settingsSummary = computed(() => {
   return parts.length > 0 ? parts.join(" / ") : t("chat.defaultSettings");
 });
 
+/** 输入框模式下拉按钮标签（快速/默认/专家） */
 const composerModeLabel = computed(() => {
   const modeMap: Record<ChatMode, string> = {
     fast: t("chat.chatModeFast"),
@@ -996,6 +1065,7 @@ const composerModeLabel = computed(() => {
   return modeMap[selectedChatMode.value] || t("chat.chatModeDefault");
 });
 
+/** 执行模式下拉按钮标签 */
 const composerExecutionLabel = computed(() => {
   const mode = effectiveExecutionHint.value;
   if (!mode) {
@@ -1012,6 +1082,7 @@ const composerExecutionLabel = computed(() => {
   return modeMap[mode];
 });
 
+/** 来源引用按钮标签（全部来源 或 N 篇文档 + M 张图片） */
 const composerSourceLabel = computed(() => {
   const docCount = selectedSources.value.filter((item) => item.type === "doc").length;
   const imageCount = selectedSources.value.filter((item) => item.type === "image").length;
@@ -1021,6 +1092,7 @@ const composerSourceLabel = computed(() => {
   return t("chat.contextScopedSources", { docs: docCount, images: imageCount });
 });
 
+/** 输入框上方的警告提示列表（模式冲突、配置矛盾等） */
 const composerWarnings = computed(() => {
   const warnings: string[] = [];
   if (selectedChatMode.value !== "default") {
@@ -1038,6 +1110,7 @@ const composerWarnings = computed(() => {
   return warnings;
 });
 
+/** 根据当前模式动态切换输入框占位文本 */
 const dynamicInputPlaceholder = computed(() => {
   if (selectedChatMode.value === "fast") return t("chat.inputPlaceholderFast");
   if (selectedChatMode.value === "expert") return t("chat.inputPlaceholderExpert");
@@ -1049,6 +1122,7 @@ const dynamicInputPlaceholder = computed(() => {
   return "Enter 发送，Shift + Enter 换行";
 });
 
+/** 快捷问题模板列表（知识库摘要、图片问答、图片搜索等） */
 const questionTemplates = computed<QuestionTemplate[]>(() => [
   {
     id: "kb-summary",
@@ -1087,13 +1161,18 @@ const questionTemplates = computed<QuestionTemplate[]>(() => [
   },
 ]);
 
+/** 是否显示大尺寸模板卡片（空会话时显示） */
 const showLargeTemplateCards = computed(() => questionTemplates.value.length > 0 && messages.value.length === 0);
+/** 是否显示紧凑模板标签（有消息且输入框为空时显示） */
 const showCompactTemplateChips = computed(() =>
   questionTemplates.value.length > 0
   && messages.value.length > 0
   && query.value.trim().length === 0,
 );
 
+// ---- 侦听器 ----
+
+/** 检索参数变化时自动打开/关闭设置面板 */
 watch([chatTopK, chatEnableScoreFilter, chatMinRelevanceScore], () => {
   settingsPanelOpen.value =
     chatTopK.value !== chatDefaultTopK.value ||
@@ -1101,6 +1180,7 @@ watch([chatTopK, chatEnableScoreFilter, chatMinRelevanceScore], () => {
     (chatEnableScoreFilter.value && chatMinRelevanceScore.value !== chatDefaultMinRelevanceScore.value);
 });
 
+/** 输入框内容变化时：@ 触发来源面板、斜杠模式下关闭来源面板 */
 watch(query, (value, oldValue) => {
   if (value.endsWith("@")) {
     sourceQuery.value = "";
@@ -1113,10 +1193,16 @@ watch(query, (value, oldValue) => {
   }
 });
 
+// ---- 工具函数 ----
+
+/** 更新视口状态（检测移动端） */
 function updateViewportState() {
   isMobile.value = window.innerWidth < 1100;
 }
 
+// ---- 来源引用面板 ----
+
+/** 加载可引用的文档和图片候选列表 */
 async function loadSourceCandidates(keyword = "") {
   sourceLoading.value = true;
   try {
@@ -1134,11 +1220,13 @@ async function loadSourceCandidates(keyword = "") {
   }
 }
 
+/** 打开来源引用面板并加载候选 */
 function openSourcePanel() {
   sourcePanelOpen.value = true;
   loadSourceCandidates(sourceQuery.value);
 }
 
+/** 加载更多来源候选（分页加载） */
 function loadMoreSources(type: "doc" | "image") {
   if (type === "doc") {
     sourceDocLimit.value += 8;
@@ -1148,6 +1236,7 @@ function loadMoreSources(type: "doc" | "image") {
   loadSourceCandidates(sourceQuery.value);
 }
 
+/** 添加一个来源标签到选中列表 */
 function addSourceChip(type: "doc" | "image", id: string, title?: string | null) {
   if (selectedSources.value.some((source) => source.type === type && source.id === id)) {
     sourcePanelOpen.value = false;
@@ -1165,15 +1254,24 @@ function addSourceChip(type: "doc" | "image", id: string, title?: string | null)
   sourceQuery.value = "";
 }
 
+/** 移除指定索引的来源标签 */
 function removeSourceChip(index: number) {
   selectedSources.value.splice(index, 1);
 }
 
+// ---- 斜杠命令与输入处理 ----
+
+/** 执行选中的斜杠命令并显示成功提示 */
 function applySlashCommand(command: SlashCommand) {
   command.apply();
   ElMessage.success(t("chat.commandApplied", { command: command.command }));
 }
 
+/**
+ * 处理输入框键盘事件
+ * - Enter：斜杠命令模式下执行命令，普通模式下发送消息
+ * - Shift+Enter：换行
+ */
 function handleInputKeydown(event: KeyboardEvent) {
   if (event.key === "Enter" && !event.shiftKey && query.value.trim().startsWith("/") && query.value.trim() === "/" && visibleSlashCommands.value.length > 0) {
     event.preventDefault();
@@ -1201,14 +1299,19 @@ function handleInputKeydown(event: KeyboardEvent) {
   }
 }
 
+// ---- 消息操作（复制/引用/重发） ----
+
+/** 获取消息作者显示名称 */
 function getMessageAuthor(msg: Message): string {
   return msg.role === "assistant" ? t("chat.assistantName") : t("chat.userName");
 }
 
+/** 获取消息的可复制纯文本 */
 function getCopyableMessageText(msg: Message): string {
   return String(msg.content || "").trim();
 }
 
+/** 复制消息内容到剪贴板（兼容不支持 Clipboard API 的环境） */
 async function copyMessage(msg: Message) {
   const text = getCopyableMessageText(msg);
   if (!text) {
@@ -1236,6 +1339,7 @@ async function copyMessage(msg: Message) {
   }
 }
 
+/** 将文本转为 Markdown 引用格式（每行前加 > ） */
 function buildQuotedMessage(text: string): string {
   return text
     .split("\n")
@@ -1243,12 +1347,14 @@ function buildQuotedMessage(text: string): string {
     .join("\n");
 }
 
+/** 聚焦到输入框 */
 function focusComposer() {
   nextTick(() => {
     composerInputRef.value?.focus?.();
   });
 }
 
+/** 引用消息内容到输入框（以 Markdown 引用格式插入） */
 function quoteMessage(msg: Message) {
   const text = getCopyableMessageText(msg);
   if (!text) {
@@ -1263,6 +1369,7 @@ function quoteMessage(msg: Message) {
   ElMessage.success(t("chat.quoteAdded"));
 }
 
+/** 从指定位置向前查找最近的用户消息（用于助手消息的重发） */
 function getRelatedUserMessage(index: number): Message | undefined {
   for (let current = index; current >= 0; current -= 1) {
     const candidate = messages.value[current];
@@ -1273,6 +1380,7 @@ function getRelatedUserMessage(index: number): Message | undefined {
   return undefined;
 }
 
+/** 重发消息：将原问题填入输入框并立即发送 */
 async function resendMessage(msg: Message, index: number) {
   const sourceMessage = msg.role === "user" ? msg : getRelatedUserMessage(index);
   const text = String(sourceMessage?.content || "").trim();
@@ -1286,6 +1394,9 @@ async function resendMessage(msg: Message, index: number) {
   await doChat();
 }
 
+// ---- 会话管理 ----
+
+/** 从后端加载会话列表 */
 async function loadSessions() {
   try {
     sessions.value = await getSessions();
@@ -1294,6 +1405,7 @@ async function loadSessions() {
   }
 }
 
+/** 加载指定会话的消息列表（支持草稿缓存和竞态保护） */
 async function loadSession(id: string) {
   const token = ++loadSessionToken;
   const draft = sessionDrafts.value[id];
@@ -1322,15 +1434,18 @@ async function loadSession(id: string) {
   }
 }
 
+/** 切换到指定会话 */
 function selectSession(id: string) {
   currentSessionId.value = id;
 }
 
+/** 从抽屉面板选择会话（同时关闭抽屉） */
 function selectSessionFromDrawer(id: string) {
   historyDrawerOpen.value = false;
   selectSession(id);
 }
 
+/** 会话切换时保存旧会话草稿、加载新会话消息 */
 watch(currentSessionId, (newId, oldId) => {
   clearCitationHighlight();
   if (oldId) {
@@ -1344,6 +1459,7 @@ watch(currentSessionId, (newId, oldId) => {
   }
 });
 
+/** 创建新会话并自动切换 */
 async function handleCreateSession() {
   try {
     const session = await createSession();
@@ -1357,6 +1473,7 @@ async function handleCreateSession() {
   }
 }
 
+/** 打开会话重命名对话框 */
 function handleRenameSession(id: string) {
   const session = sessions.value.find((s) => s.id === id);
   if (session) {
@@ -1364,6 +1481,7 @@ function handleRenameSession(id: string) {
   }
 }
 
+/** 更新会话标题（调用后端接口并同步本地状态） */
 async function updateSessionTitle(id: string, title: string) {
   try {
     await renameSession(id, title);
@@ -1382,6 +1500,7 @@ async function updateSessionTitle(id: string, title: string) {
   }
 }
 
+/** 删除会话（后端删除 + 本地清理） */
 async function handleDeleteSession(id: string) {
   try {
     await deleteSession(id);
@@ -1397,6 +1516,9 @@ async function handleDeleteSession(id: string) {
   }
 }
 
+// ---- 图片附件处理 ----
+
+/** 用户选择图片文件时的回调 */
 function onImageChange(file: UploadFile) {
   revokeAttachedPreview();
   attachedImage.value = file.raw || null;
@@ -1405,6 +1527,7 @@ function onImageChange(file: UploadFile) {
   }
 }
 
+/** 释放附件预览的 Object URL */
 function revokeAttachedPreview() {
   if (attachedImagePreview.value) {
     URL.revokeObjectURL(attachedImagePreview.value);
@@ -1412,17 +1535,22 @@ function revokeAttachedPreview() {
   }
 }
 
+/** 移除已附加的图片 */
 function removeAttached() {
   attachedImage.value = null;
   attachmentMode.value = "auto";
   revokeAttachedPreview();
 }
 
+/** 追踪 Object URL 以便组件销毁时统一释放 */
 function trackObjectUrl(url: string) {
   objectUrls.add(url);
   return url;
 }
 
+// ---- 消息深拷贝与进度追踪 ----
+
+/** 深拷贝消息对象（避免引用共享导致的状态污染） */
 function cloneMessage(message: Message): Message {
   const normalizedCitations = message.citations
     ? message.citations.map((citation) => ({
@@ -1453,6 +1581,7 @@ function cloneMessage(message: Message): Message {
   };
 }
 
+/** 合并进度事件到步骤列表（同 phase 更新，不同 phase 追加） */
 function mergeProgressSteps(existing: ProgressEvent[], incoming: ProgressEvent): ProgressEvent[] {
   const key = incoming.step_key || incoming.phase;
   const nextSteps = [...existing];
@@ -1472,6 +1601,7 @@ function mergeProgressSteps(existing: ProgressEvent[], incoming: ProgressEvent):
   return nextSteps;
 }
 
+/** 更新助手消息的实时推理进度（支持跨会话草稿更新） */
 function updateLiveAssistantProgress(targetSessionId: string, assistantId: string, event: ProgressEvent) {
   const applyProgress = (message: Message) => {
     const nextEvent: ProgressEvent = {
@@ -1496,6 +1626,7 @@ function updateLiveAssistantProgress(targetSessionId: string, assistantId: strin
   }
 }
 
+/** 释放消息列表中所有已追踪的 Object URL */
 function revokeMessageUrls(list: Message[]) {
   list.forEach((message) => {
     if (message.local_image_url && objectUrls.has(message.local_image_url)) {
@@ -1505,6 +1636,9 @@ function revokeMessageUrls(list: Message[]) {
   });
 }
 
+// ---- 草稿管理 ----
+
+/** 保存当前会话消息到草稿缓存 */
 function saveSessionDraft(sessionId: string) {
   if (!sessionId) return;
   sessionDrafts.value[sessionId] = {
@@ -1513,6 +1647,9 @@ function saveSessionDraft(sessionId: string) {
   };
 }
 
+// ---- 反馈表单管理 ----
+
+/** 获取或初始化指定消息的反馈表单 */
 function getFeedbackForm(messageId: string) {
   if (!feedbackForms.value[messageId]) {
     feedbackForms.value[messageId] = {
@@ -1523,6 +1660,7 @@ function getFeedbackForm(messageId: string) {
   return feedbackForms.value[messageId];
 }
 
+/** 将消息已有的反馈数据同步到表单 */
 function syncFeedbackForm(message: Message) {
   if (message.role !== "assistant") return;
   const form = getFeedbackForm(String(message.id));
@@ -1530,6 +1668,7 @@ function syncFeedbackForm(message: Message) {
   form.comment = message.feedback?.comment || "";
 }
 
+/** 将后端返回的反馈结果应用到消息和草稿 */
 function applyMessageFeedback(messageId: string | number, sessionId: string, feedback: AnswerFeedbackResponse) {
   const normalizedId = String(messageId);
   const target = messages.value.find((message) => String(message.id) === normalizedId);
@@ -1551,14 +1690,17 @@ function applyMessageFeedback(messageId: string | number, sessionId: string, fee
   }
 }
 
+/** 批量同步反馈表单 */
 function syncFeedbackFormsForMessages(list: Message[]) {
   list.forEach((message) => syncFeedbackForm(message));
 }
 
+/** 判断助手消息是否已持久化（ID 为整数表示已入库） */
 function hasPersistedAssistantMessageId(message: Message): boolean {
   return message.role === "assistant" && Number.isInteger(Number(message.id));
 }
 
+/** 清除指定会话的草稿缓存并释放 Object URL */
 function clearSessionDraft(sessionId: string) {
   const draft = sessionDrafts.value[sessionId];
   if (draft?.messages?.length) {
@@ -1567,6 +1709,7 @@ function clearSessionDraft(sessionId: string) {
   delete sessionDrafts.value[sessionId];
 }
 
+/** 向指定会话的草稿追加一条消息 */
 function appendMessageToDraft(sessionId: string, message: Message) {
   if (!sessionId) return;
   const existing = sessionDrafts.value[sessionId];
@@ -1578,6 +1721,7 @@ function appendMessageToDraft(sessionId: string, message: Message) {
   };
 }
 
+/** 更新草稿中指定消息的内容（通过 updater 回调修改） */
 function updateDraftMessage(sessionId: string, messageId: string | number, updater: (message: Message) => void) {
   if (!sessionId) return;
   const existing = sessionDrafts.value[sessionId];
@@ -1592,6 +1736,7 @@ function updateDraftMessage(sessionId: string, messageId: string | number, updat
   };
 }
 
+/** 从草稿中移除指定消息 */
 function removeDraftMessage(sessionId: string, messageId: string | number) {
   if (!sessionId) return;
   const existing = sessionDrafts.value[sessionId];
@@ -1602,6 +1747,7 @@ function removeDraftMessage(sessionId: string, messageId: string | number) {
   };
 }
 
+/** 重命名 pending 会话的 key（后端返回真实 ID 时迁移） */
 function renamePendingSessionKey(fromId: string, toId: string) {
   if (!fromId || !toId || fromId === toId || !pendingSessions.value[fromId]) return;
   const { [fromId]: pendingValue, ...restPending } = pendingSessions.value;
@@ -1611,16 +1757,19 @@ function renamePendingSessionKey(fromId: string, toId: string) {
   };
 }
 
+/** 将草稿从旧会话 ID 迁移到新会话 ID */
 function moveSessionDraft(fromId: string, toId: string) {
   if (!fromId || !toId || fromId === toId || !sessionDrafts.value[fromId]) return;
   sessionDrafts.value[toId] = sessionDrafts.value[fromId];
   delete sessionDrafts.value[fromId];
 }
 
+/** 获取会话显示标题（优先取草稿标题） */
 function getSessionDisplayTitle(sessionId: string, fallback?: string) {
   return sessionDrafts.value[sessionId]?.title || fallback || t("chat.newSession");
 }
 
+/** 根据用户提问自动生成会话标题（截取首句，最多 18 字符） */
 function generateSessionTitle(rawQuery: string): string {
   const normalized = rawQuery.replace(/\s+/g, " ").trim();
   if (!normalized) return t("chat.newSession");
@@ -1630,22 +1779,29 @@ function generateSessionTitle(rawQuery: string): string {
   return `${compact.slice(0, 18)}…`;
 }
 
+// ---- 消息展示模式与来源渲染 ----
+
+/** 获取消息的展示模式（rag_answer / direct_answer / image_only / image_plus_answer） */
 function getPresentationMode(msg: Message): string {
   return msg.presentation_mode || msg.retrieval_params?.presentation_mode || "rag_answer";
 }
 
+/** 获取消息中的图片类型来源 */
 function getImageSources(msg: Message): SourceItem[] {
   return (msg.sources || []).filter((source) => source.source_type === "image");
 }
 
+/** 获取消息中所有可见的来源列表 */
 function getVisibleSources(msg: Message): SourceItem[] {
   return msg.sources || [];
 }
 
+/** 获取消息的引用列表（段落-来源映射） */
 function getMessageCitations(msg: Message): CitationItem[] {
   return msg.citations || (Array.isArray(msg.retrieval_params?.citations) ? msg.retrieval_params.citations as CitationItem[] : []);
 }
 
+/** 生成来源 ID 到显示标签（S1、S2...）的映射 */
 function getSourceLabelMap(msg: Message): Record<string, string> {
   return getVisibleSources(msg).reduce<Record<string, string>>((acc, source, index) => {
     acc[source.source_id] = `S${index + 1}`;
@@ -1653,22 +1809,29 @@ function getSourceLabelMap(msg: Message): Record<string, string> {
   }, {});
 }
 
+/** 获取指定来源被引用的次数 */
 function getSourceCitationCount(msg: Message, source: SourceItem): number {
   return getMessageCitations(msg).filter((citation) => citation.source_ids.includes(source.source_id)).length;
 }
 
+/** 获取当前高亮的段落 key 列表 */
 function getActiveParagraphKeys(msg: Message): string[] {
   return activeCitationMessageId.value === String(msg.id) ? activeCitationParagraphKeys.value : [];
 }
 
+/** 获取当前高亮的来源 ID 列表 */
 function getActiveSourceIds(msg: Message): string[] {
   return activeCitationMessageId.value === String(msg.id) ? activeCitationSourceIds.value : [];
 }
 
+// ---- 来源面板展开/折叠 ----
+
+/** 检查消息的来源面板是否展开 */
 function isSourcePanelExpanded(msg: Message): boolean {
   return Boolean(expandedSourcePanels.value[String(msg.id)]);
 }
 
+/** 切换来源面板的展开/折叠状态 */
 function toggleSourcePanel(msg: Message): void {
   const key = String(msg.id);
   expandedSourcePanels.value = {
@@ -1677,6 +1840,7 @@ function toggleSourcePanel(msg: Message): void {
   };
 }
 
+/** 展开来源面板（如果尚未展开） */
 function expandSourcePanel(msg: Message): void {
   const key = String(msg.id);
   if (expandedSourcePanels.value[key]) {
@@ -1688,6 +1852,7 @@ function expandSourcePanel(msg: Message): void {
   };
 }
 
+/** 注册来源卡片的 DOM 引用（用于滚动定位） */
 function setSourceCardRef(messageId: string, sourceId: string, element: Element | { $el?: Element } | null) {
   const key = `${messageId}::${sourceId}`;
   const actualElement = element instanceof HTMLElement
@@ -1702,6 +1867,7 @@ function setSourceCardRef(messageId: string, sourceId: string, element: Element 
   sourceCardRefs.delete(key);
 }
 
+/** 清除所有引用高亮状态 */
 function clearCitationHighlight() {
   activeCitationMessageId.value = null;
   activeCitationSourceIds.value = [];

@@ -1,4 +1,15 @@
-"""图片知识库管理 API。"""
+"""
+图片知识库管理 API 路由。
+
+提供图片知识库的 CRUD 操作，包括：
+- 图片列表查询：支持按关键词、状态、启用标记、数据来源、标签等多维度过滤
+- 图片上传：通过 MLLM 生成结构化描述后存入向量库
+- 图片版本管理：支持上传新版本、查看历史版本
+- 图片元数据编辑：标题、标签、备注、启用状态、自定义元数据
+- 图片删除与重处理
+
+所有路由以 /api/knowledge-base 为前缀。图片处理核心逻辑委托给 LangChainAdapter。
+"""
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
@@ -25,8 +36,10 @@ from app.langchain_integration.adapters import get_langchain_adapter
 
 
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
-SEARCH_KEYWORD_MAX_LENGTH = 4000
+SEARCH_KEYWORD_MAX_LENGTH = 4000  # 搜索关键词最大长度
 
+
+# ---- 图片列表与查询 ----
 
 @router.get("/list", response_model=List[ImageRecordOut])
 async def list_images(
@@ -40,6 +53,7 @@ async def list_images(
     tag: Optional[str] = Query(default=None, max_length=50),
     include_history: bool = False,
 ) -> List[ImageRecordOut]:
+    """分页查询图片列表，支持按关键词、状态、启用标记、数据来源、标签等多维度过滤。"""
     ensure_knowledge_management_columns(db)
     query = db.query(ImageRecord)
     if not include_history:
@@ -65,11 +79,14 @@ async def list_images(
     return [ImageRecordOut.model_validate(r) for r in records]
 
 
+# ---- 图片版本管理 ----
+
 @router.get("/{image_id}/versions", response_model=List[ImageRecordOut])
 async def list_image_versions(
     image_id: str,
     db: Session = Depends(get_db),
 ) -> List[ImageRecordOut]:
+    """查询指定图片的所有历史版本，按版本号降序排列。"""
     try:
         record = get_image_record_or_raise(db, image_id)
     except LookupError as exc:
@@ -90,6 +107,16 @@ async def upload_image_new_version(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ) -> UploadImagesResponse:
+    """为指定图片上传新版本，复用原图片的数据来源和逻辑资产 ID，自动调用 MLLM 生成描述并存入向量库。
+
+    Args:
+        image_id: 要上传新版本的图片记录 ID。
+        file: 待上传的图片文件。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        UploadImagesResponse，包含新版本图片记录及去重信息，可选附带耗时统计。
+    """
     try:
         current = get_image_record_or_raise(db, image_id)
     except LookupError as exc:
@@ -130,6 +157,15 @@ async def get_image_detail(
     image_id: str,
     db: Session = Depends(get_db),
 ) -> ImageRecordOut:
+    """获取指定图片记录的详细信息。
+
+    Args:
+        image_id: 图片记录 ID。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        ImageRecordOut，包含图片完整元数据。
+    """
     try:
         record = get_image_record_or_raise(db, image_id)
     except LookupError as exc:
@@ -143,6 +179,18 @@ async def update_image(
     payload: ImageRecordUpdateRequest,
     db: Session = Depends(get_db),
 ) -> ImageRecordOut:
+    """更新指定图片的元数据，包括标题、标签、备注、启用状态、数据来源和自定义元数据。
+
+    更新后自动同步向量库中对应的记录；若启用状态发生变化，还会重建 BM25 索引。
+
+    Args:
+        image_id: 图片记录 ID。
+        payload: 包含待更新字段的请求体，各字段均为可选。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        ImageRecordOut，更新后的图片完整元数据。
+    """
     try:
         record = get_image_record_or_raise(db, image_id)
     except LookupError as exc:
@@ -177,6 +225,18 @@ async def delete_image(
     confirm: bool = Query(default=False),
     db: Session = Depends(get_db),
 ) -> DeleteResponse:
+    """删除指定图片记录及其对应的向量数据和存储文件。
+
+    需要传入 confirm=true 以确认删除操作，防止误删。
+
+    Args:
+        image_id: 图片记录 ID。
+        confirm: 是否确认删除，必须为 True 才执行删除。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DeleteResponse，包含操作是否成功及可能的警告信息。
+    """
     if not confirm:
         raise HTTPException(status_code=400, detail="删除图片需要 confirm=true")
 
@@ -194,6 +254,17 @@ async def reprocess_image(
     image_id: str,
     db: Session = Depends(get_db),
 ) -> DeleteResponse:
+    """重新处理指定图片：删除旧的向量记录，重新调用 MLLM 生成描述并写入向量库。
+
+    适用于图片描述质量不佳或模型升级后需要重新生成描述的场景。
+
+    Args:
+        image_id: 图片记录 ID。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DeleteResponse，包含操作是否成功及可能的警告信息。
+    """
     try:
         record = get_image_record_or_raise(db, image_id)
     except LookupError as exc:
@@ -215,6 +286,19 @@ async def upload_images(
     source_dataset: Optional[str] = None,
     db: Session = Depends(get_db),
 ) -> UploadImagesResponse:
+    """批量上传图片到知识库，对每张图片调用 MLLM 生成结构化描述并存入向量库。
+
+    支持去重检测：若图片已存在则跳过处理并记录去重信息。
+
+    Args:
+        files: 待上传的图片文件列表。
+        split: 数据分割标识，默认 "custom"。
+        source_dataset: 数据来源名称，可选。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        UploadImagesResponse，包含所有图片记录及去重统计，可选附带耗时统计。
+    """
     collector = RequestTimingCollector("/api/knowledge-base/upload", "knowledge_base_upload")
     collector.set_metadata(file_count=len(files), split=split)
     response: UploadImagesResponse | None = None

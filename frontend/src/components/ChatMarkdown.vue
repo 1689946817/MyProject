@@ -1,3 +1,8 @@
+<!--
+  ChatMarkdown - 聊天 Markdown 渲染组件
+  功能：将聊天消息中的 Markdown 内容渲染为 HTML，支持代码块高亮、代码复制、
+  引用段落高亮与关联来源展示。将 Markdown 按段落拆分，每段可独立绑定引用信息。
+-->
 <template>
   <div class="chat-markdown" :class="{ typing: streaming }" @click="handleMarkdownClick">
     <div
@@ -37,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入依赖 ----
 import { computed } from "vue";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
@@ -45,12 +51,19 @@ import "highlight.js/styles/github-dark.css";
 import type { ChatCitationChunkRef, ChatCitationItem } from "@/types";
 import { decodeCopiedCode, renderChatMarkdown, splitChatMarkdownBlocks } from "@/utils/chatMarkdown";
 
+// ---- Props ----
 const props = withDefaults(defineProps<{
+  /** Markdown 原始内容 */
   content: string;
+  /** 是否处于流式输出中（添加打字机动画样式） */
   streaming?: boolean;
+  /** 引用列表，关联段落与来源 */
   citations?: ChatCitationItem[];
+  /** 当前高亮的段落 key 列表 */
   activeParagraphKeys?: string[];
+  /** 当前高亮的来源 ID 列表 */
   activeSourceIds?: string[];
+  /** 来源 ID 到显示名称的映射 */
   sourceLabels?: Record<string, string>;
 }>(), {
   streaming: false,
@@ -60,13 +73,18 @@ const props = withDefaults(defineProps<{
   sourceLabels: () => ({}),
 });
 
+// ---- 事件定义 ----
 const emit = defineEmits<{
+  /** 点击引用标签时触发，传递引用项 */
   (event: "paragraph-select", citation: ChatCitationItem): void;
+  /** 点击文档引用打开按钮时触发 */
   (event: "citation-open-doc", ref: ChatCitationChunkRef): void;
 }>();
 
 const { t } = useI18n();
 
+// ---- 计算属性 ----
+/** 将 Markdown 内容拆分为段落块，每块渲染为 HTML 并关联引用信息 */
 const renderedBlocks = computed(() => {
   const citationMap = new Map<string, ChatCitationItem[]>();
   (props.citations || []).forEach((citation) => {
@@ -85,6 +103,8 @@ const renderedBlocks = computed(() => {
   }));
 });
 
+// ---- 事件处理与工具函数 ----
+/** 获取引用的来源标签文本，多个来源用 " · " 连接 */
 function getCitationLabel(citation: ChatCitationItem): string {
   const labels = citation.source_ids
     .map((sourceId) => props.sourceLabels[sourceId] || sourceId)
@@ -92,15 +112,18 @@ function getCitationLabel(citation: ChatCitationItem): string {
   return labels.join(" · ");
 }
 
+/** 判断指定段落是否处于高亮激活状态 */
 function isParagraphActive(paragraphKey: string): boolean {
   return props.activeParagraphKeys.includes(paragraphKey);
 }
 
+/** 判断指定引用是否处于高亮激活状态（来源或段落任一匹配即激活） */
 function isCitationActive(citation: ChatCitationItem): boolean {
   return citation.source_ids.some((sourceId) => props.activeSourceIds.includes(sourceId))
     || props.activeParagraphKeys.includes(citation.paragraph_key);
 }
 
+/** 复制代码到剪贴板，优先使用 Clipboard API，降级使用 textarea + execCommand */
 async function copyCode(text: string) {
   if (navigator?.clipboard?.writeText) {
     await navigator.clipboard.writeText(text);
@@ -118,6 +141,7 @@ async function copyCode(text: string) {
   document.body.removeChild(textarea);
 }
 
+/** 处理 Markdown 区域的点击事件，拦截代码块复制按钮的点击 */
 async function handleMarkdownClick(event: MouseEvent) {
   const target = event.target as HTMLElement | null;
   const copyButton = target?.closest(".chat-code-copy") as HTMLElement | null;

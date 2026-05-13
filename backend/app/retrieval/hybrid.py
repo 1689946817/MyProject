@@ -4,6 +4,10 @@ BM25 索引管理 + RRF（Reciprocal Rank Fusion）混合检索模块
 提供：
 - BM25Index：基于 rank_bm25 的关键词检索索引，支持构建/搜索/持久化
 - reciprocal_rank_fusion：向量检索与 BM25 检索结果的 RRF 融合
+- rebuild_bm25_index：从 ChromaDB 全量重建 BM25 索引
+
+RRF 公式：score(d) = Σ weight_i / (k + rank_i(d))
+其中 k=60 为平滑常数，weight_i 为各检索通道权重。
 """
 import logging
 import os

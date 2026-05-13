@@ -1,3 +1,8 @@
+<!--
+  QaProcessCard - RAG 问答过程可视化卡片
+  功能：以折叠面板形式展示 RAG 流式问答的完整处理过程，包括意图路由、查询改写、检索、重排、压缩、生成等阶段。
+  支持实时流式（live）和历史回顾两种模式，实时模式下自动刷新计时器并按阶段排序显示步骤。
+-->
 <template>
   <details v-if="shouldRender" class="thinking-inline-wrap" :open="detailsOpen">
     <summary class="thinking-inline" :class="{ done: isDone, live: isLive }" @click="handleSummaryClick">
@@ -45,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入依赖 ----
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import QaProcessStepList from "@/components/QaProcessStepList.vue";
@@ -58,27 +64,40 @@ import type {
   TimingSummary,
 } from "@/types";
 
+// ---- Props ----
 const props = defineProps<{
+  /** 当前助手消息，包含流式进度、检索步骤和耗时信息 */
   message: ChatMessage;
 }>();
 
 const { t } = useI18n();
-const now = ref(Date.now());
-const detailsOpen = ref(false);
-let timer = 0;
 
+// ---- 响应式状态 ----
+const now = ref(Date.now());           // 当前时间戳，用于实时计算已耗时
+const detailsOpen = ref(false);        // 详情面板是否展开
+let timer = 0;                         // 定时器 ID，每 300ms 刷新 now
+
+// ---- 流式进度计算属性 ----
+/** 从消息中提取所有流式进度步骤 */
 const liveSteps = computed<ChatProgressEvent[]>(() => props.message.live_progress_steps || []);
+/** 最近一条进度事件，优先取 live_progress 字段 */
 const latestStep = computed<ChatProgressEvent | null>(() => props.message.live_progress || liveSteps.value.at(-1) || null);
+/** 历史检索步骤（非流式模式使用） */
 const rawSteps = computed<RetrievalStepItem[]>(() => props.message.retrieval_steps || []);
+/** 是否处于流式接收中 */
 const isLive = computed(() => liveSteps.value.length > 0);
+/** 流式是否已完成 */
 const isDone = computed(() => Boolean(props.message.live_progress_done) || (!isLive.value && rawSteps.value.length > 0));
 
+// ---- 耗时统计 ----
+/** 耗时汇总信息，兼容两种消息结构 */
 const timingSummary = computed<TimingSummary | null>(() => {
   return (props.message.timings as TimingSummary | null | undefined)
     || (props.message.retrieval_params?.timings as TimingSummary | null | undefined)
     || null;
 });
 
+/** 按阶段名称分组的耗时阶段列表 */
 const timingStageMap = computed<Record<string, TimingStage[]>>(() => {
   return (timingSummary.value?.stages || []).reduce<Record<string, TimingStage[]>>((acc, stage) => {
     const bucket = acc[stage.name] || [];
@@ -88,6 +107,7 @@ const timingStageMap = computed<Record<string, TimingStage[]>>(() => {
   }, {});
 });
 
+/** 合并所有流式步骤的 meta 信息 */
 const liveMeta = computed<Record<string, unknown>>(() => {
   return liveSteps.value.reduce<Record<string, unknown>>((acc, step) => {
     Object.assign(acc, step.meta || {});
@@ -95,6 +115,7 @@ const liveMeta = computed<Record<string, unknown>>(() => {
   }, {});
 });
 
+/** 总耗时（毫秒），优先从最新步骤获取，其次从汇总获取，实时模式下自动计算 */
 const totalMs = computed<number | null>(() => {
   const latestElapsed = latestStep.value?.elapsed_ms;
   if (typeof latestElapsed === "number") {
@@ -109,8 +130,12 @@ const totalMs = computed<number | null>(() => {
   return null;
 });
 
+// ---- 渲染控制 ----
+/** 仅助手消息且有进度数据时才渲染整个卡片 */
 const shouldRender = computed(() => props.message.role === "assistant" && (isLive.value || rawSteps.value.length > 0 || Boolean(timingSummary.value)));
 
+// ---- 步骤视图模型 ----
+/** 将流式/历史步骤转换为统一的视图模型列表，按优先级排序并计算每步耗时 */
 const processSteps = computed<QaProcessStepViewModel[]>(() => {
   if (isLive.value) {
     const preferredOrder = ["routing", "rewrite", "retrieve", "rerank", "compress", "agentic", "generate", "complete"];
@@ -148,6 +173,8 @@ const processSteps = computed<QaProcessStepViewModel[]>(() => {
   }));
 });
 
+// ---- 参数详情 ----
+/** 检索参数详情项列表（来源范围、查询改写、候选数量等），过滤空值后展示 */
 const detailItems = computed(() => {
   const metadata = isLive.value ? liveMeta.value : (props.message.retrieval_params || {});
 
@@ -161,6 +188,8 @@ const detailItems = computed(() => {
   ].filter((item) => item.value !== "");
 });
 
+// ---- 折叠栏文本 ----
+/** 主标题文本：流式中显示当前阶段，完成后显示"可查看处理过程" */
 const primaryText = computed(() => {
   if (isLive.value && latestStep.value) {
     if (latestStep.value.phase === "complete" || props.message.live_progress_done) {
@@ -174,6 +203,7 @@ const primaryText = computed(() => {
   return t("chat.thinking");
 });
 
+/** 副标题文本：显示步骤详情或总耗时 */
 const secondaryText = computed(() => {
   if (isLive.value) {
     const detail = latestStep.value?.detail?.trim();
@@ -187,22 +217,29 @@ const secondaryText = computed(() => {
   return t("chat.processReviewHint");
 });
 
+/** 状态指示点的 CSS 类名：active(进行中) | done(已完成) | 空(待定) */
 const dotClass = computed(() => {
   if (isLive.value) return "active";
   if (isDone.value) return "done";
   return "";
 });
 
+/** 聊天模式（fast / expert / default） */
 const modeValue = computed(() => props.message.chat_mode || (props.message.retrieval_params?.chat_mode as ChatMode | undefined));
+/** 执行模式值 */
 const executionModeValue = computed(() => props.message.execution_mode || props.message.retrieval_params?.execution_mode || "");
+/** 是否启用知识库路由 */
 const useRagValue = computed(() => props.message.use_rag ?? props.message.retrieval_params?.use_rag);
 
+// ---- 生命周期与监听 ----
+/** 流式开始时自动收起详情面板 */
 watch(isLive, (value) => {
   if (value) {
     detailsOpen.value = false;
   }
 }, { immediate: true });
 
+/** 挂载时启动 300ms 定时器，实时刷新已耗时显示 */
 onMounted(() => {
   timer = window.setInterval(() => {
     if (isLive.value && !props.message.live_progress_done) {
@@ -211,10 +248,13 @@ onMounted(() => {
   }, 300);
 });
 
+/** 卸载时清除定时器 */
 onBeforeUnmount(() => {
   window.clearInterval(timer);
 });
 
+// ---- 事件处理 ----
+/** 点击折叠栏标题时切换详情面板展开状态（流式中禁止展开） */
 function handleSummaryClick() {
   if (isLive.value) {
     return;
@@ -222,6 +262,8 @@ function handleSummaryClick() {
   detailsOpen.value = !detailsOpen.value;
 }
 
+// ---- 国际化映射函数 ----
+/** 将阶段标识映射为流式状态显示文本 */
 function mapPhaseText(phase: ChatProgressEvent["phase"]): string {
   if (phase === "routing") return t("chat.thinkingRouting");
   if (phase === "rewrite") return t("chat.thinkingRewrite");
@@ -233,6 +275,7 @@ function mapPhaseText(phase: ChatProgressEvent["phase"]): string {
   return t("chat.thinking");
 }
 
+/** 将阶段标识映射为步骤列表标签文本 */
 function mapPhaseLabel(phase: ChatProgressEvent["phase"]): string {
   if (phase === "routing") return t("chat.processIntent");
   if (phase === "rewrite") return t("chat.processRewrite");
@@ -244,6 +287,7 @@ function mapPhaseLabel(phase: ChatProgressEvent["phase"]): string {
   return t("chat.processComplete");
 }
 
+/** 将旧版检索步骤 key 显示为标签文本（兼容历史数据） */
 function mapLegacyStepLabel(step: RetrievalStepItem): string {
   if (step.key === "intent") return t("chat.processIntent");
   if (step.key === "query") return t("chat.processQuery");
@@ -254,6 +298,7 @@ function mapLegacyStepLabel(step: RetrievalStepItem): string {
   return step.label;
 }
 
+/** 将步骤状态映射为摘要文本 */
 function resolveProgressSummary(status: ChatProgressEvent["status"]): string {
   if (status === "completed") return t("chat.processStepCompleted");
   if (status === "skipped") return t("chat.processStepSkipped");
@@ -261,6 +306,8 @@ function resolveProgressSummary(status: ChatProgressEvent["status"]): string {
   return t("chat.processStepRunning");
 }
 
+// ---- 耗时计算 ----
+/** 根据步骤 key 从耗时统计中查找对应阶段的总耗时 */
 function lookupDuration(stepKey: string): number | null {
   const candidateGroups = timingStageNames(stepKey);
   for (const names of candidateGroups) {
@@ -280,6 +327,7 @@ function lookupDuration(stepKey: string): number | null {
   return null;
 }
 
+/** 将步骤 key 映射为可能的耗时阶段名称组（一个步骤可能对应多个阶段） */
 function timingStageNames(stepKey: string): string[][] {
   if (stepKey === "intent") return [["chat_routing"], ["intent_classification"]];
   if (stepKey === "query") return [["chat_rewrite"]];
@@ -294,6 +342,8 @@ function timingStageNames(stepKey: string): string[][] {
   return [];
 }
 
+// ---- 工具函数 ----
+/** 将原始详情对象转换为标签-值对数组，过滤空值 */
 function toDetailItems(details: Record<string, unknown>): QaProcessStepViewModel["details"] {
   return Object.entries(details)
     .filter(([, value]) => value !== undefined && value !== null && value !== "")
@@ -304,6 +354,7 @@ function toDetailItems(details: Record<string, unknown>): QaProcessStepViewModel
     }));
 }
 
+/** 将详情 key 映射为国际化标签文本 */
 function mapDetailLabel(key: string): string {
   if (key === "source_scope_enabled") return t("chat.processSourceScope");
   if (key === "query_rewrite_enabled") return t("chat.processQueryRewrite");
@@ -314,11 +365,13 @@ function mapDetailLabel(key: string): string {
   return key;
 }
 
+/** 将布尔值格式化为"启用/禁用"文本 */
 function formatBoolean(value: unknown): string {
   if (typeof value !== "boolean") return "";
   return value ? t("chat.processEnabled") : t("chat.processDisabled");
 }
 
+/** 将任意值格式化为可显示的字符串（数组用逗号连接，数字保留3位小数） */
 function formatScalar(value: unknown): string {
   if (value === undefined || value === null || value === "") return "";
   if (Array.isArray(value)) return value.join(", ");
@@ -327,11 +380,13 @@ function formatScalar(value: unknown): string {
   return String(value);
 }
 
+/** 将毫秒数格式化为 "X.X s" 或 "X ms" 格式 */
 function formatDuration(value: number): string {
   if (value >= 1000) return `${(value / 1000).toFixed(1)} s`;
   return `${Math.round(value)} ms`;
 }
 
+/** 将聊天模式枚举值映射为国际化显示文本 */
 function formatChatMode(mode?: ChatMode): string {
   if (mode === "fast") return t("chat.chatModeFast");
   if (mode === "expert") return t("chat.chatModeExpert");

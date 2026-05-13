@@ -24,11 +24,11 @@ import Settings from "@/views/Settings.vue"; // 系统配置页面
  */
 const routes: RouteRecordRaw[] = [
   { path: "/", redirect: "/chat" }, // 根路径重定向到智能问答页面
-  { path: "/kb", component: KnowledgeBase }, // 知识库管理页面
-  { path: "/search", component: Search }, // 搜索页面
-  { path: "/chat", component: Chat }, // 聊天页面
+  { path: "/kb", component: KnowledgeBase, meta: { keepAlive: true } }, // 知识库管理页面
+  { path: "/search", component: Search, meta: { keepAlive: true } }, // 搜索页面
+  { path: "/chat", component: Chat, meta: { keepAlive: true } }, // 聊天页面
   { path: "/docs", component: DocumentKB }, // 文档知识库页面
-  { path: "/ops", component: Ops }, // 运营页面
+  { path: "/ops", component: Ops, meta: { keepAlive: true } }, // 运营页面
   { path: "/settings", component: Settings }, // 系统配置页面
 ];
 

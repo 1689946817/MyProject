@@ -1,3 +1,4 @@
+<!-- 文档知识库管理页面：支持 PDF 上传、解析结果查看（文本片段/提取图片）、版本管理和文档编辑 -->
 <template>
   <div class="doc-kb">
     <div class="page-intro">
@@ -6,30 +7,27 @@
         <p class="page-subtitle">{{ t("docs.subtitle") }}</p>
       </div>
     </div>
-    <el-card class="glass-card">
-      <template #header>
-        <div class="card-header">
-          <i class="i-ep-document mr-2 accent-icon"></i>
-          <span>{{ t("docs.title") }}</span>
-        </div>
-      </template>
-      <UploadZone
-        v-model:files="selectedFiles"
-        :text="t('docs.uploadArea')"
-        :hint="t('docs.uploadTip')"
-        :accept="'.pdf'"
-        :multiple="false"
-      />
-      <el-button
-        type="primary"
-        class="upload-btn"
-        :loading="uploading"
-        :disabled="!selectedFile"
-        @click="doUpload"
-      >
-        <i class="i-ep-upload mr-2"></i>
-        {{ t("docs.uploadBtn") }}
-      </el-button>
+    <el-card class="glass-card upload-entry-card">
+      <div class="upload-entry-row">
+        <UploadZone
+          v-model:files="selectedFiles"
+          :text="t('docs.uploadArea')"
+          :hint="t('docs.uploadTip')"
+          :accept="'.pdf'"
+          :multiple="false"
+          compact
+        />
+        <el-button
+          type="primary"
+          class="upload-btn"
+          :loading="uploading"
+          :disabled="!selectedFile"
+          @click="doUpload"
+        >
+          <i class="i-ep-upload mr-2"></i>
+          {{ t("docs.uploadBtn") }}
+        </el-button>
+      </div>
       <div v-if="showProgressPanel" class="upload-progress-panel">
         <div class="progress-header">
           <span>{{ progressTitle }}</span>
@@ -281,6 +279,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入 ----
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
@@ -308,6 +307,7 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
+// ---- 文件上传与进度状态 ----
 const selectedFiles = ref<File[]>([]);
 const selectedFile = computed(() => selectedFiles.value[0] || null);
 const uploading = ref(false);
@@ -323,6 +323,7 @@ const progressPercent = ref(0);
 const progressMessage = ref("");
 let progressTimer: number | null = null;
 
+// ---- 文档列表过滤条件 ----
 const filters = reactive({
   keyword: "",
   status: "",
@@ -330,6 +331,7 @@ const filters = reactive({
   tag: "",
 });
 
+// ---- 文档列表与详情抽屉状态 ----
 const docList = ref<DocumentRecord[]>([]);
 const loadingList = ref(false);
 const drawerVisible = ref(false);
@@ -341,6 +343,7 @@ const resultTab = ref("chunks");
 const activeChunkIndex = ref<number | null>(null);
 const chunkItemRefs = new Map<number, HTMLElement>();
 
+// ---- 文档编辑弹窗状态 ----
 const editVisible = ref(false);
 const currentDocId = ref("");
 const editForm = reactive({
@@ -351,6 +354,9 @@ const editForm = reactive({
   document_type: "pdf",
 });
 
+// ---- 计算属性 ----
+
+/** 按页码 → 表格索引 → 标题排序的解析结果图片列表 */
 const sortedResultImages = computed(() => {
   if (!parseResult.value) return [];
   return [...parseResult.value.images].sort((left, right) => {
@@ -366,31 +372,41 @@ const sortedResultImages = computed(() => {
   });
 });
 
+/** 当前文档的文本片段数量（优先取解析结果，回退到文档记录） */
 const activeChunkCount = computed(() => parseResult.value?.chunks.length ?? activeDoc.value?.chunk_count ?? 0);
+/** 当前文档的提取图片数量 */
 const activeImageCount = computed(() => parseResult.value?.images.length ?? activeDoc.value?.image_count ?? 0);
+/** 是否显示上传/处理进度面板 */
 const showProgressPanel = computed(() => uploading.value || !!progressDocId.value);
 
+/** 进度面板标题（上传中 vs 处理中） */
 const progressTitle = computed(() => {
   if (uploading.value && uploadPercent.value < 100) return t("docs.uploadingProgress");
   return t("docs.processingProgress");
 });
 
+/** 进度条状态样式（失败=exception，完成=success，其余=默认） */
 const progressStatus = computed(() => {
   if (progressStage.value === "failed") return "exception";
   if (progressStage.value === "completed") return "success";
   return undefined;
 });
 
+// ---- 工具函数 ----
+
+/** 将日期时间字符串格式化为本地显示格式 */
 function formatDateTime(value?: string | null): string {
   if (!value) return "-";
   return new Date(value).toLocaleString();
 }
 
+/** 截断并缩写哈希值用于展示（保留前10位和后6位） */
 function shortenHash(value?: string | null): string {
   if (!value) return "-";
   return value.length > 16 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value;
 }
 
+/** 清除文档处理进度的定时轮询 */
 function clearProgressPolling() {
   if (progressTimer !== null) {
     window.clearTimeout(progressTimer);
@@ -398,6 +414,7 @@ function clearProgressPolling() {
   }
 }
 
+/** 获取处理阶段的回退显示标签（当后端未返回 message 时使用） */
 function stageFallbackLabel(stage: string) {
   const fallbackMap: Record<string, string> = {
     idle: "",
@@ -413,12 +430,14 @@ function stageFallbackLabel(stage: string) {
   return fallbackMap[stage] || stage;
 }
 
+/** 将后端返回的进度数据应用到组件状态 */
 function applyProgress(progress: DocumentProgressResponse) {
   progressStage.value = progress.stage;
   progressPercent.value = progress.progress_percent ?? 0;
   progressMessage.value = progress.message || stageFallbackLabel(progress.stage);
 }
 
+/** 轮询文档处理进度，直到完成或失败 */
 async function pollDocumentProgress(docId: string) {
   clearProgressPolling();
   progressDocId.value = docId;
@@ -444,6 +463,7 @@ async function pollDocumentProgress(docId: string) {
   await run();
 }
 
+/** 加载指定文档的所有版本记录 */
 async function loadDocVersions(docId: string) {
   try {
     versionsLoading.value = true;
@@ -456,6 +476,9 @@ async function loadDocVersions(docId: string) {
   }
 }
 
+// ---- 核心操作方法 ----
+
+/** 上传选中的 PDF 文件，启动进度轮询 */
 async function doUpload() {
   if (!selectedFile.value) return;
   uploading.value = true;
@@ -486,6 +509,7 @@ async function doUpload() {
   }
 }
 
+/** 加载文档列表，可选自动启动对处理中文档的进度轮询 */
 async function loadDocList(autostartPoll = true) {
   loadingList.value = true;
   try {
@@ -511,16 +535,19 @@ async function loadDocList(autostartPoll = true) {
   }
 }
 
+/** 将文档状态映射为 Element Plus Tag 类型 */
 function statusType(status: string) {
   if (status === "Completed") return "success";
   if (status === "Failed") return "danger";
   return "warning";
 }
 
+/** 将标签数组格式化为逗号分隔字符串 */
 function formatTags(tags?: string[]) {
   return tags?.length ? tags.join(", ") : "-";
 }
 
+/** 将资源类型映射为可读标签（表格截图/整页渲染/页面渲染） */
 function assetTypeLabel(img: DocParseResult["images"][number]) {
   if (img.asset_type === "table_crop") return t("docs.tableCrop");
   if (img.asset_type === "table_page_render") return t("docs.tablePageRender");
@@ -528,10 +555,12 @@ function assetTypeLabel(img: DocParseResult["images"][number]) {
   return "";
 }
 
+/** 判断资源是否跨页延续 */
 function isCrossPageAsset(img: DocParseResult["images"][number]) {
   return Boolean(img.continued_from_previous_page || img.continued_to_next_page);
 }
 
+/** 拼接资源的详情描述文本（表格索引、回退原因、跨页分组信息） */
 function assetDetailText(img: DocParseResult["images"][number]) {
   const parts: string[] = [];
   if (img.asset_type === "table_crop" && typeof img.table_index_on_page === "number") {
@@ -546,6 +575,7 @@ function assetDetailText(img: DocParseResult["images"][number]) {
   return parts.join(" · ");
 }
 
+/** 收集/清理文本片段卡片的 DOM 引用，用于滚动定位 */
 function setChunkItemRef(chunkIndex: number, element: Element | { $el?: Element } | null) {
   const actualElement = element instanceof HTMLElement
     ? element
@@ -559,6 +589,7 @@ function setChunkItemRef(chunkIndex: number, element: Element | { $el?: Element 
   chunkItemRefs.delete(chunkIndex);
 }
 
+/** 滚动到指定索引的文本片段卡片并高亮显示 */
 async function scrollToTargetChunk(chunkIndex: number | null) {
   if (chunkIndex === null || chunkIndex === undefined) {
     activeChunkIndex.value = null;
@@ -575,6 +606,7 @@ async function scrollToTargetChunk(chunkIndex: number | null) {
   }, 2600);
 }
 
+/** 从路由查询参数（chunk 或 page）解析目标片段索引 */
 function resolveChunkIndexFromRoute(result: DocParseResult): number | null {
   const chunkParam = route.query.chunk;
   if (typeof chunkParam === "string" && chunkParam !== "") {
@@ -596,6 +628,7 @@ function resolveChunkIndexFromRoute(result: DocParseResult): number | null {
   return null;
 }
 
+/** 根据路由参数切换 Tab 并定位到目标片段 */
 async function applyRouteTarget(result: DocParseResult) {
   const requestedTab = typeof route.query.tab === "string" ? route.query.tab : "chunks";
   resultTab.value = ["chunks", "images", "versions"].includes(requestedTab) ? requestedTab : "chunks";
@@ -606,6 +639,7 @@ async function applyRouteTarget(result: DocParseResult) {
   }
 }
 
+/** 打开文档详情抽屉，加载解析结果和版本列表 */
 async function openDrawer(doc: DocumentRecord) {
   activeDoc.value = doc;
   drawerVisible.value = true;
@@ -629,6 +663,7 @@ async function openDrawer(doc: DocumentRecord) {
   }
 }
 
+/** 根据路由中的 docId 打开对应文档（先在当前列表查找，未找到则重新加载列表） */
 async function openDocumentFromRoute(docId: string) {
   const target = docList.value.find((item) => item.id === docId);
   if (target) {
@@ -646,6 +681,7 @@ async function openDocumentFromRoute(docId: string) {
   }
 }
 
+/** 同步路由参数到抽屉状态：打开文档或切换 Tab/片段定位 */
 async function syncRouteTarget() {
   const docId = typeof route.query.docId === "string" ? route.query.docId : "";
   if (!docId) return;
@@ -660,6 +696,7 @@ async function syncRouteTarget() {
   }
 }
 
+/** 打开文档编辑弹窗，填充当前文档信息 */
 function openEdit(doc: DocumentRecord) {
   currentDocId.value = doc.id;
   editForm.title = doc.title || "";
@@ -670,6 +707,7 @@ function openEdit(doc: DocumentRecord) {
   editVisible.value = true;
 }
 
+/** 提交文档编辑（标题、标签、备注、启用状态、文档类型） */
 async function submitEdit() {
   try {
     saving.value = true;
@@ -694,6 +732,7 @@ async function submitEdit() {
   }
 }
 
+/** 删除文档（含二次确认），同时关闭已打开的抽屉 */
 async function handleDelete(doc: DocumentRecord) {
   await ElMessageBox.confirm(
     t("docs.deleteConfirm", { title: doc.title || doc.file_name, chunks: doc.chunk_count, images: doc.image_count }),
@@ -715,6 +754,7 @@ async function handleDelete(doc: DocumentRecord) {
   }
 }
 
+/** 重新处理文档（触发后端重新解析），启动进度轮询 */
 async function handleReprocess(doc: DocumentRecord) {
   try {
     await reprocessDocument(doc.id);
@@ -732,6 +772,7 @@ async function handleReprocess(doc: DocumentRecord) {
   }
 }
 
+/** 上传文档新版本文件，触发重新解析并刷新版本列表 */
 async function handleVersionFileChange(uploadFile: { raw?: File }) {
   if (!uploadFile.raw || !activeDoc.value) return;
   try {
@@ -754,6 +795,8 @@ async function handleVersionFileChange(uploadFile: { raw?: File }) {
   }
 }
 
+// ---- 生命周期与路由侦听 ----
+
 onMounted(async () => {
   await loadDocList();
   await syncRouteTarget();
@@ -766,6 +809,7 @@ watch(
   },
 );
 
+/** 抽屉关闭时清理路由中的文档相关查询参数 */
 watch(drawerVisible, (visible) => {
   if (visible || !route.query.docId) return;
   const nextQuery = { ...route.query };
@@ -798,11 +842,23 @@ onBeforeUnmount(() => {
   color: var(--accent-primary);
 }
 
+.upload-entry-card :deep(.el-card__body) {
+  padding: 14px 18px;
+}
+
+.upload-entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
 .upload-btn {
-  margin-top: 16px;
-  width: 100%;
-  min-height: 44px;
-  border-radius: 14px;
+  margin-top: 0;
+  min-width: 196px;
+  min-height: 38px;
+  padding: 0 18px;
+  border-radius: 12px;
 }
 
 .upload-progress-panel {
@@ -870,6 +926,16 @@ onBeforeUnmount(() => {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 0;
+}
+
+@media (max-width: 960px) {
+  .upload-entry-row {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-btn {
+    width: 100%;
+  }
 }
 
 .dark-drawer :deep(.el-drawer__body) {

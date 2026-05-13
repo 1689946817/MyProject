@@ -55,6 +55,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# ---- 模块导入 ----
 from evaluation.datasets.coco_subset import CocoQuerySample, load_coco_subset
 from evaluation.methods import (
     baseline_clip_retrieval,
@@ -65,9 +66,12 @@ from evaluation.methods import (
     ocr_text_rag,
 )
 
+# 将 backend 目录加入 sys.path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 from app.langchain_integration.models import get_chat_model  # noqa: E402
 from langchain_core.messages import HumanMessage  # noqa: E402
+
+# ---- Prompt 模板 ----
 
 # 传图片给 MLLM 时使用的 prompt
 _RAG_WITH_IMAGE_PROMPT = (
@@ -82,13 +86,16 @@ _RAG_WITH_IMAGE_PROMPT = (
 _EXTRA_CONTEXT_SECTION = "参考文档内容：\n{extra_context}\n\n"
 
 
+# ---- 工具函数 ----
+
 def _build_image_data_url(image_b64: str, file_path: str = "") -> str:
+    """将 base64 编码的图片转为 data URL 格式，供 MLLM API 使用。"""
     mime_type, _ = mimetypes.guess_type(file_path) if file_path else (None, None)
     actual_mime_type = mime_type if mime_type and mime_type.startswith("image/") else "image/jpeg"
     return f"data:{actual_mime_type};base64,{image_b64}"
 
 
-_IMAGE_METHODS = {"proposed", "baseline_clip", "baseline_ocr"}
+_IMAGE_METHODS = {"proposed", "baseline_clip", "baseline_ocr"}  # 需要传图片的方法集合
 
 # 各方法对应的检索函数（返回图像 ID 列表）
 _RETRIEVAL_FUNCS = {
@@ -99,7 +106,16 @@ _RETRIEVAL_FUNCS = {
 
 
 def _ids_to_file_paths(ids: List[str]) -> List[str]:
-    """将图像 ID 列表转换为文件路径列表（从 ChromaDB 元数据中查询）。"""
+    """将图像 ID 列表转换为文件路径列表（从 ChromaDB 元数据中查询）。
+
+    遍历多个 ChromaDB 集合，从 metadata 的 file_path 字段查找。
+
+    Args:
+        ids: 图像 ID 列表。
+
+    Returns:
+        与 ids 等长的文件路径列表，未找到的返回空字符串。
+    """
     import chromadb
     from chromadb.config import Settings as ChromaSettings
     from app.core.config import settings as app_settings
@@ -128,12 +144,15 @@ def _ids_to_file_paths(ids: List[str]) -> List[str]:
 
 
 def _read_image_as_base64(file_path: str) -> Optional[tuple[str, str]]:
+    """读取本地图片文件并返回 base64 编码。失败时返回 None。"""
     if not file_path or not os.path.exists(file_path):
         return None
     with open(file_path, "rb") as f:
         image_b64 = base64.b64encode(f.read()).decode("utf-8")
     return image_b64, file_path
 
+
+# ---- MLLM 生成 ----
 
 async def _generate_with_images(
     query: str,
@@ -161,9 +180,18 @@ async def _generate_with_images(
 
 
 def _get_extra_context(kb_type: str, query: str, top_k: int) -> Optional[str]:
-    """
-    多模态文档知识库场景下，检索文本段落作为额外上下文。
+    """多模态文档知识库场景下，检索文本段落作为额外上下文。
+
     当前文档解析待实现，暂返回 None。
+    后续实现后，将在此处调用文本知识库检索并返回段落内容。
+
+    Args:
+        kb_type: 知识库类型（image_only_kb / multimodal_kb）。
+        query: 用户查询。
+        top_k: 检索返回数量。
+
+    Returns:
+        文本上下文字符串，当前始终返回 None。
     """
     if kb_type != "multimodal_kb":
         return None
@@ -171,16 +199,32 @@ def _get_extra_context(kb_type: str, query: str, top_k: int) -> Optional[str]:
     return None
 
 
+# ---- 单样本生成 ----
+
 async def _run_one_sample(
     sample: CocoQuerySample,
     method: str,
     kb_type: str,
     top_k: int,
 ) -> Dict[str, Any]:
-    """对单条样本执行生成，返回结果记录。"""
+    """对单条样本执行生成，返回结果记录。
+
+    根据方法走不同的推理路径：
+      - no_rag / text_summary_rag / ocr_text_rag：调用对应模块的 generate 函数
+      - proposed / baseline_clip / baseline_ocr：检索图片后传给 MLLM
+
+    Args:
+        sample: COCO 查询样本。
+        method: 生成方法名称。
+        kb_type: 知识库类型。
+        top_k: 检索返回数量。
+
+    Returns:
+        包含 user_query、generated_answer、context、image 等字段的结果字典。
+    """
     extra_context = _get_extra_context(kb_type, sample.query, top_k)
 
-    # 不需要检索的方法
+    # ---- 不需要检索的方法 ----
     if method == "no_rag":
         result = await no_rag.generate(sample.query)
         return {
@@ -211,7 +255,7 @@ async def _run_one_sample(
             "image": result["images"],
         }
 
-    # 传图片的方法：proposed / baseline_clip / baseline_ocr
+    # ---- 传图片的方法：proposed / baseline_clip / baseline_ocr ----
     ids = _RETRIEVAL_FUNCS[method](sample.query, top_k=top_k)
     file_paths = _ids_to_file_paths(ids)
     image_payloads = [payload for p in file_paths if (payload := _read_image_as_base64(p))]
@@ -232,6 +276,8 @@ async def _run_one_sample(
     }
 
 
+# ---- 批量生成循环 ----
+
 async def run_generation(
     samples: List[CocoQuerySample],
     method: str,
@@ -250,6 +296,7 @@ async def run_generation(
 
 
 def main() -> None:
+    """命令行入口：解析参数、加载数据、执行生成。"""
     parser = argparse.ArgumentParser(description="Run RAG generation for evaluation.")
     parser.add_argument("--dataset-path", type=str, required=True)
     parser.add_argument(

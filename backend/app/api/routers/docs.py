@@ -1,4 +1,19 @@
-"""文档知识库 API 路由。"""
+"""文档知识库 API 路由。
+
+本模块提供文档（PDF）知识库的完整 RESTful 接口，涵盖以下核心功能：
+
+- **文档上传**：接收 PDF 文件并创建数据库记录，支持内容去重；上传后自动触发后台解析任务。
+- **文档列表**：按关键词、状态、类型、标签等条件分页查询文档，默认仅返回最新版本。
+- **版本管理**：支持为同一逻辑资产上传多个版本，按版本号降序排列。
+- **文档详情**：获取单条文档记录的元数据。
+- **文档更新**：修改标题、标签、备注、类型等元数据，并同步向量存储。
+- **文档删除**：永久删除文档及其关联的向量和图片数据，需 confirm 确认。
+- **文档重解析**：将文档重新加入解析队列，用于修复解析失败或更新解析策略。
+- **解析进度**：查询文档当前的解析阶段、进度百分比和关联任务。
+- **解析结果**：获取文档解析后的文本分块（chunk）和提取的图片列表。
+
+所有路由挂载在 ``/api/docs`` 前缀下，依赖 SQLAlchemy Session 与 LangChainAdapter 完成业务逻辑。
+"""
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
@@ -36,11 +51,30 @@ router = APIRouter(prefix="/api/docs", tags=["documents"])
 SEARCH_KEYWORD_MAX_LENGTH = 4000
 
 
+# ---- 文档上传 ----
+
+
 @router.post("/upload", response_model=UploadDocumentResponse, response_model_exclude_none=True)
 async def upload_document(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ) -> UploadDocumentResponse:
+    """上传单个 PDF 文档。
+
+    接收前端传入的 PDF 文件，创建数据库记录。若文件内容与已有文档重复，
+    则直接复用现有记录（去重）；否则创建新记录并提交一个后台解析任务
+    （``document_parse``），由后台 Worker 异步完成文本分块与向量化。
+
+    Args:
+        file: 上传的 PDF 文件，文件名必须以 ``.pdf`` 结尾。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        UploadDocumentResponse: 包含文档记录、后台任务（非去重时）及提示消息。
+
+    Raises:
+        HTTPException: 文件非 PDF 时返回 400。
+    """
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="仅支持 PDF 文件")
 
@@ -77,6 +111,9 @@ async def upload_document(
         collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
 
+# ---- 文档列表 ----
+
+
 @router.get("/list", response_model=List[DocumentRecordOut])
 def list_documents(
     skip: int = 0,
@@ -89,6 +126,26 @@ def list_documents(
     include_history: bool = False,
     db: Session = Depends(get_db),
 ) -> List[DocumentRecordOut]:
+    """分页查询文档列表，支持多条件筛选。
+
+    默认仅返回最新版本（``is_latest=True``），可通过 ``include_history=True``
+    展示所有历史版本。支持按关键词、状态、启用标记、文档类型和标签进行筛选，
+    结果按上传时间降序排列。
+
+    Args:
+        skip: 跳过的记录数，用于分页偏移。
+        limit: 每页最大记录数，上限 200。
+        keyword: 模糊搜索关键词，匹配文件名、标题和备注。
+        status: 文档状态筛选（如 ``Processing``、``Completed``、``Failed``）。
+        enabled: 是否启用筛选（``true`` / ``false``）。
+        document_type: 文档类型筛选（如 ``pdf``）。
+        tag: 标签筛选，匹配标签字符串中的子串。
+        include_history: 是否包含历史版本，默认 ``False``。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        List[DocumentRecordOut]: 符合条件的文档记录列表。
+    """
     ensure_knowledge_management_columns(db)
     query = db.query(DocumentRecord)
     if not include_history:
@@ -113,8 +170,26 @@ def list_documents(
     return [DocumentRecordOut.model_validate(r) for r in records]
 
 
+# ---- 版本管理 ----
+
+
 @router.get("/{doc_id}/versions", response_model=List[DocumentRecordOut])
 def list_document_versions(doc_id: str, db: Session = Depends(get_db)) -> List[DocumentRecordOut]:
+    """查询指定文档所属逻辑资产的所有版本。
+
+    通过 ``logical_asset_id`` 查找同一逻辑资产下的全部版本记录，
+    结果按版本号降序、上传时间降序排列（最新版本在前）。
+
+    Args:
+        doc_id: 任意一个版本的文档 ID。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        List[DocumentRecordOut]: 该逻辑资产下的所有版本记录。
+
+    Raises:
+        HTTPException: 文档不存在时返回 404。
+    """
     try:
         record = get_document_record_or_raise(db, doc_id)
     except LookupError as exc:
@@ -135,6 +210,23 @@ async def upload_document_new_version(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ) -> UploadDocumentResponse:
+    """为已有文档上传一个新版本。
+
+    将新文件关联到与 ``doc_id`` 相同的逻辑资产（``logical_asset_id``），
+    创建新版本记录。若文件内容与已有版本重复则直接复用；否则提交后台解析任务。
+    新版本上传后，旧版本仍保留，可用于回溯。
+
+    Args:
+        doc_id: 现有文档的 ID（用于确定逻辑资产）。
+        file: 新版本的 PDF 文件。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        UploadDocumentResponse: 包含新版本文档记录、后台任务及提示消息。
+
+    Raises:
+        HTTPException: 文档不存在返回 404，文件非 PDF 返回 400。
+    """
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="仅支持 PDF 文件")
     try:
@@ -178,11 +270,26 @@ async def upload_document_new_version(
         collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
 
+# ---- 文档详情与更新 ----
+
+
 @router.get("/{doc_id}", response_model=DocumentRecordOut)
 def get_document_detail(
     doc_id: str,
     db: Session = Depends(get_db),
 ) -> DocumentRecordOut:
+    """获取单条文档的详细元数据。
+
+    Args:
+        doc_id: 文档 ID。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DocumentRecordOut: 文档记录的完整元数据。
+
+    Raises:
+        HTTPException: 文档不存在时返回 404。
+    """
     try:
         record = get_document_record_or_raise(db, doc_id)
     except LookupError as exc:
@@ -196,6 +303,22 @@ def update_document(
     payload: DocumentRecordUpdateRequest,
     db: Session = Depends(get_db),
 ) -> DocumentRecordOut:
+    """更新文档的元数据（标题、标签、备注、类型、启用状态等）。
+
+    支持部分更新——仅修改请求体中提供的字段。修改后自动同步向量存储中
+    对应文档的元数据；若启停状态发生变化，还会重建 BM25 倒排索引。
+
+    Args:
+        doc_id: 文档 ID。
+        payload: 需要更新的字段集合，未提供的字段保持不变。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DocumentRecordOut: 更新后的文档记录。
+
+    Raises:
+        HTTPException: 文档不存在返回 404，文档类型无效返回 400。
+    """
     try:
         record = get_document_record_or_raise(db, doc_id)
     except LookupError as exc:
@@ -227,12 +350,31 @@ def update_document(
     return DocumentRecordOut.model_validate(record)
 
 
+# ---- 文档删除 ----
+
+
 @router.delete("/{doc_id}", response_model=DeleteResponse)
 def delete_document(
     doc_id: str,
     confirm: bool = Query(default=False),
     db: Session = Depends(get_db),
 ) -> DeleteResponse:
+    """永久删除指定文档及其关联数据。
+
+    删除操作不可逆，需传入 ``confirm=true`` 以二次确认。删除时会同步清理
+    向量存储中的文档分块和关联的图片记录。若有失败警告会返回在响应中。
+
+    Args:
+        doc_id: 文档 ID。
+        confirm: 必须为 ``true`` 才执行删除，防止误操作。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DeleteResponse: 删除结果及可选的警告信息。
+
+    Raises:
+        HTTPException: 未确认时返回 400，文档不存在时返回 404。
+    """
     if not confirm:
         raise HTTPException(status_code=400, detail="删除文档需要 confirm=true")
     try:
@@ -244,11 +386,29 @@ def delete_document(
     return DeleteResponse(success=True, message="文档已删除", warnings=warnings)
 
 
+# ---- 重解析 ----
+
+
 @router.post("/{doc_id}/reprocess", response_model=DeleteResponse)
 async def reprocess_document(
     doc_id: str,
     db: Session = Depends(get_db),
 ) -> DeleteResponse:
+    """将文档重新加入解析队列。
+
+    用于修复解析失败或应用新的解析策略。会将文档状态重置为 ``Processing``，
+    进度归零，并提交一个 ``document_reprocess`` 后台任务。
+
+    Args:
+        doc_id: 文档 ID。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DeleteResponse: 操作结果消息。
+
+    Raises:
+        HTTPException: 文档不存在时返回 404。
+    """
     try:
         record = get_document_record_or_raise(db, doc_id)
     except LookupError as exc:
@@ -270,11 +430,29 @@ async def reprocess_document(
     return DeleteResponse(success=True, message="文档已加入重新解析队列", warnings=[])
 
 
+# ---- 解析进度与结果 ----
+
+
 @router.get("/{doc_id}/progress", response_model=DocumentProgressResponse)
 def get_document_progress(
     doc_id: str,
     db: Session = Depends(get_db),
 ) -> DocumentProgressResponse:
+    """查询文档的解析进度。
+
+    返回当前解析阶段（如 ``queued``、``chunking``、``embedding``）、
+    进度百分比、进度消息以及关联的后台任务详情。
+
+    Args:
+        doc_id: 文档 ID。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DocumentProgressResponse: 包含进度信息和关联任务。
+
+    Raises:
+        HTTPException: 文档不存在时返回 404。
+    """
     try:
         record = get_document_record_or_raise(db, doc_id)
     except LookupError as exc:
@@ -307,6 +485,21 @@ def get_doc_result(
     doc_id: str,
     db: Session = Depends(get_db),
 ) -> DocParseResult:
+    """获取文档的解析结果。
+
+    返回文档元数据、解析后的文本分块列表（从 ChromaDB 文档向量库查询）
+    以及从 PDF 中提取的图片记录。分块按 ``chunk_index`` 升序排列。
+
+    Args:
+        doc_id: 文档 ID。
+        db: SQLAlchemy 数据库会话。
+
+    Returns:
+        DocParseResult: 包含文档元数据、文本分块和图片列表。
+
+    Raises:
+        HTTPException: 文档不存在时返回 404。
+    """
     try:
         record = get_document_record_or_raise(db, doc_id)
     except LookupError as exc:

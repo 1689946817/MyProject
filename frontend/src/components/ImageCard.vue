@@ -1,3 +1,9 @@
+<!--
+  ImageCard - 图片卡片组件
+  功能：以卡片形式展示图片缩略图、标题、描述和处理状态。
+  支持相似度分数显示（搜索结果场景），悬停时展示描述文字浮层和状态标签。
+  处理状态包括 Processing（处理中）、Completed（已完成）、Failed（失败）。
+-->
 <template>
   <div class="image-card glass-card" @click="$emit('click')">
     <div class="card-image-wrapper">
@@ -33,24 +39,36 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入依赖 ----
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+// ---- Props ----
 const props = defineProps<{
+  /** 图片 URL 地址 */
   src: string
+  /** 卡片标题（文件名） */
   title?: string
+  /** 图片描述文本 */
   description?: string
+  /** 相似度分数（0-1），搜索结果场景使用 */
   score?: number
+  /** 自定义相似度标签文本 */
   scoreLabel?: string
+  /** 处理状态：Processing(处理中) / Completed(已完成) / Failed(失败) */
   status?: 'Processing' | 'Completed' | 'Failed'
 }>()
 
+// ---- 事件定义 ----
 defineEmits<{
+  /** 点击卡片时触发 */
   click: []
 }>()
 
+// ---- 计算属性 ----
+/** 将处理状态枚举转换为国际化显示文本 */
 const statusText = computed(() => {
   if (!props.status) return ''
   switch (props.status) {
@@ -61,6 +79,8 @@ const statusText = computed(() => {
   }
 })
 
+// ---- 事件处理 ----
+/** 图片加载失败时隐藏 img 元素，避免显示破碎图标 */
 function onImgError(e: Event) {
   const img = e.target as HTMLImageElement
   img.style.display = 'none'

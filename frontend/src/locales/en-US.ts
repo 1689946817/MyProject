@@ -78,6 +78,11 @@ export default {
     subtitle: 'Search by text or image, compare results quickly, and inspect visual evidence with less friction.',
     textToImage: 'Text → Image Search',
     imageToImage: 'Image → Image Search',
+    textMode: 'Text Search',
+    imageMode: 'Image Search',
+    results: 'Results',
+    textHint: 'Enter a description to view matching images',
+    imageHint: 'Upload an image to view similar images',
     textQueryPlaceholder: 'Enter image content to search, e.g.: a child playing ball on grass',
     imageQueryPlaceholder: 'Drag or click to upload image for search',
     searchBtn: 'Search',
@@ -458,6 +463,9 @@ export default {
     edit: 'Edit',
     save: 'Save',
     rename: 'Rename',
-    confirmDelete: 'Confirm delete?'
+    confirmDelete: 'Confirm delete?',
+    chooseFiles: 'Choose files',
+    noFileSelected: 'No file selected',
+    dragDropOptional: 'Drag and drop supported'
   }
 }

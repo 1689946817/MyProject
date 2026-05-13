@@ -1,5 +1,5 @@
 # Repository Guidelines
-
+## 使用” E:/Pyenvironment/multimodal-rag/python.exe” 运行项目
 ## 项目结构与模块组织
 本仓库分为三个主要区域：
 

@@ -1,3 +1,4 @@
+<!-- 搜索页面：支持文本→图像和图像→图像两种检索模式，提供高级参数设置和结果预览 -->
 <template>
   <div class="search-page">
     <div class="page-intro">
@@ -7,35 +8,65 @@
       </div>
     </div>
 
-    <div class="search-layout">
-      <el-card class="search-card workspace-card glass-card">
-        <template #header>
-          <div class="card-header">
-            <div class="card-header-main">
-              <i class="i-ep-search accent-icon"></i>
-              <span>{{ t("search.textToImage") }}</span>
+    <el-card class="search-workbench glass-card">
+      <template #header>
+        <div class="workbench-header">
+          <div class="subpage-tabs" role="tablist">
+            <button
+              type="button"
+              class="subpage-tab"
+              :class="{ active: activeResultMode === 'text' }"
+              role="tab"
+              :aria-selected="activeResultMode === 'text'"
+              @click="activeResultMode = 'text'"
+            >
+              <i class="i-ep-search"></i>
+              <span>{{ t("search.textMode") }}</span>
+            </button>
+            <button
+              type="button"
+              class="subpage-tab"
+              :class="{ active: activeResultMode === 'image' }"
+              role="tab"
+              :aria-selected="activeResultMode === 'image'"
+              @click="activeResultMode = 'image'"
+            >
+              <i class="i-ep-picture"></i>
+              <span>{{ t("search.imageMode") }}</span>
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <div class="subpage-shell">
+        <section v-if="activeResultMode === 'text'" class="query-panel text-panel">
+          <div class="text-entry-row">
+            <div class="query-input-shell">
+              <el-input
+                v-model="textQuery"
+                :placeholder="t('search.textQueryPlaceholder')"
+                type="textarea"
+                :rows="2"
+                class="dark-input query-input"
+              />
             </div>
-            <span class="card-header-note">{{ t("search.searchBtn") }}</span>
-          </div>
-        </template>
 
-        <div class="workspace-body">
-          <div class="workspace-surface text-surface">
-            <el-input
-              v-model="textQuery"
-              :placeholder="t('search.textQueryPlaceholder')"
-              type="textarea"
-              :rows="6"
-              class="dark-input workspace-input"
-            />
-          </div>
+            <div class="entry-actions">
+              <el-button
+                type="primary"
+                class="search-btn"
+                :loading="loadingText"
+                @click="doTextSearch"
+              >
+                <i class="i-ep-search mr-2"></i>
+                {{ t("search.searchBtn") }}
+              </el-button>
 
-          <div class="advanced-toggle-row">
-            <el-button text class="advanced-toggle" @click="textPanelOpen = !textPanelOpen">
-              <i :class="textPanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
-              <span>{{ t("search.advancedSettings") }}</span>
-              <span class="advanced-summary">{{ textSummary }}</span>
-            </el-button>
+              <el-button text class="advanced-toggle compact-toggle" @click="textPanelOpen = !textPanelOpen">
+                <i :class="textPanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
+                <span>{{ t("search.advancedSettings") }}</span>
+              </el-button>
+            </div>
           </div>
 
           <el-collapse-transition>
@@ -61,48 +92,34 @@
               </div>
             </div>
           </el-collapse-transition>
-        </div>
+        </section>
 
-        <div class="workspace-footer">
-          <el-button
-            type="primary"
-            class="search-btn"
-            :loading="loadingText"
-            @click="doTextSearch"
-          >
-            <i class="i-ep-search mr-2"></i>
-            {{ t("search.searchBtn") }}
-          </el-button>
-        </div>
-      </el-card>
-
-      <el-card class="search-card workspace-card glass-card">
-        <template #header>
-          <div class="card-header">
-            <div class="card-header-main">
-              <i class="i-ep-picture accent-icon"></i>
-              <span>{{ t("search.imageToImage") }}</span>
-            </div>
-            <span class="card-header-note">{{ t("search.imageSearchBtn") }}</span>
-          </div>
-        </template>
-
-        <div class="workspace-body">
-          <div class="workspace-surface upload-surface">
+        <section v-else class="query-panel image-panel">
+          <div class="upload-entry-row">
             <UploadZone
               v-model:files="imageFiles"
               :text="t('search.imageQueryPlaceholder')"
               :accept="'image/*'"
               :multiple="false"
+              compact
             />
-          </div>
 
-          <div class="advanced-toggle-row">
-            <el-button text class="advanced-toggle" @click="imagePanelOpen = !imagePanelOpen">
-              <i :class="imagePanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
-              <span>{{ t("search.advancedSettings") }}</span>
-              <span class="advanced-summary">{{ imageSummary }}</span>
-            </el-button>
+            <div class="entry-actions">
+              <el-button
+                type="primary"
+                class="search-btn"
+                :loading="loadingImage"
+                @click="doImageSearch"
+              >
+                <i class="i-ep-picture mr-2"></i>
+                {{ t("search.imageSearchBtn") }}
+              </el-button>
+
+              <el-button text class="advanced-toggle compact-toggle" @click="imagePanelOpen = !imagePanelOpen">
+                <i :class="imagePanelOpen ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'"></i>
+                <span>{{ t("search.advancedSettings") }}</span>
+              </el-button>
+            </div>
           </div>
 
           <el-collapse-transition>
@@ -128,51 +145,17 @@
               </div>
             </div>
           </el-collapse-transition>
-        </div>
-
-        <div class="workspace-footer">
-          <el-button
-            type="primary"
-            class="search-btn"
-            :loading="loadingImage"
-            @click="doImageSearch"
-          >
-            <i class="i-ep-picture mr-2"></i>
-            {{ t("search.imageSearchBtn") }}
-          </el-button>
-        </div>
-      </el-card>
-    </div>
+        </section>
+      </div>
+    </el-card>
 
     <el-card class="results-card glass-card">
       <template #header>
         <div class="results-toolbar">
           <div class="results-toolbar-main">
-            <div class="results-toolbar-title">{{ t("search.similarity") }}</div>
-            <div class="results-toolbar-subtitle">{{ activeResultLabel }}</div>
+            <div class="results-toolbar-title">{{ t("search.results") }}</div>
           </div>
-          <div class="results-mode-switch">
-            <button
-              type="button"
-              class="results-mode-btn"
-              :class="{ active: activeResultMode === 'text' }"
-              @click="activeResultMode = 'text'"
-            >
-              <i class="i-ep-search"></i>
-              <span>{{ t("search.textToImage") }}</span>
-              <span class="mode-count">{{ textResults.length }}</span>
-            </button>
-            <button
-              type="button"
-              class="results-mode-btn"
-              :class="{ active: activeResultMode === 'image' }"
-              @click="activeResultMode = 'image'"
-            >
-              <i class="i-ep-picture"></i>
-              <span>{{ t("search.imageToImage") }}</span>
-              <span class="mode-count">{{ imageResults.length }}</span>
-            </button>
-          </div>
+          <div v-if="activeResults.length > 0" class="results-count-chip">{{ activeResults.length }}</div>
         </div>
       </template>
 
@@ -186,11 +169,6 @@
         </div>
 
         <div class="results-head">
-          <h4 class="section-title">
-            <span v-if="activeResults.length > 0">{{ t("search.similarity") }} ({{ activeResults.length }})</span>
-            <span v-else-if="hasAnySearch">{{ t("search.noResults") }}</span>
-            <span v-else>{{ activeResultLabel }}</span>
-          </h4>
           <el-alert
             v-if="activeFilterNotice"
             :title="activeFilterNotice"
@@ -225,14 +203,14 @@
         </div>
         <div v-else-if="activeLoading" class="results-loading">
           <i class="i-ep-loading"></i>
-          <span>{{ activeResultLabel }}</span>
+          <span>{{ activeModeLabel }}</span>
         </div>
         <div v-else-if="hasAnySearch" class="results-empty-state">
           <el-empty :description="t('search.noResults')" />
         </div>
         <div v-else class="results-placeholder">
-          <div class="results-placeholder-title">{{ activeResultLabel }}</div>
-          <p>{{ activeResultMode === "text" ? t("search.textQueryPlaceholder") : t("search.imageQueryPlaceholder") }}</p>
+          <div class="results-placeholder-title">{{ activeModeLabel }}</div>
+          <p>{{ activeResultMode === "text" ? t("search.textHint") : t("search.imageHint") }}</p>
         </div>
       </div>
     </el-card>
@@ -249,6 +227,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入 ----
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
@@ -265,6 +244,7 @@ import ImagePreviewModal from "@/components/ImagePreviewModal.vue";
 
 const { t } = useI18n();
 
+// ---- 文本检索相关状态 ----
 const textQuery = ref("");
 const textResults = ref<SearchResultItem[]>([]);
 const loadingText = ref(false);
@@ -277,6 +257,7 @@ const textDefaultMinRelevanceScore = ref(0);
 const textPanelOpen = ref(false);
 const textSearched = ref(false);
 
+// ---- 图像检索相关状态 ----
 const imageFiles = ref<File[]>([]);
 const imageResults = ref<SearchResultItem[]>([]);
 const imageQueryDescription = ref("");
@@ -288,9 +269,13 @@ const imagePanelOpen = ref(false);
 const imageSearched = ref(false);
 const activeResultMode = ref<"text" | "image">("text");
 
+// ---- 图片预览弹窗状态 ----
 const previewVisible = ref(false);
 const previewItem = ref<SearchResultItem | null>(null);
 
+// ---- 计算属性 ----
+
+/** 文本检索高级设置的摘要描述（如"Top-K: 20 / 过滤 ≥ 0.500"） */
 const textSummary = computed(() =>
   buildSummary(
     textTopK.value,
@@ -302,6 +287,7 @@ const textSummary = computed(() =>
   ),
 );
 
+/** 图像检索高级设置的摘要描述 */
 const imageSummary = computed(() =>
   buildSummary(
     imageTopK.value,
@@ -313,6 +299,7 @@ const imageSummary = computed(() =>
   ),
 );
 
+// 当前激活结果模式对应的过滤提示、结果列表、加载状态等派生属性
 const textFilterNotice = computed(() =>
   buildFilterNotice(textResults.value, textEnableScoreFilter.value),
 );
@@ -328,13 +315,16 @@ const activeLoading = computed(() =>
 const activeFilterNotice = computed(() =>
   activeResultMode.value === "text" ? textFilterNotice.value : imageFilterNotice.value,
 );
-const activeResultLabel = computed(() =>
-  activeResultMode.value === "text" ? t("search.textToImage") : t("search.imageToImage"),
+const activeModeLabel = computed(() =>
+  activeResultMode.value === "text" ? t("search.textMode") : t("search.imageMode"),
 );
 const hasAnySearch = computed(() =>
   textSearched.value || imageSearched.value,
 );
 
+// ---- 侦听器 ----
+
+/** 当高级设置参数偏离默认值时自动展开面板 */
 watch([textTopK, textEnableScoreFilter, textMinRelevanceScore], () => {
   textPanelOpen.value = shouldKeepPanelOpen(
     textTopK.value,
@@ -346,6 +336,7 @@ watch([textTopK, textEnableScoreFilter, textMinRelevanceScore], () => {
   );
 });
 
+/** 图像检索高级设置参数变化时自动管理面板展开状态 */
 watch([imageTopK, imageEnableScoreFilter, imageMinRelevanceScore], () => {
   imagePanelOpen.value = shouldKeepPanelOpen(
     imageTopK.value,
@@ -357,6 +348,9 @@ watch([imageTopK, imageEnableScoreFilter, imageMinRelevanceScore], () => {
   );
 });
 
+// ---- 工具函数 ----
+
+/** 判断高级设置面板是否应保持展开（参数偏离默认值时展开） */
 function shouldKeepPanelOpen(
   topK: number,
   enableFilter: boolean,
@@ -372,6 +366,7 @@ function shouldKeepPanelOpen(
   );
 }
 
+/** 构建高级设置的摘要文本，展示与默认值不同的参数 */
 function buildSummary(
   topK: number,
   enableFilter: boolean,
@@ -390,6 +385,7 @@ function buildSummary(
   return parts.length > 0 ? parts.join(" / ") : t("search.defaultSettings");
 }
 
+/** 构建过滤提示信息，当启用了分数过滤但结果来源不支持 rerank 时给出提示 */
 function buildFilterNotice(results: SearchResultItem[], enabled: boolean): string {
   if (!enabled || results.length === 0) {
     return "";
@@ -399,6 +395,7 @@ function buildFilterNotice(results: SearchResultItem[], enabled: boolean): strin
     : "";
 }
 
+/** 从 API 错误响应中提取用户友好的错误信息 */
 function getErrorMessage(error: any, fallback: string): string {
   return error?.response?.data?.detail || error?.message || fallback;
 }
@@ -407,11 +404,13 @@ function getImageSrc(filePath: string): string {
   return imgSrc(filePath);
 }
 
+/** 打开图片预览弹窗 */
 function openPreview(item: SearchResultItem) {
   previewItem.value = item;
   previewVisible.value = true;
 }
 
+/** 根据资源类型返回对应的中文标签（表格截图/整页渲染等） */
 function assetTypeLabel(item: SearchResultItem): string {
   if (item.asset_type === "table_crop") return t("docs.tableCrop");
   if (item.asset_type === "table_page_render") return t("docs.tablePageRender");
@@ -419,6 +418,7 @@ function assetTypeLabel(item: SearchResultItem): string {
   return "";
 }
 
+/** 返回页码标签文本 */
 function pageLabel(item: SearchResultItem): string {
   if (typeof item.page_number === "number") {
     return t("docs.pageLabel", { page: item.page_number });
@@ -426,14 +426,17 @@ function pageLabel(item: SearchResultItem): string {
   return "";
 }
 
+/** 判断搜索结果是否为跨页延续的资源 */
 function isCrossPageResult(item: SearchResultItem): boolean {
   return Boolean(item.continued_from_previous_page || item.continued_to_next_page);
 }
 
+/** 判断搜索结果是否需要显示标签徽章 */
 function resultBadgeVisible(item: SearchResultItem): boolean {
   return Boolean(assetTypeLabel(item) || pageLabel(item) || isCrossPageResult(item));
 }
 
+/** 将数值格式化为三位小数字符串，无效值返回 "-" */
 function formatNumeric(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(Number(value))) {
     return "-";
@@ -441,6 +444,7 @@ function formatNumeric(value: number | null | undefined): string {
   return Number(value).toFixed(3);
 }
 
+/** 根据分数来源生成标签文本（如 "RERANK 0.850"） */
 function getScoreLabel(item: SearchResultItem): string | undefined {
   if (item.score_source === "rerank" && typeof item.relevance_score === "number") {
     return `RERANK ${formatNumeric(item.relevance_score)}`;
@@ -451,6 +455,9 @@ function getScoreLabel(item: SearchResultItem): string | undefined {
   return undefined;
 }
 
+// ---- 搜索方法 ----
+
+/** 执行文本→图像检索，将查询文本发送到后端并展示结果 */
 async function doTextSearch() {
   if (!textQuery.value.trim()) {
     ElMessage.warning(t("search.enterQuery"));
@@ -474,6 +481,7 @@ async function doTextSearch() {
   }
 }
 
+/** 执行图像→图像检索，上传图片并展示相似结果和 MLLM 生成的查询描述 */
 async function doImageSearch() {
   const file = imageFiles.value[0];
   if (!file) {
@@ -500,6 +508,7 @@ async function doImageSearch() {
   }
 }
 
+/** 从后端加载搜索默认参数（Top-K、分数过滤等），初始化两个检索面板的默认值 */
 async function loadSearchDefaults() {
   try {
     const payload = await getSystemConfig();
@@ -520,6 +529,8 @@ async function loadSearchDefaults() {
   }
 }
 
+// ---- 生命周期 ----
+
 onMounted(() => {
   loadSearchDefaults();
 });
@@ -532,48 +543,65 @@ onMounted(() => {
   gap: 18px;
 }
 
-.search-layout {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  align-items: stretch;
+.search-workbench :deep(.el-card__body) {
+  padding: 12px 16px 14px;
 }
 
-.search-card {
-  min-height: 0;
+.workbench-header {
   display: flex;
-  flex-direction: column;
-}
-
-.workspace-card {
-  min-height: 0;
-}
-
-.search-card :deep(.el-card__body) {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  padding: 22px;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.card-header-main {
+.subpage-tabs {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: rgba(248, 250, 252, 0.88);
 }
 
-.card-header-note {
-  font-size: 11px;
-  color: var(--text-tertiary);
-  white-space: nowrap;
+.subpage-tab {
+  min-height: 30px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.subpage-tab.active {
+  background: #ffffff;
+  color: var(--accent-primary);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.subpage-shell {
+  min-height: 0;
+}
+
+.query-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78)),
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.06), transparent 30%);
 }
 
 .accent-icon {
@@ -581,61 +609,39 @@ onMounted(() => {
   font-size: 18px;
 }
 
-.workspace-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-}
-
-.workspace-surface {
-  min-height: 232px;
-  padding: 14px;
-  border-radius: 22px;
-  border: 1px solid var(--border-color);
-  background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 32%),
-    rgba(255, 255, 255, 0.8);
-}
-
-.text-surface {
-  display: flex;
-}
-
-.upload-surface {
-  display: flex;
+.text-entry-row,
+.upload-entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
   align-items: stretch;
 }
 
-.upload-surface :deep(.upload-zone) {
-  width: 100%;
-  min-height: 100%;
+.query-input-shell {
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: rgba(248, 250, 252, 0.88);
 }
 
-.workspace-footer {
-  margin-top: 14px;
+.entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .dark-input :deep(.el-textarea__inner) {
-  background: var(--bg-tertiary);
-  border-color: var(--border-color);
+  background: transparent;
+  border-color: transparent;
   color: var(--text-primary);
-  min-height: 200px !important;
+  min-height: 44px !important;
   box-shadow: none;
-  padding: 16px 18px;
-  border-radius: 18px;
+  padding: 10px 12px;
+  border-radius: 14px;
 }
 
 .dark-input :deep(.el-textarea__inner:focus) {
   border-color: var(--accent-primary);
-}
-
-.workspace-input {
-  flex: 1;
-}
-
-.advanced-toggle-row {
-  margin-top: auto;
 }
 
 .advanced-toggle {
@@ -660,10 +666,17 @@ onMounted(() => {
   text-align: right;
 }
 
+.compact-toggle {
+  width: auto;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+}
+
 .advanced-panel {
-  margin-top: 12px;
-  padding: 16px;
-  border-radius: 18px;
+  margin-top: 2px;
+  padding: 12px 14px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--border-color);
 }
@@ -690,9 +703,10 @@ onMounted(() => {
 }
 
 .search-btn {
-  width: 100%;
-  min-height: 44px;
-  border-radius: 14px;
+  min-width: 148px;
+  min-height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
 }
 
 .results-card :deep(.el-card__body) {
@@ -719,53 +733,22 @@ onMounted(() => {
   color: var(--text-primary);
 }
 
-.results-toolbar-subtitle {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.results-mode-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.results-mode-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.82);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-
-.results-mode-btn.active {
-  border-color: rgba(37, 99, 235, 0.18);
-  background: var(--bg-accent-soft);
-  color: var(--accent-primary);
-}
-
-.mode-count {
+.results-count-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 8px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.06);
-  font-size: 11px;
-  color: inherit;
+  background: var(--bg-accent-soft);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-primary);
 }
 
 .results-section {
-  padding-top: 4px;
+  padding-top: 0;
 }
 
 .unified-results {
@@ -780,14 +763,6 @@ onMounted(() => {
 
 .inline-alert {
   margin-bottom: 4px;
-}
-
-.section-title {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin: 0 0 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .result-grid {
@@ -868,18 +843,33 @@ onMounted(() => {
 }
 
 @media (max-width: 1100px) {
-  .search-layout {
-    grid-template-columns: 1fr;
-  }
-
   .advanced-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .search-card {
-    min-height: 0;
+  .workbench-header {
+    align-items: flex-start;
+  }
+
+  .subpage-tabs {
+    width: 100%;
+  }
+
+  .subpage-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 0 10px;
+  }
+
+  .text-entry-row,
+  .upload-entry-row {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-actions {
+    flex-wrap: wrap;
   }
 
   .advanced-toggle {
@@ -895,13 +885,8 @@ onMounted(() => {
     align-items: flex-start;
   }
 
-  .results-mode-switch {
+  .search-btn {
     width: 100%;
-  }
-
-  .results-mode-btn {
-    flex: 1 1 calc(50% - 4px);
-    justify-content: center;
   }
 }
 </style>

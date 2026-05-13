@@ -1,20 +1,57 @@
 """
-生成器评估 — UniDoc-Bench-subset 数据集。
+生成器评估 — UniDoc-Bench-subset 数据集（实时逐条推理版）。
 
-使用跨领域混合候选池（crossdomain）中已建好的向量索引检索 top-k 图片，
-将检索到的所有图片传给 MLLM 生成答案，并与 ground-truth answer 一同保存。
+================================================================================
+脚本用途
+================================================================================
+本脚本对 UniDoc-Bench-subset 数据集中的每条查询，实时调用 MLLM API 生成答案，
+用于评估不同检索方法在多模态 RAG 场景下的生成质量。
 
-支持的方法：
-  proposed        图片语义描述检索 → 传原始图片给 MLLM
-  baseline_clip   多模态 embedding 检索 → 传原始图片给 MLLM
-  baseline_ocr    OCR 文字检索 → 传原始图片给 MLLM
-  no_rag          不检索，直接问 MLLM
+工作流程：
+  1. 加载 UniDoc-Bench-subset 的 8 个领域数据（每领域 100 条 QA）
+  2. 根据指定方法，从跨领域候选池（crossdomain）检索 top-k 张图片
+  3. 将检索到的图片 + 用户问题一起发给 MLLM，生成回答
+  4. 将生成结果与 ground-truth 保存为 JSON 文件
 
-使用示例（从项目根目录）：
+================================================================================
+支持的检索方法
+================================================================================
+  proposed        本系统方法：MLLM 语义描述 → 文本 Embedding 检索 → 传原始图片给 MLLM
+  baseline_clip   基线方法：qwen3-vl-embedding 多模态检索 → 传原始图片给 MLLM
+  baseline_ocr    基线方法：OCR 文字 → 文本 Embedding 检索 → 传原始图片给 MLLM
+  no_rag          对照组：不检索，直接问 MLLM（无外部知识）
+
+================================================================================
+输入输出
+================================================================================
+输入：
+  --subset-root   UniDoc-Bench-subset 数据目录（含 8 个领域的 parquet 文件）
+  --domains       可选，指定评测哪些领域（默认全部 8 个）
+
+输出：
+  --output-dir/   输出目录
+  unidoc_gen_{method}_top{k}.json   每条记录包含 query_id, query, domain,
+                                    reference_answer, generated_answer, retrieved_ids 等
+
+================================================================================
+断点续传
+================================================================================
+脚本以 (query, domain) 作为去重键。如果输出文件已存在，会自动跳过已完成的样本，
+支持中断后从中断处继续。
+
+================================================================================
+使用示例（从项目根目录）
+================================================================================
+  # proposed 方法，检索 top-5 图片
   python -m evaluation.run_unidoc_gen \\
     --method proposed \\
     --top-k 5 \\
     --output-dir data/rag_outputs/unidoc_gen
+
+  # 仅评测特定领域
+  python -m evaluation.run_unidoc_gen \\
+    --method baseline_clip \\
+    --domains finance healthcare
 """
 
 from __future__ import annotations
@@ -28,7 +65,11 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-# 加载 backend/.env
+# ============================================================================
+# 环境变量加载
+# ============================================================================
+# 脚本独立于 FastAPI 后端运行，需要手动加载 .env 中的模型配置
+# （MLLM_BASE_URL, MLLM_API_KEY, EMBEDDING_BASE_URL 等）
 _env_path = Path(__file__).parent.parent / "backend" / ".env"
 if _env_path.exists():
     for _line in _env_path.read_text(encoding="utf-8").splitlines():
@@ -39,21 +80,26 @@ if _env_path.exists():
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
+# ============================================================================
+# 核心依赖导入
+# ============================================================================
 from evaluation._generation_core import (  # noqa: E402
-    read_image_as_base64,
-    generate_with_images,
+    read_image_as_base64,      # 读取图片文件并编码为 base64 字符串
+    generate_with_images,      # 将图片 + 问题发送给 MLLM 生成回答
 )
 from evaluation.datasets.unidoc_subset import (  # noqa: E402
-    DOMAINS,
-    UniDocQuerySample,
-    load_unidoc_domain,
+    DOMAINS,                   # 8 个领域名称列表
+    UniDocQuerySample,         # 单条查询样本的数据结构
+    load_unidoc_domain,        # 从 parquet 文件加载指定领域的样本
 )
 from evaluation.methods import unidoc_clip, unidoc_ocr, unidoc_proposed  # noqa: E402
 
+# 跨领域候选池标识，所有方法统一使用 crossdomain 集合进行检索
 CROSSDOMAIN_KEY = "crossdomain"
 
 
 def _configure_utf8_stdio() -> None:
+    """将 stdout/stderr 重新配置为 UTF-8 编码，避免 Windows 下中文输出乱码。"""
     for stream_name in ("stdout", "stderr"):
         stream = getattr(sys, stream_name, None)
         reconfigure = getattr(stream, "reconfigure", None)
@@ -65,7 +111,20 @@ _configure_utf8_stdio()
 
 
 def _ids_to_file_paths_unidoc(ids: List[str], domain: str) -> List[str]:
-    """从 UniDoc ChromaDB 集合中查询 file_path。"""
+    """
+    将检索返回的图片 ID 列表转换为本地文件路径。
+
+    查询策略（按优先级）：
+      1. 从 ChromaDB 的 proposed/clip/ocr 三个集合中查询 metadata.file_path
+      2. 回退到 data/UniDoc-Bench-subset/ 目录下按 ID 直接查找文件
+
+    Args:
+        ids: 检索返回的图片 ID 列表（如文件名或 UUID）
+        domain: 领域标识（如 "crossdomain"）
+
+    Returns:
+        与 ids 顺序一致的文件路径列表，未找到的返回空字符串
+    """
     import chromadb
     from chromadb.config import Settings as ChromaSettings
     from app.core.config import settings as app_settings
@@ -74,6 +133,7 @@ def _ids_to_file_paths_unidoc(ids: List[str], domain: str) -> List[str]:
         ChromaSettings(is_persistent=True, persist_directory=app_settings.CHROMA_PERSIST_DIR)
     )
     id_to_path: Dict[str, str] = {}
+    # 遍历三个可能的集合查找 file_path（不同方法建的集合都可能包含该 ID）
     candidate_collections = [
         f"unidoc_{domain}_proposed",
         f"unidoc_{domain}_clip",
@@ -91,7 +151,7 @@ def _ids_to_file_paths_unidoc(ids: List[str], domain: str) -> List[str]:
                     id_to_path[img_id] = meta["file_path"]
         except Exception:
             continue
-    # 对仍未找到 file_path 的 id，尝试从 subset_root 直接构建路径
+    # 回退策略：从 subset_root 目录下按文件名直接查找
     subset_root = Path(__file__).parent.parent / "data" / "UniDoc-Bench-subset"
     for img_id in ids:
         if img_id not in id_to_path:
@@ -102,7 +162,8 @@ def _ids_to_file_paths_unidoc(ids: List[str], domain: str) -> List[str]:
 
 
 async def _generate_no_rag(query: str) -> str:
-    """不检索，直接问 MLLM。"""
+    """no_rag 方法：不进行任何检索，直接将问题发给 MLLM，作为对照基线。"""
+    # 构造简单的问答 Prompt，不提供任何外部知识
     from app.langchain_integration.models import get_chat_model
     from langchain_core.messages import HumanMessage
 
@@ -121,6 +182,26 @@ async def _run_one_sample(
     method: str,
     top_k: int,
 ) -> Dict[str, Any]:
+    """
+    处理单条查询样本：检索 + 生成。
+
+    流程：
+      1. 生成 query_id（跨脚本一致的 16 位 MD5 哈希）
+      2. 若为 no_rag，跳过检索直接生成
+      3. 否则按方法检索 top-k 图片 ID，解析为文件路径，编码为 base64
+      4. 将图片 + 问题发给 MLLM 生成回答
+      5. 返回包含 query_id、query、domain、generated_answer 等的记录字典
+
+    Args:
+        sample: 单条 UniDoc 查询样本
+        method: 检索方法名（proposed / baseline_clip / baseline_ocr / no_rag）
+        top_k: 检索返回的图片数量
+
+    Returns:
+        包含完整评测信息的记录字典
+    """
+    # query_id 生成规则：md5("query||domain")[:16]
+    # 该规则在 run_unidoc_gen_batch.py / run_unidoc_score.py 中保持一致，确保跨脚本可关联
     _qid = hashlib.md5(f"{sample.query}||{sample.domain}".encode()).hexdigest()[:16]
 
     if method == "no_rag":
@@ -146,10 +227,13 @@ async def _run_one_sample(
     else:
         raise ValueError(f"Unsupported method: {method}")
 
+    # 将图片 ID 解析为本地文件路径
     file_paths = _ids_to_file_paths_unidoc(ids, domain=CROSSDOMAIN_KEY)
+    # 读取图片并编码为 base64，过滤掉读取失败的（payload 为空的被 walrus 运算符丢弃）
     image_payloads = [payload for p in file_paths if (payload := read_image_as_base64(p))]
 
     try:
+        # 将图片 + 问题发送给 MLLM 生成回答
         answer = await generate_with_images(sample.query, image_payloads)
     except Exception as e:
         import traceback
@@ -171,6 +255,7 @@ async def _run_one_sample(
 
 
 def _load_existing(output_path: Path) -> List[Dict[str, Any]]:
+    """加载已有的输出文件，用于断点续传。文件不存在或解析失败时返回空列表。"""
     if not output_path.exists():
         return []
     try:
@@ -185,8 +270,20 @@ async def run_generation(
     top_k: int,
     output_path: Path,
 ) -> None:
+    """
+    批量运行生成评估，支持断点续传。
+
+    逐条处理样本，每完成一条立即写入 JSON 文件（避免中途丢失进度）。
+    以 (query, domain) 二元组作为去重键，跳过已完成的样本。
+
+    Args:
+        samples: 待评测的查询样本列表
+        method: 检索方法名
+        top_k: 检索图片数量
+        output_path: 输出 JSON 文件路径
+    """
     existing = _load_existing(output_path)
-    # 用 (query, domain) 作为去重键
+    # 用 (query, domain) 作为去重键，已处理的样本直接跳过
     done_keys = {(r["query"], r["domain"]) for r in existing}
     records = list(existing)
 
@@ -206,7 +303,11 @@ async def run_generation(
     print(f"Done. {len(records)} records saved to {output_path} (skipped {skipped} cached).")
 
 
+# ============================================================================
+# 命令行入口
+# ============================================================================
 def main() -> None:
+    """解析命令行参数，加载数据集，运行生成评估。"""
     parser = argparse.ArgumentParser(description="生成器评估 — UniDoc-Bench-subset")
     parser.add_argument(
         "--method",
@@ -232,8 +333,9 @@ def main() -> None:
     args = parser.parse_args()
 
     subset_root = Path(args.subset_root)
-    domains = args.domains or DOMAINS
+    domains = args.domains or DOMAINS  # 默认使用全部 8 个领域
 
+    # ---- 加载所有领域的查询样本 ----
     samples: List[UniDocQuerySample] = []
     for domain in domains:
         try:
@@ -247,6 +349,7 @@ def main() -> None:
         print("No samples loaded. Check --subset-root.")
         return
 
+    # ---- OCR 方法前置检查：确保 crossdomain 集合的 OCR 索引已构建 ----
     if args.method == "baseline_ocr" and not unidoc_ocr.check_index(CROSSDOMAIN_KEY):
         print(
             "[ERROR] OCR index for crossdomain is missing or unhealthy. "
@@ -256,8 +359,10 @@ def main() -> None:
 
     print(f"Total samples: {len(samples)}")
 
+    # ---- 构造输出路径并运行 ----
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    # 输出文件名格式：unidoc_gen_{method}_top{k}.json
     output_path = output_dir / f"unidoc_gen_{args.method}_top{args.top_k}.json"
 
     asyncio.run(run_generation(samples, args.method, args.top_k, output_path))

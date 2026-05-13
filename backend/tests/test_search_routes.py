@@ -119,6 +119,22 @@ class TestSearchRoutes(unittest.TestCase):
         self.assertFalse(self.fake_adapter.image_calls[0]["enable_score_filter"])
         self.assertEqual(self.fake_adapter.image_calls[0]["min_relevance_score"], 0.0)
 
+    def test_image_to_image_accepts_form_control_params(self):
+        response = self.client.post(
+            "/api/search/image-to-image",
+            files={"file": ("demo.jpg", b"fake-bytes", "image/jpeg")},
+            data={
+                "top_k": "3",
+                "enable_score_filter": "true",
+                "min_relevance_score": "0.6",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.fake_adapter.image_calls[0]["top_k"], 3)
+        self.assertTrue(self.fake_adapter.image_calls[0]["enable_score_filter"])
+        self.assertEqual(self.fake_adapter.image_calls[0]["min_relevance_score"], 0.6)
+
 
 if __name__ == "__main__":
     unittest.main()

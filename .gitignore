@@ -181,6 +181,16 @@ frontend/node_modules/
 frontend/dist/
 frontend/package-lock.json
 
+# Frontend generated source artifacts
+frontend/src/**/*.vue.js
+frontend/src/api/*.js
+frontend/src/router/*.js
+frontend/src/locales/*.js
+frontend/src/composables/*.js
+frontend/src/types/*.js
+frontend/src/utils/*.js
+frontend/src/main.js
+
 # Large data / batch outputs
 data/rag_outputs/
 data/cache/
@@ -216,3 +226,8 @@ evaluation/export_unidoc_shared_subset.py
 
 # Claude Code
 .claude/
+
+# Office / generated docs
+docs/~$*.docx
+docs/*-构建中.docx
+docs/张琪-答辩问答-多模态RAG系统.docx

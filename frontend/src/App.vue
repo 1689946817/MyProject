@@ -134,9 +134,12 @@
       </el-header>
 
       <el-main class="main-content" :class="{ 'chat-mode': route.path === '/chat' }">
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component, route: currentRoute }">
           <transition name="fade-slide" mode="out-in">
-            <component :is="Component" />
+            <keep-alive v-if="currentRoute.meta.keepAlive">
+              <component :is="Component" />
+            </keep-alive>
+            <component :is="Component" v-else />
           </transition>
         </router-view>
       </el-main>

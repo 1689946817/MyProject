@@ -1,3 +1,8 @@
+<!--
+  SessionList - 聊天会话侧栏列表组件
+  功能：展示用户的聊天会话列表，支持新建、重命名、删除会话，以及折叠/展开侧栏。
+  当前活跃会话高亮显示，悬停时显示编辑和删除操作按钮。
+-->
 <template>
   <div class="session-list" :class="{ compact: collapsed }">
     <div class="session-toolbar">
@@ -53,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+// ---- 导入依赖 ----
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessageBox } from 'element-plus'
@@ -61,25 +67,39 @@ import { formatDate } from '@/utils/image'
 
 const { t } = useI18n()
 
+// ---- Props ----
 defineProps<{
+  /** 会话列表数据 */
   sessions: ChatSession[]
+  /** 当前活跃会话 ID */
   activeId?: string
+  /** 是否折叠侧栏 */
   collapsed?: boolean
 }>()
 
+// ---- 事件定义 ----
 const emit = defineEmits<{
+  /** 选择会话 */
   select: [string]
+  /** 新建会话 */
   create: []
+  /** 请求重命名会话（打开对话框） */
   rename: [string]
+  /** 提交会话标题修改 */
   updateTitle: [string, string]
+  /** 删除会话 */
   delete: [string]
+  /** 切换侧栏折叠状态 */
   toggleCollapse: []
 }>()
 
-const renameDialogVisible = ref(false)
-const renameValue = ref('')
-const renameTargetId = ref('')
+// ---- 重命名对话框状态 ----
+const renameDialogVisible = ref(false)   // 对话框是否可见
+const renameValue = ref('')               // 重命名输入框的值
+const renameTargetId = ref('')            // 当前正在重命名的会话 ID
 
+// ---- 方法 ----
+/** 弹出确认对话框，用户确认后触发 delete 事件 */
 function confirmDelete(id: string) {
   ElMessageBox.confirm(t('common.confirmDelete'), t('common.delete'), {
     confirmButtonText: t('common.confirm'),
@@ -90,6 +110,7 @@ function confirmDelete(id: string) {
   }).catch(() => {})
 }
 
+/** 执行重命名：提交新标题并关闭对话框 */
 function doRename() {
   if (renameTargetId.value && renameValue.value.trim()) {
     emit('updateTitle', renameTargetId.value, renameValue.value.trim())
@@ -97,7 +118,7 @@ function doRename() {
   renameDialogVisible.value = false
 }
 
-// 打开重命名对话框（由父组件调用）
+/** 打开重命名对话框并填充当前标题（通过 defineExpose 暴露给父组件调用） */
 function openRenameDialog(id: string, currentTitle: string) {
   renameTargetId.value = id
   renameValue.value = currentTitle || ''

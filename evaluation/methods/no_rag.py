@@ -1,7 +1,17 @@
 """
-No-RAG 基线：不检索任何知识库，直接将问题发给 MLLM 生成答案。
+No-RAG 基线方法。
 
-用途：作为生成器评估的下界对照，证明检索对生成质量有帮助。
+不检索任何知识库，直接将用户问题发给 MLLM（多模态大模型）生成答案。
+
+用途：作为生成器评估的下界对照（lower bound）。
+如果 No-RAG 的表现显著低于有检索的方法，则证明检索对生成质量有正向贡献。
+
+返回格式与其他方法统一：
+    {
+        "generated_answer": str,  # MLLM 直接生成的回答
+        "context": "",            # 无检索上下文
+        "images": [],             # 无图片
+    }
 """
 
 from __future__ import annotations
@@ -15,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 from app.langchain_integration.models import get_chat_model  # noqa: E402
 from langchain_core.messages import HumanMessage  # noqa: E402
 
+# No-RAG 提示词模板：要求模型基于自身知识直接回答，不确定时明确说明
 _PROMPT = (
     "你是一个多模态知识库问答助手。请根据以下问题直接作答，"
     "如果你不确定，请明确说明。\n\n"
