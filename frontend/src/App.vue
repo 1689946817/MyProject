@@ -134,12 +134,11 @@
       </el-header>
 
       <el-main class="main-content" :class="{ 'chat-mode': route.path === '/chat' }">
-        <router-view v-slot="{ Component, route: currentRoute }">
+        <router-view v-slot="{ Component }">
           <transition name="fade-slide" mode="out-in">
-            <keep-alive v-if="currentRoute.meta.keepAlive">
+            <keep-alive :include="keepAliveComponentNames">
               <component :is="Component" />
             </keep-alive>
-            <component :is="Component" v-else />
           </transition>
         </router-view>
       </el-main>
@@ -164,6 +163,7 @@ const router = useRouter();
 const backendConnected = ref(false);
 const currentLocale = ref(getLocale());
 const activeMenu = computed(() => route.path);
+const keepAliveComponentNames = ["KnowledgeBase", "Search", "Chat", "Ops"];
 const sidebarCollapsed = ref(false);
 const mobileNavOpen = ref(false);
 const isMobile = ref(false);

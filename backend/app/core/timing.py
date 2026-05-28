@@ -146,7 +146,11 @@ def bind_timing_collector(collector: RequestTimingCollector) -> Iterator[Request
     try:
         yield collector
     finally:
-        _CURRENT_TIMING_COLLECTOR.reset(token)
+        try:
+            _CURRENT_TIMING_COLLECTOR.reset(token)
+        except ValueError as exc:
+            logger.debug("Skip timing collector reset from a different context: %s", exc)
+            _CURRENT_TIMING_COLLECTOR.set(None)
 
 
 @contextmanager

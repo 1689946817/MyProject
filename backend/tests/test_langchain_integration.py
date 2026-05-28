@@ -103,6 +103,7 @@ from langchain_core.messages import HumanMessage
 from langchain_core.outputs import ChatGenerationChunk
 
 from app.langchain_integration.chains import ImageDescriptionChain, RAGChain
+from app.langchain_integration import retrievers as retrievers_module
 from app.langchain_integration.doc_parser import (
     ParsedPdfTextChunk,
     ParsedPdfVisualAsset,
@@ -433,6 +434,50 @@ class TestChromaMetadataNormalization(unittest.TestCase):
         self.assertEqual(kwargs["metadatas"][0]["tags"], "hr,policy")
 
 
+class TestImageSearchDescriptionSections(unittest.TestCase):
+    """测试图搜图检索描述分段裁剪。"""
+
+    def test_extracts_first_three_sections_from_five_section_description(self):
+        """五段描述只应保留前三段用于检索。"""
+        description = "[###] 分类 [###] 摘要 [###] 细节 [###] 文字 [###] 关键词"
+
+        result = retrievers_module._extract_search_description_sections(description)
+
+        self.assertEqual(result, "[###] 分类 [###] 摘要 [###] 细节")
+
+    def test_ignores_empty_section_before_leading_separator(self):
+        """以分隔符开头时应忽略空段。"""
+        description = "[###] 分类 [###] 摘要 [###] 细节 [###] 文字"
+
+        result = retrievers_module._extract_search_description_sections(description)
+
+        self.assertEqual(result, "[###] 分类 [###] 摘要 [###] 细节")
+
+    def test_returns_available_sections_when_less_than_three(self):
+        """不足三段时返回已有有效段。"""
+        description = "[###] 分类 [###] 摘要"
+
+        result = retrievers_module._extract_search_description_sections(description)
+
+        self.assertEqual(result, "[###] 分类 [###] 摘要")
+
+    def test_returns_original_description_without_separator(self):
+        """没有有效分隔符时回退原文。"""
+        description = "A dog in the park"
+
+        result = retrievers_module._extract_search_description_sections(description)
+
+        self.assertEqual(result, description)
+
+    def test_trims_extra_whitespace_and_newlines(self):
+        """多余空格和换行不应影响分段结果。"""
+        description = "  [###]  分类\n [###]\n 摘要  [###]  细节\t [###]  文字  "
+
+        result = retrievers_module._extract_search_description_sections(description)
+
+        self.assertEqual(result, "[###] 分类 [###] 摘要 [###] 细节")
+
+
 class TestMultimodalRetriever(unittest.TestCase):
     """测试多模态检索器"""
 
@@ -608,6 +653,51 @@ class TestMultimodalRetriever(unittest.TestCase):
         # 验证结果
         self.assertEqual(description, "A dog in the park")
         self.assertEqual(len(results), 1)
+
+    def test_image_to_image_search_uses_trimmed_description_for_retrieval(self):
+        """图搜图内部检索只使用前三段，但返回完整描述给前端。"""
+        full_description = (
+            "[###] 分类 "
+            "[###] 摘要 "
+            "[###] 细节 "
+            "[###] 摄图网 "
+            "[###] 金毛, 狗狗, 宠物"
+        )
+        retrieval_description = "[###] 分类 [###] 摘要 [###] 细节"
+        mock_doc = Document(page_content="matched dog", metadata={"id": "img-dog"})
+
+        self.mock_chat_model.agenerate_description = AsyncMock(return_value=full_description)
+        self.retriever.text_to_image_search = AsyncMock(return_value=[mock_doc])
+        mock_file = MagicMock()
+        mock_file.read = AsyncMock(return_value=b"fake_image_data")
+
+        results, query_description = asyncio.run(
+            self.retriever.image_to_image_search(
+                mock_file,
+                top_k=1,
+                fast=True,
+                enable_score_filter=True,
+                min_relevance_score=0.3,
+                candidate_k=8,
+                enable_query_rewrite=False,
+                query_rewrite_count=2,
+                enable_rerank=False,
+            )
+        )
+
+        self.assertEqual(results, [mock_doc])
+        self.assertEqual(query_description, full_description)
+        self.retriever.text_to_image_search.assert_awaited_once_with(
+            retrieval_description,
+            top_k=1,
+            fast=True,
+            enable_score_filter=True,
+            min_relevance_score=0.3,
+            candidate_k=8,
+            enable_query_rewrite=False,
+            query_rewrite_count=2,
+            enable_rerank=False,
+        )
 
 
 class TestPdfParsing(unittest.TestCase):
@@ -866,6 +956,31 @@ class TestChatObservabilityHelpers(unittest.TestCase):
         self.assertEqual(len(sources), 1)
         self.assertEqual(sources[0].rerank_score, 0.91)
         self.assertEqual(sources[0].score, 0.77)
+
+    def test_normalize_chat_sources_handles_web_source(self):
+        """测试百度 Web Search 引用会归一化为网页来源。"""
+        sources = _normalize_chat_sources(
+            [
+                {
+                    "id": "web:abc",
+                    "source_type": "web",
+                    "content": "网页摘要片段",
+                    "metadata": {
+                        "source_type": "web",
+                        "asset_type": "web",
+                        "title": "百度智能云文档",
+                        "url": "https://cloud.baidu.com/doc/qianfan-api/s/wmjqtqr7w",
+                        "provider": "baidu_qianfan",
+                    },
+                }
+            ]
+        )
+
+        self.assertEqual(len(sources), 1)
+        self.assertEqual(sources[0].source_type, "web")
+        self.assertEqual(sources[0].title, "百度智能云文档")
+        self.assertEqual(sources[0].file_path, "https://cloud.baidu.com/doc/qianfan-api/s/wmjqtqr7w")
+        self.assertEqual(sources[0].metadata["url"], "https://cloud.baidu.com/doc/qianfan-api/s/wmjqtqr7w")
 
 
 class TestStoragePaths(unittest.TestCase):
@@ -1754,7 +1869,8 @@ class TestLangChainAdapter(unittest.TestCase):
         mock_file.read = AsyncMock(return_value=b"fake_image_data")
         self.adapter.rag_chain.ainvoke_with_image = AsyncMock(return_value=("Image answer", [{"id": "img-2"}]))
 
-        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True), \
+            patch("app.core.config.settings.SELF_RAG_ENABLED", False):
             with patch(
                 "app.langchain_integration.adapters.classify_chat_intent",
                 AsyncMock(
@@ -1801,7 +1917,8 @@ class TestLangChainAdapter(unittest.TestCase):
                 items.append((chunk, docs))
             return items
 
-        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True):
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True), \
+            patch("app.core.config.settings.SELF_RAG_ENABLED", False):
             with patch(
                 "app.langchain_integration.adapters.classify_chat_intent",
                 AsyncMock(
@@ -1833,6 +1950,79 @@ class TestLangChainAdapter(unittest.TestCase):
         self.assertTrue(all(docs[0]["id"] == "img-1" for _, docs in streamed))
         mock_prepare.assert_awaited_once()
 
+    def test_rag_chat_stream_replays_self_checked_answer_when_self_rag_enabled(self):
+        """测试开启 Self-RAG 时，Agentic 流式路径回放自检后的最终答案。"""
+        async def stream_from_context(**_kwargs):
+            yield "stream-only"
+
+        self.adapter.rag_chain.astream_from_context = stream_from_context
+        self.adapter.rag_chain.agenerate_from_context = AsyncMock(return_value="初始答案")
+        mock_model = MagicMock()
+        mock_model._agenerate = AsyncMock(
+            return_value=MagicMock(
+                generations=[
+                    MagicMock(
+                        message=MagicMock(
+                            content='{"passed": false, "reason": "需要更保守", "revised_answer": "自检修正答案"}'
+                        )
+                    )
+                ]
+            )
+        )
+
+        async def collect():
+            items = []
+            async for chunk, docs, intent in self.adapter.rag_chat_stream(
+                query="What is this?",
+                top_k=1,
+                chat_history=[("上一问", "上一答")],
+            ):
+                items.append((chunk, docs, intent))
+            return items
+
+        with patch("app.core.config.settings.AGENTIC_RAG_ENABLED", True), \
+            patch("app.core.config.settings.SELF_RAG_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.settings.SELF_RAG_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.get_task_text_chat_model", return_value=mock_model):
+            with patch(
+                "app.langchain_integration.adapters.classify_chat_intent",
+                AsyncMock(
+                    return_value={
+                        "presentation_mode": "rag_answer",
+                        "execution_mode": "multimodal_rag",
+                        "use_rag": True,
+                        "has_uploaded_image": False,
+                        "wants_images": False,
+                        "confidence": 0.92,
+                        "reason": "internal_knowledge",
+                    }
+                ),
+            ):
+                with patch(
+                    "app.langchain_integration.adapters.prepare_agentic_multimodal_rag_context",
+                    AsyncMock(
+                        return_value=(
+                            {
+                                "query": "What is this?",
+                                "chat_history": [("上一问", "上一答")],
+                                "documents": [{"id": "img-1", "document": "图像描述"}],
+                                "text_chunks": [{"content": "文本块"}],
+                                "answer": "",
+                                "retrieval_meta": {},
+                            },
+                            [{"id": "img-1", "document": "图像描述", "metadata": {"asset_type": "image"}}],
+                            [{"content": "文本块"}],
+                            [{"key": "generate", "label": "生成", "summary": "done", "details": {}}],
+                        )
+                    ),
+                ):
+                    streamed = asyncio.run(collect())
+
+        self.assertEqual("".join(chunk for chunk, _docs, _intent in streamed), "自检修正答案")
+        self.assertTrue(all(docs[0]["id"] == "img-1" for _chunk, docs, _intent in streamed))
+        self.assertEqual(streamed[-1][2]["retrieval_steps"][-1]["key"], "self_check")
+        self.adapter.rag_chain.agenerate_from_context.assert_awaited_once()
+
     def test_rag_chat_stream_scoped_multimodal_rag_uses_astream_from_context(self):
         """测试 scoped multimodal_rag 流式会直接复用准备好的上下文做真实流式输出。"""
         self.adapter = _build_isolated_adapter()
@@ -1857,7 +2047,8 @@ class TestLangChainAdapter(unittest.TestCase):
                 items.append((chunk, docs, intent))
             return items
 
-        streamed = asyncio.run(collect())
+        with patch("app.core.config.settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED", False):
+            streamed = asyncio.run(collect())
 
         self.assertEqual("".join(chunk for chunk, _, _ in streamed), "Scoped stream")
         self.assertEqual(streamed[0][2]["execution_mode"], "multimodal_rag")
@@ -1891,7 +2082,8 @@ class TestLangChainAdapter(unittest.TestCase):
                 items.append((chunk, docs, intent))
             return items
 
-        streamed = asyncio.run(collect())
+        with patch("app.core.config.settings.IMAGE_GROUNDED_TEXT_AUGMENT_ENABLED", False):
+            streamed = asyncio.run(collect())
 
         self.assertEqual("".join(chunk for chunk, _, _ in streamed), "Grounded answer")
         self.assertEqual(streamed[0][2]["execution_mode"], "image_grounded_answer")
@@ -1924,15 +2116,27 @@ class TestLangChainAdapter(unittest.TestCase):
 class TestRemediationRegressions(unittest.TestCase):
     """整改回归测试"""
 
-    def test_generate_answer_reuses_rag_chain_context_generation(self):
-        """测试 Agentic graph 生成节点复用 rag_chain.agenerate_from_context。"""
-        mock_rag_chain = MagicMock()
-        mock_rag_chain.agenerate_from_context = AsyncMock(return_value="Generated answer")
-        state = {
+    def _make_low_quality_agentic_dependencies(self):
+        retriever = MagicMock()
+        retriever.async_search_with_dict_output = AsyncMock(
+            side_effect=[
+                [{"id": "img-low-1", "rerank_score": 0.1, "metadata": {"asset_type": "image"}}],
+                [{"id": "img-low-2", "rerank_score": 0.1, "metadata": {"asset_type": "image"}}],
+            ]
+        )
+        doc_vector_store = MagicMock()
+        doc_vector_store.similarity_search = MagicMock(return_value=[{"document": "local chunk"}])
+        rag_chain = MagicMock()
+        rag_chain.text_top_k = 3
+        rag_chain.agenerate_from_context = AsyncMock(return_value="should-not-run")
+        return retriever, doc_vector_store, rag_chain
+
+    def _make_generation_state(self):
+        return {
             "query": "问题",
             "chat_history": [("前一个问题", "前一个回答")],
-            "documents": [{"document": "文档内容"}],
-            "text_chunks": [{"document": "文本块"}],
+            "documents": [{"id": "img-1", "document": "图像描述内容", "metadata": {"asset_type": "image"}}],
+            "text_chunks": [{"content": "文本块内容"}],
             "answer": "",
             "top_k": 3,
             "enable_score_filter": False,
@@ -1943,15 +2147,136 @@ class TestRemediationRegressions(unittest.TestCase):
             "retrieval_meta": {},
         }
 
-        new_state = asyncio.run(generate_answer(state, rag_chain=mock_rag_chain))
+    def test_generate_answer_reuses_rag_chain_context_generation(self):
+        """测试 Agentic graph 生成节点复用 rag_chain.agenerate_from_context。"""
+        mock_rag_chain = MagicMock()
+        mock_rag_chain.agenerate_from_context = AsyncMock(return_value="Generated answer")
+        state = self._make_generation_state()
+
+        with patch("app.langchain_integration.agentic_rag.settings.SELF_RAG_ENABLED", False), \
+            patch("app.langchain_integration.agentic_rag.get_task_text_chat_model") as mock_get_model:
+            new_state = asyncio.run(generate_answer(state, rag_chain=mock_rag_chain))
 
         self.assertEqual(new_state["answer"], "Generated answer")
+        self.assertNotIn("self_check", new_state["retrieval_meta"])
+        mock_get_model.assert_not_called()
         mock_rag_chain.agenerate_from_context.assert_awaited_once_with(
             query="问题",
-            documents=[{"document": "文档内容"}],
-            text_chunks=[{"document": "文本块"}],
+            documents=[{"id": "img-1", "document": "图像描述内容", "metadata": {"asset_type": "image"}}],
+            text_chunks=[{"content": "文本块内容"}],
             chat_history=[("前一个问题", "前一个回答")],
         )
+
+    def test_generate_answer_keeps_answer_when_self_check_passes(self):
+        """测试 Self-RAG 自检通过时保留初始答案。"""
+        mock_rag_chain = MagicMock()
+        mock_rag_chain.agenerate_from_context = AsyncMock(return_value="初始答案")
+        mock_model = MagicMock()
+        mock_model._agenerate = AsyncMock(
+            return_value=MagicMock(
+                generations=[
+                    MagicMock(
+                        message=MagicMock(
+                            content='{"passed": true, "reason": "答案由上下文支持", "revised_answer": ""}'
+                        )
+                    )
+                ]
+            )
+        )
+
+        with patch("app.langchain_integration.agentic_rag.settings.SELF_RAG_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.get_task_text_chat_model", return_value=mock_model):
+            new_state = asyncio.run(generate_answer(self._make_generation_state(), rag_chain=mock_rag_chain))
+
+        self.assertEqual(new_state["answer"], "初始答案")
+        self.assertTrue(new_state["retrieval_meta"]["self_check"]["passed"])
+        self.assertEqual(new_state["retrieval_meta"]["self_check"]["action"], "keep")
+        mock_model._agenerate.assert_awaited_once()
+
+    def test_generate_answer_revises_answer_when_self_check_fails(self):
+        """测试 Self-RAG 自检不通过时使用保守修正版。"""
+        mock_rag_chain = MagicMock()
+        mock_rag_chain.agenerate_from_context = AsyncMock(return_value="初始答案包含未支持内容")
+        mock_model = MagicMock()
+        mock_model._agenerate = AsyncMock(
+            return_value=MagicMock(
+                generations=[
+                    MagicMock(
+                        message=MagicMock(
+                            content='{"passed": false, "reason": "部分结论缺少依据", "revised_answer": "根据当前知识库，只能确认文本块内容。"}'
+                        )
+                    )
+                ]
+            )
+        )
+
+        with patch("app.langchain_integration.agentic_rag.settings.SELF_RAG_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.get_task_text_chat_model", return_value=mock_model):
+            new_state = asyncio.run(generate_answer(self._make_generation_state(), rag_chain=mock_rag_chain))
+
+        self.assertEqual(new_state["answer"], "根据当前知识库，只能确认文本块内容。")
+        self.assertFalse(new_state["retrieval_meta"]["self_check"]["passed"])
+        self.assertEqual(new_state["retrieval_meta"]["self_check"]["action"], "revise")
+        self.assertEqual(new_state["retrieval_meta"]["self_check"]["final_answer_chars"], len(new_state["answer"]))
+
+    def test_generate_answer_revises_verbose_irrelevant_refusal(self):
+        """测试拒答时大量展开无关上下文会被 Self-RAG 改写为简洁保守回答。"""
+        verbose_refusal = (
+            "根据您提供的知识库内容，无法找到关于 vivox300 手机的具体配置信息。\n\n"
+            "1. FPGA 开发工具与流程：多份文本片段描述了 Vivado 软件的使用方法。\n"
+            "2. 企业级网络设备：文本片段介绍了 NetEngine AR 设备和 iMaster NCE。"
+        )
+        revised_answer = (
+            "当前知识库中没有检索到关于 vivox300 手机配置的资料，"
+            "因此无法基于知识库可靠回答其处理器、屏幕、影像、电池或存储等具体参数。"
+        )
+        mock_rag_chain = MagicMock()
+        mock_rag_chain.agenerate_from_context = AsyncMock(return_value=verbose_refusal)
+        mock_model = MagicMock()
+
+        async def _agenerate(messages):
+            prompt = messages[0].content
+            if "大量罗列或解释与用户问题无关的检索内容" in prompt:
+                content = (
+                    '{"passed": false, "reason": "拒答结论正确，但展开了无关上下文", '
+                    f'"revised_answer": "{revised_answer}"}}'
+                )
+            else:
+                content = '{"passed": true, "reason": "没有编造手机参数", "revised_answer": ""}'
+            return MagicMock(generations=[MagicMock(message=MagicMock(content=content))])
+
+        mock_model._agenerate = AsyncMock(side_effect=_agenerate)
+        state = self._make_generation_state()
+        state["query"] = "请告诉我vivox300的手机具体配置"
+        state["documents"] = []
+        state["text_chunks"] = [
+            {"content": "Vivado 2018.3 工程创建、Verilog 仿真与管脚配置。"},
+            {"content": "NetEngine AR 设备和 iMaster NCE 的网络架构说明。"},
+        ]
+
+        with patch("app.langchain_integration.agentic_rag.settings.SELF_RAG_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.get_task_text_chat_model", return_value=mock_model):
+            new_state = asyncio.run(generate_answer(state, rag_chain=mock_rag_chain))
+
+        self.assertEqual(new_state["answer"], revised_answer)
+        self.assertFalse(new_state["retrieval_meta"]["self_check"]["passed"])
+        self.assertEqual(new_state["retrieval_meta"]["self_check"]["action"], "revise")
+        mock_model._agenerate.assert_awaited_once()
+
+    def test_generate_answer_falls_back_to_original_when_self_check_errors(self):
+        """测试 Self-RAG 自检异常时不中断主回答流程。"""
+        mock_rag_chain = MagicMock()
+        mock_rag_chain.agenerate_from_context = AsyncMock(return_value="初始答案")
+        mock_model = MagicMock()
+        mock_model._agenerate = AsyncMock(side_effect=RuntimeError("self-check timeout"))
+
+        with patch("app.langchain_integration.agentic_rag.settings.SELF_RAG_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.get_task_text_chat_model", return_value=mock_model):
+            new_state = asyncio.run(generate_answer(self._make_generation_state(), rag_chain=mock_rag_chain))
+
+        self.assertEqual(new_state["answer"], "初始答案")
+        self.assertEqual(new_state["retrieval_meta"]["self_check"]["status"], "failed")
+        self.assertEqual(new_state["retrieval_meta"]["self_check"]["action"], "keep")
 
     def test_prepare_agentic_multimodal_rag_context_returns_generation_inputs(self):
         """测试 Agentic prepare 阶段只返回上下文与步骤，不提前生成答案。"""
@@ -1965,27 +2290,34 @@ class TestRemediationRegressions(unittest.TestCase):
         rag_chain.text_top_k = 3
         rag_chain.agenerate_from_context = AsyncMock(return_value="should-not-run")
 
-        final_state, documents, text_chunks, retrieval_steps = asyncio.run(
-            prepare_agentic_multimodal_rag_context(
-                query="公司的工资发放流程是什么？",
-                top_k=1,
-                chat_history=[("上一问", "上一答")],
-                enable_score_filter=False,
-                min_relevance_score=None,
-                rag_chain=rag_chain,
-                retriever=retriever,
-                doc_vector_store=doc_vector_store,
-                execution_mode="multimodal_rag",
-                presentation_mode="rag_answer",
-                classifier_reason="internal_knowledge",
-                has_uploaded_image=False,
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0), \
+            patch("app.langchain_integration.agentic_rag.settings.WEB_SEARCH_ENABLED", False):
+            final_state, documents, text_chunks, retrieval_steps = asyncio.run(
+                prepare_agentic_multimodal_rag_context(
+                    query="公司的工资发放流程是什么？",
+                    top_k=1,
+                    chat_history=[("上一问", "上一答")],
+                    enable_score_filter=False,
+                    min_relevance_score=None,
+                    rag_chain=rag_chain,
+                    retriever=retriever,
+                    doc_vector_store=doc_vector_store,
+                    execution_mode="multimodal_rag",
+                    presentation_mode="rag_answer",
+                    classifier_reason="internal_knowledge",
+                    has_uploaded_image=False,
+                )
             )
-        )
 
         self.assertEqual(documents[0]["id"], "img-prepare")
         self.assertEqual(text_chunks[0]["document"], "chunk")
         self.assertEqual(final_state["answer"], "")
         self.assertEqual(retrieval_steps[-1]["key"], "generate")
+        grade_step = next(step for step in retrieval_steps if step["key"] == "grade")
+        self.assertIn("CRAG 检索质量评估", grade_step["summary"])
+        self.assertEqual(grade_step["details"]["crag_threshold"], 2.0)
+        self.assertTrue(grade_step["details"]["crag_triggered"])
+        self.assertEqual(grade_step["details"]["crag_action"], "generate")
         rag_chain.agenerate_from_context.assert_not_called()
 
     def test_compress_context_uses_flat_message_list_and_rewrites_document(self):
@@ -2289,12 +2621,75 @@ class TestRemediationRegressions(unittest.TestCase):
             "retrieval_meta": {},
         }
 
-        new_state = asyncio.run(grade_documents(state))
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0):
+            new_state = asyncio.run(grade_documents(state))
 
         self.assertAlmostEqual(new_state["relevance_score"], 0.25)
         self.assertTrue(new_state["needs_retry"])
         self.assertEqual(new_state["retrieval_meta"]["document_count"], 2)
         self.assertTrue(new_state["retrieval_meta"]["has_rerank_score"])
+        self.assertTrue(new_state["retrieval_meta"]["crag_enabled"])
+        self.assertEqual(new_state["retrieval_meta"]["crag_threshold"], 2.0)
+        self.assertTrue(new_state["retrieval_meta"]["crag_triggered"])
+        self.assertEqual(new_state["retrieval_meta"]["crag_action"], "retry_retrieve")
+
+    def test_grade_documents_does_not_retry_when_rerank_score_meets_crag_threshold(self):
+        """测试 rerank_score 达到 CRAG 阈值时不触发 retry。"""
+        state = {
+            "query": "问题",
+            "chat_history": [],
+            "top_k": 3,
+            "enable_score_filter": False,
+            "min_relevance_score": None,
+            "documents": [
+                {"id": "img-1", "rerank_score": 2.3, "metadata": {"asset_type": "image"}},
+                {"id": "img-2", "rerank_score": 2.5, "metadata": {"asset_type": "table_crop"}},
+            ],
+            "text_chunks": [],
+            "answer": "",
+            "retrieval_attempt": 1,
+            "relevance_score": 0.0,
+            "needs_retry": False,
+            "retrieval_meta": {},
+        }
+
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0):
+            new_state = asyncio.run(grade_documents(state))
+
+        self.assertAlmostEqual(new_state["relevance_score"], 2.4)
+        self.assertFalse(new_state["needs_retry"])
+        self.assertTrue(new_state["retrieval_meta"]["crag_enabled"])
+        self.assertEqual(new_state["retrieval_meta"]["crag_threshold"], 2.0)
+        self.assertFalse(new_state["retrieval_meta"]["crag_triggered"])
+        self.assertEqual(new_state["retrieval_meta"]["crag_action"], "generate")
+
+    def test_grade_documents_uses_configured_crag_threshold(self):
+        """测试 CRAG retry 判定读取配置阈值，而不是固定写死。"""
+        state = {
+            "query": "问题",
+            "chat_history": [],
+            "top_k": 3,
+            "enable_score_filter": False,
+            "min_relevance_score": None,
+            "documents": [
+                {"id": "img-1", "rerank_score": 1.2, "metadata": {"asset_type": "image"}},
+                {"id": "img-2", "rerank_score": 1.4, "metadata": {"asset_type": "table_crop"}},
+            ],
+            "text_chunks": [],
+            "answer": "",
+            "retrieval_attempt": 1,
+            "relevance_score": 0.0,
+            "needs_retry": False,
+            "retrieval_meta": {},
+        }
+
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 1.0):
+            new_state = asyncio.run(grade_documents(state))
+
+        self.assertAlmostEqual(new_state["relevance_score"], 1.3)
+        self.assertFalse(new_state["needs_retry"])
+        self.assertEqual(new_state["retrieval_meta"]["crag_threshold"], 1.0)
+        self.assertFalse(new_state["retrieval_meta"]["crag_triggered"])
 
     def test_grade_documents_does_not_retry_without_rerank_score(self):
         """测试没有 rerank_score 时，即使只有 rrf_score 也不因为低分触发 retry。"""
@@ -2315,11 +2710,159 @@ class TestRemediationRegressions(unittest.TestCase):
             "retrieval_meta": {},
         }
 
-        new_state = asyncio.run(grade_documents(state))
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0):
+            new_state = asyncio.run(grade_documents(state))
 
         self.assertAlmostEqual(new_state["relevance_score"], 0.02)
         self.assertFalse(new_state["needs_retry"])
         self.assertFalse(new_state["retrieval_meta"]["has_rerank_score"])
+        self.assertTrue(new_state["retrieval_meta"]["crag_enabled"])
+        self.assertEqual(new_state["retrieval_meta"]["crag_threshold"], 2.0)
+        self.assertFalse(new_state["retrieval_meta"]["crag_triggered"])
+        self.assertEqual(new_state["retrieval_meta"]["crag_action"], "generate")
+
+    def test_agentic_web_search_runs_after_second_low_quality_retrieval(self):
+        """测试二次低质检索会在开启配置后调用百度 Web Search 并注入上下文。"""
+        retriever, doc_vector_store, rag_chain = self._make_low_quality_agentic_dependencies()
+        web_result = {
+            "provider": "baidu_qianfan",
+            "request_id": "req-1",
+            "summary": "百度搜索补充摘要",
+            "references": [
+                {
+                    "title": "百度智能云文档",
+                    "url": "https://cloud.baidu.com/doc/qianfan-api/s/wmjqtqr7w",
+                    "content": "web_summary 接口说明",
+                    "site_name": "百度智能云",
+                }
+            ],
+            "error": None,
+        }
+
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0), \
+            patch("app.langchain_integration.agentic_rag.settings.WEB_SEARCH_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.settings.BAIDU_WEB_SEARCH_API_KEY", "fake-key"), \
+            patch("app.langchain_integration.agentic_rag.settings.BAIDU_WEB_SEARCH_TOP_K", 1), \
+            patch("app.langchain_integration.web_search.search_baidu_web_summary", AsyncMock(return_value=web_result)) as mock_search:
+            final_state, documents, text_chunks, retrieval_steps = asyncio.run(
+                prepare_agentic_multimodal_rag_context(
+                    query="新的公开资料是什么？",
+                    top_k=1,
+                    chat_history=[],
+                    enable_score_filter=False,
+                    min_relevance_score=None,
+                    rag_chain=rag_chain,
+                    retriever=retriever,
+                    doc_vector_store=doc_vector_store,
+                    execution_mode="multimodal_rag",
+                    presentation_mode="rag_answer",
+                    classifier_reason="internal_knowledge",
+                    has_uploaded_image=False,
+                )
+            )
+
+        mock_search.assert_awaited_once_with("新的公开资料是什么？", top_k=1)
+        self.assertEqual(final_state["retrieval_attempt"], 2)
+        self.assertTrue(any("百度搜索补充摘要" in chunk.get("content", "") for chunk in text_chunks))
+        self.assertTrue(any((doc.get("metadata") or {}).get("source_type") == "web" for doc in documents))
+        web_step = next(step for step in retrieval_steps if step["key"] == "web_search")
+        self.assertEqual(web_step["details"]["status"], "completed")
+        self.assertEqual(web_step["details"]["reference_count"], 1)
+        self.assertTrue(web_step["details"]["used_as_context"])
+        self.assertEqual(retrieval_steps[-1]["key"], "generate")
+
+    def test_agentic_web_search_disabled_does_not_call_baidu(self):
+        """测试 Web Search 默认关闭时不调用百度且保持原生成路径。"""
+        retriever, doc_vector_store, rag_chain = self._make_low_quality_agentic_dependencies()
+
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0), \
+            patch("app.langchain_integration.agentic_rag.settings.WEB_SEARCH_ENABLED", False), \
+            patch("app.langchain_integration.agentic_rag.settings.BAIDU_WEB_SEARCH_API_KEY", "fake-key"), \
+            patch("app.langchain_integration.web_search.search_baidu_web_summary", AsyncMock()) as mock_search:
+            _final_state, documents, _text_chunks, retrieval_steps = asyncio.run(
+                prepare_agentic_multimodal_rag_context(
+                    query="新的公开资料是什么？",
+                    top_k=1,
+                    chat_history=[],
+                    enable_score_filter=False,
+                    min_relevance_score=None,
+                    rag_chain=rag_chain,
+                    retriever=retriever,
+                    doc_vector_store=doc_vector_store,
+                    execution_mode="multimodal_rag",
+                    presentation_mode="rag_answer",
+                    classifier_reason="internal_knowledge",
+                    has_uploaded_image=False,
+                )
+            )
+
+        mock_search.assert_not_awaited()
+        self.assertFalse(any(step["key"] == "web_search" for step in retrieval_steps))
+        self.assertFalse(any((doc.get("metadata") or {}).get("source_type") == "web" for doc in documents))
+        self.assertEqual(retrieval_steps[-1]["key"], "generate")
+
+    def test_agentic_web_search_missing_key_records_skipped_step(self):
+        """测试开启 Web Search 但缺少 Key 时不调用百度，并记录跳过原因。"""
+        retriever, doc_vector_store, rag_chain = self._make_low_quality_agentic_dependencies()
+
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0), \
+            patch("app.langchain_integration.agentic_rag.settings.WEB_SEARCH_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.settings.BAIDU_WEB_SEARCH_API_KEY", ""), \
+            patch("app.langchain_integration.web_search.search_baidu_web_summary", AsyncMock()) as mock_search:
+            _final_state, documents, _text_chunks, retrieval_steps = asyncio.run(
+                prepare_agentic_multimodal_rag_context(
+                    query="新的公开资料是什么？",
+                    top_k=1,
+                    chat_history=[],
+                    enable_score_filter=False,
+                    min_relevance_score=None,
+                    rag_chain=rag_chain,
+                    retriever=retriever,
+                    doc_vector_store=doc_vector_store,
+                    execution_mode="multimodal_rag",
+                    presentation_mode="rag_answer",
+                    classifier_reason="internal_knowledge",
+                    has_uploaded_image=False,
+                )
+            )
+
+        mock_search.assert_not_awaited()
+        web_step = next(step for step in retrieval_steps if step["key"] == "web_search")
+        self.assertEqual(web_step["details"]["status"], "skipped")
+        self.assertEqual(web_step["details"]["skipped_reason"], "missing_api_key")
+        self.assertFalse(any((doc.get("metadata") or {}).get("source_type") == "web" for doc in documents))
+
+    def test_agentic_web_search_error_keeps_generation_path(self):
+        """测试百度接口异常不会中断 Agentic RAG 生成路径。"""
+        retriever, doc_vector_store, rag_chain = self._make_low_quality_agentic_dependencies()
+
+        with patch("app.langchain_integration.agentic_rag.settings.CRAG_RELEVANCE_THRESHOLD", 2.0), \
+            patch("app.langchain_integration.agentic_rag.settings.WEB_SEARCH_ENABLED", True), \
+            patch("app.langchain_integration.agentic_rag.settings.BAIDU_WEB_SEARCH_API_KEY", "fake-key"), \
+            patch("app.langchain_integration.web_search.search_baidu_web_summary", AsyncMock(side_effect=RuntimeError("timeout"))) as mock_search:
+            _final_state, documents, _text_chunks, retrieval_steps = asyncio.run(
+                prepare_agentic_multimodal_rag_context(
+                    query="新的公开资料是什么？",
+                    top_k=1,
+                    chat_history=[],
+                    enable_score_filter=False,
+                    min_relevance_score=None,
+                    rag_chain=rag_chain,
+                    retriever=retriever,
+                    doc_vector_store=doc_vector_store,
+                    execution_mode="multimodal_rag",
+                    presentation_mode="rag_answer",
+                    classifier_reason="internal_knowledge",
+                    has_uploaded_image=False,
+                )
+            )
+
+        mock_search.assert_awaited_once()
+        web_step = next(step for step in retrieval_steps if step["key"] == "web_search")
+        self.assertEqual(web_step["details"]["status"], "failed")
+        self.assertIn("timeout", web_step["details"]["error"])
+        self.assertFalse(any((doc.get("metadata") or {}).get("source_type") == "web" for doc in documents))
+        self.assertEqual(retrieval_steps[-1]["key"], "generate")
 
     def test_rag_chat_uses_image_similarity_for_image_only_requests(self):
         """测试纯找图请求走 image_similarity"""

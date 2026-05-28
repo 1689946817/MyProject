@@ -39,7 +39,9 @@ from app.core.config import settings
 from app.core.timing import get_current_timing_collector, timing_stage
 from app.langchain_integration.agentic_rag import (
     _rule_based_intent,
+    append_self_check_retrieval_step,
     classify_chat_intent,
+    generate_answer,
     prepare_agentic_multimodal_rag_context,
     run_agentic_multimodal_rag,
 )
@@ -841,13 +843,22 @@ class LangChainAdapter:
                         step_key="generate",
                         meta=self._progress_meta(generation_started=True),
                     )
-                async for chunk in self.rag_chain.astream_from_context(
-                    query=query,
-                    documents=docs,
-                    text_chunks=text_chunks,
-                    chat_history=chat_history or [],
-                ):
-                    yield chunk, docs, intent
+                if settings.SELF_RAG_ENABLED:
+                    generated_state = await generate_answer(_final_state, rag_chain=self.rag_chain)
+                    intent["retrieval_steps"] = append_self_check_retrieval_step(
+                        retrieval_steps,
+                        generated_state,
+                    )
+                    for chunk in self._iter_answer_chunks(str(generated_state.get("answer", ""))):
+                        yield chunk, docs, intent
+                else:
+                    async for chunk in self.rag_chain.astream_from_context(
+                        query=query,
+                        documents=docs,
+                        text_chunks=text_chunks,
+                        chat_history=chat_history or [],
+                    ):
+                        yield chunk, docs, intent
                 return
 
             if intent["execution_mode"] == "direct_llm":
@@ -1042,7 +1053,7 @@ class LangChainAdapter:
             chat_history=chat_history,
             enable_score_filter=enable_score_filter,
             min_relevance_score=min_relevance_score,
-            force_agentic_rag=False,
+            force_agentic_rag=True,
         )
 
     async def _run_fast_chat(
@@ -1783,13 +1794,22 @@ class LangChainAdapter:
                     step_key="generate",
                     meta=self._progress_meta(generation_started=True),
                 )
-            async for chunk in self.rag_chain.astream_from_context(
-                query=query,
-                documents=docs,
-                text_chunks=text_chunks,
-                chat_history=chat_history or [],
-            ):
-                yield chunk, docs, intent
+            if settings.SELF_RAG_ENABLED:
+                generated_state = await generate_answer(final_state, rag_chain=self.rag_chain)
+                intent["retrieval_steps"] = append_self_check_retrieval_step(
+                    retrieval_steps,
+                    generated_state,
+                )
+                for chunk in self._iter_answer_chunks(str(generated_state.get("answer", ""))):
+                    yield chunk, docs, intent
+            else:
+                async for chunk in self.rag_chain.astream_from_context(
+                    query=query,
+                    documents=docs,
+                    text_chunks=text_chunks,
+                    chat_history=chat_history or [],
+                ):
+                    yield chunk, docs, intent
             return
 
         if execution_mode in {"multimodal_rag", "image_grounded_answer"}:

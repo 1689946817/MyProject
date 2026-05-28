@@ -58,6 +58,9 @@ def get_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFon
 PANEL_FONT = get_font(30, bold=True)
 CARD_TITLE_FONT = get_font(28, bold=True)
 CARD_BODY_FONT = get_font(22)
+MODE_TITLE_FONT = get_font(24, bold=True)
+MODE_BODY_FONT = get_font(19)
+NOTE_FONT = get_font(18)
 
 
 def make_canvas() -> tuple[Image.Image, ImageDraw.ImageDraw]:
@@ -402,6 +405,106 @@ def build_fig_4_4() -> None:
     image.save(OUT_DIR / "fig4_4_retrieval_qa_flow.png")
 
 
+def draw_mode_card(
+    draw: ImageDraw.ImageDraw,
+    xy: tuple[int, int, int, int],
+    title: str,
+    body: str,
+    *,
+    fill: tuple[int, int, int],
+    outline: tuple[int, int, int],
+) -> None:
+    draw_shadowed_roundrect(draw, xy, radius=24, fill=fill, outline=outline, width=3, shadow_offset=8)
+    x1, y1, x2, _ = xy
+    chip_w, chip_h = text_size(draw, title, MODE_TITLE_FONT, spacing=4)
+    chip_x = x1 + 24
+    chip_y = y1 + 18
+    draw.rounded_rectangle(
+        (chip_x, chip_y, chip_x + chip_w + 34, chip_y + chip_h + 18),
+        radius=18,
+        fill=outline,
+    )
+    draw.text((chip_x + 17, chip_y + 7), title, fill=WHITE, font=MODE_TITLE_FONT)
+    body_w, body_h = text_size(draw, body, MODE_BODY_FONT, spacing=8)
+    body_x = x1 + ((x2 - x1) - body_w) / 2
+    draw.multiline_text((body_x, y1 + 78), body, fill=TEXT, font=MODE_BODY_FONT, spacing=8, align="center")
+
+
+def draw_note(draw: ImageDraw.ImageDraw, xy: tuple[int, int, int, int], text: str) -> None:
+    x1, y1, x2, y2 = xy
+    draw.rounded_rectangle(xy, radius=18, fill=(248, 250, 252), outline=FRAME_OUTLINE, width=2)
+    draw.multiline_text((x1 + 22, y1 + 16), text, fill=SUBTEXT, font=NOTE_FONT, spacing=6)
+
+
+def build_fig_4_5() -> None:
+    image, draw = make_canvas()
+
+    draw_card(draw, (110, 105, 420, 240), "用户请求", "文本问题 / 上传图片\nexecution_hint 可选", outline=AMBER_OUTLINE)
+    draw_card(draw, (560, 95, 960, 250), "意图路由", "手动 hint 优先\n否则规则与 LLM 分类", outline=GREEN_OUTLINE)
+    draw_card(draw, (1110, 105, 1530, 240), "执行模式确定", "execution_mode\npresentation_mode", outline=BLUE_OUTLINE)
+
+    draw_arrow(draw, [(420, 172), (560, 172)])
+    draw_arrow(draw, [(960, 172), (1110, 172)])
+    draw_chip(draw, 625, 275, "按 execution_mode 进入对应处理分支", fill=BLUE_OUTLINE)
+    draw_arrow(draw, [(1320, 240), (1320, 306), (1115, 306)])
+
+    mode_cards = [
+        (
+            (95, 345, 555, 560),
+            "direct_llm",
+            "_answer_directly()\n流式: _astream_direct_answer()\n输出: direct_answer",
+            GREEN_FILL,
+            GREEN_OUTLINE,
+        ),
+        (
+            (670, 345, 1130, 560),
+            "uploaded_image_qa",
+            "有图: _answer_with_uploaded_image()\n流式: _astream_uploaded_image_answer()\n无图: 回退 direct_llm\n输出: direct_answer",
+            AMBER_FILL,
+            AMBER_OUTLINE,
+        ),
+        (
+            (1245, 345, 1705, 560),
+            "save_uploaded_image",
+            "有图: _save_uploaded_image_to_kb()\n无图: 回退 direct_llm\n写入: 图片知识库\n输出: direct_answer",
+            RED_FILL,
+            RED_OUTLINE,
+        ),
+        (
+            (95, 645, 555, 860),
+            "image_similarity",
+            "_retrieve_images_for_query()\n有图: image_to_image_search()\n无图: text_to_image_search()\n输出: image_only",
+            PURPLE_FILL,
+            PURPLE_OUTLINE,
+        ),
+        (
+            (670, 645, 1130, 860),
+            "image_grounded_answer",
+            "_retrieve_images_for_query()\n_answer_with_retrieved_images()\n流式: astream_from_context()\n输出: image_plus_answer",
+            BLUE_FILL,
+            BLUE_OUTLINE,
+        ),
+        (
+            (1245, 645, 1705, 860),
+            "multimodal_rag",
+            "有图: rag_chain.ainvoke_with_image()\n无图+Agentic: run_agentic_multimodal_rag()\n否则: rag_chain.ainvoke()\n输出: rag_answer",
+            GREEN_FILL,
+            GREEN_OUTLINE,
+        ),
+    ]
+
+    for xy, title, body, fill, outline in mode_cards:
+        draw_mode_card(draw, xy, title, body, fill=fill, outline=outline)
+
+    draw_note(
+        draw,
+        (110, 895, 1690, 950),
+        "注：Agentic 分支仅在 multimodal_rag、无上传图、无 source_scope 且配置 force_agentic_rag 时进入；流式场景先准备上下文，再由 astream_from_context() 输出。",
+    )
+
+    image.save(OUT_DIR / "fig4_5_execution_modes_flow.png")
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     build_fig_2_1()
@@ -411,6 +514,7 @@ def main() -> None:
     build_fig_4_2()
     build_fig_4_3()
     build_fig_4_4()
+    build_fig_4_5()
     print(f"generated figures in: {OUT_DIR}")
 
 

@@ -193,6 +193,8 @@ export default {
     sourceReferences: '来源卡片',
     previewImage: '点击查看大图',
     openSourceDoc: '查看原文',
+    openWebSource: '打开网页',
+    webSource: '网页',
     topK: '检索数量',
     enableScoreFilter: '启用来源重排序过滤',
     minRelevanceScore: '最小重排序分数',

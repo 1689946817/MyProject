@@ -90,6 +90,17 @@ def resolve_analysis_dirname(suffix: Optional[str] = None) -> str:
     return f"{ANALYSIS_DIRNAME}_{cleaned}"
 
 
+def ordered_method_labels(methods: Sequence[str], locale: str) -> List[str]:
+    """Return method labels in the same order as the input methods.
+
+    Seaborn infers hue order from the encountered label order by default. When
+    that order differs from the palette order, legends and bar colors can be
+    mismatched. We therefore pass an explicit hue_order everywhere we compare
+    multiple methods.
+    """
+    return [label_for_method(method, locale) for method in methods]
+
+
 def resolve_legacy_report_name(suffix: Optional[str] = None) -> str:
     cleaned = "" if suffix is None else suffix.strip().strip("_")
     if not cleaned:
@@ -342,6 +353,7 @@ def draw_grouped_metric_chart(
     }
     melted["metric_label"] = melted["metric"].map(metric_labels).fillna(melted["metric"])
     melted["method_label"] = melted["method"].map(lambda x: label_for_method(x, locale))
+    hue_order = ordered_method_labels(methods, locale)
 
     fig, ax = plt.subplots(figsize=(9.4, 4.8))
     sns.barplot(
@@ -349,6 +361,7 @@ def draw_grouped_metric_chart(
         x="metric_label",
         y="value",
         hue="method_label",
+        hue_order=hue_order,
         palette=[PALETTE[m] for m in methods],
         ax=ax,
     )
@@ -387,6 +400,7 @@ def draw_latency_chart(
     }
     melted["metric_label"] = melted["metric"].map(lambda x: labels[x][locale])
     melted["method_label"] = melted["method"].map(lambda x: label_for_method(x, locale))
+    hue_order = ordered_method_labels(methods, locale)
 
     fig, ax = plt.subplots(figsize=(7.8, 4.6))
     sns.barplot(
@@ -394,6 +408,7 @@ def draw_latency_chart(
         x="metric_label",
         y="value",
         hue="method_label",
+        hue_order=hue_order,
         palette=[PALETTE[m] for m in methods],
         ax=ax,
     )
@@ -425,11 +440,13 @@ def draw_domain_metric_chart(
     for ax, metric in zip(axes, metrics):
         temp = plot_df.copy()
         temp["domain_label"] = temp["scope"].map(lambda x: label_for_domain(x, locale))
+        temp["method_label"] = temp["method"].map(lambda x: label_for_method(x, locale))
         sns.barplot(
             data=temp,
             x="domain_label",
             y=metric,
-            hue=temp["method"].map(lambda x: label_for_method(x, locale)),
+            hue="method_label",
+            hue_order=ordered_method_labels(methods, locale),
             palette=[PALETTE[m] for m in methods],
             ax=ax,
         )
@@ -597,12 +614,14 @@ def draw_retrieval_single_domain_chart(
     metric_labels = {"recall_at_1": "Recall@1", "recall_at_10": "Recall@10", "mrr": "MRR", "map_at_10": "mAP@10"}
     melted["metric_label"] = melted["metric"].map(metric_labels)
     melted["method_label"] = melted["method"].map(lambda x: label_for_method(x, locale))
+    hue_order = ordered_method_labels(methods, locale)
     fig, ax = plt.subplots(figsize=(8.8, 4.6))
     sns.barplot(
         data=melted,
         x="metric_label",
         y="value",
         hue="method_label",
+        hue_order=hue_order,
         palette=[PALETTE[m] for m in methods],
         ax=ax,
     )
@@ -650,7 +669,15 @@ def draw_generation_domain_chart(df: pd.DataFrame, methods: Sequence[str], local
     plot_df["domain_label"] = plot_df["domain"].map(lambda x: label_for_domain(x, locale))
     plot_df["method_label"] = plot_df["method"].map(lambda x: label_for_method(x, locale))
     fig, ax = plt.subplots(figsize=(11.8, 5.1))
-    sns.barplot(data=plot_df, x="domain_label", y="answer_correctness", hue="method_label", palette=[PALETTE[m] for m in methods], ax=ax)
+    sns.barplot(
+        data=plot_df,
+        x="domain_label",
+        y="answer_correctness",
+        hue="method_label",
+        hue_order=ordered_method_labels(methods, locale),
+        palette=[PALETTE[m] for m in methods],
+        ax=ax,
+    )
     ax.set_title("Domain-wise Answer Correctness" if locale == "en" else "分领域答案正确性", fontsize=12, weight="bold")
     ax.set_xlabel("")
     ax.set_ylabel("Avg. Score" if locale == "en" else "平均得分")
@@ -665,7 +692,15 @@ def draw_generation_qtype_chart(df: pd.DataFrame, methods: Sequence[str], locale
     plot_df["question_label"] = plot_df["question_type"].map(lambda x: label_for_question_type(x, locale))
     plot_df["method_label"] = plot_df["method"].map(lambda x: label_for_method(x, locale))
     fig, ax = plt.subplots(figsize=(10.8, 4.9))
-    sns.barplot(data=plot_df, x="question_label", y="answer_correctness", hue="method_label", palette=[PALETTE[m] for m in methods], ax=ax)
+    sns.barplot(
+        data=plot_df,
+        x="question_label",
+        y="answer_correctness",
+        hue="method_label",
+        hue_order=ordered_method_labels(methods, locale),
+        palette=[PALETTE[m] for m in methods],
+        ax=ax,
+    )
     ax.set_title("Question-type Answer Correctness" if locale == "en" else "分题型答案正确性", fontsize=12, weight="bold")
     ax.set_xlabel("")
     ax.set_ylabel("Avg. Score" if locale == "en" else "平均得分")
@@ -690,7 +725,15 @@ def draw_relevancy_faithfulness_chart(summary_df: pd.DataFrame, methods: Sequenc
     for ax, metric_group, title in zip(axes, [left_metrics, right_metrics], ["Relevancy" if locale == "en" else "相关性", "Faithfulness" if locale == "en" else "忠实度"]):
         melted = plot_df.melt(id_vars=["method", "method_label"], value_vars=metric_group, var_name="metric", value_name="value")
         melted["metric_label"] = melted["metric"].map(lambda x: label_map[x][locale])
-        sns.barplot(data=melted, x="metric_label", y="value", hue="method_label", palette=[PALETTE[m] for m in methods], ax=ax)
+        sns.barplot(
+            data=melted,
+            x="metric_label",
+            y="value",
+            hue="method_label",
+            hue_order=ordered_method_labels(methods, locale),
+            palette=[PALETTE[m] for m in methods],
+            ax=ax,
+        )
         ax.set_title(title, fontsize=11, weight="bold")
         ax.set_xlabel("")
         ax.set_ylabel("Pass Rate" if locale == "en" else "通过率")
@@ -723,7 +766,15 @@ def draw_generation_improvement_chart(summary_df: pd.DataFrame, methods: Sequenc
     plot_df["metric_label"] = plot_df["metric"].map(label_map)
     plot_df["method_label"] = plot_df["method"].map(lambda x: label_for_method(x, locale))
     fig, ax = plt.subplots(figsize=(9.8, 4.8))
-    sns.barplot(data=plot_df, x="metric_label", y="delta", hue="method_label", palette=[PALETTE[m] for m in compare_methods], ax=ax)
+    sns.barplot(
+        data=plot_df,
+        x="metric_label",
+        y="delta",
+        hue="method_label",
+        hue_order=ordered_method_labels(compare_methods, locale),
+        palette=[PALETTE[m] for m in compare_methods],
+        ax=ax,
+    )
     ax.axhline(0, color="#222222", linewidth=0.8)
     ax.set_title("Proposed Method Gains over Baselines" if locale == "en" else "本文方法相对基线的提升", fontsize=12, weight="bold")
     ax.set_xlabel("")

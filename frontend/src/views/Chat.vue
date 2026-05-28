@@ -163,6 +163,15 @@
                               <i class="i-ep-document"></i>
                               <span>{{ t("chat.openSourceDoc") }}</span>
                             </button>
+                            <button
+                              v-if="canOpenWebSource(source)"
+                              type="button"
+                              class="message-action-btn compact"
+                              @click.stop="openWebSource(source)"
+                            >
+                              <i class="i-ep-link"></i>
+                              <span>{{ t("chat.openWebSource") }}</span>
+                            </button>
                           </div>
                         </div>
                       </template>
@@ -288,6 +297,15 @@
                             >
                               <i class="i-ep-document"></i>
                               <span>{{ t("chat.openSourceDoc") }}</span>
+                            </button>
+                            <button
+                              v-if="canOpenWebSource(source)"
+                              type="button"
+                              class="message-action-btn compact"
+                              @click.stop="openWebSource(source)"
+                            >
+                              <i class="i-ep-link"></i>
+                              <span>{{ t("chat.openWebSource") }}</span>
                             </button>
                           </div>
                         </div>
@@ -1960,6 +1978,10 @@ function isDocumentSource(source: SourceItem): boolean {
   return source.source_type === "document_chunk";
 }
 
+function isWebSource(source: SourceItem): boolean {
+  return source.source_type === "web" || source.metadata?.source_type === "web";
+}
+
 function isImageFocusedMode(msg: Message): boolean {
   const mode = getPresentationMode(msg);
   return mode === "image_only" || mode === "image_plus_answer";
@@ -2004,6 +2026,7 @@ function getModeLabel(msg: Message): string {
 }
 
 function getSourceAssetLabel(source: SourceItem): string {
+  if (isWebSource(source)) return t("chat.webSource");
   const assetType = String(source.metadata?.asset_type || "").trim();
   if (assetType === "table_crop") return t("docs.tableCrop");
   if (assetType === "table_page_render") return t("docs.tablePageRender");
@@ -2056,7 +2079,7 @@ function getSourceScoreLabel(source: SourceItem): string {
 
 function getSourceDisplayTitle(source: SourceItem): string {
   return source.title
-    || String(source.metadata?.file_name || source.metadata?.filename || source.metadata?.doc_id || source.source_id);
+    || String(source.metadata?.title || source.metadata?.site_name || source.metadata?.file_name || source.metadata?.filename || source.metadata?.doc_id || source.source_id);
 }
 
 function getSourceSummary(source: SourceItem): string {
@@ -2066,7 +2089,21 @@ function getSourceSummary(source: SourceItem): string {
 }
 
 function canOpenSourceDocument(source: SourceItem): boolean {
-  return Boolean(source.metadata?.doc_id);
+  return !isWebSource(source) && Boolean(source.metadata?.doc_id);
+}
+
+function getWebSourceUrl(source: SourceItem): string {
+  return String(source.metadata?.url || source.file_path || "").trim();
+}
+
+function canOpenWebSource(source: SourceItem): boolean {
+  return isWebSource(source) && Boolean(getWebSourceUrl(source));
+}
+
+function openWebSource(source: SourceItem) {
+  const url = getWebSourceUrl(source);
+  if (!url) return;
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function openSourceDocument(source: SourceItem) {

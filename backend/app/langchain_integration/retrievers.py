@@ -31,6 +31,28 @@ from app.semantic.prompts import IMAGE_DESCRIPTION_PROMPT
 
 logger = logging.getLogger(__name__)
 
+IMAGE_DESCRIPTION_SECTION_SEPARATOR = "[###]"
+
+
+def _extract_search_description_sections(description: str, max_sections: int = 3) -> str:
+    """提取图片描述前若干个分段，作为图搜图内部检索 query。"""
+    if IMAGE_DESCRIPTION_SECTION_SEPARATOR not in description:
+        return description
+
+    sections = [
+        section.strip()
+        for section in description.split(IMAGE_DESCRIPTION_SECTION_SEPARATOR)
+        if section.strip()
+    ]
+    selected_sections = sections[:max_sections]
+    if not selected_sections:
+        return description
+
+    return (
+        f"{IMAGE_DESCRIPTION_SECTION_SEPARATOR} "
+        + f" {IMAGE_DESCRIPTION_SECTION_SEPARATOR} ".join(selected_sections)
+    )
+
 
 def _asset_priority(hit: Dict[str, Any]) -> int:
     asset_type = str((hit.get("metadata") or {}).get("asset_type", "")).strip().lower()
@@ -259,8 +281,9 @@ class MultimodalRetriever:
                         prompt=IMAGE_DESCRIPTION_PROMPT,
                     )
 
+            retrieval_description = _extract_search_description_sections(description, max_sections=3)
             documents = await self.text_to_image_search(
-                description,
+                retrieval_description,
                 top_k=k,
                 fast=fast,
                 enable_score_filter=enable_score_filter,

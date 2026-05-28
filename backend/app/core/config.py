@@ -164,6 +164,13 @@ class Settings(BaseSettings):
 
     # P3 升级：Agentic RAG
     AGENTIC_RAG_ENABLED: bool = False  # 默认关闭，需手动启用
+    CRAG_RELEVANCE_THRESHOLD: float = 2.0
+    SELF_RAG_ENABLED: bool = False
+    WEB_SEARCH_ENABLED: bool = False
+    BAIDU_WEB_SEARCH_API_KEY: Optional[str] = None
+    BAIDU_WEB_SEARCH_ENDPOINT: str = "https://qianfan.baidubce.com/v2/ai_search/web_summary"
+    BAIDU_WEB_SEARCH_TOP_K: int = 5
+    BAIDU_WEB_SEARCH_TIMEOUT_SECONDS: int = 30
     CHAT_EXPERT_FORCE_AGENTIC_RAG: bool = True
 
     # 生成器评估器模型配置（OpenAI 兼容格式）

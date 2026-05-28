@@ -32,6 +32,7 @@ RAG 聊天 API 路由模块（LangChain 版本）。
 - `rag_router`：`/api/rag/chat`（JSON）和 `/api/rag/chat/stream`（SSE）
 - `router`：会话管理 CRUD + 反馈提交
 """
+import asyncio
 import json
 import os
 import uuid
@@ -286,6 +287,35 @@ def _normalize_chat_sources(retrieved: List[dict]) -> List[ChatSourceItem]:
 
         raw_metadata = item.get("metadata")
         metadata = dict(raw_metadata) if isinstance(raw_metadata, dict) else {}
+        is_web_source = (
+            item.get("source_type") == "web"
+            or metadata.get("source_type") == "web"
+            or metadata.get("asset_type") == "web"
+        )
+        if is_web_source:
+            url = item.get("url") or metadata.get("url") or metadata.get("file_path")
+            title = item.get("title") or metadata.get("title") or metadata.get("site_name") or url
+            source_id = item.get("id") or metadata.get("id") or url or _fallback_source_id(item, metadata)
+            metadata.setdefault("source_type", "web")
+            metadata.setdefault("asset_type", "web")
+            if url:
+                metadata.setdefault("url", url)
+            normalized.append(
+                ChatSourceItem(
+                    source_type="web",
+                    source_id=str(source_id),
+                    title=str(title or source_id),
+                    file_path=str(url) if url else None,
+                    content=item.get("content") or item.get("document"),
+                    score=None,
+                    rerank_score=_safe_score(item.get("rerank_score") or metadata.get("rerank_score")),
+                    relevance_score=None,
+                    score_source="web_search",
+                    metadata=metadata,
+                )
+            )
+            continue
+
         is_document_chunk = item.get("doc_id") is not None or item.get("chunk_index") is not None or "content" in item
 
         if is_document_chunk:
@@ -922,6 +952,7 @@ def _build_rag_streaming_response(
                 "source_scope": source_scope,
             },
         ):
+            stream_aborted = False
             try:
                 yield _build_sse_chunk({"type": "session", "session_id": session.id})
 
@@ -1107,6 +1138,10 @@ def _build_rag_streaming_response(
                         ),
                     )
                 )
+            except (asyncio.CancelledError, GeneratorExit):
+                stream_aborted = True
+                collector.set_metadata(stream_cancelled=True)
+                raise
             except Exception as exc:
                 yield emit_progress(
                     phase="complete",
@@ -1117,7 +1152,8 @@ def _build_rag_streaming_response(
                 )
                 yield _build_sse_chunk({"type": "error", "detail": str(exc)})
             finally:
-                yield "data: [DONE]\n\n"
+                if not stream_aborted:
+                    yield "data: [DONE]\n\n"
                 collector.finish(log_enabled=settings.ENABLE_TIMING_LOGS)
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

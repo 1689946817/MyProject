@@ -93,6 +93,16 @@ def build_legend_handles(methods: list[str], locale: str) -> list[Patch]:
     ]
 
 
+def ordered_method_labels(methods: list[str], locale: str) -> list[str]:
+    """Return legend/hue labels in the intended method order.
+
+    Seaborn infers hue order from the data if not specified. That can misalign
+    bar colors and legend labels when the dataframe row order differs from the
+    palette order. We therefore pass an explicit hue_order everywhere.
+    """
+    return [label_for_method(m, locale) for m in methods]
+
+
 def resolve_analysis_dirname(suffix: str | None = None) -> str:
     if suffix is None:
         return "analysis"
@@ -153,7 +163,9 @@ def draw_overall_metrics(df: pd.DataFrame, methods: list[str], locale: str,
     present_methods = [m for m in methods if m in melted["method"].unique()]
     sns.barplot(
         data=melted, x="metric_label", y="value",
-        hue="method_label", palette=[PALETTE[m] for m in present_methods],
+        hue="method_label",
+        hue_order=ordered_method_labels(present_methods, locale),
+        palette=[PALETTE[m] for m in present_methods],
         ax=ax,
     )
     title = "Generator Evaluation Overview" if locale == "en" else "生成器评测总览"
@@ -224,7 +236,9 @@ def draw_relevancy_faithfulness(df: pd.DataFrame, methods: list[str], locale: st
         present_methods = [m for m in methods if m in melted["method"].unique()]
         sns.barplot(
             data=melted, x="metric_label", y="value",
-            hue="method_label", palette=[PALETTE[m] for m in present_methods],
+            hue="method_label",
+            hue_order=ordered_method_labels(present_methods, locale),
+            palette=[PALETTE[m] for m in present_methods],
             ax=ax,
         )
         ax.set_title(title, fontsize=11, weight="bold")
@@ -284,7 +298,9 @@ def draw_improvement_chart(df: pd.DataFrame, methods: list[str], locale: str,
     fig, ax = plt.subplots(figsize=(9.8, 4.8))
     sns.barplot(
         data=plot_df, x="metric_label", y="delta",
-        hue="method_label", palette=[PALETTE[m] for m in present_methods],
+        hue="method_label",
+        hue_order=ordered_method_labels(present_methods, locale),
+        palette=[PALETTE[m] for m in present_methods],
         ax=ax,
     )
     ax.axhline(0, color="#222222", linewidth=0.8)

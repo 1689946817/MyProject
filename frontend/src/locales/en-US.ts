@@ -193,6 +193,8 @@ export default {
     sourceReferences: 'Source cards',
     previewImage: 'Open preview',
     openSourceDoc: 'Open source',
+    openWebSource: 'Open page',
+    webSource: 'Web page',
     topK: 'Retrieval count',
     enableScoreFilter: 'Enable source rerank filter',
     minRelevanceScore: 'Min rerank score',

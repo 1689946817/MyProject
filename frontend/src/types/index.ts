@@ -100,7 +100,7 @@ export interface SearchResultItem {
  * RAG 问答中检索到的参考文档或图像，作为回答的依据展示给用户。
  */
 export interface ChatSourceItem {
-  /** 来源类型（如 "document", "image", "chunk"） */
+  /** 来源类型（如 "document_chunk", "image", "web"） */
   source_type: string
   /** 来源记录的唯一标识 */
   source_id: string

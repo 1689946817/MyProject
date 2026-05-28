@@ -7,6 +7,7 @@ Agentic RAG 模块（基于 LangGraph）
 3. Self-RAG：生成后自我评估，决定是否需要更多检索
 """
 import asyncio
+import hashlib
 import inspect
 import json
 import logging
@@ -69,12 +70,17 @@ class AgenticRAGState(TypedDict):
     needs_retry: bool
     retrieval_meta: Dict[str, Any]
     retrieval_profile: Dict[str, Any]
+    web_search_result: Dict[str, Any]
+    web_search_references: List[Dict[str, Any]]
+    self_check_meta: Dict[str, Any]
 
 
 _DIRECT_ANSWER = "direct_answer"
 _RAG_ANSWER = "rag_answer"
 _IMAGE_ONLY = "image_only"
 _IMAGE_PLUS_ANSWER = "image_plus_answer"
+_SELF_RAG_INSUFFICIENT_ANSWER = "当前知识库证据不足，暂时无法给出可靠回答。"
+_SELF_RAG_MAX_CONTEXT_CHARS = 6000
 
 _COMMON_FACT_PATTERNS = [
     "长城",
@@ -185,6 +191,8 @@ _SAVE_IMAGE_HINTS = [
     "保存",
     "存入",
     "存到",
+    "保持到知识库",
+    "保持到图片知识库",
     "加入知识库",
     "加入图片知识库",
     "放到知识库",
@@ -674,6 +682,91 @@ async def retry_retrieve_documents(
     )
 
 
+def _is_web_search_source(item: Dict[str, Any]) -> bool:
+    metadata = item.get("metadata") or {}
+    return bool(
+        item.get("source_type") == "web"
+        or metadata.get("source_type") == "web"
+        or metadata.get("asset_type") == "web"
+    )
+
+
+def _stable_web_source_id(url: str, index: int) -> str:
+    raw = url.strip() or f"web-ref-{index}"
+    digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:12]
+    return f"web:{digest}"
+
+
+def _build_web_text_chunk(summary: str, references: List[Dict[str, Any]], result: Dict[str, Any]) -> Dict[str, Any]:
+    reference_lines = []
+    for index, ref in enumerate(references, start=1):
+        title = str(ref.get("title") or f"网页来源 {index}").strip()
+        url = str(ref.get("url") or "").strip()
+        snippet = str(ref.get("content") or "").strip()
+        line = f"{index}. {title}"
+        if url:
+            line += f" - {url}"
+        if snippet:
+            line += f"\n   摘要：{snippet}"
+        reference_lines.append(line)
+
+    content = f"百度网页搜索摘要：\n{summary.strip()}"
+    if reference_lines:
+        content += "\n\n网页引用：\n" + "\n".join(reference_lines)
+    request_id = result.get("request_id") or "no-request-id"
+    return {
+        "doc_id": f"web-search:{request_id}",
+        "chunk_index": 0,
+        "content": content,
+        "score": None,
+        "source_type": "web_search",
+        "metadata": {
+            "source_type": "web_search",
+            "asset_type": "web",
+            "provider": result.get("provider"),
+            "request_id": result.get("request_id"),
+            "reference_count": len(references),
+        },
+    }
+
+
+def _build_web_reference_documents(result: Dict[str, Any]) -> List[Dict[str, Any]]:
+    documents: List[Dict[str, Any]] = []
+    provider = str(result.get("provider") or "baidu_qianfan")
+    request_id = result.get("request_id")
+    for index, ref in enumerate(result.get("references") or [], start=1):
+        if not isinstance(ref, dict):
+            continue
+        title = str(ref.get("title") or f"网页来源 {index}").strip()
+        url = str(ref.get("url") or "").strip()
+        content = str(ref.get("content") or "").strip()
+        source_id = _stable_web_source_id(url or title, index)
+        documents.append(
+            {
+                "id": source_id,
+                "document": content or title,
+                "content": content,
+                "source_type": "web",
+                "metadata": {
+                    "id": source_id,
+                    "source_type": "web",
+                    "asset_type": "web",
+                    "provider": provider,
+                    "request_id": request_id,
+                    "title": title,
+                    "url": url,
+                    "site_name": ref.get("site_name") or "",
+                    "published_at": ref.get("published_at") or "",
+                    "reference_index": index,
+                },
+                "score": 0.0,
+                "relevance_score": None,
+                "score_source": "web_search",
+            }
+        )
+    return documents
+
+
 async def grade_documents(state: AgenticRAGState) -> AgenticRAGState:
     """评估检索结果质量，决定是否需要单次 retry。"""
     documents = state["documents"]
@@ -710,17 +803,39 @@ async def grade_documents(state: AgenticRAGState) -> AgenticRAGState:
                 }
             )
             retrieval_attempt = int(state.get("retrieval_attempt", 1) or 1)
+            crag_threshold = float(getattr(settings, "CRAG_RELEVANCE_THRESHOLD", 2.0) or 2.0)
+            previous_meta = dict(state.get("retrieval_meta", {}))
+            crag_low_quality = len(documents) == 0 or (has_rerank_score and relevance_score < crag_threshold)
+            current_needs_retry = bool(crag_low_quality and retrieval_attempt < 2)
+            web_search_eligible = bool(
+                crag_low_quality
+                and retrieval_attempt >= 2
+                and getattr(settings, "WEB_SEARCH_ENABLED", False)
+            )
+            crag_triggered = bool(previous_meta.get("crag_triggered", False) or current_needs_retry)
+            if current_needs_retry:
+                crag_action = "retry_retrieve"
+            elif web_search_eligible:
+                crag_action = "web_search"
+            else:
+                crag_action = "generate"
 
             state["relevance_score"] = relevance_score
-            state["needs_retry"] = len(documents) == 0 or (
-                has_rerank_score and relevance_score < 0.35 and retrieval_attempt < 2
-            )
+            state["needs_retry"] = current_needs_retry
             state["retrieval_meta"] = {
-                **dict(state.get("retrieval_meta", {})),
+                **previous_meta,
                 "document_count": len(documents),
                 "has_rerank_score": has_rerank_score,
                 "top_source_ids": top_source_ids,
                 "asset_types": asset_types,
+                "relevance_score": round(relevance_score, 6),
+                "crag_enabled": True,
+                "crag_threshold": crag_threshold,
+                "crag_triggered": crag_triggered,
+                "crag_action": crag_action,
+                "crag_low_quality": crag_low_quality,
+                "web_search_enabled": bool(getattr(settings, "WEB_SEARCH_ENABLED", False)),
+                "web_search_eligible": web_search_eligible,
             }
 
     logger.info(
@@ -732,11 +847,291 @@ async def grade_documents(state: AgenticRAGState) -> AgenticRAGState:
     return state
 
 
-def decide_next_after_grade(state: AgenticRAGState) -> Literal["retry", "generate"]:
-    """根据评分结果决定是否做一次 retry。"""
+async def web_search_fallback(state: AgenticRAGState) -> AgenticRAGState:
+    """CRAG 重试后仍低质时，调用百度 Web Search 作为外部兜底上下文。"""
+    retrieval_meta = dict(state.get("retrieval_meta", {}))
+    top_k = int(getattr(settings, "BAIDU_WEB_SEARCH_TOP_K", 5) or 5)
+    enabled = bool(getattr(settings, "WEB_SEARCH_ENABLED", False))
+    endpoint = str(getattr(settings, "BAIDU_WEB_SEARCH_ENDPOINT", "") or "")
+    api_key = str(getattr(settings, "BAIDU_WEB_SEARCH_API_KEY", "") or "")
+    web_meta: Dict[str, Any] = {
+        "enabled": enabled,
+        "provider": "baidu_qianfan",
+        "endpoint": endpoint,
+        "top_k": top_k,
+        "status": "skipped",
+        "request_id": None,
+        "reference_count": 0,
+        "summary_chars": 0,
+        "used_as_context": False,
+        "error": None,
+        "skipped_reason": None,
+    }
+
+    if not enabled:
+        web_meta["skipped_reason"] = "disabled"
+    elif not api_key.strip():
+        web_meta["skipped_reason"] = "missing_api_key"
+    elif not endpoint.strip():
+        web_meta["skipped_reason"] = "missing_endpoint"
+    else:
+        try:
+            from app.langchain_integration.web_search import search_baidu_web_summary
+
+            with timing_stage("agentic_web_search", meta={"provider": "baidu_qianfan", "top_k": top_k}):
+                result = await search_baidu_web_summary(state["query"], top_k=top_k)
+            references = [
+                ref for ref in (result.get("references") or []) if isinstance(ref, dict)
+            ]
+            summary = str(result.get("summary") or "").strip()
+            web_meta.update(
+                {
+                    "status": "failed" if result.get("error") else "completed",
+                    "request_id": result.get("request_id"),
+                    "reference_count": len(references),
+                    "summary_chars": len(summary),
+                    "error": result.get("error"),
+                }
+            )
+            state["web_search_result"] = result
+            state["web_search_references"] = references
+            if not result.get("error") and summary:
+                text_chunks = list(state.get("text_chunks", []))
+                text_chunks.append(_build_web_text_chunk(summary, references, result))
+                state["text_chunks"] = text_chunks
+
+                documents = list(state.get("documents", []))
+                web_documents = _build_web_reference_documents({**result, "references": references})
+                documents.extend(web_documents)
+                state["documents"] = documents
+                web_meta["used_as_context"] = True
+            elif not result.get("error"):
+                web_meta["skipped_reason"] = "empty_summary"
+        except Exception as exc:  # pragma: no cover - defensive guard around external integration
+            logger.warning("[AgenticGraph] web search fallback failed: %s", exc)
+            web_meta.update({"status": "failed", "error": str(exc)})
+
+    retrieval_meta.update(
+        {
+            "web_search_attempted": enabled,
+            "web_search": web_meta,
+            "web_search_reference_count": web_meta["reference_count"],
+            "web_search_used_as_context": web_meta["used_as_context"],
+        }
+    )
+    if web_meta["status"] != "completed" or not web_meta["used_as_context"]:
+        retrieval_meta["crag_action"] = "generate"
+    state["retrieval_meta"] = retrieval_meta
+    return state
+
+
+def decide_next_after_grade(state: AgenticRAGState) -> Literal["retry", "web_search", "generate"]:
+    """根据评分结果决定是否做一次 retry 或 Web Search 兜底。"""
     if state.get("needs_retry"):
         return "retry"
+    retrieval_meta = dict(state.get("retrieval_meta", {}))
+    if retrieval_meta.get("web_search_eligible") and not retrieval_meta.get("web_search_attempted"):
+        return "web_search"
     return "generate"
+
+
+def _stringify_context_item(item: Any, index: int, source_kind: str) -> str:
+    """将检索上下文压缩成 Self-RAG 自检可读文本。"""
+    if isinstance(item, dict):
+        metadata = item.get("metadata") or {}
+        source_id = str(item.get("id") or item.get("doc_id") or metadata.get("id") or f"{source_kind}-{index}")
+        asset_type = str(metadata.get("asset_type") or metadata.get("source_type") or source_kind)
+        content = str(
+            item.get("content")
+            or item.get("document")
+            or metadata.get("description")
+            or metadata.get("title")
+            or ""
+        ).strip()
+        return f"[{source_kind} {index}] id={source_id}; type={asset_type}; content={content}"
+    return f"[{source_kind} {index}] {str(item).strip()}"
+
+
+def _build_self_rag_context(documents: List[Dict[str, Any]], text_chunks: List[Any]) -> str:
+    context_parts: List[str] = []
+    for index, chunk in enumerate(text_chunks[:8], start=1):
+        context_parts.append(_stringify_context_item(chunk, index, "文本片段"))
+    for index, document in enumerate(documents[:8], start=1):
+        context_parts.append(_stringify_context_item(document, index, "检索来源"))
+    context = "\n".join(part for part in context_parts if part.strip())
+    return context[:_SELF_RAG_MAX_CONTEXT_CHARS]
+
+
+def _store_self_check_meta(state: AgenticRAGState, meta: Dict[str, Any]) -> None:
+    retrieval_meta = dict(state.get("retrieval_meta", {}))
+    retrieval_meta["self_check"] = meta
+    state["retrieval_meta"] = retrieval_meta
+    state["self_check_meta"] = meta
+
+
+async def self_check_answer(state: AgenticRAGState, *, chat_model=None) -> AgenticRAGState:
+    """执行轻量 Self-RAG 后验检查，失败时保留原答案。"""
+    if not getattr(settings, "SELF_RAG_ENABLED", False):
+        return state
+
+    original_answer = str(state.get("answer") or "")
+    base_meta: Dict[str, Any] = {
+        "enabled": True,
+        "status": "completed",
+        "passed": None,
+        "action": "keep",
+        "reason": "",
+        "original_answer_chars": len(original_answer),
+        "final_answer_chars": len(original_answer),
+    }
+
+    if not original_answer.strip():
+        base_meta.update(
+            {
+                "status": "skipped",
+                "reason": "empty_answer",
+            }
+        )
+        _store_self_check_meta(state, base_meta)
+        return state
+
+    try:
+        model = chat_model or get_task_text_chat_model()
+        context_text = _build_self_rag_context(
+            list(state.get("documents", [])),
+            list(state.get("text_chunks", [])),
+        )
+        prompt = f"""
+你是多模态 RAG 系统的 Self-RAG 后验检查器。请只根据给定的检索上下文判断初始答案是否可靠。
+
+判断标准：
+1. 答案是否被检索上下文支持。
+2. 答案是否回答了用户问题。
+3. 答案是否包含上下文未支持的具体事实、指标、结论或承诺。
+4. 如果检索上下文与用户问题明显不相关，初始答案虽然拒答但大量罗列或解释与用户问题无关的检索内容，也必须判定为 passed=false。
+
+如果答案可靠，返回 passed=true，revised_answer 为空字符串。
+如果答案不可靠，请给出更保守的 revised_answer；只能使用上下文中能支持的信息，不足时明确说明当前知识库证据不足。
+保守修正版应直接回应用户问题，避免继续展开无关检索内容；如果知识库缺少相关证据，请用简洁表述说明无法基于知识库可靠回答。
+
+必须只输出 JSON 对象，不要输出 Markdown：
+{{"passed": true, "reason": "简短原因", "revised_answer": ""}}
+
+用户问题：
+{state.get("query", "")}
+
+检索上下文：
+{context_text or "（无检索上下文）"}
+
+初始答案：
+{original_answer}
+""".strip()
+        with timing_stage(
+            "agentic_self_check",
+            meta={
+                "document_count": len(state.get("documents", [])),
+                "text_chunk_count": len(state.get("text_chunks", [])),
+                "answer_chars": len(original_answer),
+            },
+        ):
+            result = await model._agenerate([HumanMessage(content=prompt)])
+        raw = str(result.generations[0].message.content or "").strip()
+        parsed = _extract_json_object(raw)
+        if not isinstance(parsed, dict):
+            raise ValueError("Self-RAG check did not return a JSON object")
+
+        passed = bool(parsed.get("passed", False))
+        reason = str(parsed.get("reason") or "").strip()
+        revised_answer = str(parsed.get("revised_answer") or "").strip()
+        final_answer = original_answer
+        action = "keep"
+        if not passed:
+            if revised_answer:
+                final_answer = revised_answer
+                action = "revise"
+            else:
+                final_answer = _SELF_RAG_INSUFFICIENT_ANSWER
+                action = "insufficient_evidence"
+        state["answer"] = final_answer
+        base_meta.update(
+            {
+                "passed": passed,
+                "action": action,
+                "reason": reason,
+                "final_answer_chars": len(final_answer),
+            }
+        )
+    except Exception as exc:  # pragma: no cover - defensive; tests cover mocked failure
+        logger.warning("[AgenticGraph] Self-RAG answer check failed: %s", exc)
+        base_meta.update(
+            {
+                "status": "failed",
+                "action": "keep",
+                "reason": str(exc),
+                "error": str(exc),
+            }
+        )
+
+    _store_self_check_meta(state, base_meta)
+    collector = get_current_timing_collector()
+    if collector is not None:
+        collector.set_metadata(
+            self_rag_enabled=True,
+            self_rag_status=base_meta.get("status"),
+            self_rag_passed=base_meta.get("passed"),
+            self_rag_action=base_meta.get("action"),
+        )
+    return state
+
+
+def _build_self_check_step(final_state: AgenticRAGState) -> Optional[Dict[str, Any]]:
+    retrieval_meta = dict(final_state.get("retrieval_meta", {}))
+    meta = dict(retrieval_meta.get("self_check") or final_state.get("self_check_meta") or {})
+    if not meta.get("enabled"):
+        return None
+
+    status = str(meta.get("status") or "completed")
+    action = str(meta.get("action") or "keep")
+    passed = meta.get("passed")
+    reason = str(meta.get("reason") or "")
+    if status == "failed":
+        summary = f"Self-RAG 后验检查失败，已保留原答案：{reason or 'unknown_error'}"
+    elif status == "skipped":
+        summary = "Self-RAG 后验检查已跳过"
+    elif passed is True:
+        summary = "Self-RAG 后验检查通过，保留原答案"
+    elif action == "revise":
+        summary = "Self-RAG 后验检查未通过，已保守修正答案"
+    else:
+        summary = "Self-RAG 后验检查未通过，当前知识库证据不足"
+
+    return {
+        "key": "self_check",
+        "label": "Self-RAG 后验检查",
+        "summary": summary,
+        "details": {
+            "enabled": True,
+            "status": status,
+            "passed": passed,
+            "action": action,
+            "reason": reason,
+            "original_answer_chars": int(meta.get("original_answer_chars", 0) or 0),
+            "final_answer_chars": int(meta.get("final_answer_chars", 0) or 0),
+            "error": meta.get("error"),
+        },
+    }
+
+
+def append_self_check_retrieval_step(
+    retrieval_steps: List[Dict[str, Any]],
+    final_state: AgenticRAGState,
+) -> List[Dict[str, Any]]:
+    step = _build_self_check_step(final_state)
+    if step is None:
+        return retrieval_steps
+    steps = [item for item in retrieval_steps if item.get("key") != "self_check"]
+    steps.append(step)
+    return steps
 
 
 async def generate_answer(state: AgenticRAGState, *, rag_chain=None) -> AgenticRAGState:
@@ -761,6 +1156,7 @@ async def generate_answer(state: AgenticRAGState, *, rag_chain=None) -> AgenticR
         )
 
     state["answer"] = answer
+    state = await self_check_answer(state)
     logger.info("[AgenticGraph] generated answer with %s docs", len(state.get("documents", [])))
     return state
 
@@ -786,12 +1182,16 @@ def build_agentic_rag_graph(*, retriever=None, doc_vector_store=None, rag_chain=
             text_top_k=text_top_k,
         )
 
+    async def _web_search_node(state: AgenticRAGState) -> AgenticRAGState:
+        return await web_search_fallback(state)
+
     async def _generate_node(state: AgenticRAGState) -> AgenticRAGState:
         return await generate_answer(state, rag_chain=rag_chain)
 
     workflow.add_node("retrieve", _retrieve_node)
     workflow.add_node("grade", grade_documents)
     workflow.add_node("retry_retrieve", _retry_retrieve_node)
+    workflow.add_node("web_search", _web_search_node)
     workflow.add_node("generate", _generate_node)
 
     workflow.set_entry_point("retrieve")
@@ -801,10 +1201,12 @@ def build_agentic_rag_graph(*, retriever=None, doc_vector_store=None, rag_chain=
         decide_next_after_grade,
         {
             "retry": "retry_retrieve",
+            "web_search": "web_search",
             "generate": "generate",
         },
     )
     workflow.add_edge("retry_retrieve", "grade")
+    workflow.add_edge("web_search", "generate")
     workflow.add_edge("generate", END)
     return workflow.compile()
 
@@ -840,6 +1242,14 @@ def _build_agentic_retrieval_steps(
 ) -> List[Dict[str, Any]]:
     retrieval_meta = dict(final_state.get("retrieval_meta", {}))
     relevance_score = float(final_state.get("relevance_score", 0.0) or 0.0)
+    crag_threshold = float(
+        retrieval_meta.get("crag_threshold", getattr(settings, "CRAG_RELEVANCE_THRESHOLD", 2.0)) or 2.0
+    )
+    crag_triggered = bool(retrieval_meta.get("crag_triggered", False))
+    crag_action = str(retrieval_meta.get("crag_action") or ("retry_retrieve" if crag_triggered else "generate"))
+    crag_summary = "已触发纠错重试" if crag_triggered else "未触发纠错重试"
+    local_documents = [doc for doc in documents if isinstance(doc, dict) and not _is_web_search_source(doc)]
+    web_search_meta = dict(retrieval_meta.get("web_search") or {})
     steps: List[Dict[str, Any]] = [
         {
             "key": "intent",
@@ -862,11 +1272,11 @@ def _build_agentic_retrieval_steps(
         {
             "key": "retrieve",
             "label": "首次检索",
-            "summary": f"召回 {len(documents)} 条结果",
+            "summary": f"召回 {len(local_documents)} 条结果",
             "details": {
-                "count": len(documents),
+                "count": len(local_documents),
                 "attempt": 1,
-                "document_count": retrieval_meta.get("document_count", len(documents)),
+                "document_count": retrieval_meta.get("document_count", len(local_documents)),
                 "text_chunk_count": retrieval_meta.get("text_chunk_count", len(final_state.get("text_chunks", []))),
                 "top_source_ids": retrieval_meta.get("top_source_ids", []),
                 "asset_types": retrieval_meta.get("asset_types", []),
@@ -874,14 +1284,21 @@ def _build_agentic_retrieval_steps(
         },
         {
             "key": "grade",
-            "label": "评分",
-            "summary": f"相关性 {relevance_score:.3f}",
+            "label": "CRAG 检索质量评估",
+            "summary": f"CRAG 检索质量评估：分数 {relevance_score:.3f}，阈值 {crag_threshold:.3f}，{crag_summary}",
             "details": {
                 "attempt": min(int(final_state.get("retrieval_attempt", 1) or 1), 1),
                 "relevance_score": round(relevance_score, 6),
                 "document_count": retrieval_meta.get("document_count", len(documents)),
                 "has_rerank_score": bool(retrieval_meta.get("has_rerank_score", False)),
                 "needs_retry": bool(int(final_state.get("retrieval_attempt", 1) or 1) > 1),
+                "crag_enabled": bool(retrieval_meta.get("crag_enabled", True)),
+                "crag_threshold": crag_threshold,
+                "crag_triggered": crag_triggered,
+                "crag_action": crag_action,
+                "crag_low_quality": bool(retrieval_meta.get("crag_low_quality", False)),
+                "web_search_enabled": bool(retrieval_meta.get("web_search_enabled", False)),
+                "web_search_eligible": bool(retrieval_meta.get("web_search_eligible", False)),
             },
         },
     ]
@@ -894,11 +1311,45 @@ def _build_agentic_retrieval_steps(
                 "summary": "首次检索质量不足，已执行一次重试",
                 "details": {
                     "attempt": int(final_state.get("retrieval_attempt", 1) or 1),
-                    "count": len(documents),
-                    "document_count": retrieval_meta.get("document_count", len(documents)),
+                    "count": len(local_documents),
+                    "document_count": retrieval_meta.get("document_count", len(local_documents)),
                     "text_chunk_count": retrieval_meta.get("text_chunk_count", len(final_state.get("text_chunks", []))),
                     "top_source_ids": retrieval_meta.get("top_source_ids", []),
                     "asset_types": retrieval_meta.get("asset_types", []),
+                    "crag_triggered": crag_triggered,
+                    "crag_action": crag_action,
+                },
+            }
+        )
+
+    if web_search_meta:
+        web_status = str(web_search_meta.get("status") or "skipped")
+        reference_count = int(web_search_meta.get("reference_count") or 0)
+        skipped_reason = web_search_meta.get("skipped_reason")
+        error = web_search_meta.get("error")
+        if web_status == "completed" and web_search_meta.get("used_as_context"):
+            web_summary = f"CRAG 重试后仍低于阈值，已调用百度搜索，引用 {reference_count} 条"
+        elif skipped_reason:
+            web_summary = f"CRAG 重试后仍低于阈值，Web Search 未调用：{skipped_reason}"
+        else:
+            web_summary = f"CRAG 重试后仍低于阈值，百度搜索调用失败：{error or 'unknown_error'}"
+        steps.append(
+            {
+                "key": "web_search",
+                "label": "百度 Web Search 兜底",
+                "summary": web_summary,
+                "details": {
+                    "provider": web_search_meta.get("provider"),
+                    "endpoint": web_search_meta.get("endpoint"),
+                    "enabled": bool(web_search_meta.get("enabled", False)),
+                    "status": web_status,
+                    "top_k": web_search_meta.get("top_k"),
+                    "request_id": web_search_meta.get("request_id"),
+                    "reference_count": reference_count,
+                    "summary_chars": web_search_meta.get("summary_chars"),
+                    "used_as_context": bool(web_search_meta.get("used_as_context", False)),
+                    "error": error,
+                    "skipped_reason": skipped_reason,
                 },
             }
         )
@@ -913,6 +1364,8 @@ def _build_agentic_retrieval_steps(
                 "document_count": len(documents),
                 "text_chunk_count": retrieval_meta.get("text_chunk_count", len(final_state.get("text_chunks", []))),
                 "relevance_score": round(relevance_score, 6),
+                "crag_triggered": crag_triggered,
+                "crag_action": crag_action,
             },
         }
     )
@@ -953,6 +1406,7 @@ async def run_agentic_multimodal_rag(
     )
 
     generated_state = await generate_answer(final_state, rag_chain=rag_chain)
+    retrieval_steps = append_self_check_retrieval_step(retrieval_steps, generated_state)
     return generated_state.get("answer", ""), documents, retrieval_steps
 
 
@@ -987,6 +1441,9 @@ async def prepare_agentic_multimodal_rag_context(
         "needs_retry": False,
         "retrieval_meta": {},
         "retrieval_profile": dict(retrieval_profile or {}),
+        "web_search_result": {},
+        "web_search_references": [],
+        "self_check_meta": {},
     }
 
     with timing_stage("agentic_graph_total", meta={"top_k": top_k, "execution_mode": execution_mode}):
@@ -1011,12 +1468,17 @@ async def prepare_agentic_multimodal_rag_context(
     if documents and compression_enabled is not None:
         from app.langchain_integration.context_compression import compress_context
 
-        with timing_stage("chat_compress", meta={"document_count": len(documents)}):
-            documents = await compress_context(
+        web_documents = [doc for doc in documents if isinstance(doc, dict) and _is_web_search_source(doc)]
+        compressible_documents = [
+            doc for doc in documents if not (isinstance(doc, dict) and _is_web_search_source(doc))
+        ]
+        with timing_stage("chat_compress", meta={"document_count": len(compressible_documents)}):
+            compressed_documents = await compress_context(
                 query,
-                documents,
+                compressible_documents,
                 force_enabled=bool(compression_enabled),
             )
+        documents = compressed_documents + web_documents
         final_state["documents"] = documents
     retrieval_steps = _build_agentic_retrieval_steps(
         query=query,

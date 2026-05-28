@@ -26,6 +26,7 @@ def test_timing_config_fields_are_registered():
     assert "CHAT_ENABLE_SCORE_FILTER" in CONFIG_FIELD_MAP
     assert "CHAT_MIN_RELEVANCE_SCORE" in CONFIG_FIELD_MAP
     assert "CHAT_EXPERT_FORCE_AGENTIC_RAG" in CONFIG_FIELD_MAP
+    assert "SELF_RAG_ENABLED" in CONFIG_FIELD_MAP
     assert CONFIG_FIELD_MAP["ENABLE_TIMING_LOGS"].parse_as == "bool"
     assert CONFIG_FIELD_MAP["EXPOSE_TIMINGS_IN_API"].parse_as == "bool"
     assert CONFIG_FIELD_MAP["TASK_LLM_BASE_URL"].group == "models"
@@ -45,3 +46,6 @@ def test_timing_config_fields_are_registered():
     assert CONFIG_FIELD_MAP["CHAT_EXPERT_FORCE_CONTEXT_COMPRESSION"].parse_as == "bool"
     assert CONFIG_FIELD_MAP["CHAT_EXPERT_FORCE_TRUE_STREAMING"].parse_as == "bool"
     assert CONFIG_FIELD_MAP["CHAT_EXPERT_FORCE_AGENTIC_RAG"].parse_as == "bool"
+    assert CONFIG_FIELD_MAP["SELF_RAG_ENABLED"].group == "rag"
+    assert CONFIG_FIELD_MAP["SELF_RAG_ENABLED"].parse_as == "bool"
+    assert CONFIG_FIELD_MAP["SELF_RAG_ENABLED"].default is False

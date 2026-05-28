@@ -249,7 +249,7 @@ class ChatSourceItem(BaseModel):
     记录 RAG 检索命中的单个来源，用于前端展示和引用构建。
     """
 
-    source_type: str  # 来源类型：image / document_chunk
+    source_type: str  # 来源类型：image / document_chunk / web
     source_id: str  # 来源唯一标识符
     title: Optional[str] = None  # 来源标题
     file_path: Optional[str] = None  # 文件路径
